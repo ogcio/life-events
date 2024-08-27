@@ -2,6 +2,8 @@ import type { FileMetadata } from "../../../types";
 import ds from "design-system";
 import styles from "./FileTable.module.scss";
 import DeleteFile from "./DeleteFile";
+import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 
 const formatBytes = (bytes: number) => {
   if (bytes === 0) return "0 Bytes";
@@ -16,7 +18,9 @@ type TableRowProps = {
   deleteFile: (formData: FormData) => Promise<{ error: string }>;
 };
 
-const TableRow = ({ file, deleteFile }: TableRowProps) => {
+const TableRow = async ({ file, deleteFile }: TableRowProps) => {
+  const tTable = await getTranslations("Upload.table.data");
+
   return (
     <tr className="govie-table__row">
       <th className="govie-table__header" scope="row">
@@ -29,8 +33,8 @@ const TableRow = ({ file, deleteFile }: TableRowProps) => {
           <span>
             {file.fileName} -
             <span style={{ color: ds.colours.ogcio.red }}>
-              <span className="govie-visually-hidden">Error:</span> The file is
-              infected
+              <span className="govie-visually-hidden">Error:</span>{" "}
+              {tTable("infected")}
             </span>
           </span>
         )}
@@ -49,25 +53,26 @@ type FileTableProps = {
   deleteFile: (formData: FormData) => Promise<{ error: string }>;
 };
 
-export default ({ deleteFile, files }: FileTableProps) => {
+export default async ({ deleteFile, files }: FileTableProps) => {
+  const tTable = await getTranslations("Upload.table");
   return (
     <table className="govie-table">
       <caption className="govie-table__caption govie-table__caption--m">
-        Files
+        {tTable("caption")}
       </caption>
       <thead className="govie-table__head">
         <tr className="govie-table__row">
           <th scope="col" className="govie-table__header">
-            File
+            {tTable("header.file")}
           </th>
           <th scope="col" className="govie-table__header">
-            File size
+            {tTable("header.fileSize")}
           </th>
           <th scope="col" className="govie-table__header">
-            Uploaded by
+            {tTable("header.uploadedBy")}
           </th>
           <th scope="col" className="govie-table__header">
-            Action
+            {tTable("header.action")}
           </th>
         </tr>
       </thead>

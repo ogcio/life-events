@@ -130,8 +130,8 @@ export default async function messages(app: FastifyInstance) {
       const links = getPaginationLinks({
         totalCount,
         url: baseUrl(),
-        limit,
-        offset,
+        limit: Number(limit),
+        offset: Number(offset),
       });
 
       const response: GenericResponse<MessageEventListType> = {

@@ -38,24 +38,23 @@ paths:
           required: false
           description: Either recipientUserId and organisationId are mandatory
         - schema:
-            default: 0
-            minimum: 0
-            type: integer
+            pattern: ^[0-9][0-9]*|$
+            default: "0"
+            type: string
           in: query
           name: offset
           required: false
           description: Indicates where to start fetching data or how many records to skip,
             defining the initial position within the list
         - schema:
-            default: 20
-            minimum: 1
-            maximum: 100
-            type: integer
+            default: "20"
+            pattern: ^([1-9]|100)|$
+            type: string
           in: query
           name: limit
           required: false
-          description: Indicates the maximum number of items that will be returned in a
-            single request
+          description: Indicates the maximum number (100) of items that will be returned
+            in a single request
       responses:
         "200":
           description: Default Response
@@ -605,24 +604,23 @@ paths:
           required: true
           description: Provider types that can be manipulated
         - schema:
-            default: 0
-            minimum: 0
-            type: integer
+            pattern: ^[0-9][0-9]*|$
+            default: "0"
+            type: string
           in: query
           name: offset
           required: false
           description: Indicates where to start fetching data or how many records to skip,
             defining the initial position within the list
         - schema:
-            default: 20
-            minimum: 1
-            maximum: 100
-            type: integer
+            default: "20"
+            pattern: ^([1-9]|100)|$
+            type: string
           in: query
           name: limit
           required: false
-          description: Indicates the maximum number of items that will be returned in a
-            single request
+          description: Indicates the maximum number (100) of items that will be returned
+            in a single request
       responses:
         "200":
           description: Default Response
@@ -4162,24 +4160,23 @@ paths:
           required: false
           description: If true, the endpoint returns active only users
         - schema:
-            default: 0
-            minimum: 0
-            type: integer
+            pattern: ^[0-9][0-9]*|$
+            default: "0"
+            type: string
           in: query
           name: offset
           required: false
           description: Indicates where to start fetching data or how many records to skip,
             defining the initial position within the list
         - schema:
-            default: 20
-            minimum: 1
-            maximum: 100
-            type: integer
+            default: "20"
+            pattern: ^([1-9]|100)|$
+            type: string
           in: query
           name: limit
           required: false
-          description: Indicates the maximum number of items that will be returned in a
-            single request
+          description: Indicates the maximum number (100) of items that will be returned
+            in a single request
       responses:
         "200":
           description: Default Response
@@ -4912,24 +4909,23 @@ paths:
           description: If set, it filters the events for the messages containing the set
             value in subject
         - schema:
-            default: 0
-            minimum: 0
-            type: integer
+            pattern: ^[0-9][0-9]*|$
+            default: "0"
+            type: string
           in: query
           name: offset
           required: false
           description: Indicates where to start fetching data or how many records to skip,
             defining the initial position within the list
         - schema:
-            default: 20
-            minimum: 1
-            maximum: 100
-            type: integer
+            default: "20"
+            pattern: ^([1-9]|100)|$
+            type: string
           in: query
           name: limit
           required: false
-          description: Indicates the maximum number of items that will be returned in a
-            single request
+          description: Indicates the maximum number (100) of items that will be returned
+            in a single request
       responses:
         "200":
           description: Default Response

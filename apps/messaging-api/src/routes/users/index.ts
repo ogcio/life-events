@@ -109,7 +109,8 @@ export default async function users(app: FastifyInstance) {
       const recipientsResponse = await getUsers(params);
 
       const paginationDetails: PaginationDetails = {
-        ...pagination,
+        limit: Number(pagination.limit),
+        offset: Number(pagination.offset),
         totalCount: recipientsResponse.total,
         url: new URL(`${app.listeningOrigin}${request.url}`),
       };
