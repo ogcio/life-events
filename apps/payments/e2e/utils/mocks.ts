@@ -22,3 +22,9 @@ export const mockAddress = {
   city: "GlanMire",
   ZIP: "T23",
 };
+
+export const realexCardData = {
+  number: "4263970000005262",
+  expiry: "0230",
+  code: "123",
+};

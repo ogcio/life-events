@@ -8,7 +8,13 @@ import {
 } from "allure-js-commons";
 import { PaymentRequestsPage } from "../../objects/paymentRequests/PaymentRequestsListPage";
 import { PaymentRequestDetailsPage } from "../../objects/paymentRequests/PaymentRequestDetailsPage";
-import { mockAddress, mockAmount, mockPhoneNumber } from "../../utils/mocks";
+import {
+  mockAccountHolderName,
+  mockAddress,
+  mockAmount,
+  mockPhoneNumber,
+  realexCardData,
+} from "../../utils/mocks";
 import { PayPage } from "../../objects/payments/PayPage";
 import { RealexTransactionPage } from "../../objects/payments/realex/RealexTransactionPage";
 import { citizens, myGovIdMockSettings } from "../../utils/constants";
@@ -59,6 +65,13 @@ test.describe("Transaction with Realex", () => {
     await realexTransactionPage.payerData.enterCity(mockAddress.city);
     await realexTransactionPage.payerData.enterZIP(mockAddress.ZIP);
     await realexTransactionPage.payerData.enterPhoneNumber(mockPhoneNumber);
-    await realexTransactionPage.continue();
+    await realexTransactionPage.payerData.continue();
+    await realexTransactionPage.cardData.enterCardNumber(realexCardData.number);
+    await realexTransactionPage.cardData.enterExpiry(realexCardData.expiry);
+    await realexTransactionPage.cardData.enterSecurityCode(realexCardData.code);
+    await realexTransactionPage.cardData.enterCardholderName(
+      mockAccountHolderName,
+    );
+    await realexTransactionPage.cardData.pay();
   });
 });

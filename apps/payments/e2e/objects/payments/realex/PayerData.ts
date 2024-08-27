@@ -1,4 +1,4 @@
-import { type Page, type Locator, expect } from "@playwright/test";
+import { type Page, type Locator } from "@playwright/test";
 
 export class PayerData {
   private readonly emailInput: Locator;
@@ -9,6 +9,7 @@ export class PayerData {
   private readonly cityInput: Locator;
   private readonly ZIPInput: Locator;
   private readonly phoneInput: Locator;
+  private readonly continueBtn: Locator;
 
   constructor(public readonly page: Page) {
     this.emailInput = page.getByLabel("Email Address");
@@ -23,6 +24,7 @@ export class PayerData {
       name: "ZIP / Postal Code / Eircode",
     });
     this.phoneInput = page.getByRole("textbox", { name: "Phone Number" });
+    this.continueBtn = page.getByRole("button", { name: "Continue" });
   }
 
   async enterEmail(email: string) {
@@ -55,5 +57,9 @@ export class PayerData {
 
   async enterPhoneNumber(number: string) {
     await this.phoneInput.fill(number);
+  }
+
+  async continue() {
+    await this.continueBtn.click();
   }
 }
