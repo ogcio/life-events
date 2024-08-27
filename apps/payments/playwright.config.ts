@@ -17,6 +17,7 @@ export default defineConfig({
   retries: 0,
   outputDir: "./e2e/test-results/",
 
+  // uncomment if you want to spin up services and dependencies upon starting the test process
   // webServer: {
   //   command: "npm run start:logto",
   //   cwd: "../../",

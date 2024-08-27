@@ -87,3 +87,5 @@ export const paymentRequestValidationErrorTexts: Record<
   statusInvalid:
     "Payment Request Status cannot be active if no providers are selected.",
 };
+
+export const PID_FILE = "e2e/utils/ngrok.pid";

@@ -24,8 +24,14 @@ import {
   referenceCodeSearchParam,
 } from "../../utils/constants";
 import { expect } from "@playwright/test";
+import { startNgrok } from "../../utils/start-ngrok";
+import { stopNgrok } from "../../utils/stop-ngrok";
 
 test.describe("Transaction with Realex", () => {
+  test.beforeAll(async () => await startNgrok());
+
+  test.afterAll(async () => await stopNgrok());
+
   test("should complete a payment with a realex provider @smoke @critical", async ({
     publicServantPage,
     paymentRequestWithRealexProvider,

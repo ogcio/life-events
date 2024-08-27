@@ -45,3 +45,4 @@ e2e/.auth
 /blob-report/
 /playwright/.cache/
 /allure-results
+e2e/utils/ngrok.pid
