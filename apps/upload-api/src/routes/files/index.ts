@@ -9,11 +9,7 @@ import { FastifyInstance, FastifyRequest } from "fastify";
 import { EventEmitter } from "node:events";
 import { PassThrough, pipeline } from "stream";
 import { HttpError } from "../../types/httpErrors.js";
-import {
-  FileOwnerType,
-  getGenericResponseSchema,
-  ResponseMetadata,
-} from "../../types/schemaDefinitions.js";
+import { getGenericResponseSchema } from "../../types/schemaDefinitions.js";
 import PromiseTransform from "./PromiseTransform.js";
 
 import {
@@ -24,23 +20,22 @@ import {
   NotFoundError,
   ServerError,
 } from "shared-errors";
-import deleteFileMetadata from "./utils/deleteFileMetadata.js";
-import getFileMetadata from "./utils/getFileMetadata.js";
-import getUserFiles from "./utils/getUserFiles.js";
-import insertFileMetadata from "./utils/insertFileMetadata.js";
-import updateFileMetadata from "./utils/updateFileMetadata.js";
-import getDbVersion from "./utils/getDbVersion.js";
+import deleteFileMetadata from "../utils/deleteFileMetadata.js";
+import getFileMetadataById from "../utils/getFileMetadataById.js";
+import insertFileMetadata from "../utils/insertFileMetadata.js";
+import updateFileMetadata from "../utils/updateFileMetadata.js";
+import getDbVersion from "../utils/getDbVersion.js";
 import { Permissions } from "../../types/permissions.js";
 import {
   ensureOrganizationIdIsSet,
   ensureUserIdIsSet,
-  getProfileSdk,
 } from "../../utils/authentication-factory.js";
 
 const FILE_UPLOAD = "FILE_UPLOAD";
 const FILE_DELETE = "FILE_DELETE";
-const FILE_INDEX = "FILE_INDEX";
 const FILE_DOWNLOAD = "FILE_DOWNLOAD";
+
+const API_DOCS_TAG = "Files";
 
 const deleteObject = (
   s3Client: S3Client,
@@ -204,7 +199,7 @@ export default async function routes(app: FastifyInstance) {
         app.checkPermissions(req, res, [Permissions.Upload.Write]),
       schema: {
         consumes: ["multipart/form-data"],
-        tags: ["Files"],
+        tags: [API_DOCS_TAG],
         response: {
           200: getGenericResponseSchema(
             Type.Object({ message: Type.String() }),
@@ -221,77 +216,14 @@ export default async function routes(app: FastifyInstance) {
     },
   );
 
-  app.get(
-    "/",
-    {
-      preValidation: (req, res) =>
-        app.checkPermissions(req, res, [
-          Permissions.Upload.Read,
-          Permissions.UploadSelf.Read,
-        ]),
-      schema: {
-        tags: ["Files"],
-        response: {
-          200: getGenericResponseSchema(Type.Array(ResponseMetadata)),
-          "4xx": HttpError,
-          "5xx": HttpError,
-        },
-      },
-    },
-    async (request, reply) => {
-      const userId = ensureUserIdIsSet(request, FILE_INDEX);
-      const organizationId = request.userData?.organizationId;
-
-      const profileSdk = await getProfileSdk(organizationId);
-
-      const data = await getUserFiles(app.pg, userId, organizationId);
-
-      const files = data.rows;
-
-      const userIds = files.map((f) => f.ownerId);
-      let usersData: { [key: string]: FileOwnerType };
-
-      if (files.length === 0) {
-        return reply.send({ data: [] });
-      }
-
-      try {
-        const usersResponse = await profileSdk.selectUsers(userIds);
-
-        if (usersResponse.error) {
-          throw new ServerError(
-            FILE_DELETE,
-            "Internal server error",
-            usersResponse.error,
-          );
-        }
-
-        if (usersResponse.data) {
-          usersData = usersResponse.data.reduce(
-            (acc, next) => ({ ...acc, [next.id]: next }),
-            {},
-          );
-        }
-      } catch (err) {
-        throw new ServerError(FILE_DELETE, "Internal server error", err);
-      }
-      const filesData = files.map((f) => ({
-        ...f,
-        owner: usersData[f.ownerId],
-      }));
-
-      reply.send({ data: filesData });
-    },
-  );
-
-  app.delete<{ Params: { key: string } }>(
-    "/:key",
+  app.delete<{ Params: { id: string } }>(
+    "/:id",
     {
       preValidation: (req, res) =>
         app.checkPermissions(req, res, [Permissions.Upload.Write]),
       schema: {
-        tags: ["Files"],
-        params: Type.Object({ key: Type.String() }),
+        tags: [API_DOCS_TAG],
+        params: Type.Object({ id: Type.String() }),
         response: {
           200: getGenericResponseSchema(
             Type.Object({ message: Type.String() }),
@@ -303,16 +235,17 @@ export default async function routes(app: FastifyInstance) {
     },
     async (request, reply) => {
       const userId = request.userData?.userId as string;
+      const fileId = request.params.id;
 
-      if (!request.params.key) {
+      if (!fileId) {
         throw new BadRequestError(FILE_DELETE, "File key not provided");
       }
 
       const organizationId = ensureOrganizationIdIsSet(request, FILE_DELETE);
 
-      const fileData = await getFileMetadata(
+      const fileData = await getFileMetadataById(
         app.pg,
-        request.params.key,
+        fileId,
         userId,
         organizationId,
       );
@@ -331,7 +264,7 @@ export default async function routes(app: FastifyInstance) {
           }),
         );
 
-        await deleteFileMetadata(app.pg, request.params.key);
+        await deleteFileMetadata(app.pg, fileId);
       } catch (err) {
         throw new ServerError(FILE_DELETE, "Internal server error", err);
       }
@@ -340,8 +273,8 @@ export default async function routes(app: FastifyInstance) {
     },
   );
 
-  app.get<{ Params: { key: string } }>(
-    "/:key",
+  app.get<{ Params: { id: string } }>(
+    "/:id",
     {
       preValidation: (req, res) =>
         app.checkPermissions(req, res, [
@@ -349,8 +282,8 @@ export default async function routes(app: FastifyInstance) {
           Permissions.Upload.Read,
         ]),
       schema: {
-        tags: ["Files"],
-        params: Type.Object({ key: Type.String() }),
+        tags: [API_DOCS_TAG],
+        params: Type.Object({ id: Type.String() }),
         response: {
           200: Type.String(),
           "4xx": HttpError,
@@ -361,13 +294,14 @@ export default async function routes(app: FastifyInstance) {
     async (request, reply) => {
       let response;
 
-      const userId = ensureUserIdIsSet(request, FILE_INDEX);
+      const userId = ensureUserIdIsSet(request, FILE_DOWNLOAD);
       const organizationId = request.userData?.organizationId;
 
-      const key = request.params.key;
-      const fileData = await getFileMetadata(
+      const fileId = request.params.id;
+
+      const fileData = await getFileMetadataById(
         app.pg,
-        key,
+        fileId,
         userId,
         organizationId,
       );

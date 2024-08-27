@@ -7,6 +7,7 @@ import uploadFile from "./actions/uploadFile";
 import deleteFile from "./actions/deleteFile";
 
 import FileTable from "./components/FileTable";
+import { FileMetadata } from "../../types";
 
 type Props = {
   params: {
@@ -15,15 +16,27 @@ type Props = {
 };
 
 export default async (props: Props) => {
-  const uploadClient = await AuthenticationFactory.getUploadClient();
   const t = await getTranslations("Upload");
 
   const { isPublicServant } =
     await AuthenticationFactory.getInstance().getContext();
 
-  const { data: files, error } = await uploadClient.getFiles();
+  const uploadClient = await AuthenticationFactory.getUploadClient();
 
-  if (error) {
+  let files: FileMetadata[] | undefined;
+  try {
+    const { data: files_, error } = await uploadClient.getFilesMetadata();
+    if (error) {
+      getCommonLogger().error(error);
+      return (
+        <section>
+          <h3 className="govie-heading-l">Error retrieving files</h3>
+        </section>
+      );
+    }
+
+    files = files_;
+  } catch (error) {
     getCommonLogger().error(error);
     return (
       <section>
