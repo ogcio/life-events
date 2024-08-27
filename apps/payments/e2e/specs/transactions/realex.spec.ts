@@ -28,6 +28,10 @@ import { startNgrok } from "../../utils/start-ngrok";
 import { stopNgrok } from "../../utils/stop-ngrok";
 
 test.describe("Transaction with Realex", () => {
+  const citizenName = citizens[0];
+  const [name, surname] = citizenName.split(" ");
+  const citizenEmail = `${name.toLocaleLowerCase()}.${surname.toLocaleLowerCase()}@${myGovIdMockSettings.citizenEmailDomain}`;
+
   test.beforeAll(async () => await startNgrok());
 
   test.afterAll(async () => await stopNgrok());
@@ -66,9 +70,6 @@ test.describe("Transaction with Realex", () => {
     await realexTransactionPage.checkHeader();
     await citizenPage.waitForLoadState("networkidle");
     await realexTransactionPage.chooseManualCheckout();
-    const citizenName = citizens[0];
-    const [name, surname] = citizenName.split(" ");
-    const citizenEmail = `${name.toLocaleLowerCase()}.${surname.toLocaleLowerCase()}@${myGovIdMockSettings.citizenEmailDomain}`;
     await realexTransactionPage.payerData.enterEmail(citizenEmail);
     await realexTransactionPage.payerData.enterName(citizenName);
     await realexTransactionPage.payerData.enterStreet(mockAddress.street);
@@ -152,9 +153,6 @@ test.describe("Transaction with Realex", () => {
     await realexTransactionPage.checkHeader();
     await citizenPage.waitForLoadState("networkidle");
     await realexTransactionPage.chooseManualCheckout();
-    const citizenName = citizens[0];
-    const [name, surname] = citizenName.split(" ");
-    const citizenEmail = `${name.toLocaleLowerCase()}.${surname.toLocaleLowerCase()}@${myGovIdMockSettings.citizenEmailDomain}`;
     await realexTransactionPage.payerData.enterEmail(citizenEmail);
     await realexTransactionPage.payerData.enterName(citizenName);
     await realexTransactionPage.payerData.enterStreet(mockAddress.street);
