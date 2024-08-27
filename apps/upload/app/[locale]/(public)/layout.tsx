@@ -13,6 +13,7 @@ import favicon from "../../../public/favicon.ico";
 import { AuthenticationFactory } from "../../utils/authentication-factory";
 import hasCitizenPermissions from "./utils/hasCitizenPermissions";
 import { hasPermissions } from "auth/check-permissions";
+import { getTranslations } from "next-intl/server";
 
 export const metadata: Metadata = {
   title: "Life events",
@@ -31,6 +32,7 @@ export default async function RootLayout({
   children: React.ReactNode;
   params: { locale: string };
 }) {
+  const t = await getTranslations();
   const authFactory = AuthenticationFactory.getInstance();
   await authFactory.getContext();
 
@@ -40,7 +42,7 @@ export default async function RootLayout({
   return (
     <html lang={locale}>
       <head>
-        <title>File Explorer</title>
+        <title>{t("title")}</title>
       </head>
       <body
         style={{
