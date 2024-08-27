@@ -129,18 +129,25 @@ export default async function routes(app: FastifyInstance) {
 
       const fileId = request.params.id;
 
-      const fileData = await getFileMetadataById(
-        app.pg,
-        fileId,
-        userId,
-        organizationId,
-      );
-
-      const file = fileData.rows.length > 0 ? fileData.rows[0] : undefined;
+      let file: FileMetadataType | undefined = undefined;
+      try {
+        const fileData = await getFileMetadataById(
+          app.pg,
+          fileId,
+          userId,
+          organizationId,
+        );
+        if (fileData.rows) {
+          file = fileData.rows[0];
+        }
+      } catch (err) {
+        throw new ServerError(METADATA_INDEX, "Internal server error", err);
+      }
 
       if (!file) {
         throw new NotFoundError(GET_METADATA, "File not found");
       }
+
       const profileSdk = await getProfileSdk(organizationId);
 
       let userData: FileOwnerType | undefined = undefined;
