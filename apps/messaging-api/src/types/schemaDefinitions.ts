@@ -2,7 +2,6 @@ import { Static, TSchema, Type } from "@sinclair/typebox";
 import {
   PAGINATION_LIMIT_DEFAULT,
   PAGINATION_MAX_LIMIT,
-  PAGINATION_MIN_LIMIT,
   PAGINATION_MIN_OFFSET,
 } from "../utils/pagination.js";
 
@@ -39,7 +38,7 @@ export const ConfidentialSecurity = "confidential";
 export const PublicSecurity = "public";
 export const SecurityLevelsSchema = TypeboxStringEnum(
   [ConfidentialSecurity, PublicSecurity],
-  PublicSecurity,
+  undefined,
   "Confidentiality level of the message",
 );
 export type SecurityLevels = Static<typeof SecurityLevelsSchema>;
@@ -85,16 +84,31 @@ export const MessageInputSchema = Type.Object({
   threadName: Type.Optional(
     Type.String({
       description: "Thread Name used to group messages",
+      minLength: 1,
     }),
   ),
   subject: Type.String({
     description:
       "Subject. This is the only part that will be seen outside of the messaging platform is security is 'confidential'",
+    minLength: 1,
   }),
-  excerpt: Type.String({ description: "Brief description of the message" }),
-  plainText: Type.String({ description: "Plain text version of the message" }),
-  richText: Type.String({ description: "Rich text version of the message" }),
-  lang: Type.String({ description: "Language used to send the message" }),
+  excerpt: Type.String({
+    description: "Brief description of the message",
+    minLength: 1,
+  }),
+  plainText: Type.String({
+    description: "Plain text version of the message",
+    minLength: 1,
+  }),
+  richText: Type.String({
+    description: "Rich text version of the message",
+    minLength: 1,
+  }),
+  lang: TypeboxStringEnum(
+    ["en", "ga"],
+    undefined,
+    "Language used to send the message",
+  ),
 });
 export type MessageInput = Static<typeof MessageInputSchema>;
 
@@ -111,15 +125,6 @@ export const CreateMessageOptionsSchema = Type.Object({
   scheduleAt: Type.String({ format: "date-time" }),
 });
 export type CreateMessageOptions = Static<typeof CreateMessageOptionsSchema>;
-
-export const CreateMessageSchema = Type.Composite([
-  CreateMessageOptionsSchema,
-  Type.Object({
-    message: Type.Optional(MessageInputSchema),
-    template: Type.Optional(TemplateInputSchema),
-  }),
-]);
-export type CreateMessage = Static<typeof CreateMessageSchema>;
 
 export const PaginationParamsSchema = Type.Object({
   offset: Type.Optional(

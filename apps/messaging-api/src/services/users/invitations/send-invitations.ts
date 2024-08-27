@@ -352,6 +352,13 @@ const getLanguagePerUser = (params: {
   return output;
 };
 
+function isAcceptedLang(lang: string): lang is "en" | "ga" {
+  return ["en", "ga"].includes(lang);
+}
+
+const defaultLang = (language: string): "en" | "ga" =>
+  isAcceptedLang(language) ? language : "en";
+
 const getJoinMessagingMessageForLanguage = (language: string): MessageInput => {
   // TODO This one will be updated and translated in a next PR
   return {
@@ -360,7 +367,7 @@ const getJoinMessagingMessageForLanguage = (language: string): MessageInput => {
     plainText: "Click here to join our platform",
     richText: "Click here to join our platform",
     threadName: "JoinMessaging",
-    lang: language,
+    lang: defaultLang(language),
   };
 };
 
@@ -372,7 +379,7 @@ const getJoinOrgMessageForLanguage = (language: string): MessageInput => {
     plainText: "Click here to join our platform",
     richText: "Click here to join our platform",
     threadName: "JoinOrganisation",
-    lang: language,
+    lang: defaultLang(language),
   };
 };
 
@@ -384,7 +391,7 @@ const getWelcomeMessageForLanguage = (language: string): MessageInput => {
     plainText: "Click here to join our platform",
     richText: "Click here to join our platform",
     threadName: "JoinOrganisation",
-    lang: language,
+    lang: defaultLang(language),
   };
 };
 
