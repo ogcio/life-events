@@ -98,7 +98,7 @@ export default async function routes(app: FastifyInstance) {
       }
       const filesData = files.map((f) => ({
         ...f,
-        owner: usersData[f.ownerId],
+        owner: undefined,
       }));
 
       reply.send({ data: filesData });
