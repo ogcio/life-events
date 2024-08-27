@@ -312,6 +312,7 @@ export const CitizenTransaction = Type.Pick(Transaction, [
   "status",
   "title",
   "updatedAt",
+  "extPaymentId",
   "amount",
 ]);
 export const CitizenTransactions = Type.Array(CitizenTransaction);

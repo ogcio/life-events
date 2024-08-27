@@ -2102,6 +2102,8 @@ paths:
                           type: string
                         updatedAt:
                           type: string
+                        extPaymentId:
+                          type: string
                         amount:
                           type: number
                       required:
@@ -2109,6 +2111,7 @@ paths:
                         - status
                         - title
                         - updatedAt
+                        - extPaymentId
                         - amount
                   metadata:
                     type: object
