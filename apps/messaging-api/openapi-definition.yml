@@ -222,7 +222,6 @@ paths:
                   enum:
                     - confidential
                     - public
-                  default: public
                   description: Confidentiality level of the message
                 bypassConsent:
                   default: false
@@ -238,23 +237,31 @@ paths:
                   properties:
                     threadName:
                       description: Thread Name used to group messages
+                      minLength: 1
                       type: string
                     subject:
                       description: Subject. This is the only part that will be seen outside of the
                         messaging platform is security is 'confidential'
+                      minLength: 1
                       type: string
                     excerpt:
                       description: Brief description of the message
+                      minLength: 1
                       type: string
                     plainText:
                       description: Plain text version of the message
+                      minLength: 1
                       type: string
                     richText:
                       description: Rich text version of the message
+                      minLength: 1
                       type: string
                     lang:
-                      description: Language used to send the message
                       type: string
+                      enum:
+                        - en
+                        - ga
+                      description: Language used to send the message
                   required:
                     - subject
                     - excerpt
@@ -424,7 +431,6 @@ paths:
                         enum:
                           - confidential
                           - public
-                        default: public
                         description: Confidentiality level of the message
                       senderUserProfileId:
                         description: Unique id of the sender from the Life Events building block
@@ -5196,7 +5202,6 @@ paths:
                                   enum:
                                     - confidential
                                     - public
-                                  default: public
                                   description: Confidentiality level of the message
                                 bypassConsent:
                                   description: If true, the message will be sent even if the recipient didn't
