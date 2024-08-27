@@ -1036,6 +1036,7 @@ export interface paths {
                   | "failed";
                 title: string;
                 updatedAt: string;
+                extPaymentId: string;
                 amount: number;
               }[];
               metadata?: {

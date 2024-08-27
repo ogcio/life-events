@@ -3,20 +3,25 @@ import { PaymentRequestsPage } from "../objects/paymentRequests/PaymentRequestsL
 import { PaymentRequestDetailsPage } from "../objects/paymentRequests/PaymentRequestDetailsPage";
 import { PayPage } from "../objects/payments/PayPage";
 import { ManualBankTransferTransactionPage } from "../objects/payments/ManualBankTransferTransactionPage";
-import dayjs from "dayjs";
+
+export type Transaction = {
+  referenceCode: string;
+  amount: string;
+  paymentRequestTitle: string;
+  status: string;
+};
 
 type transactionFixtures = {
-  manualBankTransferTransaction: {
-    referenceCode: string;
-    amount: string;
-    status: string;
-    date: string;
-  };
+  manualBankTransferTransaction: Transaction;
 };
 
 export const test = base.extend<transactionFixtures>({
   manualBankTransferTransaction: async (
-    { paymentRequestWithManualBankTransferProvider, publicServantPage, citizenPage },
+    {
+      paymentRequestWithManualBankTransferProvider,
+      publicServantPage,
+      citizenPage,
+    },
     use,
   ) => {
     const paymentRequestsPage = new PaymentRequestsPage(publicServantPage);
@@ -43,8 +48,8 @@ export const test = base.extend<transactionFixtures>({
     await use({
       referenceCode,
       amount,
+      paymentRequestTitle: paymentRequestWithManualBankTransferProvider,
       status: "pending",
-      date: dayjs(new Date()).format("DD/MM/YYYY - HH:mm"),
     });
   },
 });

@@ -62,6 +62,17 @@ export class ManualBankTransferTransactionPage {
     await expect(this.referenceCodeInfo).toBeVisible();
   }
 
+  async getPaymentRequestTitle() {
+    const title = await this.page
+      .locator("div")
+      .filter({ hasText: "Title" })
+      .last()
+      .locator("dt")
+      .last();
+    await expect(title).toBeVisible();
+    return (await title.innerText()).trim();
+  }
+
   async getReferenceCode() {
     const referenceCodeCell = await this.page
       .locator("div")
