@@ -12,7 +12,9 @@ export class CardData {
     this.expiryInput = page.getByPlaceholder("MM/YY");
     this.securityCodeInput = page.getByPlaceholder("Security Code");
     this.cardholderNameInput = page.getByPlaceholder("Cardholder Name");
-    this.payBtn = page.getByRole("button", { name: "Proceed to verification" });
+    this.payBtn = page
+      .getByRole("button", { name: "Proceed to verification" })
+      .or(page.getByRole("button", { name: "Pay Now" }));
   }
 
   async enterCardNumber(num: string) {

@@ -35,8 +35,3 @@ export const startNgrok = () => {
     });
   });
 };
-
-startNgrok().catch((error) => {
-  console.error("Failed to start ngrok:", error);
-  process.exit(1);
-});

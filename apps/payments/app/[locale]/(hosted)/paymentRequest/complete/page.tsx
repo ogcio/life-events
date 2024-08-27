@@ -59,9 +59,7 @@ export default async function Page(props: Props) {
   let extPaymentId = payment_id ?? "";
 
   let status = TransactionStatuses.Succeeded;
-  if (error) {
-    status = TransactionStatuses.Failed;
-  }
+
   if (payment_id) {
     // It's a TrueLayer transaction
     const paymentDetails = await getTrueLayerPaymentDetails(payment_id);
@@ -86,6 +84,10 @@ export default async function Page(props: Props) {
     } else {
       return notFound();
     }
+  }
+
+  if (error) {
+    status = TransactionStatuses.Failed;
   }
 
   const transactionDetail = await updateTransaction(extPaymentId, status);
