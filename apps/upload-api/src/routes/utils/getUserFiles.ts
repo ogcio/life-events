@@ -5,8 +5,8 @@ import { PoolClient } from "pg";
 const baseQuery =
   'SELECT id, key, owner as "ownerId", file_size as "fileSize", mime_type as "mimeType", created_at as "createdAt", last_scan as "lastScan", infected, infection_description as "infectionDescription", deleted, file_name as "fileName" FROM files';
 
-const getOwnedFiles = (connection: PoolClient, ownerId: string) => {
-  return connection.query<FileMetadataType>(
+const getOwnedFiles = (client: PoolClient, ownerId: string) => {
+  return client.query<FileMetadataType>(
     `
     ${baseQuery}
     WHERE owner = $1
@@ -16,7 +16,7 @@ const getOwnedFiles = (connection: PoolClient, ownerId: string) => {
 };
 
 const getOrganizationFiles = (
-  connection: PoolClient,
+  client: PoolClient,
   organizationId: string,
   toExclude: string[],
 ) => {
@@ -30,10 +30,7 @@ const getOrganizationFiles = (
     query = `${query} AND id NOT IN (${toExclude.map(() => `$${i++}`).join(", ")})`;
   }
 
-  return connection.query<FileMetadataType>(query, [
-    organizationId,
-    ...toExclude,
-  ]);
+  return client.query<FileMetadataType>(query, [organizationId, ...toExclude]);
 };
 
 export default async (
