@@ -195,7 +195,7 @@ export class TransactionsRepo {
         status,
         integration_reference as "integrationReference",
         created_at as "createdAt",
-        updated_at as "updatedAt',
+        updated_at as "updatedAt",
         amount,
         payment_provider_id as "paymentProviderId",
         user_data as "userData",

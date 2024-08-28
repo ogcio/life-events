@@ -135,9 +135,6 @@ test.describe("Transaction with open banking", () => {
     await openBankingTransactionPage.paymentInProgress.checkIsInProgress(
       mockAmount,
     );
-    citizenPage.on("response", async (response) =>
-      console.log("<<<<", response.url()),
-    );
 
     let temporaryRedirectionUrl = "";
     let paymentReferenceCode;

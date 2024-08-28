@@ -3,11 +3,9 @@ import { testPlanFilter } from "allure-playwright/testplan";
 import path from "path";
 import dotenv from "dotenv";
 
-dotenv.config();
+dotenv.config({ path: ".env.test" });
 
-const baseURL =
-  process.env.NEXT_PUBLIC_PAYMENTS_SERVICE_ENTRY_POINT ??
-  "http://localhost:3001";
+const baseURL = process.env.BASE_URL;
 
 export default defineConfig({
   timeout: 500000,
@@ -17,6 +15,7 @@ export default defineConfig({
   retries: 0,
   outputDir: "./e2e/test-results/",
 
+  // uncomment if you want to spin up services and dependencies upon starting the test process
   // webServer: {
   //   command: "npm run start:logto",
   //   cwd: "../../",
