@@ -7,6 +7,10 @@ function newInterpolator(interpolations: Record<string, string>) {
   };
 }
 
+function toStringOrUndefined(variable: number | boolean | undefined) {
+  return variable === undefined ? undefined : String(variable);
+}
+
 export class Messaging {
   private client: ReturnType<typeof createClient<paths>>;
   constructor(authToken: string) {
@@ -30,7 +34,8 @@ export class Messaging {
     const { error, data } = await this.client.GET("/api/v1/messages/", {
       params: {
         query: {
-          ...(filter || {}),
+          limit: toStringOrUndefined(filter?.limit),
+          offset: toStringOrUndefined(filter?.offset),
           recipientUserId: userId,
           status: "delivered",
         },
@@ -46,7 +51,11 @@ export class Messaging {
   ) {
     const { error, data } = await this.client.GET("/api/v1/messages/", {
       params: {
-        query: { ...(filter || {}), organisationId },
+        query: {
+          limit: toStringOrUndefined(filter?.limit),
+          offset: toStringOrUndefined(filter?.offset),
+          organisationId,
+        },
       },
     });
 
@@ -206,8 +215,8 @@ export class Messaging {
       params: {
         query: {
           type: "email",
-          limit,
-          offset,
+          limit: toStringOrUndefined(limit),
+          offset: toStringOrUndefined(offset),
           primary,
         },
       },
@@ -306,8 +315,8 @@ export class Messaging {
       params: {
         query: {
           type: "sms",
-          limit,
-          offset,
+          limit: toStringOrUndefined(limit),
+          offset: toStringOrUndefined(offset),
           primary,
         },
       },
@@ -447,7 +456,7 @@ export class Messaging {
 
   async getUsersForImport(importId: string, activeOnly: boolean) {
     const { error, data } = await this.client.GET("/api/v1/users/", {
-      params: { query: { importId, activeOnly } },
+      params: { query: { importId, activeOnly: String(activeOnly) } },
     });
     return { error, data: data?.data };
   }
@@ -525,7 +534,7 @@ export class Messaging {
           userId,
         },
         query: {
-          activeOnly,
+          activeOnly: toStringOrUndefined(activeOnly),
         },
       },
     });
