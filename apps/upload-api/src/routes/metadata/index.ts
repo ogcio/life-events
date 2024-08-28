@@ -66,6 +66,8 @@ export default async function routes(app: FastifyInstance) {
         }
       } catch (err) {
         throw new ServerError(METADATA_INDEX, "Internal server error", err);
+      } finally {
+        client.release();
       }
 
       const userIds = files.map((f) => f.ownerId);
