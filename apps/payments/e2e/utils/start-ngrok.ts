@@ -8,6 +8,17 @@ const SAFE_DIRECTORY = os.tmpdir();
 
 const PID_FILE = path.join(SAFE_DIRECTORY, SAFE_PID_FILENAME);
 
+function writeFile(filename, content) {
+  switch (filename) {
+    case SAFE_PID_FILENAME:
+      fs.writeFileSync(SAFE_PID_FILENAME, content, {
+        flag: "w",
+        encoding: "utf8",
+      });
+      break;
+  }
+}
+
 export const startNgrok = () => {
   return new Promise((resolve, reject) => {
     const domain = process.env.NGROK_DOMAIN;
@@ -38,10 +49,7 @@ export const startNgrok = () => {
     ngrokProcess.on("spawn", () => {
       try {
         if (path.dirname(PID_FILE) === SAFE_DIRECTORY) {
-          fs.writeFileSync(PID_FILE, ngrokProcess.pid.toString(), {
-            flag: "w",
-            encoding: "utf8",
-          });
+          writeFile(PID_FILE, ngrokProcess.pid.toString());
           console.log(`ngrok PID saved to ${PID_FILE}`);
           resolve();
         } else {
