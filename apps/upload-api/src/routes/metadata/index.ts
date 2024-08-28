@@ -80,6 +80,7 @@ export default async function routes(app: FastifyInstance) {
         const usersResponse = await profileSdk.selectUsers(userIds);
 
         if (usersResponse.error) {
+          app.log.error(usersResponse.error);
           throw new ServerError(
             METADATA_INDEX,
             "Internal server error",
@@ -155,6 +156,7 @@ export default async function routes(app: FastifyInstance) {
         const usersResponse = await profileSdk.selectUsers(userId);
 
         if (usersResponse.error) {
+          app.log.error(usersResponse.error);
           throw new ServerError(
             METADATA_INDEX,
             "Internal server error",
