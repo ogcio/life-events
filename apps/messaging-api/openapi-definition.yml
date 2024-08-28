@@ -4160,7 +4160,8 @@ paths:
           description: If set, the endpoint returns the users whom have imported by that
             specific batch
         - schema:
-            type: boolean
+            pattern: ^true|false$
+            type: string
           in: query
           name: activeOnly
           required: false
@@ -4541,7 +4542,8 @@ paths:
       description: Returns the requested user
       parameters:
         - schema:
-            type: boolean
+            pattern: ^true|false$
+            type: string
           in: query
           name: activeOnly
           required: false

@@ -34,7 +34,7 @@ export default async function users(app: FastifyInstance) {
       search?: string;
       transports?: string;
       importId?: string;
-      activeOnly?: boolean;
+      activeOnly?: string;
     } & PaginationParams;
     Response: GenericResponse<UserPerOrganisation[]>;
   }
@@ -44,7 +44,7 @@ export default async function users(app: FastifyInstance) {
       userId: string;
     };
     Querystring: {
-      activeOnly?: boolean;
+      activeOnly?: string;
     };
     Response: GenericResponse<UserPerOrganisation>;
   }
@@ -78,9 +78,10 @@ export default async function users(app: FastifyInstance) {
                 }),
               ),
               activeOnly: Type.Optional(
-                Type.Boolean({
+                Type.String({
                   description:
                     "If true, the endpoint returns active only users",
+                  pattern: "^true|false$",
                 }),
               ),
             }),
@@ -132,8 +133,9 @@ export default async function users(app: FastifyInstance) {
         querystring: Type.Optional(
           Type.Object({
             activeOnly: Type.Optional(
-              Type.Boolean({
+              Type.String({
                 description: "If true, the endpoint returns active only users",
+                pattern: "^true|false$",
               }),
             ),
           }),
@@ -193,6 +195,6 @@ export default async function users(app: FastifyInstance) {
     },
   );
 
-  const parseActiveOnlyParam = (activeOnly: boolean | undefined): boolean =>
-    activeOnly ?? true;
+  const parseActiveOnlyParam = (activeOnly?: string): boolean =>
+    activeOnly !== "false";
 }
