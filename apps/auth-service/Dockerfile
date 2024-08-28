@@ -30,7 +30,6 @@ WORKDIR /app
 COPY --from=builder /app/package*.json /app/
 
 COPY --from=builder /app/apps/auth-service/dist /app/apps/auth-service/dist
-COPY --from=builder /app/apps/auth-service/node_modules /app/apps/auth-service/node_modules
 COPY --from=builder /app/apps/auth-service/package*.json /app/apps/auth-service/
 
 COPY --from=builder /app/packages/shared-errors/dist /app/packages/shared-errors/dist
