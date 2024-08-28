@@ -187,19 +187,12 @@ export default async function Page(props: Props) {
 
   if (embed)
     return (
-      <body
-        style={{
-          margin: "unset",
-          position: "relative",
-          display: "flex",
-          flexDirection: "column",
-        }}
-      >
+      <>
         {isPublicServant && (
           <Banner text={tBanner("bannerText")} tag={tBanner("tag")} />
         )}
         {content}
-      </body>
+      </>
     );
 
   /**
@@ -207,7 +200,7 @@ export default async function Page(props: Props) {
    * and to make the content fit the windows' height.
    */
   return (
-    <body
+    <div
       style={{
         margin: "unset",
         minHeight: "100vh",
@@ -229,6 +222,6 @@ export default async function Page(props: Props) {
         </div>
       </div>
       <Footer />
-    </body>
+    </div>
   );
 }
