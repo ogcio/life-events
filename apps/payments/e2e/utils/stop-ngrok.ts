@@ -1,10 +1,10 @@
 import fs from "fs";
 import { exec } from "child_process";
-import { PID_FILE_PATH } from "./constants";
+import { SAFE_PID_FILENAME } from "./constants";
 
 export const stopNgrok = () => {
-  if (fs.existsSync(PID_FILE_PATH)) {
-    const pid = fs.readFileSync(PID_FILE_PATH, "utf8");
+  if (fs.existsSync(SAFE_PID_FILENAME)) {
+    const pid = fs.readFileSync(SAFE_PID_FILENAME, "utf8");
 
     exec(`kill ${pid}`, (error, stdout, stderr) => {
       if (error) {
@@ -17,7 +17,7 @@ export const stopNgrok = () => {
       }
       console.log(`ngrok stopped successfully.`);
 
-      fs.unlinkSync(PID_FILE_PATH);
+      fs.unlinkSync(SAFE_PID_FILENAME);
     });
   } else {
     console.log("No ngrok PID file found. ngrok might not be running.");

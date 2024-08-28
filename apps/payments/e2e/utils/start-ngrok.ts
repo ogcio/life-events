@@ -1,11 +1,12 @@
 import { exec } from "child_process";
 import fs from "fs";
-import { PID_FILE_PATH } from "./constants";
+import { SAFE_PID_FILENAME } from "./constants";
 import path from "path";
 import os from "os";
 
-const SAFE_DIRECTORY = os.tmpdir(); // You can customize this as needed
-const PID_FILE = path.resolve(SAFE_DIRECTORY, PID_FILE_PATH);
+const SAFE_DIRECTORY = os.tmpdir();
+
+const PID_FILE = path.join(SAFE_DIRECTORY, SAFE_PID_FILENAME);
 
 export const startNgrok = () => {
   return new Promise((resolve, reject) => {
@@ -35,8 +36,21 @@ export const startNgrok = () => {
     });
 
     ngrokProcess.on("spawn", () => {
-      fs.writeFileSync(PID_FILE, ngrokProcess.pid.toString());
-      resolve();
+      try {
+        if (path.dirname(PID_FILE) === SAFE_DIRECTORY) {
+          fs.writeFileSync(PID_FILE, ngrokProcess.pid.toString(), {
+            flag: "w",
+            encoding: "utf8",
+          });
+          console.log(`ngrok PID saved to ${PID_FILE}`);
+          resolve();
+        } else {
+          throw new Error("Invalid file path detected");
+        }
+      } catch (error) {
+        console.error(`Failed to write PID file: ${error.message}`);
+        reject(error);
+      }
     });
   });
 };

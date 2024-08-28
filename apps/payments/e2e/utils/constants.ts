@@ -90,4 +90,4 @@ export const paymentRequestValidationErrorTexts: Record<
     "Payment Request Status cannot be active if no providers are selected.",
 };
 
-export const PID_FILE_PATH = "ngrok.pid";
+export const SAFE_PID_FILENAME = "ngrok.pid";
