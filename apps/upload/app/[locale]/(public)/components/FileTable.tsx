@@ -40,7 +40,7 @@ const TableRow = async ({ file, deleteFile }: TableRowProps) => {
         )}
       </th>
       <td className="govie-table__cell">{formatBytes(file.fileSize)}</td>
-      <td className="govie-table__cell">{file.owner.email}</td>
+      <td className="govie-table__cell">{file?.owner?.email}</td>
       <td className="govie-table__cell">
         <DeleteFile deleteFile={deleteFile} id={file.id as string} />
       </td>
