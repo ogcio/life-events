@@ -30,7 +30,6 @@ WORKDIR /app
 COPY --from=builder /app/package*.json /app/
 
 COPY --from=builder /app/apps/timeline-api/dist /app/apps/timeline-api/dist
-COPY --from=builder /app/apps/timeline-api/node_modules /app/apps/timeline-api/node_modules
 COPY --from=builder /app/apps/timeline-api/package*.json /app/apps/timeline-api/
 
 COPY --from=builder /app/packages/shared-errors/dist /app/packages/shared-errors/dist
