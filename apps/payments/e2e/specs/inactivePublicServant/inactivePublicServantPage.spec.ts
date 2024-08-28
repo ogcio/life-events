@@ -11,6 +11,42 @@ import { InactivePublicServantPage } from "../../objects/inactivePublicSurvant/I
 import { ErrorPage } from "../../objects/errorPage/ErrorPage";
 
 test.describe("Inactive public servant page", () => {
+  test.afterAll(async ({ inactivePublicServantPage, request }) => {
+    const cookies = await inactivePublicServantPage.context().cookies();
+    // console.log(cookies)
+
+    const logtoEndpoint = "http://localhost:3301";
+    const tokenEndpoint = `${logtoEndpoint}/oidc/token`;
+    const applicationId = "qrtllp45fgbvsdjyasd5";
+    const applicationSecret = "XXXXXX";
+
+    const result = await request.post(tokenEndpoint, {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        Authorization: `Basic ${Buffer.from(
+          `${applicationId}:${applicationSecret}`,
+        ).toString("base64")}`,
+      },
+      data: new URLSearchParams({
+        grant_type: "client_credentials",
+        resource: `https://default.logto.app/api`,
+        scope: "all",
+      }).toString(),
+    });
+    const accessToken = (await result.json()).access_token;
+    console.log(accessToken);
+    const r = await request.get(
+      `${logtoEndpoint}/api/users/${"dtndm92rkicd"}`,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      },
+    );
+    const userInfo = await r.json();
+    console.log(userInfo);
+  });
+
   test("should see a dedicated page for inactive public servants @smoke @normal", async ({
     inactivePublicServantPage,
   }) => {
