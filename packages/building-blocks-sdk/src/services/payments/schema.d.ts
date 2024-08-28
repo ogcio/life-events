@@ -3,6 +3,7 @@
  * Do not make direct changes to the file.
  */
 
+
 export interface paths {
   "/health": {
     get: {
@@ -20,34 +21,25 @@ export interface paths {
         /** @description Default Response */
         200: {
           content: {
-            "application/json": {
-              id: string;
-              name: string;
-              type:
-                | "banktransfer"
-                | "openbanking"
-                | "stripe"
-                | "realex"
-                | "worldpay";
-              data:
-                | {
-                    iban: string;
-                    accountHolderName: string;
-                  }
-                | {
-                    livePublishableKey: string;
-                    liveSecretKey: string;
-                  }
-                | {
-                    merchantCode: string;
-                    installationId: string;
-                  }
-                | {
-                    merchantId: string;
-                    sharedSecret: string;
-                  };
-              status: "connected" | "disconnected";
-            }[];
+            "application/json": ({
+                id: string;
+                name: string;
+                type: "banktransfer" | "openbanking" | "stripe" | "realex" | "worldpay";
+                data: {
+                  iban: string;
+                  accountHolderName: string;
+                } | {
+                  livePublishableKey: string;
+                  liveSecretKey: string;
+                } | {
+                  merchantCode: string;
+                  installationId: string;
+                } | {
+                  merchantId: string;
+                  sharedSecret: string;
+                };
+                status: "connected" | "disconnected";
+              })[];
           };
         };
         /** @description Default Response */
@@ -70,12 +62,7 @@ export interface paths {
         content: {
           "application/json": {
             name: string;
-            type:
-              | "banktransfer"
-              | "openbanking"
-              | "stripe"
-              | "realex"
-              | "worldpay";
+            type: "banktransfer" | "openbanking" | "stripe" | "realex" | "worldpay";
             data: {
               [key: string]: string;
             };
@@ -147,29 +134,20 @@ export interface paths {
             "application/json": {
               id: string;
               name: string;
-              type:
-                | "banktransfer"
-                | "openbanking"
-                | "stripe"
-                | "realex"
-                | "worldpay";
-              data:
-                | {
-                    iban: string;
-                    accountHolderName: string;
-                  }
-                | {
-                    livePublishableKey: string;
-                    liveSecretKey: string;
-                  }
-                | {
-                    merchantCode: string;
-                    installationId: string;
-                  }
-                | {
-                    merchantId: string;
-                    sharedSecret: string;
-                  };
+              type: "banktransfer" | "openbanking" | "stripe" | "realex" | "worldpay";
+              data: {
+                iban: string;
+                accountHolderName: string;
+              } | {
+                livePublishableKey: string;
+                liveSecretKey: string;
+              } | {
+                merchantCode: string;
+                installationId: string;
+              } | {
+                merchantId: string;
+                sharedSecret: string;
+              };
               status: "connected" | "disconnected";
             };
           };
@@ -212,12 +190,7 @@ export interface paths {
         content: {
           "application/json": {
             name: string;
-            type:
-              | "banktransfer"
-              | "openbanking"
-              | "stripe"
-              | "realex"
-              | "worldpay";
+            type: "banktransfer" | "openbanking" | "stripe" | "realex" | "worldpay";
             data: {
               [key: string]: string;
             };
@@ -289,44 +262,35 @@ export interface paths {
         200: {
           content: {
             "application/json": {
-              data: {
-                paymentRequestId: string;
-                title: string;
-                description: string;
-                amount: number;
-                reference: string;
-                providers: {
-                  userId: string;
-                  id: string;
-                  name: string;
-                  type:
-                    | "banktransfer"
-                    | "openbanking"
-                    | "stripe"
-                    | "realex"
-                    | "worldpay";
-                  status: "connected" | "disconnected";
-                  data:
-                    | {
+              data: ({
+                  paymentRequestId: string;
+                  title: string;
+                  description: string;
+                  amount: number;
+                  reference: string;
+                  providers: ({
+                      userId: string;
+                      id: string;
+                      name: string;
+                      type: "banktransfer" | "openbanking" | "stripe" | "realex" | "worldpay";
+                      status: "connected" | "disconnected";
+                      data: {
                         iban: string;
                         accountHolderName: string;
-                      }
-                    | {
+                      } | {
                         livePublishableKey: string;
                         liveSecretKey: string;
-                      }
-                    | {
+                      } | {
                         merchantCode: string;
                         installationId: string;
-                      }
-                    | {
+                      } | {
                         merchantId: string;
                         sharedSecret: string;
                       };
-                  createdAt: string;
-                }[];
-                status: "active" | "inactive";
-              }[];
+                      createdAt: string;
+                    })[];
+                  status: "active" | "inactive";
+                })[];
               metadata?: {
                 links?: {
                   self: {
@@ -434,36 +398,27 @@ export interface paths {
               description: string;
               amount: number;
               reference: string;
-              providers: {
-                userId: string;
-                id: string;
-                name: string;
-                type:
-                  | "banktransfer"
-                  | "openbanking"
-                  | "stripe"
-                  | "realex"
-                  | "worldpay";
-                status: "connected" | "disconnected";
-                data:
-                  | {
-                      iban: string;
-                      accountHolderName: string;
-                    }
-                  | {
-                      livePublishableKey: string;
-                      liveSecretKey: string;
-                    }
-                  | {
-                      merchantCode: string;
-                      installationId: string;
-                    }
-                  | {
-                      merchantId: string;
-                      sharedSecret: string;
-                    };
-                createdAt: string;
-              }[];
+              providers: ({
+                  userId: string;
+                  id: string;
+                  name: string;
+                  type: "banktransfer" | "openbanking" | "stripe" | "realex" | "worldpay";
+                  status: "connected" | "disconnected";
+                  data: {
+                    iban: string;
+                    accountHolderName: string;
+                  } | {
+                    livePublishableKey: string;
+                    liveSecretKey: string;
+                  } | {
+                    merchantCode: string;
+                    installationId: string;
+                  } | {
+                    merchantId: string;
+                    sharedSecret: string;
+                  };
+                  createdAt: string;
+                })[];
               status: "active" | "inactive";
               redirectUrl: string;
               allowAmountOverride: boolean;
@@ -545,36 +500,27 @@ export interface paths {
               description: string;
               amount: number;
               reference: string;
-              providers: {
-                userId: string;
-                id: string;
-                name: string;
-                type:
-                  | "banktransfer"
-                  | "openbanking"
-                  | "stripe"
-                  | "realex"
-                  | "worldpay";
-                status: "connected" | "disconnected";
-                data:
-                  | {
-                      iban: string;
-                      accountHolderName: string;
-                    }
-                  | {
-                      livePublishableKey: string;
-                      liveSecretKey: string;
-                    }
-                  | {
-                      merchantCode: string;
-                      installationId: string;
-                    }
-                  | {
-                      merchantId: string;
-                      sharedSecret: string;
-                    };
-                createdAt: string;
-              }[];
+              providers: ({
+                  userId: string;
+                  id: string;
+                  name: string;
+                  type: "banktransfer" | "openbanking" | "stripe" | "realex" | "worldpay";
+                  status: "connected" | "disconnected";
+                  data: {
+                    iban: string;
+                    accountHolderName: string;
+                  } | {
+                    livePublishableKey: string;
+                    liveSecretKey: string;
+                  } | {
+                    merchantCode: string;
+                    installationId: string;
+                  } | {
+                    merchantId: string;
+                    sharedSecret: string;
+                  };
+                  createdAt: string;
+                })[];
               status: "active" | "inactive";
               redirectUrl: string;
               allowAmountOverride: boolean;
@@ -614,19 +560,14 @@ export interface paths {
         200: {
           content: {
             "application/json": {
-              data: {
-                transactionId: string;
-                status:
-                  | "initiated"
-                  | "pending"
-                  | "succeeded"
-                  | "cancelled"
-                  | "failed";
-                amount: number;
-                extPaymentId: string;
-                updatedAt: string;
-                title: string;
-              }[];
+              data: ({
+                  transactionId: string;
+                  status: "initiated" | "pending" | "succeeded" | "cancelled" | "failed";
+                  amount: number;
+                  extPaymentId: string;
+                  updatedAt: string;
+                  title: string;
+                })[];
               metadata?: {
                 links?: {
                   self: {
@@ -672,12 +613,7 @@ export interface paths {
             "application/json": {
               data: {
                 transactionId: string;
-                status:
-                  | "initiated"
-                  | "pending"
-                  | "succeeded"
-                  | "cancelled"
-                  | "failed";
+                status: "initiated" | "pending" | "succeeded" | "cancelled" | "failed";
                 amount: number;
                 extPaymentId: string & string;
                 updatedAt: string;
@@ -743,12 +679,7 @@ export interface paths {
       requestBody: {
         content: {
           "application/json": {
-            status:
-              | "initiated"
-              | "pending"
-              | "succeeded"
-              | "cancelled"
-              | "failed";
+            status: "initiated" | "pending" | "succeeded" | "cancelled" | "failed";
           };
         };
       };
@@ -788,27 +719,22 @@ export interface paths {
         200: {
           content: {
             "application/json": {
-              data: {
-                transactionId: string;
-                status:
-                  | "initiated"
-                  | "pending"
-                  | "succeeded"
-                  | "cancelled"
-                  | "failed";
-                amount: number;
-                extPaymentId: string & string;
-                updatedAt: string;
-                title: string;
-                userId: string;
-                userData: {
-                  name: string;
-                  email: string;
-                };
-                providerName: string;
-                providerType: string;
-                paymentRequestId: string;
-              }[];
+              data: ({
+                  transactionId: string;
+                  status: "initiated" | "pending" | "succeeded" | "cancelled" | "failed";
+                  amount: number;
+                  extPaymentId: string & string;
+                  updatedAt: string;
+                  title: string;
+                  userId: string;
+                  userData: {
+                    name: string;
+                    email: string;
+                  };
+                  providerName: string;
+                  providerType: string;
+                  paymentRequestId: string;
+                })[];
               metadata?: {
                 links?: {
                   self: {
@@ -1026,19 +952,14 @@ export interface paths {
         200: {
           content: {
             "application/json": {
-              data: {
-                transactionId: string;
-                status:
-                  | "initiated"
-                  | "pending"
-                  | "succeeded"
-                  | "cancelled"
-                  | "failed";
-                title: string;
-                updatedAt: string;
-                extPaymentId: string;
-                amount: number;
-              }[];
+              data: ({
+                  transactionId: string;
+                  status: "initiated" | "pending" | "succeeded" | "cancelled" | "failed";
+                  title: string;
+                  updatedAt: string;
+                  extPaymentId: string;
+                  amount: number;
+                })[];
               metadata?: {
                 links?: {
                   self: {
@@ -1123,12 +1044,7 @@ export interface paths {
             "application/json": {
               data: {
                 transactionId: string;
-                status:
-                  | "initiated"
-                  | "pending"
-                  | "succeeded"
-                  | "cancelled"
-                  | "failed";
+                status: "initiated" | "pending" | "succeeded" | "cancelled" | "failed";
                 amount: number;
                 extPaymentId: string & string;
                 updatedAt: string;
@@ -1308,7 +1224,8 @@ export interface paths {
 export type webhooks = Record<string, never>;
 
 export interface components {
-  schemas: {};
+  schemas: {
+  };
   responses: never;
   parameters: never;
   requestBodies: never;
