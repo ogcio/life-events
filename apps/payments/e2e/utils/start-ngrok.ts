@@ -5,13 +5,12 @@ import path from "path";
 import os from "os";
 
 const SAFE_DIRECTORY = os.tmpdir();
-
-const PID_FILE = path.join(SAFE_DIRECTORY, SAFE_PID_FILENAME);
+const PID_FILE = path.join(SAFE_DIRECTORY, "ngrok.pid");
 
 function writeFile(filename, content) {
   switch (filename) {
-    case SAFE_PID_FILENAME:
-      fs.writeFileSync(SAFE_PID_FILENAME, content, {
+    case "ngrok.pid":
+      fs.writeFileSync("ngrok.pid", content, {
         flag: "w",
         encoding: "utf8",
       });
