@@ -5,9 +5,7 @@ import dotenv from "dotenv";
 
 dotenv.config({ path: ".env.test" });
 
-const baseURL =
-  process.env.NEXT_PUBLIC_PAYMENTS_SERVICE_ENTRY_POINT ??
-  "http://localhost:3001";
+const baseURL = process.env.BASE_URL;
 
 export default defineConfig({
   timeout: 500000,
