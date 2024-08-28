@@ -1,11 +1,11 @@
 import { exec } from "child_process";
 import fs from "fs";
-import { SAFE_PID_FILENAME } from "./constants";
 import path from "path";
 import os from "os";
+import { SAFE_PID_FILENAME } from "./constants";
 
 const SAFE_DIRECTORY = os.tmpdir();
-const PID_FILE = path.join(SAFE_DIRECTORY, "ngrok.pid");
+const PID_FILE = path.join(SAFE_DIRECTORY, SAFE_PID_FILENAME);
 
 function writeFile(filename, content) {
   switch (filename) {
