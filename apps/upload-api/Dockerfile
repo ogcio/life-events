@@ -35,7 +35,6 @@ COPY --from=builder /app/package*.json /app/
 COPY --from=builder /app/node_modules /app/node_modules
 
 COPY --from=builder /app/apps/upload-api/dist /app/apps/upload-api/dist
-COPY --from=builder /app/apps/upload-api/node_modules /app/apps/upload-api/node_modules
 COPY --from=builder /app/apps/upload-api/package*.json /app/apps/upload-api/
 
 COPY --from=builder /app/packages/shared-errors/dist /app/packages/shared-errors/dist
@@ -47,7 +46,6 @@ COPY --from=builder /app/packages/logging-wrapper/node_modules /app/packages/log
 COPY --from=builder /app/packages/logging-wrapper/package.json /app/packages/logging-wrapper/
 
 COPY --from=builder /app/packages/error-handler/dist /app/packages/error-handler/dist
-COPY --from=builder /app/packages/error-handler/node_modules /app/packages/error-handler/node_modules
 COPY --from=builder /app/packages/error-handler/package.json /app/packages/error-handler/
 
 COPY --from=builder /app/packages/building-blocks-sdk/dist /app/packages/building-blocks-sdk/dist

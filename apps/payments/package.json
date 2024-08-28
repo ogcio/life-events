@@ -27,6 +27,7 @@
   "dependencies": {
     "@stripe/react-stripe-js": "^2.7.1",
     "@stripe/stripe-js": "^3.4.1",
+    "analytics": "*",
     "auth": "*",
     "building-blocks-sdk": "*",
     "dayjs": "^1.11.11",
