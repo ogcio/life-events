@@ -24,6 +24,7 @@ export default async (props: Props) => {
   const uploadClient = await AuthenticationFactory.getUploadClient();
 
   let files: FileMetadata[] | undefined;
+
   try {
     const { data: files_, error } = await uploadClient.getFilesMetadata();
     if (error) {

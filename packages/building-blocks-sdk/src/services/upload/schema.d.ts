@@ -155,7 +155,7 @@ export interface paths {
                 fileName: string;
                 id?: string;
                 key: string;
-                owner: {
+                owner?: {
                   id: string;
                   firstName: string;
                   lastName: string;
@@ -221,7 +221,7 @@ export interface paths {
                 fileName: string;
                 id?: string;
                 key: string;
-                owner: {
+                owner?: {
                   id: string;
                   firstName: string;
                   lastName: string;
