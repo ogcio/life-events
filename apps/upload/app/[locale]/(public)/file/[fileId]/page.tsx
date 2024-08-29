@@ -1,7 +1,6 @@
 import React from "react";
-import ds from "design-system";
 import { AuthenticationFactory } from "../../../../utils/authentication-factory";
-import { getCommonLogger } from "nextjs-logging-wrapper";
+import { getServerLogger } from "nextjs-logging-wrapper";
 import { FileMetadata } from "../../../../types";
 import { AbstractIntlMessages, NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
@@ -9,7 +8,6 @@ import styles from "./page.module.css";
 import { redirect, RedirectType } from "next/navigation";
 import handleSearch from "./actions/handleSearch";
 import SearchBar from "./components/SearchBar";
-import { revalidatePath } from "next/cache";
 import FileDetails from "./components/FileDetails";
 
 type PageProps = {
@@ -59,11 +57,11 @@ export default async ({ params, searchParams }: PageProps) => {
     users = data ? [data] : undefined;
 
     if (error) {
-      getCommonLogger().error(error);
+      getServerLogger().error(error);
       return <FileError />;
     }
   } catch (error) {
-    getCommonLogger().error(error);
+    getServerLogger().error(error);
     return <FileError />;
   }
 
@@ -71,13 +69,13 @@ export default async ({ params, searchParams }: PageProps) => {
   try {
     const { data: file_, error } = await uploadClient.getFileMetadata(fileId);
     if (error || !file_) {
-      getCommonLogger().error(error);
+      getServerLogger().error(error);
       return <FileError />;
     }
 
     file = file_;
   } catch (error) {
-    getCommonLogger().error(error);
+    getServerLogger().error(error);
     return <FileError />;
   }
 
