@@ -364,3 +364,28 @@ export const GenericResponse = <T extends TSchema>(T: T) =>
       }),
     ),
   });
+
+export const AuditLogEvent = Type.Object({
+  auditLogId: Type.String(),
+  createdAt: Type.String(),
+  eventType: Type.String(),
+  title: Type.String(),
+  userId: Type.Optional(Type.String()),
+  organizationId: Type.Optional(Type.String()),
+});
+
+export const AuditLogEvents = Type.Array(AuditLogEvent);
+
+export const AuditLogEventDetails = Type.Composite([
+  AuditLogEvent,
+  Type.Object({
+    metadata: Type.Record(Type.String(), Type.Any()),
+  }),
+]);
+
+export const CreateAuditLog = Type.Pick(AuditLogEventDetails, [
+  "eventType",
+  "userId",
+  "organizationId",
+  "metadata",
+]);
