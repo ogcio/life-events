@@ -8,18 +8,23 @@ const CERTIFICATE_ID = process.env.TL_CERTIFICATE_ID ?? "";
 const PRIVATE_KEY = process.env.TL_PRIVATE_KEY ?? "";
 
 async function fetchNewAccessToken() {
-  const res = await fetch(`${process.env.TL_AUTH_SERVER_URI}/connect/token`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
+  // add a unique query param to avoid caching the fetch request
+  const uniqueParam = new Date().getTime();
+  const res = await fetch(
+    `${process.env.TL_AUTH_SERVER_URI}/connect/token?unique=${uniqueParam}`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: new URLSearchParams({
+        client_id: process.env.TL_CLIENT_ID ?? "",
+        client_secret: process.env.TL_CLIENT_SECRET ?? "",
+        grant_type: "client_credentials",
+        scope: "payments",
+      }),
     },
-    body: new URLSearchParams({
-      client_id: process.env.TL_CLIENT_ID ?? "",
-      client_secret: process.env.TL_CLIENT_SECRET ?? "",
-      grant_type: "client_credentials",
-      scope: "payments",
-    }),
-  });
+  );
 
   return res.json();
 }
