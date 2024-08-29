@@ -15,6 +15,7 @@ export const myGovIdMockSettings = {
 export const referenceCodeSearchParam = {
   openBanking: "payment_id",
   stripe: "payment_intent",
+  realex: "order_id",
 };
 
 export const BankTransferProviderValidationErrors = [
@@ -88,3 +89,5 @@ export const paymentRequestValidationErrorTexts: Record<
   statusInvalid:
     "Payment Request Status cannot be active if no providers are selected.",
 };
+
+export const SAFE_PID_FILENAME = "ngrok.pid";

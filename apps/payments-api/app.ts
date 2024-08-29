@@ -21,6 +21,7 @@ import providers from "./plugins/entities/providers";
 import citizen from "./plugins/entities/citizen";
 import transactions from "./plugins/entities/transactions";
 import paymentRequest from "./plugins/entities/paymentRequest";
+import auditLog from "./plugins/auditLog";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -85,6 +86,8 @@ export async function build(opts?: FastifyServerOptions) {
   });
 
   app.register(healthCheck);
+
+  app.register(auditLog);
 
   app.register(routes, { prefix: "/api/v1" });
 
