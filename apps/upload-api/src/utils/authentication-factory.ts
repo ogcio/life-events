@@ -49,15 +49,3 @@ export const ensureUserIdIsSet = (
 
   throw new AuthorizationError(errorProcess, errorMessage);
 };
-
-export const ensureOrganizationIdIsSet = (
-  request: { userData?: { organizationId?: string } },
-  errorProcess: string,
-  errorMessage: string = "Organization id is not set",
-): string => {
-  if (request.userData && request.userData.organizationId) {
-    return request.userData.organizationId;
-  }
-
-  throw new AuthorizationError(errorProcess, errorMessage);
-};

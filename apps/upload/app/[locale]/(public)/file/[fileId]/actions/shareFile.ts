@@ -1,12 +1,11 @@
-"use server";
-
 import { revalidatePath } from "next/cache";
 import { AuthenticationFactory } from "../../../../../utils/authentication-factory";
-import { getCommonLogger } from "nextjs-logging-wrapper";
+import { getServerLogger } from "nextjs-logging-wrapper";
+import authenticatedAction from "../../../../../utils/authenticatedAction";
 
-export default async (fileId: string, prevState, formData) => {
+const shareFile = async (fileId: string, prevState, formData) => {
+  "use server";
   const userId = formData.get("userId");
-  console.log({ fileId, userId });
 
   const uploadSdk = await AuthenticationFactory.getUploadClient();
 
@@ -14,7 +13,7 @@ export default async (fileId: string, prevState, formData) => {
     const { data, error } = await uploadSdk.shareFile(fileId, userId);
 
     if (error) {
-      getCommonLogger().error(error);
+      getServerLogger().error(error);
       return { error: "share-error" };
     }
   } catch (err) {
@@ -23,3 +22,5 @@ export default async (fileId: string, prevState, formData) => {
 
   revalidatePath(`/file/${fileId}`);
 };
+
+export default authenticatedAction(shareFile);

@@ -10,26 +10,32 @@ type TableProps = {
 };
 
 export default ({ users, shareFile }: TableProps) => {
-  const t = useTranslations("table");
+  const tTable = useTranslations("table");
+  const tError = useTranslations("Errors");
   const [state, formAction] = useFormState(shareFile, { error: undefined });
 
   return (
     <div className="govie-form-group">
       <div style={{ margin: "0 0 5px 0" }} className="govie-label--s">
-        {t("searchResultsCaption")}
+        {tTable("searchResultsCaption")}
       </div>
 
-      {state?.error && <p className="">{state.error}</p>}
+      {state?.error && (
+        <p id="file-upload-error" className="govie-error-message">
+          <span className="govie-visually-hidden">Error:</span>
+          {tError(state.error)}
+        </p>
+      )}
 
       <table className="govie-table">
         <thead className="govie-table__head">
           <tr className="govie-table__row">
             <th scope="col" className="govie-table__header">
-              {t("fullNameHeader")}
+              {tTable("fullNameHeader")}
             </th>
 
             <th scope="col" className="govie-table__header">
-              {t("actionsHeader")}
+              {tTable("actionsHeader")}
             </th>
           </tr>
         </thead>
@@ -49,7 +55,7 @@ export default ({ users, shareFile }: TableProps) => {
                       className={`${styles.tableActionButton}`}
                       type="submit"
                     >
-                      {t("shareButton")}
+                      {tTable("shareButton")}
                     </button>
                   </div>
                 </form>

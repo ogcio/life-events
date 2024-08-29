@@ -2,36 +2,51 @@
 
 import { useTranslations } from "next-intl";
 import React from "react";
+import { useFormState } from "react-dom";
 import type { FileOwner } from "../../../../../types";
 import styles from "../page.module.css";
 
 type SharingTableProps = {
   users: FileOwner[];
+  removeSharing: (
+    userId: string,
+    formData: FormData,
+  ) => Promise<{ error: string }>;
 };
 
-export default ({ users }: SharingTableProps) => {
-  const t = useTranslations("table");
+export default ({ users, removeSharing }: SharingTableProps) => {
+  const tTable = useTranslations("table");
+  const tError = useTranslations("Errors");
+  const [state, formAction] = useFormState(removeSharing, { error: undefined });
 
   return (
     <div className="govie-form-group">
       <div className="govie-form-group">
         <div style={{ margin: "0 0 5px 0" }} className="govie-label--s">
-          {t("selectedUsersCaption")}
+          {tTable("selectedUsersCaption")}
         </div>
+
+        {state?.error && (
+          <p id="file-upload-error" className="govie-error-message">
+            <span className="govie-visually-hidden">Error:</span>
+            {tError(state.error)}
+          </p>
+        )}
+
         <table className="govie-table">
           <thead className="govie-table__head">
             <tr className="govie-table__row">
               <th scope="col" className="govie-table__header">
-                {t("fullNameHeader")}
+                {tTable("fullNameHeader")}
               </th>
               <th scope="col" className="govie-table__header">
-                {t("emailHeader")}
+                {tTable("emailHeader")}
               </th>
               <th scope="col" className="govie-table__header">
-                {t("phoneHeader")}
+                {tTable("phoneHeader")}
               </th>
               <th scope="col" className="govie-table__header">
-                {t("actionsHeader")}
+                {tTable("actionsHeader")}
               </th>
             </tr>
           </thead>
@@ -48,11 +63,11 @@ export default ({ users }: SharingTableProps) => {
                   {user.phone}
                 </td>
                 <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-                  <form>
-                    <input type="hidden" name="recipient" value={user.id} />
+                  <form action={formAction}>
+                    <input type="hidden" name="userId" value={user.id} />
                     <div style={{ display: "flex", alignItems: "center" }}>
                       <button className={`${styles.tableActionButton}`}>
-                        {t("removeButton")}
+                        {tTable("removeButton")}
                       </button>
                     </div>
                   </form>

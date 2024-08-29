@@ -1,19 +1,23 @@
-import React from "react";
 import ds from "design-system";
 
+import { getTranslations } from "next-intl/server";
+import Link from "next/link";
 import type { FileMetadata } from "../../../../types";
+import formatBytes from "../../utils/formatBytes";
 import DeleteFile from "../DeleteFile";
 import styles from "./FileTableRow.module.scss";
-import Link from "next/link";
-import { getTranslations } from "next-intl/server";
-import formatBytes from "../../utils/formatBytes";
 
 type TableRowProps = {
   file: FileMetadata;
   deleteFile: (formData: FormData) => Promise<{ error: string }>;
+  isPublicServant: boolean;
 };
 
-const TableRow = async ({ file, deleteFile }: TableRowProps) => {
+const TableRow = async ({
+  file,
+  deleteFile,
+  isPublicServant,
+}: TableRowProps) => {
   const tTable = await getTranslations("Upload.table.data");
   const cellClasses = `govie-table__cell ${styles["align-middle"]}`;
 
@@ -40,22 +44,24 @@ const TableRow = async ({ file, deleteFile }: TableRowProps) => {
       </th>
       <td className={cellClasses}>{formatBytes(file.fileSize)}</td>
       <td className={cellClasses}>{file?.owner?.email}</td>
-      <td className={cellClasses}>
-        <DeleteFile deleteFile={deleteFile} id={file.id as string} />
-        <Link href={`/file/${file.id}`}>
-          <span data-module="govie-tooltip">
-            <button
-              data-module="govie-icon-button"
-              className="govie-icon-button"
-            >
-              <ds.Icon icon="send-a-message" color={ds.colours.ogcio.black} />
+      {isPublicServant && (
+        <td className={cellClasses}>
+          <DeleteFile deleteFile={deleteFile} id={file.id as string} />
+          <Link href={`/file/${file.id}`}>
+            <span data-module="govie-tooltip">
+              <button
+                data-module="govie-icon-button"
+                className="govie-icon-button"
+              >
+                <ds.Icon icon="send-a-message" color={ds.colours.ogcio.black} />
 
-              <span className="govie-visually-hidden">Share</span>
-            </button>
-            <span className="govie-tooltip govie-tooltip--top">Share</span>
-          </span>
-        </Link>
-      </td>
+                <span className="govie-visually-hidden">Share</span>
+              </button>
+              <span className="govie-tooltip govie-tooltip--top">Share</span>
+            </span>
+          </Link>
+        </td>
+      )}
     </tr>
   );
 };

@@ -26,14 +26,11 @@ export class Upload {
   }
 
   async removeFileSharing(fileId: string, userId: string) {
-    const { data, error } = await this.client.DELETE(
-      "/api/v1/metadata/share/",
-      {
-        body: { fileId, userId },
-      },
-    );
+    const { error } = await this.client.DELETE("/api/v1/metadata/share/", {
+      body: { fileId, userId },
+    });
 
-    return { error, data: data?.data };
+    return { error };
   }
 
   async getFile(id: string) {
@@ -77,7 +74,7 @@ export class Upload {
   }
 
   async uploadFile(file?: File) {
-    const { error } = await this.client.POST("/api/v1/files/", {
+    const { error, response, data } = await this.client.POST("/api/v1/files/", {
       body: {
         file,
       } as any,
@@ -87,6 +84,8 @@ export class Upload {
         return formData;
       },
     });
+    console.log({ response: response.status });
+
     return { error };
   }
 
