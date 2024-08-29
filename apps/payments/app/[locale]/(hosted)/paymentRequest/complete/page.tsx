@@ -10,6 +10,7 @@ type Props = {
     error?: string | undefined;
     payment_id?: string;
     payment_intent?: string;
+    order_id?: string;
     redirect_status?: string;
   };
 };
@@ -53,14 +54,12 @@ async function getRequestDetails(requestId: string) {
 }
 
 export default async function Page(props: Props) {
-  const { payment_id, payment_intent, redirect_status, error } =
+  const { payment_id, payment_intent, redirect_status, order_id, error } =
     props.searchParams;
   let extPaymentId = payment_id ?? "";
 
   let status = TransactionStatuses.Succeeded;
-  if (error) {
-    status = TransactionStatuses.Failed;
-  }
+
   if (payment_id) {
     // It's a TrueLayer transaction
     const paymentDetails = await getTrueLayerPaymentDetails(payment_id);
@@ -68,19 +67,27 @@ export default async function Page(props: Props) {
   }
 
   if (!extPaymentId) {
-    if (payment_intent && redirect_status) {
+    if (order_id) {
+      // It's a Realex transaction
+      extPaymentId = order_id;
+      status = TransactionStatuses.Succeeded;
+    } else if (payment_intent && redirect_status) {
       // It's a Stripe transaction
       extPaymentId = payment_intent;
 
       const mappedStatus = getInternalStatus(redirect_status);
       if (!mappedStatus) {
-        throw new Error("Invalid payment intent status recieved!");
+        throw new Error("Invalid payment intent status received!");
       }
 
       status = mappedStatus;
     } else {
       return notFound();
     }
+  }
+
+  if (error) {
+    status = TransactionStatuses.Failed;
   }
 
   const transactionDetail = await updateTransaction(extPaymentId, status);

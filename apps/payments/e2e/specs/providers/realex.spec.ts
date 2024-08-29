@@ -168,6 +168,10 @@ test.describe("Realex provider creation", () => {
 });
 
 testWithProvider.describe("Realex provider editing", () => {
+  const merchantId = process.env.REALEX_MERCHANT_ID ?? mockRealexMerchantId;
+  const sharedSecret =
+    process.env.REALEX_SHARED_SECRET ?? mockRealexSharedSecret;
+
   testWithProvider(
     "should edit a realex provider @regression @normal",
     async ({ realexProvider, publicServantPage }) => {
@@ -195,11 +199,9 @@ testWithProvider.describe("Realex provider editing", () => {
       await editProviderPage.checkHeaderVisible();
       await editProviderPage.providerForm.checkName(realexProvider);
       await editProviderPage.providerForm.enterName(newProviderName);
-      await editProviderPage.providerForm.checkMerchantId(mockRealexMerchantId);
+      await editProviderPage.providerForm.checkMerchantId(merchantId);
       await editProviderPage.providerForm.enterMerchantId(newMerchantId);
-      await editProviderPage.providerForm.checkSharedSecret(
-        mockRealexSharedSecret,
-      );
+      await editProviderPage.providerForm.checkSharedSecret(sharedSecret);
       await editProviderPage.providerForm.enterSharedSecret(newSharedSecret);
       await editProviderPage.saveChanges();
 
@@ -291,7 +293,7 @@ testWithProvider.describe("Realex provider editing", () => {
       await providersPage.editProvider(realexProvider);
       const editProviderPage = new EditRealexProviderPage(publicServantPage);
       await editProviderPage.checkHeaderVisible();
-      await editProviderPage.providerForm.checkMerchantId(mockRealexMerchantId);
+      await editProviderPage.providerForm.checkMerchantId(merchantId);
       await editProviderPage.providerForm.enterMerchantId("");
       await editProviderPage.saveChanges();
       await editProviderPage.providerForm.expectValidationError(
@@ -300,7 +302,7 @@ testWithProvider.describe("Realex provider editing", () => {
 
       await providersPage.goto();
       await providersPage.editProvider(realexProvider);
-      await editProviderPage.providerForm.checkMerchantId(mockRealexMerchantId);
+      await editProviderPage.providerForm.checkMerchantId(merchantId);
     },
   );
 
@@ -325,9 +327,7 @@ testWithProvider.describe("Realex provider editing", () => {
       await providersPage.editProvider(realexProvider);
       const editProviderPage = new EditRealexProviderPage(publicServantPage);
       await editProviderPage.checkHeaderVisible();
-      await editProviderPage.providerForm.checkSharedSecret(
-        mockRealexSharedSecret,
-      );
+      await editProviderPage.providerForm.checkSharedSecret(sharedSecret);
       await editProviderPage.providerForm.enterSharedSecret("");
       await editProviderPage.saveChanges();
       await editProviderPage.providerForm.expectValidationError(
@@ -336,9 +336,7 @@ testWithProvider.describe("Realex provider editing", () => {
 
       await providersPage.goto();
       await providersPage.editProvider(realexProvider);
-      await editProviderPage.providerForm.checkSharedSecret(
-        mockRealexSharedSecret,
-      );
+      await editProviderPage.providerForm.checkSharedSecret(sharedSecret);
     },
   );
 });

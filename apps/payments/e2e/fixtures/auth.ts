@@ -4,10 +4,8 @@ import path from "path";
 import { MyGovIdMockLoginPage } from "../objects/MyGovIdMockLoginPage";
 import { password, publicServants, citizens } from "../utils/constants";
 
-const baseURL =
-  process.env.NEXT_PUBLIC_PAYMENTS_SERVICE_ENTRY_POINT ??
-  "http://localhost:3001";
-const loginUrl = process.env.LOGTO_ENDPOINT ?? "http://localhost:3301/";
+const baseURL = process.env.BASE_URL;
+const loginUrl = process.env.LOGTO_ENDPOINT;
 
 export * from "@playwright/test";
 
