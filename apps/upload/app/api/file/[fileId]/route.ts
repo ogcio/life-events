@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { AuthenticationFactory } from "../../../utils/authentication-factory";
-import { getCommonLogger } from "nextjs-logging-wrapper";
+import { getServerLogger } from "nextjs-logging-wrapper";
 
 export async function GET(
   request: Request,
@@ -12,7 +12,7 @@ export async function GET(
 
   if (error || !data) {
     if (error) {
-      getCommonLogger().error(error);
+      getServerLogger().error(error);
       if (status === 404) {
         throw notFound();
       }

@@ -1,52 +1,7 @@
-import type { FileMetadata } from "../../../types";
-import ds from "design-system";
-import styles from "./FileTable.module.scss";
-import DeleteFile from "./DeleteFile";
-import { useTranslations } from "next-intl";
 import { getTranslations } from "next-intl/server";
-
-const formatBytes = (bytes: number) => {
-  if (bytes === 0) return "0 Bytes";
-  const k = 1000;
-  const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + " " + sizes[i];
-};
-
-type TableRowProps = {
-  file: FileMetadata;
-  deleteFile: (formData: FormData) => Promise<{ error: string }>;
-};
-
-const TableRow = async ({ file, deleteFile }: TableRowProps) => {
-  const tTable = await getTranslations("Upload.table.data");
-
-  return (
-    <tr className="govie-table__row">
-      <th className="govie-table__header" scope="row">
-        {!file.infected && !file.deleted && (
-          <a href={`/api/file/${file.id}`} target="_blank">
-            {file.fileName}
-          </a>
-        )}
-        {file.infected && (
-          <span>
-            {file.fileName} -
-            <span style={{ color: ds.colours.ogcio.red }}>
-              <span className="govie-visually-hidden">Error:</span>{" "}
-              {tTable("infected")}
-            </span>
-          </span>
-        )}
-      </th>
-      <td className="govie-table__cell">{formatBytes(file.fileSize)}</td>
-      <td className="govie-table__cell">{file?.owner?.email}</td>
-      <td className="govie-table__cell">
-        <DeleteFile deleteFile={deleteFile} id={file.id as string} />
-      </td>
-    </tr>
-  );
-};
+import type { FileMetadata } from "../../../types";
+import styles from "./FileTable.module.scss";
+import TableRow from "./FileTableRow/FileTableRow";
 
 type FileTableProps = {
   files: FileMetadata[];
