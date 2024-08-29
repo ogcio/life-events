@@ -1,0 +1,19 @@
+meta {
+  name: Delete template
+  type: http
+  seq: 11
+}
+
+delete {
+  url: {{baseUrl}}/api/v1/templates/{{templateId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+assert {
+  res.status: eq 200
+}

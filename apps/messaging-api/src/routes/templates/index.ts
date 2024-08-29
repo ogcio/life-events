@@ -1,17 +1,28 @@
 import { Type } from "@sinclair/typebox";
 import { FastifyInstance } from "fastify";
-import { BadRequestError, NotFoundError, ServerError } from "shared-errors";
+import {
+  isLifeEventsError,
+  NotFoundError,
+  ServerError,
+  ValidationError,
+} from "shared-errors";
 import { Permissions } from "../../types/permissions.js";
 import { HttpError } from "../../types/httpErrors.js";
-import { getGenericResponseSchema } from "../../types/schemaDefinitions.js";
+import {
+  getGenericResponseSchema,
+  PaginationParams,
+  PaginationParamsSchema,
+} from "../../types/schemaDefinitions.js";
 import {
   ensureOrganizationIdIsSet,
   ensureUserIdIsSet,
 } from "../../utils/authentication-factory.js";
+import {
+  getPaginationLinks,
+  sanitizePagination,
+} from "../../utils/pagination.js";
 
 const tags = ["Templates"];
-
-const TEMPLATES_ERROR = "TEMPLATES_ERROR";
 
 type TemplateVariable = { name: string; type: string; languages: string[] };
 interface CreateTemplate {
@@ -31,7 +42,6 @@ interface CreateTemplate {
 interface UpdateTemplate {
   Body: {
     contents: {
-      id: string;
       templateName: string;
       lang: string;
       subject: string;
@@ -47,9 +57,9 @@ interface UpdateTemplate {
 }
 
 interface GetTemplates {
-  Querystring?: {
+  Querystring: {
     lang?: string;
-  };
+  } & PaginationParams;
 }
 
 interface GetTemplate {
@@ -61,7 +71,7 @@ interface GetTemplate {
   };
 }
 
-const TemplateTypeWithoutId = Type.Object({
+const TemplateContentType = Type.Object({
   templateName: Type.String({
     description: "Template name for the related language",
   }),
@@ -74,16 +84,6 @@ const TemplateTypeWithoutId = Type.Object({
   richText: Type.String({ description: "Rich text version of the template" }),
 });
 
-const TemplateType = Type.Composite([
-  Type.Object({
-    id: Type.String({
-      format: "uuid",
-      description: "Unique id of the template",
-    }),
-  }),
-  TemplateTypeWithoutId,
-]);
-
 export default async function templates(app: FastifyInstance) {
   app.get<GetTemplates>(
     "/",
@@ -93,14 +93,17 @@ export default async function templates(app: FastifyInstance) {
       schema: {
         description: "Returns the providers matching the requested query",
         querystring: Type.Optional(
-          Type.Object({
-            lang: Type.Optional(
-              Type.String({
-                description:
-                  "If set, templates with the requested language are returned",
-              }),
-            ),
-          }),
+          Type.Composite([
+            Type.Object({
+              lang: Type.Optional(
+                Type.String({
+                  description:
+                    "If set, templates with the requested language are returned",
+                }),
+              ),
+            }),
+            PaginationParamsSchema,
+          ]),
         ),
         tags,
         response: {
@@ -130,26 +133,35 @@ export default async function templates(app: FastifyInstance) {
       },
     },
     async function handleGetAll(request, _reply) {
+      const errorProcess = "TEMPLATES_GET_ALL";
       const lang = request.query?.lang || "";
+      const organisationId = ensureOrganizationIdIsSet(request, errorProcess);
+      const { limit, offset } = sanitizePagination({
+        limit: request.query.limit,
+        offset: request.query.offset,
+      });
 
       const result = await app.pg.pool.query<{
         templateMetaId: string;
-        lang: string;
-        templateName: string;
+        contents: { lang: string; templateName: string }[];
+        count: number;
       }>(
         `
+        with meta_count as(
+          select count(*) from message_template_meta
+          where organisation_id = $1
+        )
         select  
           m.id as "templateMetaId",
-          c.lang,
-          template_name as "templateName"
+          (select jsonb_agg(jsonb_build_object('templateName', template_name, 'lang', c.lang)) from message_template_contents c where template_meta_id = id) as "contents",
+          (select count from meta_count) as "count"
         from message_template_meta m
-        join message_template_contents c on c.template_meta_id = m.id
-        where 
-          case when length($1) > 0 then lang=$1 else true end
-          AND m.deleted_at is null
-          order by c.created_at desc
+        where
+          m.deleted_at is null
+          limit $2
+          offset $3
       `,
-        [lang],
+        [organisationId, limit, offset],
       );
 
       const data: {
@@ -158,17 +170,26 @@ export default async function templates(app: FastifyInstance) {
       }[] = [];
 
       for (const row of result.rows) {
-        const content = { lang: row.lang, templateName: row.templateName };
-        data
-          .find((item) => item.id === row.templateMetaId)
-          ?.contents.push(content) ||
-          data.push({
-            id: row.templateMetaId,
-            contents: [content],
-          });
+        data.push({ id: row.templateMetaId, contents: row.contents });
       }
 
-      return { data };
+      const totalCount = result.rows.at(0)?.count || 0;
+
+      const url = new URL(`/api/v1/templates`, process.env.HOST_URL);
+      const links = getPaginationLinks({
+        totalCount,
+        url,
+        limit: Number(limit),
+        offset: Number(offset),
+      });
+
+      return {
+        data,
+        metadata: {
+          totalCount,
+          links,
+        },
+      };
     },
   );
 
@@ -183,7 +204,7 @@ export default async function templates(app: FastifyInstance) {
         response: {
           200: getGenericResponseSchema(
             Type.Object({
-              contents: Type.Array(TemplateTypeWithoutId),
+              contents: Type.Array(TemplateContentType),
               fields: Type.Array(
                 Type.Object(
                   {
@@ -217,7 +238,7 @@ export default async function templates(app: FastifyInstance) {
         description: "Creates a new template",
         tags,
         body: Type.Object({
-          contents: Type.Array(TemplateTypeWithoutId),
+          contents: Type.Array(TemplateContentType),
           variables: Type.Array(
             Type.Object({
               name: Type.String(),
@@ -256,28 +277,38 @@ export default async function templates(app: FastifyInstance) {
       try {
         client.query("BEGIN");
 
+        const queryFilter: string[] = [];
+        const values: string[] = [
+          ensureOrganizationIdIsSet(request, errorCode),
+        ];
+        let index = 1;
+        for (const { templateName, lang } of contents) {
+          queryFilter.push(
+            `(lower(template_name) = lower($${++index}) AND lang=$${++index})`,
+          );
+          values.push(templateName, lang);
+        }
+
         // Let's check so that the template name isn't taken for the organisation
         const templateNameExists = await client.query<{ exists: boolean }>(
           `
           select exists(select 1 from message_template_meta m 
             join message_template_contents c on c.template_meta_id = m.id
             where organisation_id = $1
-            and LOWER(template_name) in ($2)
+            AND (${queryFilter.join(" OR ")})
             limit 1);
         `,
-          [
-            ensureOrganizationIdIsSet(request, errorCode),
-            contents
-              .map((content) => content.templateName.toLowerCase())
-              .join(", "),
-          ],
+          values,
         );
 
         if (templateNameExists.rows[0]?.exists) {
-          throw new BadRequestError(
-            TEMPLATES_ERROR,
-            "template name already exists",
-          );
+          throw new ValidationError(errorCode, "template name already exists", [
+            {
+              fieldName: "templateName",
+              message: "alreadyInUse",
+              validationRule: "already-in-use",
+            },
+          ]);
         }
 
         const templateMetaResponse = await client.query<{ id: string }>(
@@ -291,10 +322,7 @@ export default async function templates(app: FastifyInstance) {
         templateMetaId = templateMetaResponse.rows.at(0)?.id;
 
         if (!templateMetaId) {
-          throw new ServerError(
-            TEMPLATES_ERROR,
-            "failed to create a template meta",
-          );
+          throw new ServerError(errorCode, "failed to create a template meta");
         }
 
         for (const content of contents) {
@@ -342,7 +370,10 @@ export default async function templates(app: FastifyInstance) {
         if (err instanceof Error) {
           this.log.error(err.message);
         }
-        throw new ServerError(TEMPLATES_ERROR, "failed to create template");
+
+        throw isLifeEventsError(err)
+          ? err
+          : new ServerError(errorCode, "failed to create template");
       } finally {
         client.release();
       }
@@ -361,7 +392,8 @@ export default async function templates(app: FastifyInstance) {
         description: "Updates the requested template",
         tags,
         body: Type.Object({
-          contents: Type.Array(TemplateType),
+          id: Type.String({ format: "uuid" }),
+          contents: Type.Array(TemplateContentType),
           variables: Type.Array(
             Type.Object({
               name: Type.String(),
@@ -386,11 +418,49 @@ export default async function templates(app: FastifyInstance) {
       // if template does not exist
       await getTemplate(app, templateId);
 
+      const errorCode = "TEMPLATE_UPDATE";
+
       const { contents, variables } = request.body;
 
       const client = await app.pg.pool.connect();
       try {
         client.query("BEGIN");
+
+        const queryFilter: string[] = [];
+        const values: string[] = [
+          ensureOrganizationIdIsSet(request, errorCode),
+          templateId,
+        ];
+        let index = values.length;
+        for (const { templateName, lang } of contents) {
+          queryFilter.push(
+            `(lower(template_name) = lower($${++index}) AND lang=$${++index})`,
+          );
+          values.push(templateName, lang);
+        }
+
+        // Let's check so that the template name isn't taken
+        const templateNameExists = await client.query<{ exists: boolean }>(
+          `
+          select exists(select 1 from message_template_meta m 
+            join message_template_contents c on c.template_meta_id = m.id
+            where organisation_id = $1
+            AND m.id != $2
+            AND (${queryFilter.join(" OR ")})
+            limit 1);
+        `,
+          values,
+        );
+
+        if (templateNameExists.rows[0]?.exists) {
+          throw new ValidationError(errorCode, "template name already exists", [
+            {
+              fieldName: "templateName",
+              message: "alreadyInUse",
+              validationRule: "already-in-use",
+            },
+          ]);
+        }
 
         await client.query(
           `
@@ -457,7 +527,9 @@ export default async function templates(app: FastifyInstance) {
         await client.query("COMMIT");
       } catch (err) {
         client.query("ROLLBACK");
-        throw new ServerError(TEMPLATES_ERROR, "failed to update");
+        throw isLifeEventsError(err)
+          ? err
+          : new ServerError(errorCode, "failed to update");
       } finally {
         client.release();
       }
@@ -498,6 +570,7 @@ export default async function templates(app: FastifyInstance) {
   );
 
   const getTemplate = async (app: FastifyInstance, templateId: string) => {
+    const errorCode = "TEMPLATE_GET_ONE";
     const templateMeta = await app.pg.pool.query<{
       templateName: string;
       subject: string;
@@ -584,7 +657,7 @@ export default async function templates(app: FastifyInstance) {
     }
 
     if (!template.contents.length) {
-      throw new NotFoundError(TEMPLATES_ERROR, "no template found");
+      throw new NotFoundError(errorCode, "no template found");
     }
 
     return template;
