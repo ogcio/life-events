@@ -1579,6 +1579,24 @@ paths:
           name: lang
           required: false
           description: If set, templates with the requested language are returned
+        - schema:
+            pattern: ^[0-9][0-9]*|$
+            default: "0"
+            type: string
+          in: query
+          name: offset
+          required: false
+          description: Indicates where to start fetching data or how many records to skip,
+            defining the initial position within the list
+        - schema:
+            default: "20"
+            pattern: ^([1-9]|100)|$
+            type: string
+          in: query
+          name: limit
+          required: false
+          description: Indicates the maximum number (100) of items that will be returned
+            in a single request
       responses:
         "200":
           description: Default Response
@@ -2131,15 +2149,14 @@ paths:
             schema:
               type: object
               properties:
+                id:
+                  format: uuid
+                  type: string
                 contents:
                   type: array
                   items:
                     type: object
                     properties:
-                      id:
-                        format: uuid
-                        description: Unique id of the template
-                        type: string
                       templateName:
                         description: Template name for the related language
                         type: string
@@ -2159,7 +2176,6 @@ paths:
                         description: Rich text version of the template
                         type: string
                     required:
-                      - id
                       - templateName
                       - lang
                       - subject
@@ -2181,6 +2197,7 @@ paths:
                       - name
                       - type
               required:
+                - id
                 - contents
                 - variables
         required: true
