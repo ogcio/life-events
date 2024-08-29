@@ -65,7 +65,7 @@ export default async function paymentRequests(app: FastifyInstance) {
           limit,
         },
       );
-      console.log(JSON.stringify(result, undefined, 2));
+
       const totalCount =
         await app.paymentRequest.getPaymentRequestsTotalCount(organizationId);
       const url = request.url.split("?")[0];
