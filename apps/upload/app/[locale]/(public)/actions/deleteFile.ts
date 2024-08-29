@@ -1,4 +1,4 @@
-import { getCommonLogger } from "nextjs-logging-wrapper";
+import { getServerLogger } from "nextjs-logging-wrapper";
 import authenticatedAction from "../../../utils/authenticatedAction";
 import { AuthenticationFactory } from "../../../utils/authentication-factory";
 import { revalidatePath } from "next/cache";
@@ -21,11 +21,11 @@ const deleteFile = async (prevState, formData: FormData) => {
   try {
     const { error } = await uploadClient.deleteFile(key);
     if (error) {
-      getCommonLogger().error(error);
+      getServerLogger().error(error);
       return { error: ERRORS.DELETE_ERROR };
     }
   } catch (err) {
-    getCommonLogger().error(err);
+    getServerLogger().error(err);
     return { error: ERRORS.DELETE_ERROR };
   }
 

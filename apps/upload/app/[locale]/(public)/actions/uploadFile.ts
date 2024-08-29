@@ -1,4 +1,4 @@
-import { getCommonLogger } from "nextjs-logging-wrapper";
+import { getServerLogger } from "nextjs-logging-wrapper";
 import authenticatedAction from "../../../utils/authenticatedAction";
 import { AuthenticationFactory } from "../../../utils/authentication-factory";
 import { revalidatePath } from "next/cache";
@@ -30,7 +30,7 @@ const uploadFile = async (prevState, formData: FormData) => {
   try {
     const { error } = await uploadClient.uploadFile(file);
     if (error) {
-      getCommonLogger().error(error);
+      getServerLogger().error(error);
 
       if (error.detail === "File is infected") {
         return {
@@ -40,7 +40,7 @@ const uploadFile = async (prevState, formData: FormData) => {
       return { error: ERRORS.UPLOAD_ERROR };
     }
   } catch (err) {
-    getCommonLogger().error(err);
+    getServerLogger().error(err);
     return { error: ERRORS.UPLOAD_ERROR };
   }
 
