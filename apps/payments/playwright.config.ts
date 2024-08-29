@@ -10,7 +10,12 @@ const baseURL = process.env.BASE_URL;
 export default defineConfig({
   timeout: 500000,
   grep: testPlanFilter(),
-  reporter: [["line"], ["allure-playwright"], ["html"]], // Test directory
+  reporter: [
+    ["line"],
+    ["allure-playwright"],
+    ["html"],
+    ["junit", { outputFile: "./e2e/test-results/results.xml" }],
+  ], // Test directory
   testDir: path.join(__dirname, "e2e"),
   retries: 0,
   outputDir: "./e2e/test-results/",
