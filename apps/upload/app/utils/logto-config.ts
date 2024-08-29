@@ -21,7 +21,7 @@ export const baseConfig = {
 
 const organizationId = "ogcio";
 export const citizenScopes = ["upload:file.self:read"];
-export const publicServantScopes = ["upload:file:*", "profile:user:*"];
+export const publicServantScopes = ["upload:file:*", "profile:user:read"];
 const publicServantExpectedRole = "File Upload Public Servant";
 
 export const getAuthenticationContextConfig =

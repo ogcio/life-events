@@ -62,7 +62,7 @@ export class RealexService implements IRealexService {
     const errorQueryParam =
       response.RESULT !== "00" ? `&error=${response.RESULT}` : "";
     const url = new URL(
-      `/${response.HPP_LANG}/paymentRequest/complete?payment_id=${response.ORDER_ID}${errorQueryParam}`,
+      `/${response.HPP_LANG}/paymentRequest/complete?order_id=${response.ORDER_ID}${errorQueryParam}`,
       process.env.PAYMENTS_HOST_URL,
     );
 
