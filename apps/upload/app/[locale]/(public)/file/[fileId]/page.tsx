@@ -12,7 +12,6 @@ import SearchBar from "./components/SearchBar";
 import { revalidatePath } from "next/cache";
 import FileDetails from "./components/FileDetails";
 import shareFileAction from "./actions/shareFile";
-import ShareFile from "./components/ShareFile";
 import SearchResultsTable from "./components/SearchResultsTable";
 import SharingTables from "./components/SharingTables";
 
