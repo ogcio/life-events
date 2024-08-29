@@ -1,4 +1,4 @@
-import { getCommonLogger } from "nextjs-logging-wrapper";
+import { getServerLogger } from "nextjs-logging-wrapper";
 import { AuthenticationFactory } from "../../utils/authentication-factory";
 import FileUpload from "./components/FileUpload";
 import { AbstractIntlMessages, NextIntlClientProvider } from "next-intl";
@@ -28,7 +28,7 @@ export default async (props: Props) => {
   try {
     const { data: files_, error } = await uploadClient.getFilesMetadata();
     if (error) {
-      getCommonLogger().error(error);
+      getServerLogger().error(error);
       return (
         <section>
           <h3 className="govie-heading-l">Error retrieving files</h3>
@@ -38,7 +38,7 @@ export default async (props: Props) => {
 
     files = files_;
   } catch (error) {
-    getCommonLogger().error(error);
+    getServerLogger().error(error);
     return (
       <section>
         <h3 className="govie-heading-l">{t("Errors.retrievalError")}</h3>
