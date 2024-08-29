@@ -25,8 +25,12 @@ export class AddRealexProviderPage {
 
   async create(name: string) {
     await this.providerForm.enterName(name);
-    await this.providerForm.enterMerchantId(mockRealexMerchantId);
-    await this.providerForm.enterSharedSecret(mockRealexSharedSecret);
+    await this.providerForm.enterMerchantId(
+      process.env.REALEX_MERCHANT_ID ?? mockRealexMerchantId,
+    );
+    await this.providerForm.enterSharedSecret(
+      process.env.REALEX_SHARED_SECRET ?? mockRealexSharedSecret,
+    );
     await this.submitProviderCreation();
 
     await this.page.waitForURL(providersUrl);

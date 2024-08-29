@@ -14,10 +14,10 @@ export class InactivePayPage {
   }
 
   async checkHeader() {
-    await expect(this.header).toBeVisible;
+    await expect(this.header).toBeVisible();
   }
 
   async checkDescription() {
-    await expect(this.description).toBeVisible;
+    await expect(this.description).toBeVisible();
   }
 }

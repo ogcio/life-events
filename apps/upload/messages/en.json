@@ -22,10 +22,36 @@
       "deleteError": "There was an error trying to delete the file",
       "fileInfected": "The file is infected",
       "noKey": "No file specified for deletion",
-      "retrievalError": "There was an error retrieving file"
+      "retrievalError": "There was an error retrieving files"
     },
     "buttonLabel": "Upload a file",
     "uploadButton": "Upload"
+  },
+  "File": {
+    "title": "File details",
+    "Errors": { "retrievalError": "There was an error retrieving file" },
+    "shareFileCaption": "Share file",
+    "table": {
+      "searchResultsCaption": "Search results",
+      "searchUsersButton": "Search users",
+      "fullNameHeader": "Full name",
+      "actionsHeader": "Action",
+      "shareButton": "Share",
+
+      "selectedUsersCaption": "Users accessing this file",
+      "emailHeader": "Email",
+      "phoneHeader": "Phone",
+      "removeSharingButton": "Remove"
+    },
+
+    "details": {
+      "name": "Name",
+      "fileSize": "File size",
+      "createdAt": "Created at",
+      "fileType": "File type",
+      "uploadedBy": "Uploaded by"
+    },
+    "backLink": "Back"
   },
   "NotFound": {
     "title": "Not Found",
@@ -43,5 +69,4 @@
     "tag": "Alpha",
     "bannerText": "This is a new service - your <link1>feedback</link1> will help us improve it. If you're having problems submit a <link2>support</link2> request"
   }
-  
 }
