@@ -1,0 +1,63 @@
+meta {
+  name: Create template with existing name
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/v1/templates
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  { 
+    "contents": [
+      {
+        "templateName": "A {{randomTemplateName}}",
+        "lang": "en",
+        "subject": "subj A {{var1}}",
+        "excerpt": "expt A {{var2en}}",
+        "plainText": "pt A",
+        "richText": "rt A"
+      },
+      {
+        "templateName": "B {{randomTemplateName}}",
+        "lang": "ga",
+        "subject": "subj B {{var1}}",
+        "excerpt": "expt B {{var2ga}}",
+        "plainText": "pt B",
+        "richText": "rt B"
+      }
+    ],
+    "variables": [
+      {
+        "name": "var1",
+        "type": "remove?",
+        "languages": ["en", "ga"]
+      },
+      {
+        "name": "var2en",
+        "type": "remove?",
+        "languages": ["en"]
+      },
+      {
+        "name": "var2ga",
+        "type": "remove?",
+        "languages": ["ga"]
+      }
+    ]
+  }
+}
+
+assert {
+  res.status: eq 422
+  res.body.requestId: isDefined
+  res.body.validation[0].fieldName: eq templateName
+  res.body.validation[0].message: eq alreadyInUse
+  res.body.code: eq VALIDATION_ERROR
+}
