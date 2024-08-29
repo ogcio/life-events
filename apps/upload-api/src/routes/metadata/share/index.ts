@@ -35,8 +35,6 @@ export default async function routes(app: FastifyInstance) {
     async (request, reply) => {
       const { fileId, userId } = request.body;
 
-      console.log({ fileId, userId });
-
       // TODO: IMPLEMENT THIS
 
       reply.send({ data: {} });
@@ -66,7 +64,6 @@ export default async function routes(app: FastifyInstance) {
 
       // TODO: IMPLEMENT THIS
 
-      console.log({ fileId, userId });
       return reply.send({ data: {} });
     },
   );
