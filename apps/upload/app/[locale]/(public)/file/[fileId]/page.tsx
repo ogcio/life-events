@@ -11,6 +11,10 @@ import handleSearch from "./actions/handleSearch";
 import SearchBar from "./components/SearchBar";
 import { revalidatePath } from "next/cache";
 import FileDetails from "./components/FileDetails";
+import shareFileAction from "./actions/shareFile";
+import ShareFile from "./components/ShareFile";
+import SearchResultsTable from "./components/SearchResultsTable";
+import SharingTables from "./components/SharingTables";
 
 type PageProps = {
   params: { fileId: string; locale: string };
@@ -43,6 +47,7 @@ export default async ({ params, searchParams }: PageProps) => {
   const profileClient = await AuthenticationFactory.getProfileClient();
 
   const handlesSearchWithId = handleSearch.bind(null, fileId);
+  const shareFileWithId = shareFileAction.bind(null, fileId);
 
   let users:
     | {
@@ -52,19 +57,21 @@ export default async ({ params, searchParams }: PageProps) => {
         matchQuality: "exact" | "approximate";
       }[]
     | undefined;
-  try {
-    const { data, error } = await profileClient.findUser({
-      email,
-    });
-    users = data ? [data] : undefined;
+  if (email) {
+    try {
+      const { data, error } = await profileClient.findUser({
+        email,
+      });
+      users = data ? [data] : undefined;
 
-    if (error) {
+      if (error) {
+        getCommonLogger().error(error);
+        return <FileError />;
+      }
+    } catch (error) {
       getCommonLogger().error(error);
       return <FileError />;
     }
-  } catch (error) {
-    getCommonLogger().error(error);
-    return <FileError />;
   }
 
   let file: FileMetadata;
@@ -102,120 +109,28 @@ export default async ({ params, searchParams }: PageProps) => {
           {/* Search bar */}
           <SearchBar handleSearch={handlesSearchWithId} searchString={email} />
           {/* Search results table  */}
-          <div className="govie-form-group">
-            <div style={{ margin: "0 0 5px 0" }} className="govie-label--s">
-              {tTable("searchResultsCaption")}
-            </div>
-            <table className="govie-table">
-              <thead className="govie-table__head">
-                <tr className="govie-table__row">
-                  <th scope="col" className="govie-table__header">
-                    {tTable("fullNameHeader")}
-                  </th>
 
-                  <th scope="col" className="govie-table__header">
-                    {tTable("actionsHeader")}
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="govie-table__body">
-                {users?.map((foundUser) => (
-                  <tr className="govie-table__row" key={foundUser?.id}>
-                    <th className="govie-table__header govie-table__header--vertical-centralized govie-body-s">
-                      {foundUser?.firstname} {foundUser?.lastname}
-                    </th>
-
-                    <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-                      <form>
-                        <input
-                          type="hidden"
-                          name="recipient"
-                          value={foundUser?.id}
-                        />
-
-                        <div style={{ display: "flex", alignItems: "center" }}>
-                          <button className={`${styles.tableActionButton}`}>
-                            {tTable("shareButton")}
-                          </button>
-                        </div>
-                      </form>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <SearchResultsTable users={users} shareFile={shareFileWithId} />
 
           {/* Sharing users table */}
-          <div className="govie-form-group">
-            <div className="govie-form-group">
-              <div style={{ margin: "0 0 5px 0" }} className="govie-label--s">
-                {tTable("selectedUsersCaption")}
-              </div>
-              <table className="govie-table">
-                <thead className="govie-table__head">
-                  <tr className="govie-table__row">
-                    <th scope="col" className="govie-table__header">
-                      {tTable("fullNameHeader")}
-                    </th>
-                    <th scope="col" className="govie-table__header">
-                      {tTable("emailHeader")}
-                    </th>
-                    <th scope="col" className="govie-table__header">
-                      {tTable("phoneHeader")}
-                    </th>
-                    <th scope="col" className="govie-table__header">
-                      {tTable("actionsHeader")}
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="govie-table__body">
-                  {/* {addedUsers?.map((foundUser) => (
-                <tr className="govie-table__row" key={foundUser.id}>
-                  <th className="govie-table__header govie-table__header--vertical-centralized govie-body-s">
-                    {foundUser.firstName} {foundUser.lastName}
-                  </th>
-                  <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-                    {foundUser.emailAddress}
-                  </td>
-                  <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-                    {foundUser.phoneNumber}
-                  </td>
-                  <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-                    <form action={removeRecipientAction}>
-                      <input
-                        type="hidden"
-                        name="recipient"
-                        value={foundUser.id}
-                      />
-                      <div style={{ display: "flex", alignItems: "center" }}>
-                        <button className={`${styles.tableActionButton}`}>
-                          {t("searchTable.removeButton")}
-                        </button>
-                      </div>
-                    </form>
-                  </td>
-                </tr>
-              ))} */}
-                </tbody>
-              </table>
-            </div>
-          </div>
+          {file.sharedWith && <SharingTables users={file.sharedWith} />}
 
-          <form action={goBack}>
-            <button
-              type="submit"
-              style={{
-                background: "transparent",
-                border: "none",
-                cursor: "pointer",
-                margin: "unset",
-              }}
-              className="govie-back-link"
-            >
-              {t("backLink")}
-            </button>
-          </form>
+          <div style={{ marginTop: "30px", marginBottom: "30px" }}>
+            <form action={goBack}>
+              <button
+                type="submit"
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  cursor: "pointer",
+                  margin: "unset",
+                }}
+                className="govie-back-link"
+              >
+                {t("backLink")}
+              </button>
+            </form>
+          </div>
         </div>
       </section>
     </NextIntlClientProvider>

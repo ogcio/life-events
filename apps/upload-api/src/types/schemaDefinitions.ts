@@ -35,6 +35,7 @@ export const ResponseMetadata = Type.Object({
   infected: Type.Boolean(),
   infectionDescription: Type.Optional(Type.String()),
   antivirusDbVersion: Type.Optional(Type.String()),
+  sharedWith: Type.Optional(Type.Array(FileOwner)),
 });
 
 export type ResponseMetadataType = Static<typeof ResponseMetadata>;
@@ -59,5 +60,10 @@ export const FileMetadata = Type.Object({
   antivirusDbVersion: Type.Optional(Type.String()),
   organizationId: Type.String(),
 });
+
+export type Sharing = {
+  fileId: string;
+  userId: string;
+};
 
 export type FileMetadataType = Static<typeof FileMetadata>;
