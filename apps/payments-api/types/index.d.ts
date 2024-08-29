@@ -13,6 +13,7 @@ import { ProvidersPlugin } from "../plugins/entities/providers";
 import { CitizenPlugin } from "../plugins/entities/citizen";
 import { TransactionsPlugin } from "../plugins/entities/transactions";
 import { PaymentRequestPlugin } from "../plugins/entities/paymentRequest";
+import { AuditLogPlugin } from "../plugins/auditLog";
 
 declare module "fastify" {
   export interface FastifyInstance<
@@ -45,5 +46,6 @@ declare module "fastify" {
     citizen: CitizenPlugin;
     transactions: TransactionsPlugin;
     paymentRequest: PaymentRequestPlugin;
+    auditLog: AuditLogPlugin;
   }
 }
