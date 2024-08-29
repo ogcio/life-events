@@ -36,7 +36,7 @@ export const paymentsPublicServantScopes = [
 
 const buildLoginUrlWithPostLoginRedirect = () => {
   const currentPath = headers().get("x-url");
-  return `${routeDefinitions.preLogin.path()}?loginUrl=${routeDefinitions.login.path()}&postLoginRedirectUrl=${encodeURIComponent(currentPath)}`;
+  return `${routeDefinitions.preLogin.path()}?loginUrl=${routeDefinitions.login.path()}&postLoginRedirectUrl=${encodeURIComponent(currentPath ?? "")}`;
 };
 
 export const getAuthenticationContextConfig =
