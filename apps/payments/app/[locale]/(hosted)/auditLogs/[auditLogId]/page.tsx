@@ -68,5 +68,3 @@ export default async function ({
     </PageWrapper>
   );
 }
-
-// {"auditLogId":"32c6a1cc-cfc8-4b7d-a9c6-5f3a2a503c19","createdAt":"2024-08-29T14:35:56.733Z","eventType":"provider.create","title":"Provider created","metadata":{"providerId":"68c46c8d-f93c-4dd6-9cd3-e25d402e45d2"},"userId":"fm58vll8gylp","organizationId":"ogcio"}
