@@ -50,7 +50,7 @@ export default async (props: MessageCreateProps) => {
 
   const template =
     templateResult?.contents.find(
-      (x) => x.lang === headers().get("x-next-intl-locale"),
+      (x) => x.language === headers().get("x-next-intl-locale"),
     ) || templateResult?.contents.at(0);
 
   return (
