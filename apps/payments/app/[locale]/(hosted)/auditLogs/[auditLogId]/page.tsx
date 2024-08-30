@@ -7,11 +7,12 @@ import { PageWrapper } from "../../PageWrapper";
 
 async function getAuditLogDetails(auditLogId: string) {
   const paymentsApi = await AuthenticationFactory.getPaymentsClient();
-  const { data, error } = await paymentsApi.getAuditLogDetails(auditLogId);
+  const { data: result, error } =
+    await paymentsApi.getAuditLogDetails(auditLogId);
 
   if (error) errorHandler(error);
 
-  return data;
+  return result?.data;
 }
 
 export default async function ({

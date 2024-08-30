@@ -1393,14 +1393,41 @@ export interface paths {
         200: {
           content: {
             "application/json": {
-              auditLogId: string;
-              createdAt: string;
-              eventType: string;
-              title: string;
-              userId?: string;
-              organizationId?: string;
-              metadata: {
-                [key: string]: unknown;
+              data: {
+                auditLogId: string;
+                createdAt: string;
+                eventType: string;
+                title: string;
+                userId?: string;
+                organizationId?: string;
+                metadata: {
+                  [key: string]: unknown;
+                };
+              };
+              metadata?: {
+                links?: {
+                  self: {
+                    href?: string;
+                  };
+                  next?: {
+                    href?: string;
+                  };
+                  prev?: {
+                    href?: string;
+                  };
+                  first: {
+                    href?: string;
+                  };
+                  last: {
+                    href?: string;
+                  };
+                  pages: {
+                    [key: string]: {
+                      href?: string;
+                    };
+                  };
+                };
+                totalCount?: number;
               };
             };
           };

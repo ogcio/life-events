@@ -2711,27 +2711,77 @@ paths:
               schema:
                 type: object
                 properties:
-                  auditLogId:
-                    type: string
-                  createdAt:
-                    type: string
-                  eventType:
-                    type: string
-                  title:
-                    type: string
-                  userId:
-                    type: string
-                  organizationId:
-                    type: string
+                  data:
+                    type: object
+                    properties:
+                      auditLogId:
+                        type: string
+                      createdAt:
+                        type: string
+                      eventType:
+                        type: string
+                      title:
+                        type: string
+                      userId:
+                        type: string
+                      organizationId:
+                        type: string
+                      metadata:
+                        type: object
+                        additionalProperties: {}
+                    required:
+                      - auditLogId
+                      - createdAt
+                      - eventType
+                      - title
+                      - metadata
                   metadata:
                     type: object
-                    additionalProperties: {}
+                    properties:
+                      links:
+                        type: object
+                        properties:
+                          self:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          next:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          prev:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          first:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          last:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          pages:
+                            type: object
+                            additionalProperties:
+                              type: object
+                              properties:
+                                href:
+                                  type: string
+                        required:
+                          - self
+                          - first
+                          - last
+                          - pages
+                      totalCount:
+                        type: number
                 required:
-                  - auditLogId
-                  - createdAt
-                  - eventType
-                  - title
-                  - metadata
+                  - data
         "401":
           description: Default Response
           content:

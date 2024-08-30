@@ -72,7 +72,7 @@ export default async function auditLogs(app: FastifyInstance) {
   );
 
   app.get<{
-    Reply: AuditLogEventDetailsDO | Error;
+    Reply: GenericResponseType<AuditLogEventDetailsDO> | Error;
     Params: ParamsWithAuditLogId;
   }>(
     "/:auditLogId",
@@ -82,7 +82,7 @@ export default async function auditLogs(app: FastifyInstance) {
       schema: {
         tags: TAGS_AUDIT_LOGS,
         response: {
-          200: AuditLogEventDetails,
+          200: GenericResponse(AuditLogEventDetails),
           401: HttpError,
           500: HttpError,
         },
@@ -102,7 +102,7 @@ export default async function auditLogs(app: FastifyInstance) {
         throw app.httpErrors.unauthorized("Unauthorized!");
       }
 
-      reply.send(eventDetails);
+      reply.send(formatAPIResponse(eventDetails));
     },
   );
 }
