@@ -1613,14 +1613,17 @@ paths:
                           items:
                             type: object
                             properties:
-                              lang:
-                                description: Language key for template content
+                              language:
                                 type: string
+                                enum:
+                                  - en
+                                  - ga
+                                description: Template content language
                               templateName:
                                 description: Template name for the related language
                                 type: string
                             required:
-                              - lang
+                              - language
                               - templateName
                       required:
                         - id
