@@ -1449,6 +1449,86 @@ export interface paths {
       };
     };
   };
+  "/api/v1/auditLogs/{auditLogId}": {
+    get: {
+      parameters: {
+        path: {
+          auditLogId: string;
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              data: {
+                auditLogId: string;
+                createdAt: string;
+                eventType: string;
+                title: string;
+                userId?: string;
+                organizationId?: string;
+                metadata: {
+                  [key: string]: unknown;
+                };
+              };
+              metadata?: {
+                links?: {
+                  self: {
+                    href?: string;
+                  };
+                  next?: {
+                    href?: string;
+                  };
+                  prev?: {
+                    href?: string;
+                  };
+                  first: {
+                    href?: string;
+                  };
+                  last: {
+                    href?: string;
+                  };
+                  pages: {
+                    [key: string]: {
+                      href?: string;
+                    };
+                  };
+                };
+                totalCount?: number;
+              };
+            };
+          };
+        };
+        /** @description Default Response */
+        401: {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              requestId: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        500: {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              requestId: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
+      };
+    };
+  };
 }
 
 export type webhooks = Record<string, never>;

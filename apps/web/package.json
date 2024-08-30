@@ -6,6 +6,8 @@
     "build": "next build",
     "start": "next start -p 3000",
     "test:e2e": "playwright test",
+    "test:smoke:e2e": "echo \"Error: no test specified\" && exit 0",
+    "test:regression:e2e": "echo \"Error: no test specified\" && exit 0",
     "test:lighthouse": "node performance-tests/lighthouse/main.mjs",
     "migrate": "db-migrate up"
   },
