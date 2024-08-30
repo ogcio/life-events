@@ -1,12 +1,4 @@
-export enum AuditLogEventType {
-  TRANSACTION_CREATE = "transaction.create",
-}
-
-export const AuditLogEventTitles: Record<string, string> & {
-  [key in AuditLogEventType]: string;
-} = {
-  [AuditLogEventType.TRANSACTION_CREATE]: "Transaction created",
-};
+import { AuditLogEventType } from "./auditLogEvents";
 
 export type AuditLogEvent = {
   auditLogId: string;
@@ -14,10 +6,21 @@ export type AuditLogEvent = {
   eventType: AuditLogEventType;
   userId?: string;
   organizationId?: string;
+};
+
+export type AuditLogEventDetails = AuditLogEvent & {
   metadata: Record<string, unknown>;
 };
 
+export type AuditLogEventDO = AuditLogEvent & {
+  title: string;
+};
+
+export type AuditLogEventDetailsDO = AuditLogEventDetails & {
+  title: string;
+};
+
 export type CreateAuditLog = Pick<
-  AuditLogEvent,
+  AuditLogEventDetails,
   "eventType" | "userId" | "organizationId" | "metadata"
 >;

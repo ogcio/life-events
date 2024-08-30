@@ -26,7 +26,6 @@ script:pre-request {
   const uuid = require("uuid")
   const next = uuid.v4()
   bru.setVar("randomStringSms", next)
-  console.log("potatis arne", next)
   req.setBody({
     "type":"sms",
     "isPrimary":true,

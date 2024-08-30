@@ -1,6 +1,7 @@
 import { FastifyInstance } from "fastify";
 import { Permissions } from "../../types/permissions.js";
 import {
+  FileMetadata,
   FileMetadataType,
   FileOwnerType,
   getGenericResponseSchema,
