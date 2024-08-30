@@ -16,7 +16,7 @@ paths:
       tags:
         - Files
       responses:
-        "200":
+        "201":
           description: Default Response
           content:
             application/json:
@@ -26,10 +26,10 @@ paths:
                   data:
                     type: object
                     properties:
-                      message:
+                      id:
                         type: string
                     required:
-                      - message
+                      - id
                 required:
                   - data
         4XX:
@@ -512,14 +512,23 @@ paths:
                 - userId
         required: true
       responses:
-        "200":
+        "201":
           description: Default Response
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  data: {}
+                  data:
+                    type: object
+                    properties:
+                      fileId:
+                        type: string
+                      userId:
+                        type: string
+                    required:
+                      - fileId
+                      - userId
                 required:
                   - data
         4XX:
@@ -586,91 +595,6 @@ paths:
                 - userId
         required: true
       responses:
-        "200":
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: object
-                    properties:
-                      fileName:
-                        type: string
-                      id:
-                        type: string
-                      key:
-                        type: string
-                      owner:
-                        type: object
-                        properties:
-                          id:
-                            type: string
-                          firstName:
-                            type: string
-                          lastName:
-                            type: string
-                          ppsn:
-                            type: string
-                          email:
-                            type: string
-                          phone:
-                            type: string
-                        required:
-                          - id
-                          - firstName
-                          - lastName
-                          - ppsn
-                      fileSize:
-                        type: number
-                      mimeType:
-                        type: string
-                      createdAt:
-                        type: string
-                      lastScan:
-                        type: string
-                      deleted:
-                        default: false
-                        type: boolean
-                      infected:
-                        type: boolean
-                      infectionDescription:
-                        type: string
-                      antivirusDbVersion:
-                        type: string
-                      sharedWith:
-                        type: array
-                        items:
-                          type: object
-                          properties:
-                            id:
-                              type: string
-                            firstName:
-                              type: string
-                            lastName:
-                              type: string
-                            ppsn:
-                              type: string
-                            email:
-                              type: string
-                            phone:
-                              type: string
-                          required:
-                            - id
-                            - firstName
-                            - lastName
-                            - ppsn
-                    required:
-                      - fileName
-                      - key
-                      - fileSize
-                      - mimeType
-                      - createdAt
-                      - lastScan
-                      - infected
-                required:
-                  - data
         4XX:
           description: Default Response
           content:

@@ -29,7 +29,11 @@
   },
   "File": {
     "title": "File details",
-    "Errors": { "retrievalError": "There was an error retrieving file" },
+    "Errors": {
+      "retrievalError": "There was an error retrieving file",
+      "share-error": "There was an error trying to share the file",
+      "remove-share-error": "There was an error trying to remove file sharing"
+    },
     "shareFileCaption": "Share file",
     "table": {
       "searchResultsCaption": "Search results",
