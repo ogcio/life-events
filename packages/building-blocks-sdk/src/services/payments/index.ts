@@ -310,8 +310,4 @@ export class Payments {
       }),
     );
   }
-
-  async getAuditLogEventTypes() {
-    return formatQueryResult(this.client.GET("/api/v1/auditLogs/event-types"));
-  }
 }

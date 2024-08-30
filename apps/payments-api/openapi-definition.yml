@@ -2571,11 +2571,6 @@ paths:
           in: query
           name: limit
           required: false
-        - schema:
-            type: string
-          in: query
-          name: eventType
-          required: false
       responses:
         "200":
           description: Default Response
