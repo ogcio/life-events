@@ -6,7 +6,6 @@ import { getCommonLogger } from "nextjs-logging-wrapper";
 
 export default async (fileId: string, prevState, formData) => {
   const userId = formData.get("userId");
-  console.log({ fileId, userId });
 
   const uploadSdk = await AuthenticationFactory.getUploadClient();
 
