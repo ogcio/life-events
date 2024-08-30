@@ -54,9 +54,7 @@ export default async function providers(app: FastifyInstance) {
         eventType: AuditLogEventType.PROVIDER_CREATE,
         userId,
         organizationId,
-        metadata: {
-          providerId: result.id,
-        },
+        metadata: {}
       });
 
       reply.send(result);
@@ -141,6 +139,7 @@ export default async function providers(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
+      const userId = request.userData?.userId;
       const organizationId = request.userData?.organizationId;
       const { providerId } = request.params;
 
@@ -153,6 +152,13 @@ export default async function providers(app: FastifyInstance) {
         request.body,
         organizationId,
       );
+
+      app.auditLog.createEvent({
+        eventType: AuditLogEventType.PROVIDER_UPDATE,
+        userId,
+        organizationId,
+        metadata: {},
+      });
 
       reply.send({ ok: true });
     },
