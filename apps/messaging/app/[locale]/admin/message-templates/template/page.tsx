@@ -452,8 +452,8 @@ export default async (props: {
     const { data, error } = await client.getTemplate(props.searchParams.id);
     if (data?.contents) {
       for (const item of data.contents) {
-        contents[item.lang] = item;
-        contents.langs.push(item.lang);
+        contents[item.language] = item;
+        contents.langs.push(item.language);
       }
     }
 
