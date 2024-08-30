@@ -1,3 +1,6 @@
 node_modules
 .env
 .tap
+
+e2e/test-results/*
+!e2e/test-results/

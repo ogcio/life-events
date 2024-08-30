@@ -6,7 +6,8 @@
   "scripts": {
     "test": "TAP_RCFILE=tap.yml tap",
     "test:e2e" : "cd ./e2e && bru run --env local",
-    "test:dev" : "cd ./e2e && bru run --env dev",
+    "test:smoke:e2e": "cd ./e2e && bru run --env dev --output ./test-results/results.xml --format junit",
+    "test:regression:e2e": "cd ./e2e && bru run --env dev --output ./test-results/results.xml --format junit",
     "start": "node dist/index.js",
     "dev": "nodemon | pino-pretty",
     "lint": "eslint . --ext .ts",

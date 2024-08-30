@@ -6,7 +6,8 @@
   "scripts": {
     "test": "TAP_RCFILE=tap.yml tap",
     "test:e2e": "cd ./e2e && bru run --env local",
-    "test:dev": "cd ./e2e && bru run --env dev",
+    "test:smoke:e2e": "cd ./e2e && bru run --env dev --output ./test-results/results.xml --format junit",
+    "test:regression:e2e": "cd ./e2e && bru run --env dev --output ./test-results/results.xml --format junit",
     "dev": "node --watch --import tsx src/index.ts | pino-pretty",
     "lint": "eslint . --ext .ts",
     "generate-ts-client": "npx openapi-typescript openapi-definition.yml -o ../../packages/building-blocks-sdk/src/services/messaging/schema.d.ts",
@@ -30,6 +31,7 @@
     "@sinclair/typebox": "^0.33.0",
     "api-auth": "*",
     "auth": "*",
+    "building-blocks-sdk": "*",
     "dotenv": "^16.4.5",
     "error-handler": "*",
     "fast-csv": "^5.0.1",
@@ -38,8 +40,7 @@
     "logging-wrapper": "*",
     "nodemailer": "^6.9.14",
     "pg": "^8.12.0",
-    "shared-errors": "*",
-    "building-blocks-sdk": "*"
+    "shared-errors": "*"
   },
   "devDependencies": {
     "@openapitools/openapi-generator-cli": "^2.13.4",
