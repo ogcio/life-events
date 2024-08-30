@@ -37,6 +37,7 @@
       "fullNameHeader": "Full name",
       "actionsHeader": "Action",
       "shareButton": "Share",
+      "removeButton": "Remove",
 
       "selectedUsersCaption": "Users accessing this file",
       "emailHeader": "Email",

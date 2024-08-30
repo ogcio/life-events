@@ -234,21 +234,13 @@ export default async function routes(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
-      const userId = request.userData?.userId as string;
       const fileId = request.params.id;
 
       if (!fileId) {
         throw new BadRequestError(FILE_DELETE, "File key not provided");
       }
 
-      const organizationId = ensureOrganizationIdIsSet(request, FILE_DELETE);
-
-      const fileData = await getFileMetadataById(
-        app.pg,
-        fileId,
-        userId,
-        organizationId,
-      );
+      const fileData = await getFileMetadataById(app.pg, fileId);
 
       const file = fileData.rows?.[0];
 
@@ -294,17 +286,9 @@ export default async function routes(app: FastifyInstance) {
     async (request, reply) => {
       let response;
 
-      const userId = ensureUserIdIsSet(request, FILE_DOWNLOAD);
-      const organizationId = request.userData?.organizationId;
-
       const fileId = request.params.id;
 
-      const fileData = await getFileMetadataById(
-        app.pg,
-        fileId,
-        userId,
-        organizationId,
-      );
+      const fileData = await getFileMetadataById(app.pg, fileId);
 
       const file = fileData.rows.length > 0 ? fileData.rows[0] : undefined;
 

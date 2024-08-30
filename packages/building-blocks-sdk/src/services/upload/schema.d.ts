@@ -172,6 +172,14 @@ export interface paths {
                 infected: boolean;
                 infectionDescription?: string;
                 antivirusDbVersion?: string;
+                sharedWith?: {
+                  id: string;
+                  firstName: string;
+                  lastName: string;
+                  ppsn: string;
+                  email?: string;
+                  phone?: string;
+                }[];
               }[];
             };
           };
@@ -238,6 +246,137 @@ export interface paths {
                 infected: boolean;
                 infectionDescription?: string;
                 antivirusDbVersion?: string;
+                sharedWith?: {
+                  id: string;
+                  firstName: string;
+                  lastName: string;
+                  ppsn: string;
+                  email?: string;
+                  phone?: string;
+                }[];
+              };
+            };
+          };
+        };
+        /** @description Default Response */
+        "4XX": {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              requestId: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        "5XX": {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              requestId: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  "/api/v1/metadata/share/": {
+    post: {
+      requestBody: {
+        content: {
+          "application/json": {
+            fileId: string;
+            userId: string;
+          };
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              data: unknown;
+            };
+          };
+        };
+        /** @description Default Response */
+        "4XX": {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              requestId: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        "5XX": {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              requestId: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
+      };
+    };
+    delete: {
+      requestBody: {
+        content: {
+          "application/json": {
+            fileId: string;
+            userId: string;
+          };
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              data: {
+                fileName: string;
+                id?: string;
+                key: string;
+                owner?: {
+                  id: string;
+                  firstName: string;
+                  lastName: string;
+                  ppsn: string;
+                  email?: string;
+                  phone?: string;
+                };
+                fileSize: number;
+                mimeType: string;
+                createdAt: string;
+                lastScan: string;
+                /** @default false */
+                deleted?: boolean;
+                infected: boolean;
+                infectionDescription?: string;
+                antivirusDbVersion?: string;
+                sharedWith?: {
+                  id: string;
+                  firstName: string;
+                  lastName: string;
+                  ppsn: string;
+                  email?: string;
+                  phone?: string;
+                }[];
               };
             };
           };
