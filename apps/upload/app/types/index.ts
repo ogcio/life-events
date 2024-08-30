@@ -1,4 +1,4 @@
-type FileOwner = {
+export type FileOwner = {
   id: string;
   firstName: string;
   lastName: string;
@@ -19,4 +19,5 @@ export type FileMetadata = {
   deleted?: boolean;
   infected: boolean;
   infectionDescription?: string;
+  sharedWith?: FileOwner[];
 };

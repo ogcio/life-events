@@ -16,7 +16,7 @@ paths:
       tags:
         - Files
       responses:
-        "200":
+        "201":
           description: Default Response
           content:
             application/json:
@@ -26,10 +26,10 @@ paths:
                   data:
                     type: object
                     properties:
-                      message:
+                      id:
                         type: string
                     required:
-                      - message
+                      - id
                 required:
                   - data
         4XX:
@@ -273,6 +273,28 @@ paths:
                           type: string
                         antivirusDbVersion:
                           type: string
+                        sharedWith:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              id:
+                                type: string
+                              firstName:
+                                type: string
+                              lastName:
+                                type: string
+                              ppsn:
+                                type: string
+                              email:
+                                type: string
+                              phone:
+                                type: string
+                            required:
+                              - id
+                              - firstName
+                              - lastName
+                              - ppsn
                       required:
                         - fileName
                         - key
@@ -393,6 +415,28 @@ paths:
                         type: string
                       antivirusDbVersion:
                         type: string
+                      sharedWith:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            firstName:
+                              type: string
+                            lastName:
+                              type: string
+                            ppsn:
+                              type: string
+                            email:
+                              type: string
+                            phone:
+                              type: string
+                          required:
+                            - id
+                            - firstName
+                            - lastName
+                            - ppsn
                     required:
                       - fileName
                       - key
@@ -403,6 +447,154 @@ paths:
                       - infected
                 required:
                   - data
+        4XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  requestId:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - requestId
+                  - name
+        5XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  requestId:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - requestId
+                  - name
+  /api/v1/metadata/share/:
+    post:
+      tags:
+        - Metadata share
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                fileId:
+                  type: string
+                userId:
+                  type: string
+              required:
+                - fileId
+                - userId
+        required: true
+      responses:
+        "201":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      fileId:
+                        type: string
+                      userId:
+                        type: string
+                    required:
+                      - fileId
+                      - userId
+                required:
+                  - data
+        4XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  requestId:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - requestId
+                  - name
+        5XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  requestId:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - requestId
+                  - name
+    delete:
+      tags:
+        - Metadata share
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                fileId:
+                  type: string
+                userId:
+                  type: string
+              required:
+                - fileId
+                - userId
+        required: true
+      responses:
         4XX:
           description: Default Response
           content:

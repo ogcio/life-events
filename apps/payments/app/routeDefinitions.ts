@@ -116,4 +116,10 @@ export const routeDefinitions = {
       return `/${routeDefinitions.signOut.slug}`;
     },
   },
+  auditLogs: {
+    slug: "auditLogs",
+    path() {
+      return `/${routeDefinitions.auditLogs.slug}`;
+    },
+  },
 };

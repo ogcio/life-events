@@ -4,11 +4,16 @@ import styles from "./FileTable.module.scss";
 import TableRow from "./FileTableRow/FileTableRow";
 
 type FileTableProps = {
+  isPublicServant: boolean;
   files: FileMetadata[];
   deleteFile: (formData: FormData) => Promise<{ error: string }>;
 };
 
-export default async ({ deleteFile, files }: FileTableProps) => {
+export default async ({
+  deleteFile,
+  files,
+  isPublicServant,
+}: FileTableProps) => {
   const tTable = await getTranslations("Upload.table");
   return (
     <table className="govie-table">
@@ -26,14 +31,21 @@ export default async ({ deleteFile, files }: FileTableProps) => {
           <th scope="col" className="govie-table__header">
             {tTable("header.uploadedBy")}
           </th>
-          <th scope="col" className="govie-table__header">
-            {tTable("header.action")}
-          </th>
+          {isPublicServant && (
+            <th scope="col" className="govie-table__header">
+              {tTable("header.action")}
+            </th>
+          )}
         </tr>
       </thead>
       <tbody className="govie-table__body">
         {files.map((file) => (
-          <TableRow key={file.id} file={file} deleteFile={deleteFile} />
+          <TableRow
+            key={file.id}
+            file={file}
+            deleteFile={deleteFile}
+            isPublicServant={isPublicServant}
+          />
         ))}
       </tbody>
     </table>

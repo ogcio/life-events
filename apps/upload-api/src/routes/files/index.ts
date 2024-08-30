@@ -26,10 +26,6 @@ import insertFileMetadata from "../utils/insertFileMetadata.js";
 import updateFileMetadata from "../utils/updateFileMetadata.js";
 import getDbVersion from "../utils/getDbVersion.js";
 import { Permissions } from "../../types/permissions.js";
-import {
-  ensureOrganizationIdIsSet,
-  ensureUserIdIsSet,
-} from "../../utils/authentication-factory.js";
 
 const FILE_UPLOAD = "FILE_UPLOAD";
 const FILE_DELETE = "FILE_DELETE";
@@ -135,7 +131,7 @@ const scanAndUpload = async (app: FastifyInstance, request: FastifyRequest) => {
       const { Key } = resData;
       const dbVersion = await getDbVersionPromise;
 
-      await insertFileMetadata(app.pg, {
+      const data = await insertFileMetadata(app.pg, {
         createdAt: new Date(),
         lastScan: new Date(),
         fileSize: length,
@@ -148,7 +144,7 @@ const scanAndUpload = async (app: FastifyInstance, request: FastifyRequest) => {
         organizationId,
         antivirusDbVersion: dbVersion,
       });
-      eventEmitter.emit("fileUploaded");
+      eventEmitter.emit("fileUploaded", data.rows[0].id);
     })
     .catch((err) => {
       eventEmitter.emit("error", err);
@@ -166,9 +162,9 @@ const scanAndUpload = async (app: FastifyInstance, request: FastifyRequest) => {
     },
   );
 
-  return new Promise<void>((resolve, reject) => {
-    eventEmitter.once("fileUploaded", () => {
-      resolve();
+  return new Promise<string>((resolve, reject) => {
+    eventEmitter.once("fileUploaded", (id: string) => {
+      resolve(id);
     });
 
     eventEmitter.once("fileTooLarge", () => {
@@ -201,18 +197,16 @@ export default async function routes(app: FastifyInstance) {
         consumes: ["multipart/form-data"],
         tags: [API_DOCS_TAG],
         response: {
-          200: getGenericResponseSchema(
-            Type.Object({ message: Type.String() }),
-          ),
+          201: getGenericResponseSchema(Type.Object({ id: Type.String() })),
           "4xx": HttpError,
           "5xx": HttpError,
         },
       },
     },
     async (request, reply) => {
-      await scanAndUpload(app, request);
-
-      reply.send({ data: { message: "File uploaded successfully" } });
+      const fileId = await scanAndUpload(app, request);
+      reply.status(201);
+      reply.send({ data: { id: fileId } });
     },
   );
 
@@ -234,21 +228,13 @@ export default async function routes(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
-      const userId = request.userData?.userId as string;
       const fileId = request.params.id;
 
       if (!fileId) {
         throw new BadRequestError(FILE_DELETE, "File key not provided");
       }
 
-      const organizationId = ensureOrganizationIdIsSet(request, FILE_DELETE);
-
-      const fileData = await getFileMetadataById(
-        app.pg,
-        fileId,
-        userId,
-        organizationId,
-      );
+      const fileData = await getFileMetadataById(app.pg, fileId);
 
       const file = fileData.rows?.[0];
 
@@ -294,17 +280,9 @@ export default async function routes(app: FastifyInstance) {
     async (request, reply) => {
       let response;
 
-      const userId = ensureUserIdIsSet(request, FILE_DOWNLOAD);
-      const organizationId = request.userData?.organizationId;
-
       const fileId = request.params.id;
 
-      const fileData = await getFileMetadataById(
-        app.pg,
-        fileId,
-        userId,
-        organizationId,
-      );
+      const fileData = await getFileMetadataById(app.pg, fileId);
 
       const file = fileData.rows.length > 0 ? fileData.rows[0] : undefined;
 

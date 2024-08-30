@@ -18,11 +18,11 @@ export interface paths {
     post: {
       responses: {
         /** @description Default Response */
-        200: {
+        201: {
           content: {
             "application/json": {
               data: {
-                message: string;
+                id: string;
               };
             };
           };
@@ -172,6 +172,14 @@ export interface paths {
                 infected: boolean;
                 infectionDescription?: string;
                 antivirusDbVersion?: string;
+                sharedWith?: {
+                  id: string;
+                  firstName: string;
+                  lastName: string;
+                  ppsn: string;
+                  email?: string;
+                  phone?: string;
+                }[];
               }[];
             };
           };
@@ -238,10 +246,107 @@ export interface paths {
                 infected: boolean;
                 infectionDescription?: string;
                 antivirusDbVersion?: string;
+                sharedWith?: {
+                  id: string;
+                  firstName: string;
+                  lastName: string;
+                  ppsn: string;
+                  email?: string;
+                  phone?: string;
+                }[];
               };
             };
           };
         };
+        /** @description Default Response */
+        "4XX": {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              requestId: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        "5XX": {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              requestId: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  "/api/v1/metadata/share/": {
+    post: {
+      requestBody: {
+        content: {
+          "application/json": {
+            fileId: string;
+            userId: string;
+          };
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        201: {
+          content: {
+            "application/json": {
+              data: {
+                fileId: string;
+                userId: string;
+              };
+            };
+          };
+        };
+        /** @description Default Response */
+        "4XX": {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              requestId: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        "5XX": {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              requestId: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
+      };
+    };
+    delete: {
+      requestBody: {
+        content: {
+          "application/json": {
+            fileId: string;
+            userId: string;
+          };
+        };
+      };
+      responses: {
         /** @description Default Response */
         "4XX": {
           content: {

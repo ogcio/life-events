@@ -32,4 +32,19 @@ const getOrganizationFiles = (
   return client.query<FileMetadataType>(query, [organizationId, ...toExclude]);
 };
 
-export { getOwnedFiles, getOrganizationFiles };
+const getSharedFiles = (
+  client: PoolClient,
+  userId: string,
+  toExclude: string[],
+) => {
+  let query = `${baseQuery}, files_users WHERE files_users.user_id = $1`;
+
+  if (toExclude.length) {
+    let i = 2;
+    query = `${query} AND id NOT IN (${toExclude.map(() => `$${i++}`).join(", ")})`;
+  }
+
+  return client.query<FileMetadataType>(query, [userId, ...toExclude]);
+};
+
+export { getOwnedFiles, getOrganizationFiles, getSharedFiles };
