@@ -19,18 +19,18 @@ assert {
   res.body.data: isDefined
   res.body.data.contents: length 2
   res.body.data.contents[0].templateName: eq A {{randomTemplateName}}
-  res.body.data.contents[0].lang: eq en
+  res.body.data.contents[0].language: eq en
   res.body.data.contents[0].subject: eq update subj A \{{var1}}
   res.body.data.contents[0].excerpt: eq update expt A \{{var2en}} \{{var2en2}}
   res.body.data.contents[0].plainText: eq update pt A
   res.body.data.contents[0].richText: eq update rt A
   res.body.data.contents[1].templateName: eq B {{randomTemplateName}}
-  res.body.data.contents[1].lang: eq ga
+  res.body.data.contents[1].language: eq ga
   res.body.data.contents[1].subject: eq update subj B \{{var1}}
   res.body.data.contents[1].excerpt: eq update expt B \{{var2ga}}
   res.body.data.contents[1].plainText: eq update pt B
   res.body.data.contents[1].richText: eq update rt B
-  res.body.data.fields: length 4 
+  res.body.data.fields: length 4
   res.body.data.fields[0].fieldName: eq var1
   res.body.data.fields[1].fieldName: eq var2en
   res.body.data.fields[2].fieldName: eq var2ga
