@@ -1,4 +1,15 @@
 {
+  "AuditLogs": {
+    "title": "Audit Logs",
+    "emptyListTitle": "Nothing to show...",
+    "emptyListDescription": "There are no events yet.",
+    "table": {
+      "eventType": "Event type",
+      "creationDate": "Creation date",
+      "user": "User",
+      "details": "Details"
+    }
+  },
   "Common": {
     "notFound": "Payment request not found",
     "edit": "Edit",
@@ -64,6 +75,7 @@
     "payments": "Payments",
     "paymentRequests": "Payment requests",
     "providers": "Providers",
+    "auditLogs": "Audit logs",
     "logout": "Logout",
     "loading": "Loading..."
   },

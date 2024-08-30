@@ -280,4 +280,20 @@ export class Payments {
   async testPublicServantAuth() {
     return formatQueryResult(this.client.GET("/api/v1/test/pub-ser", {}));
   }
+
+  /**
+   * AUDIT LOGS
+   */
+
+  async getAuditLogEvents(
+    query: paths["/api/v1/auditLogs/"]["get"]["parameters"]["query"],
+  ) {
+    return formatQueryResult(
+      this.client.GET("/api/v1/auditLogs/", {
+        params: {
+          query,
+        },
+      }),
+    );
+  }
 }

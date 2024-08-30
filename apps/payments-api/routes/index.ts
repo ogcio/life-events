@@ -5,6 +5,7 @@ import transactions from "./transactions";
 import citizen from "./citizen";
 import realex from "./realex";
 import authTest from "./authTest";
+import auditLogs from "./auditLogs";
 
 export default async function routes(app: FastifyInstance) {
   app.register(providers, { prefix: "/providers" });
@@ -15,4 +16,6 @@ export default async function routes(app: FastifyInstance) {
 
   // API for testing purposes on authorization
   app.register(authTest, { prefix: "/test" });
+
+  app.register(auditLogs, { prefix: "/auditLogs" });
 }
