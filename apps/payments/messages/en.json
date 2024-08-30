@@ -8,6 +8,11 @@
       "creationDate": "Creation date",
       "user": "User",
       "details": "Details"
+    },
+    "filter": {
+      "label": "Filter by event type",
+      "action": "Filter",
+      "allEventsOption": "All"
     }
   },
   "Common": {

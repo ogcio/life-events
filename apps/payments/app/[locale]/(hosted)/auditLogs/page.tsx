@@ -5,8 +5,6 @@ import { EmptyStatus } from "../../../components/EmptyStatus";
 import {
   buildPaginationLinks,
   errorHandler,
-  formatCurrency,
-  mapTransactionStatusColorClassName,
   pageToOffset,
   PAGINATION_LIMIT_DEFAULT,
   PAGINATION_PAGE_DEFAULT,
@@ -21,12 +19,12 @@ type Props = {
   params: {
     locale: string;
   };
-  searchParams: { page?: string; limit?: string };
+  searchParams: { page?: string; limit?: string; eventType?: string };
 };
 
 export default async function ({
   params: { locale },
-  searchParams: { page, limit },
+  searchParams: { page, limit, eventType },
 }: Props) {
   const t = await getTranslations("AuditLogs");
   const paymentsApi = await AuthenticationFactory.getPaymentsClient();
@@ -34,13 +32,14 @@ export default async function ({
   const currentPage = page ? parseInt(page) : PAGINATION_PAGE_DEFAULT;
   const pageLimit = limit ? parseInt(limit) : PAGINATION_LIMIT_DEFAULT;
 
-  const pagination = {
+  const params = {
     offset: pageToOffset(currentPage, pageLimit),
     limit: pageLimit,
+    eventType,
   };
 
   const { data: auditLogsResponse, error } =
-    await paymentsApi.getAuditLogEvents(pagination);
+    await paymentsApi.getAuditLogEvents(params);
 
   const errors = errorHandler(error);
 
@@ -48,8 +47,33 @@ export default async function ({
     return redirect("/error", RedirectType.replace);
   }
 
+  const { data: eventTypesResponse } =
+    await paymentsApi.getAuditLogEventTypes();
+  const eventTypes = eventTypesResponse?.data ?? {};
+
   const url = `/${locale}/${routeDefinitions.auditLogs.path()}`;
   const links = buildPaginationLinks(url, auditLogsResponse?.metadata?.links);
+
+  const setFilterParam = async (formData: FormData) => {
+    "use server";
+    const queryItems: Array<string> = [];
+
+    if (page) {
+      queryItems.push(`page=${page}`);
+    }
+
+    if (limit) {
+      queryItems.push(`limit=${limit}`);
+    }
+
+    const selectedEventType = formData.get("eventType");
+
+    if (selectedEventType) {
+      queryItems.push(`eventType=${selectedEventType}`);
+    }
+
+    redirect(`?${queryItems.join("&")}`);
+  };
 
   return (
     <PageWrapper locale={locale} disableOrgSelector={true}>
@@ -60,6 +84,45 @@ export default async function ({
           }}
         >
           <h1 className="govie-heading-m">{t("title")}</h1>
+
+          <form action={setFilterParam}>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "end",
+                gap: "12px",
+              }}
+            >
+              <div className="govie-form-group">
+                <label htmlFor="event-type" className="govie-label--s">
+                  {t("filter.label")}
+                </label>
+                <br />
+                <select
+                  id="event-type"
+                  name="eventType"
+                  className="govie-select"
+                  defaultValue={eventType ?? ""}
+                  style={{ width: "150px" }}
+                >
+                  <option value={""}>{t("filter.allEventsOption")}</option>
+                  {Object.entries(eventTypes).map(([type, title]) => (
+                    <option key={type} value={type}>
+                      {title}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <button
+                type="submit"
+                data-module="govie-button"
+                className="govie-button govie-button--medium"
+              >
+                {t("filter.action")}
+              </button>
+            </div>
+          </form>
 
           {auditLogsResponse?.data.length === 0 ? (
             <EmptyStatus

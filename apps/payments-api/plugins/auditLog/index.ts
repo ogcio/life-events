@@ -5,7 +5,12 @@ import {
 } from "fastify";
 import fp from "fastify-plugin";
 import { AuditLogRepo } from "./repo";
-import { AuditLogEvent, AuditLogEventDO, CreateAuditLog } from "./types";
+import {
+  AuditLogEvent,
+  AuditLogEventDO,
+  AuditLogEventsFilters,
+  CreateAuditLog,
+} from "./types";
 import { PaginationParams } from "../../types/pagination";
 import { AuditLogEventTitles, AuditLogEventType } from "./auditLogEvents";
 
@@ -43,12 +48,13 @@ const buildGetEvents =
   (repo: AuditLogRepo, log: FastifyBaseLogger) =>
   async (
     organizationId: string,
+    filters: AuditLogEventsFilters,
     pagination: PaginationParams,
   ): Promise<AuditLogEvent[]> => {
     let result;
 
     try {
-      result = await repo.getEvents(organizationId, pagination);
+      result = await repo.getEvents(organizationId, filters, pagination);
     } catch (err) {
       log.error((err as Error).message);
     }
@@ -67,11 +73,14 @@ const buildGetEvents =
 
 const buildGetEventsTotalCount =
   (repo: AuditLogRepo, log: FastifyBaseLogger) =>
-  async (organizationId: string): Promise<number> => {
+  async (
+    organizationId: string,
+    filters: AuditLogEventsFilters,
+  ): Promise<number> => {
     let result;
 
     try {
-      result = await repo.getEventsTotalCount(organizationId);
+      result = await repo.getEventsTotalCount(organizationId, filters);
     } catch (err) {
       log.error((err as Error).message);
     }
@@ -86,11 +95,18 @@ const buildGetEventsTotalCount =
     return totalCount;
   };
 
+const getEventTypes = (): Record<string, string> => {
+  return {
+    ...AuditLogEventTitles,
+  };
+};
+
 const buildPlugin = (repo: AuditLogRepo, log: FastifyBaseLogger) => {
   return {
     createEvent: buildCreateEvent(repo, log),
     getEvents: buildGetEvents(repo, log),
-    buildGetEventsTotalCount: buildGetEventsTotalCount(repo, log),
+    getEventsTotalCount: buildGetEventsTotalCount(repo, log),
+    getEventTypes,
   };
 };
 

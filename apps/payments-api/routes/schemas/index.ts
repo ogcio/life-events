@@ -389,3 +389,14 @@ export const CreateAuditLog = Type.Pick(AuditLogEventDetails, [
   "organizationId",
   "metadata",
 ]);
+
+export const EventTypes = Type.Record(Type.String(), Type.String());
+
+export const AuditLogEventsFilters = Type.Object({
+  eventType: Type.Optional(Type.String()),
+});
+
+export const AuditLogEventsFiltersQueryString = Type.Composite([
+  PaginationParams,
+  AuditLogEventsFilters,
+]);
