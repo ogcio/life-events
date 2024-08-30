@@ -1,9 +1,10 @@
-"use server";
 import { redirect, RedirectType } from "next/navigation";
+import authenticatedAction from "../../../../../utils/authenticatedAction";
 
 const EMAIL_REGEXP = /^[^<;%]*@[^<;]*$/;
 
-export default async (fileId: string, prevState, formData) => {
+const searchUser = async (fileId: string, prevState, formData) => {
+  "use server";
   const email = formData.get("email");
 
   if (!EMAIL_REGEXP.test(email as string)) {
@@ -15,3 +16,5 @@ export default async (fileId: string, prevState, formData) => {
 
   redirect(`/file/${fileId}?${searchParams.toString()}`, RedirectType.replace);
 };
+
+export default authenticatedAction(searchUser);
