@@ -2552,7 +2552,7 @@ paths:
           description: Default Response
   /api/v1/auditLogs/:
     get:
-      tags:
+      tags: &a5
         - AuditLogs
       parameters:
         - schema:

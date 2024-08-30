@@ -15,7 +15,7 @@ import {
   UpdateProviderDO,
 } from "../../plugins/entities/providers/types";
 import { authPermissions } from "../../types/authPermissions";
-import { AuditLogEventType } from "../../plugins/auditLog";
+import { AuditLogEventType } from "../../plugins/auditLog/auditLogEvents";
 
 const TAGS = ["Providers"];
 
