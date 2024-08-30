@@ -38,7 +38,7 @@ script:pre-request {
             "contents": [
                 {
                   "templateName": `A ${anotherString}`,
-                  "lang": "en",
+                  "language": "en",
                   "subject": "subj A {{var1}}",
                   "excerpt": "expt A {{var2en}}",
                   "plainText": "pt A",
@@ -46,7 +46,7 @@ script:pre-request {
                 },
                 {
                   "templateName": `B ${anotherString}`,
-                  "lang": "ga",
+                  "language": "ga",
                   "subject": "subj B {{var1}}",
                   "excerpt": "expt B {{var2ga}}",
                   "plainText": "pt B",
@@ -55,19 +55,13 @@ script:pre-request {
               ],
             "variables": [
               {
-                "name": "var1",
-                "type": "remove?",
-                "languages": ["en", "ga"]
+                "name": "var1"
               },
               {
-                "name": "var2en",
-                "type": "remove?",
-                "languages": ["en"]
+                "name": "var2en"
               },
               {
-                "name": "var2ga",
-                "type": "remove?",
-                "languages": ["ga"]
+                "name": "var2ga"
               }
             ]
           }
@@ -81,7 +75,7 @@ script:pre-request {
     "contents": [
       {
         "templateName": `A ${anotherString}`,
-        "lang": "en",
+        "language": "en",
         "subject": "subj A {{var1}}",
         "excerpt": "expt A {{var2en}}",
         "plainText": "pt A",
@@ -89,7 +83,7 @@ script:pre-request {
       },
       {
         "templateName": `B ${anotherString}`,
-        "lang": "ga",
+        "language": "ga",
         "subject": "subj B {{var1}}",
         "excerpt": "expt B {{var2ga}}",
         "plainText": "pt B",
@@ -98,19 +92,13 @@ script:pre-request {
     ],
     "variables": [
       {
-        "name": "var1",
-        "type": "remove?",
-        "languages": ["en", "ga"]
+        "name": "var1"
       },
       {
-        "name": "var2en",
-        "type": "remove?",
-        "languages": ["en"]
+        "name": "var2en"
       },
       {
-        "name": "var2ga",
-        "type": "remove?",
-        "languages": ["ga"]
+        "name": "var2ga"
       }
     ]
   })

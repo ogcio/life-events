@@ -38,7 +38,7 @@ paths:
           required: false
           description: Either recipientUserId and organisationId are mandatory
         - schema:
-            pattern: ^[0-9][0-9]*|$
+            pattern: ^[0-9][0-9]*|undefined$
             default: "0"
             type: string
           in: query
@@ -48,7 +48,7 @@ paths:
             defining the initial position within the list
         - schema:
             default: "20"
-            pattern: ^([1-9]|100)|$
+            pattern: ^([1-9]|100)|undefined$
             type: string
           in: query
           name: limit
@@ -610,7 +610,7 @@ paths:
           required: true
           description: Provider types that can be manipulated
         - schema:
-            pattern: ^[0-9][0-9]*|$
+            pattern: ^[0-9][0-9]*|undefined$
             default: "0"
             type: string
           in: query
@@ -620,7 +620,7 @@ paths:
             defining the initial position within the list
         - schema:
             default: "20"
-            pattern: ^([1-9]|100)|$
+            pattern: ^([1-9]|100)|undefined$
             type: string
           in: query
           name: limit
@@ -1574,13 +1574,7 @@ paths:
       description: Returns the providers matching the requested query
       parameters:
         - schema:
-            type: string
-          in: query
-          name: lang
-          required: false
-          description: If set, templates with the requested language are returned
-        - schema:
-            pattern: ^[0-9][0-9]*|$
+            pattern: ^[0-9][0-9]*|undefined$
             default: "0"
             type: string
           in: query
@@ -1590,7 +1584,7 @@ paths:
             defining the initial position within the list
         - schema:
             default: "20"
-            pattern: ^([1-9]|100)|$
+            pattern: ^([1-9]|100)|undefined$
             type: string
           in: query
           name: limit
@@ -1620,7 +1614,7 @@ paths:
                             type: object
                             properties:
                               lang:
-                                description: Selected language
+                                description: Language key for template content
                                 type: string
                               templateName:
                                 description: Template name for the related language
@@ -1781,36 +1775,46 @@ paths:
               type: object
               properties:
                 contents:
+                  minItems: 1
                   type: array
                   items:
                     type: object
                     properties:
                       templateName:
                         description: Template name for the related language
+                        minLength: 1
                         type: string
-                      lang:
-                        description: Current language
+                      language:
                         type: string
+                        enum:
+                          - en
+                          - ga
+                        description: Template content language
                       subject:
                         description: Subject of the template
+                        minLength: 1
                         type: string
                       excerpt:
                         description: Brief description of the template content
+                        minLength: 1
                         type: string
                       plainText:
                         description: Plain text version of the template
+                        minLength: 1
                         type: string
                       richText:
                         description: Rich text version of the template
+                        minLength: 1
                         type: string
                     required:
                       - templateName
-                      - lang
+                      - language
                       - subject
                       - excerpt
                       - plainText
                       - richText
                 variables:
+                  minItems: 1
                   description: List of the variables that are needed to be filled to create a
                     message using this template
                   type: array
@@ -1818,20 +1822,12 @@ paths:
                     type: object
                     properties:
                       name:
+                        minLength: 1
                         type: string
-                      type:
-                        type: string
-                      languages:
-                        type: array
-                        items:
-                          type: string
                     required:
                       - name
-                      - type
-                      - languages
               required:
                 - contents
-                - variables
         required: true
       responses:
         "201":
@@ -1938,6 +1934,7 @@ paths:
       description: Returns the requested template
       parameters:
         - schema:
+            format: uuid
             type: string
           in: path
           name: templateId
@@ -1960,25 +1957,33 @@ paths:
                           properties:
                             templateName:
                               description: Template name for the related language
+                              minLength: 1
                               type: string
-                            lang:
-                              description: Current language
+                            language:
                               type: string
+                              enum:
+                                - en
+                                - ga
+                              description: Template content language
                             subject:
                               description: Subject of the template
+                              minLength: 1
                               type: string
                             excerpt:
                               description: Brief description of the template content
+                              minLength: 1
                               type: string
                             plainText:
                               description: Plain text version of the template
+                              minLength: 1
                               type: string
                             richText:
                               description: Rich text version of the template
+                              minLength: 1
                               type: string
                           required:
                             - templateName
-                            - lang
+                            - language
                             - subject
                             - excerpt
                             - plainText
@@ -1992,11 +1997,8 @@ paths:
                           properties:
                             fieldName:
                               type: string
-                            fieldType:
-                              type: string
                           required:
                             - fieldName
-                            - fieldType
                     required:
                       - contents
                       - fields
@@ -2153,36 +2155,46 @@ paths:
                   format: uuid
                   type: string
                 contents:
+                  minItems: 1
                   type: array
                   items:
                     type: object
                     properties:
                       templateName:
                         description: Template name for the related language
+                        minLength: 1
                         type: string
-                      lang:
-                        description: Current language
+                      language:
                         type: string
+                        enum:
+                          - en
+                          - ga
+                        description: Template content language
                       subject:
                         description: Subject of the template
+                        minLength: 1
                         type: string
                       excerpt:
                         description: Brief description of the template content
+                        minLength: 1
                         type: string
                       plainText:
                         description: Plain text version of the template
+                        minLength: 1
                         type: string
                       richText:
                         description: Rich text version of the template
+                        minLength: 1
                         type: string
                     required:
                       - templateName
-                      - lang
+                      - language
                       - subject
                       - excerpt
                       - plainText
                       - richText
                 variables:
+                  minItems: 1
                   description: List of the variables that are needed to be filled to create a
                     message using this template
                   type: array
@@ -2190,19 +2202,17 @@ paths:
                     type: object
                     properties:
                       name:
-                        type: string
-                      type:
+                        minLength: 1
                         type: string
                     required:
                       - name
-                      - type
               required:
                 - id
                 - contents
-                - variables
         required: true
       parameters:
         - schema:
+            format: uuid
             type: string
           in: path
           name: templateId
@@ -2295,6 +2305,7 @@ paths:
       description: Deletes the requested template
       parameters:
         - schema:
+            format: uuid
             type: string
           in: path
           name: templateId
@@ -4184,7 +4195,7 @@ paths:
           required: false
           description: If true, the endpoint returns active only users
         - schema:
-            pattern: ^[0-9][0-9]*|$
+            pattern: ^[0-9][0-9]*|undefined$
             default: "0"
             type: string
           in: query
@@ -4194,7 +4205,7 @@ paths:
             defining the initial position within the list
         - schema:
             default: "20"
-            pattern: ^([1-9]|100)|$
+            pattern: ^([1-9]|100)|undefined$
             type: string
           in: query
           name: limit
@@ -4934,7 +4945,7 @@ paths:
           description: If set, it filters the events for the messages containing the set
             value in subject
         - schema:
-            pattern: ^[0-9][0-9]*|$
+            pattern: ^[0-9][0-9]*|undefined$
             default: "0"
             type: string
           in: query
@@ -4944,7 +4955,7 @@ paths:
             defining the initial position within the list
         - schema:
             default: "20"
-            pattern: ^([1-9]|100)|$
+            pattern: ^([1-9]|100)|undefined$
             type: string
           in: query
           name: limit
