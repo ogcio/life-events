@@ -120,9 +120,11 @@ export default async function templates(app: FastifyInstance) {
                 }),
                 contents: Type.Array(
                   Type.Object({
-                    lang: Type.String({
-                      description: "Language key for template content",
-                    }),
+                    language: TypeboxStringEnum(
+                      ["en", "ga"],
+                      undefined,
+                      "Template content language",
+                    ),
                     templateName: Type.String({
                       description: "Template name for the related language",
                     }),
@@ -147,7 +149,7 @@ export default async function templates(app: FastifyInstance) {
 
       const result = await app.pg.pool.query<{
         templateMetaId: string;
-        contents: { lang: string; templateName: string }[];
+        contents: { language: string; templateName: string }[];
         count: number;
       }>(
         `
@@ -157,7 +159,7 @@ export default async function templates(app: FastifyInstance) {
         )
         select  
           m.id as "templateMetaId",
-          (select jsonb_agg(jsonb_build_object('templateName', template_name, 'lang', c.lang)) from message_template_contents c where template_meta_id = id) as "contents",
+          (select jsonb_agg(jsonb_build_object('templateName', template_name, 'language', c.lang)) from message_template_contents c where template_meta_id = id) as "contents",
           (select count from meta_count) as "count"
         from message_template_meta m
         where
@@ -170,7 +172,7 @@ export default async function templates(app: FastifyInstance) {
 
       const data: {
         id: string;
-        contents: { templateName: string; lang: string }[];
+        contents: { templateName: string; language: string }[];
       }[] = [];
 
       for (const row of result.rows) {

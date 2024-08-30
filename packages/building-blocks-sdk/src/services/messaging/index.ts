@@ -85,10 +85,8 @@ export class Messaging {
     return { error, data: data?.data };
   }
 
-  async getTemplates(lang?: string) {
-    const { error, data } = await this.client.GET("/api/v1/templates/", {
-      params: { query: { lang } },
-    });
+  async getTemplates() {
+    const { error, data } = await this.client.GET("/api/v1/templates/");
 
     return { error, data: data?.data };
   }
