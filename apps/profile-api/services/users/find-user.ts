@@ -139,20 +139,16 @@ const findByEmailAddress = async (params: {
   findUserParams: FindUserParams;
 }): Promise<FoundUser | undefined> => {
   const userParams = params.findUserParams;
-  if (!userParams.firstname || !userParams.lastname || !userParams.email) {
+  if (!userParams.email) {
     return undefined;
   }
 
-  const query = buildFindQuery([
-    "firstname ILIKE $1",
-    "lastname ILIKE $2",
-    "email ILIKE $3",
-  ]);
+  const query = buildFindQuery(["email ILIKE $1"]);
 
   const found = await runFindQuery({
     client: params.client,
     query,
-    values: [userParams.firstname, userParams.lastname, userParams.email],
+    values: [userParams.email],
   });
 
   return found ? { ...found, matchQuality: "exact" } : undefined;
