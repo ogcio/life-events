@@ -297,6 +297,20 @@ export class Payments {
     );
   }
 
+  async getAuditLogDetails(
+    auditLogId: paths["/api/v1/auditLogs/{auditLogId}"]["get"]["parameters"]["path"]["auditLogId"],
+  ) {
+    return formatQueryResult(
+      this.client.GET("/api/v1/auditLogs/{auditLogId}", {
+        params: {
+          path: {
+            auditLogId,
+          },
+        },
+      }),
+    );
+  }
+
   async getAuditLogEventTypes() {
     return formatQueryResult(this.client.GET("/api/v1/auditLogs/event-types"));
   }

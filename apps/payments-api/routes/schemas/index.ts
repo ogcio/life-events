@@ -390,6 +390,11 @@ export const CreateAuditLog = Type.Pick(AuditLogEventDetails, [
   "metadata",
 ]);
 
+export const ParamsWithAuditLogId = Type.Object({
+  auditLogId: Type.String(),
+});
+export type ParamsWithAuditLogId = Static<typeof ParamsWithAuditLogId>;
+
 export const EventTypes = Type.Record(Type.String(), Type.String());
 
 export const AuditLogEventsFilters = Type.Object({
