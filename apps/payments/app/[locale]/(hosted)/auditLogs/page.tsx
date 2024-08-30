@@ -78,13 +78,8 @@ export default async function ({
   return (
     <PageWrapper locale={locale} disableOrgSelector={true}>
       <div className="table-container">
-        <div
-          style={{
-            width: "100%",
-          }}
-        >
+        <div style={{ width: "100%" }}>
           <h1 className="govie-heading-m">{t("title")}</h1>
-
           <form action={setFilterParam}>
             <div
               style={{

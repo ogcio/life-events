@@ -7,11 +7,13 @@ import fp from "fastify-plugin";
 import { AuditLogRepo } from "./repo";
 import {
   AuditLogEvent,
+  AuditLogEventDetailsDO,
   AuditLogEventDO,
   AuditLogEventsFilters,
   CreateAuditLog,
 } from "./types";
 import { PaginationParams } from "../../types/pagination";
+import { httpErrors } from "@fastify/sensible";
 import { AuditLogEventTitles, AuditLogEventType } from "./auditLogEvents";
 
 export type AuditLogPlugin = Awaited<ReturnType<typeof buildPlugin>>;
@@ -95,6 +97,29 @@ const buildGetEventsTotalCount =
     return totalCount;
   };
 
+const buildGetEventById =
+  (repo: AuditLogRepo, log: FastifyBaseLogger) =>
+  async (
+    eventId: string,
+    organizationId: string,
+  ): Promise<AuditLogEventDetailsDO> => {
+    let result;
+
+    try {
+      result = await repo.getEvent(eventId, organizationId);
+    } catch (err) {
+      log.error((err as Error).message);
+    }
+
+    if (!result?.rowCount) {
+      throw httpErrors.notFound("The requested audit log was not found");
+    }
+
+    const event = result?.rows[0];
+
+    return { ...event, title: getEventTitle(event.eventType) };
+  };
+
 const getEventTypes = (): Record<string, string> => {
   return {
     ...AuditLogEventTitles,
@@ -106,6 +131,7 @@ const buildPlugin = (repo: AuditLogRepo, log: FastifyBaseLogger) => {
     createEvent: buildCreateEvent(repo, log),
     getEvents: buildGetEvents(repo, log),
     getEventsTotalCount: buildGetEventsTotalCount(repo, log),
+    getEventById: buildGetEventById(repo, log),
     getEventTypes,
   };
 };

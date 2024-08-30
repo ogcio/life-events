@@ -1,5 +1,10 @@
 import { PostgresDb } from "@fastify/postgres";
-import { AuditLogEvent, AuditLogEventsFilters, CreateAuditLog } from "./types";
+import {
+  AuditLogEvent,
+  AuditLogEventDetails,
+  AuditLogEventsFilters,
+  CreateAuditLog,
+} from "./types";
 import { QueryResult } from "pg";
 import { PaginationParams } from "../../types/pagination";
 
@@ -82,6 +87,26 @@ export class AuditLogRepo {
         WHERE ${conditions.join(" AND ")}
       `,
       params,
+    );
+  }
+
+  getEvent(
+    eventId: string,
+    organizationId: string,
+  ): Promise<QueryResult<AuditLogEventDetails>> {
+    return this.pg.query(
+      `
+        SELECT
+          audit_log_id as "auditLogId",
+          created_at as "createdAt",
+          event_type as "eventType",
+          user_id as "userId",
+          organization_id as "organizationId",
+          metadata
+        FROM audit_logs
+        WHERE audit_log_id = $1 AND organization_id = $2
+      `,
+      [eventId, organizationId],
     );
   }
 }
