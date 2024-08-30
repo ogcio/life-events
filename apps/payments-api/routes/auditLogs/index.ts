@@ -1,6 +1,12 @@
 import { FastifyInstance } from "fastify";
 import { HttpError } from "../../types/httpErrors";
-import { AuditLogEvents, GenericResponse, PaginationParams } from "../schemas";
+import {
+  AuditLogEventDetails,
+  AuditLogEvents,
+  GenericResponse,
+  PaginationParams,
+  ParamsWithAuditLogId,
+} from "../schemas";
 import {
   PAGINATION_LIMIT_DEFAULT,
   PAGINATION_OFFSET_DEFAULT,
@@ -10,7 +16,10 @@ import { formatAPIResponse } from "../../utils/responseFormatter";
 import { GenericResponse as GenericResponseType } from "../../types/genericResponse";
 import { PaginationParams as PaginationParamsType } from "../../types/pagination";
 import { authPermissions } from "../../types/authPermissions";
-import { AuditLogEvent as AuditLogEventDO } from "../../plugins/auditLog/types";
+import {
+  AuditLogEventDetailsDO,
+  AuditLogEvent as AuditLogEventDO,
+} from "../../plugins/auditLog/types";
 
 const TAGS_AUDIT_LOGS = ["AuditLogs"];
 
@@ -59,6 +68,38 @@ export default async function auditLogs(app: FastifyInstance) {
       };
 
       reply.send(formatAPIResponse(events, paginationDetails));
+    },
+  );
+
+  app.get<{
+    Reply: AuditLogEventDetailsDO | Error;
+    Params: ParamsWithAuditLogId;
+  }>(
+    "/:auditLogId",
+    {
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [authPermissions.TRANSACTION_ALL]), // TODO: CHange this later
+      schema: {
+        tags: TAGS_AUDIT_LOGS,
+        response: {
+          200: AuditLogEventDetails,
+          401: HttpError,
+          500: HttpError,
+        },
+      },
+    },
+    async (request, reply) => {
+      const organizationId = request.userData?.organizationId;
+      const { auditLogId } = request.params;
+
+      if (!organizationId) {
+        throw app.httpErrors.unauthorized("Unauthorized!");
+      }
+
+      // shoudl we check for org id also?
+      const eventDetails = await app.auditLog.getEventById(auditLogId);
+
+      reply.send(eventDetails);
     },
   );
 }

@@ -5,8 +5,14 @@ import {
 } from "fastify";
 import fp from "fastify-plugin";
 import { AuditLogRepo } from "./repo";
-import { AuditLogEvent, AuditLogEventDO, CreateAuditLog } from "./types";
+import {
+  AuditLogEvent,
+  AuditLogEventDetailsDO,
+  AuditLogEventDO,
+  CreateAuditLog,
+} from "./types";
 import { PaginationParams } from "../../types/pagination";
+import { httpErrors } from "@fastify/sensible";
 
 export type AuditLogPlugin = Awaited<ReturnType<typeof buildPlugin>>;
 
@@ -97,11 +103,32 @@ const buildGetEventsTotalCount =
     return totalCount;
   };
 
+const buildGetEventById =
+  (repo: AuditLogRepo, log: FastifyBaseLogger) =>
+  async (eventId: string): Promise<AuditLogEventDetailsDO> => {
+    let result;
+
+    try {
+      result = await repo.getEvent(eventId);
+    } catch (err) {
+      log.error((err as Error).message);
+    }
+
+    if (!result?.rowCount) {
+      throw httpErrors.notFound("The requested audit log was not found");
+    }
+
+    const event = result?.rows[0];
+
+    return { ...event, title: getEventTitle(event.eventType) };
+  };
+
 const buildPlugin = (repo: AuditLogRepo, log: FastifyBaseLogger) => {
   return {
     createEvent: buildCreateEvent(repo, log),
     getEvents: buildGetEvents(repo, log),
     buildGetEventsTotalCount: buildGetEventsTotalCount(repo, log),
+    getEventById: buildGetEventById(repo, log),
   };
 };
 

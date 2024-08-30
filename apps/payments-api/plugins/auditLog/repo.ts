@@ -1,5 +1,5 @@
 import { PostgresDb } from "@fastify/postgres";
-import { AuditLogEvent, CreateAuditLog } from "./types";
+import { AuditLogEvent, AuditLogEventDetails, CreateAuditLog } from "./types";
 import { QueryResult } from "pg";
 import { PaginationParams } from "../../types/pagination";
 
@@ -64,6 +64,23 @@ export class AuditLogRepo {
         WHERE organization_id = $1
       `,
       [organizationId],
+    );
+  }
+
+  getEvent(eventId: string): Promise<QueryResult<AuditLogEventDetails>> {
+    return this.pg.query(
+      `
+        SELECT
+          audit_log_id as "auditLogId",
+          created_at as "createdAt",
+          event_type as "eventType",
+          user_id as "userId",
+          organization_id as "organizationId",
+          metadata
+        FROM audit_logs
+        WHERE audit_log_id = $1
+      `,
+      [eventId],
     );
   }
 }

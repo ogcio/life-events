@@ -2552,7 +2552,7 @@ paths:
           description: Default Response
   /api/v1/auditLogs/:
     get:
-      tags:
+      tags: &a5
         - AuditLogs
       parameters:
         - schema:
@@ -2648,6 +2648,90 @@ paths:
                         type: number
                 required:
                   - data
+        "401":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  requestId:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - requestId
+                  - name
+        "500":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  requestId:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - requestId
+                  - name
+  /api/v1/auditLogs/{auditLogId}:
+    get:
+      tags: *a5
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: auditLogId
+          required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  auditLogId:
+                    type: string
+                  createdAt:
+                    type: string
+                  eventType:
+                    type: string
+                  title:
+                    type: string
+                  userId:
+                    type: string
+                  organizationId:
+                    type: string
+                  metadata:
+                    type: object
+                    additionalProperties: {}
+                required:
+                  - auditLogId
+                  - createdAt
+                  - eventType
+                  - title
+                  - metadata
         "401":
           description: Default Response
           content:
