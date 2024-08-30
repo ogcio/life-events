@@ -2552,7 +2552,7 @@ paths:
           description: Default Response
   /api/v1/auditLogs/:
     get:
-      tags:
+      tags: &a5
         - AuditLogs
       parameters:
         - schema:
@@ -2570,6 +2570,11 @@ paths:
             type: number
           in: query
           name: limit
+          required: false
+        - schema:
+            type: string
+          in: query
+          name: eventType
           required: false
       responses:
         "200":
@@ -2601,6 +2606,114 @@ paths:
                         - createdAt
                         - eventType
                         - title
+                  metadata:
+                    type: object
+                    properties:
+                      links:
+                        type: object
+                        properties:
+                          self:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          next:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          prev:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          first:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          last:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          pages:
+                            type: object
+                            additionalProperties:
+                              type: object
+                              properties:
+                                href:
+                                  type: string
+                        required:
+                          - self
+                          - first
+                          - last
+                          - pages
+                      totalCount:
+                        type: number
+                required:
+                  - data
+        "401":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  requestId:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - requestId
+                  - name
+        "500":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  requestId:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - requestId
+                  - name
+  /api/v1/auditLogs/event-types:
+    get:
+      tags: *a5
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    additionalProperties:
+                      type: string
                   metadata:
                     type: object
                     properties:
