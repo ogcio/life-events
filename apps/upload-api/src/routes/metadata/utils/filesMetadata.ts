@@ -26,15 +26,26 @@ const EXCLUDE_DELETED = `
   AND scheduled_deletion_at IS NULL
 `;
 
-const getOwnedFiles = (client: PoolClient, ownerId: string) => {
-  return client.query<FileMetadataType>(
-    `
-    ${baseQuery}
-    WHERE owner = $1
-    AND ${EXCLUDE_DELETED}
-    `,
-    [ownerId],
-  );
+const getUserFiles = (
+  client: PoolClient,
+  ownerId: string,
+  toExclude: string[],
+) => {
+  let query = `
+  ${baseQuery}
+  WHERE owner = $1
+  `;
+
+  if (toExclude.length) {
+    let i = 2;
+    query = `
+    ${query} AND id NOT IN (${toExclude.map(() => `$${i++}`).join(", ")})
+    `;
+  }
+
+  query = `${query} AND ${EXCLUDE_DELETED}`;
+
+  return client.query<FileMetadataType>(query, [ownerId, ...toExclude]);
 };
 
 const getOrganizationFiles = (
@@ -80,14 +91,24 @@ const getSharedFilesPerOrganization = (
   client: PoolClient,
   organizationId: string,
   userId: string,
+  toExclude: string[],
 ) => {
-  const query = `${baseQuery} 
+  let query = `${baseQuery} 
     INNER JOIN files_users ON files.id = files_users.file_id 
-    WHERE files_users.user_id = $1 and files.organization_id = $2
-    AND ${EXCLUDE_DELETED};
-  `;
+    WHERE files_users.user_id = $1 and files.organization_id = $2`;
 
-  return client.query<FileMetadataType>(query, [userId, organizationId]);
+  if (toExclude.length) {
+    let i = 3;
+    query = `${query} AND id NOT IN (${toExclude.map(() => `$${i++}`).join(", ")})`;
+  }
+
+  query = `${query} AND ${EXCLUDE_DELETED}`;
+
+  return client.query<FileMetadataType>(query, [
+    userId,
+    organizationId,
+    ...toExclude,
+  ]);
 };
 
 const getExpiredFiles = (pool: Pool, expirationDate: Date) => {
@@ -144,7 +165,7 @@ const markFilesAsDeleted = (pool: Pool, ids: string[]) => {
 };
 
 export {
-  getOwnedFiles,
+  getUserFiles,
   getOrganizationFiles,
   getSharedFiles,
   getSharedFilesPerOrganization,

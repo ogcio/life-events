@@ -1,0 +1,20 @@
+meta {
+  name: Get files for user
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/v1/metadata?userId=qrtllp45fgbvsdjyasd5&organizationId=first-testing
+  body: none
+  auth: none
+}
+
+params:query {
+  userId: qrtllp45fgbvsdjyasd5
+  organizationId: first-testing
+}
+
+headers {
+  Authorization: Bearer {{accessToken}}
+}

@@ -158,6 +158,11 @@ paths:
           in: query
           name: userId
           required: false
+        - schema:
+            type: string
+          in: query
+          name: organizationId
+          required: false
       responses:
         "200":
           description: Default Response
@@ -177,26 +182,8 @@ paths:
                           type: string
                         key:
                           type: string
-                        owner:
-                          type: object
-                          properties:
-                            id:
-                              type: string
-                            firstName:
-                              type: string
-                            lastName:
-                              type: string
-                            ppsn:
-                              type: string
-                            email:
-                              type: string
-                            phone:
-                              type: string
-                          required:
-                            - id
-                            - firstName
-                            - lastName
-                            - ppsn
+                        ownerId:
+                          type: string
                         fileSize:
                           type: number
                         mimeType:
@@ -217,30 +204,13 @@ paths:
                         sharedWith:
                           type: array
                           items:
-                            type: object
-                            properties:
-                              id:
-                                type: string
-                              firstName:
-                                type: string
-                              lastName:
-                                type: string
-                              ppsn:
-                                type: string
-                              email:
-                                type: string
-                              phone:
-                                type: string
-                            required:
-                              - id
-                              - firstName
-                              - lastName
-                              - ppsn
+                            type: string
                         expiresAt:
                           type: string
                       required:
                         - fileName
                         - key
+                        - ownerId
                         - fileSize
                         - mimeType
                         - createdAt
@@ -398,26 +368,8 @@ paths:
                         type: string
                       key:
                         type: string
-                      owner:
-                        type: object
-                        properties:
-                          id:
-                            type: string
-                          firstName:
-                            type: string
-                          lastName:
-                            type: string
-                          ppsn:
-                            type: string
-                          email:
-                            type: string
-                          phone:
-                            type: string
-                        required:
-                          - id
-                          - firstName
-                          - lastName
-                          - ppsn
+                      ownerId:
+                        type: string
                       fileSize:
                         type: number
                       mimeType:
@@ -438,30 +390,13 @@ paths:
                       sharedWith:
                         type: array
                         items:
-                          type: object
-                          properties:
-                            id:
-                              type: string
-                            firstName:
-                              type: string
-                            lastName:
-                              type: string
-                            ppsn:
-                              type: string
-                            email:
-                              type: string
-                            phone:
-                              type: string
-                          required:
-                            - id
-                            - firstName
-                            - lastName
-                            - ppsn
+                          type: string
                       expiresAt:
                         type: string
                     required:
                       - fileName
                       - key
+                      - ownerId
                       - fileSize
                       - mimeType
                       - createdAt

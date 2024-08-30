@@ -11,22 +11,22 @@ export const Token = Type.Object({
 
 export type TokenType = Static<typeof Token>;
 
-const FileOwner = Type.Object({
-  id: Type.String(),
-  firstName: Type.String(),
-  lastName: Type.String(),
-  ppsn: Type.String(),
-  email: Type.Optional(Type.String()),
-  phone: Type.Optional(Type.String()),
-});
+// const FileOwner = Type.Object({
+//   id: Type.String(),
+//   firstName: Type.String(),
+//   lastName: Type.String(),
+//   ppsn: Type.String(),
+//   email: Type.Optional(Type.String()),
+//   phone: Type.Optional(Type.String()),
+// });
 
-export type FileOwnerType = Static<typeof FileOwner>;
+// export type FileOwnerType = Static<typeof FileOwner>;
 
 export const ResponseMetadata = Type.Object({
   fileName: Type.String(),
   id: Type.Optional(Type.String()),
   key: Type.String(),
-  owner: Type.Optional(FileOwner),
+  ownerId: Type.String(),
   fileSize: Type.Number(),
   mimeType: Type.String(),
   createdAt: Type.String(),
@@ -35,7 +35,7 @@ export const ResponseMetadata = Type.Object({
   infected: Type.Boolean(),
   infectionDescription: Type.Optional(Type.String()),
   antivirusDbVersion: Type.Optional(Type.String()),
-  sharedWith: Type.Optional(Type.Array(FileOwner)),
+  sharedWith: Type.Optional(Type.Array(Type.String())),
   expiresAt: Type.Optional(Type.String()),
 });
 
