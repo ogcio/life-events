@@ -18,11 +18,11 @@ export interface paths {
     post: {
       responses: {
         /** @description Default Response */
-        200: {
+        201: {
           content: {
             "application/json": {
               data: {
-                message: string;
+                id: string;
               };
             };
           };
@@ -299,10 +299,13 @@ export interface paths {
       };
       responses: {
         /** @description Default Response */
-        200: {
+        201: {
           content: {
             "application/json": {
-              data: unknown;
+              data: {
+                fileId: string;
+                userId: string;
+              };
             };
           };
         };
@@ -344,43 +347,6 @@ export interface paths {
         };
       };
       responses: {
-        /** @description Default Response */
-        200: {
-          content: {
-            "application/json": {
-              data: {
-                fileName: string;
-                id?: string;
-                key: string;
-                owner?: {
-                  id: string;
-                  firstName: string;
-                  lastName: string;
-                  ppsn: string;
-                  email?: string;
-                  phone?: string;
-                };
-                fileSize: number;
-                mimeType: string;
-                createdAt: string;
-                lastScan: string;
-                /** @default false */
-                deleted?: boolean;
-                infected: boolean;
-                infectionDescription?: string;
-                antivirusDbVersion?: string;
-                sharedWith?: {
-                  id: string;
-                  firstName: string;
-                  lastName: string;
-                  ppsn: string;
-                  email?: string;
-                  phone?: string;
-                }[];
-              };
-            };
-          };
-        };
         /** @description Default Response */
         "4XX": {
           content: {

@@ -1,8 +1,5 @@
 import t from "tap";
-import {
-  ensureOrganizationIdIsSet,
-  ensureUserIdIsSet,
-} from "../../utils/authentication-factory.js";
+import { ensureUserIdIsSet } from "../../utils/authentication-factory.js";
 
 t.test("authentication-factory", async (t) => {
   t.test("getProfileSdk builds profile with citizen token", async (t) => {
@@ -105,26 +102,6 @@ t.test("authentication-factory", async (t) => {
       t.throws(
         () => ensureUserIdIsSet({}, "DUMMY_PROCESS"),
         "User id is not set",
-      );
-    },
-  );
-
-  t.test("ensureOrganizationIdIsSet returns organization id", async (t) => {
-    t.match(
-      ensureOrganizationIdIsSet(
-        { userData: { organizationId: "ogcio" } },
-        "DUMMY_PROCESS",
-      ),
-      "ogcio",
-    );
-  });
-
-  t.test(
-    "ensureOrganizationIdIsSet throws an error if organization is not set",
-    async (t) => {
-      t.throws(
-        () => ensureOrganizationIdIsSet({}, "DUMMY_PROCESS"),
-        "Organization id is not set",
       );
     },
   );
