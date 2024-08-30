@@ -273,6 +273,28 @@ paths:
                           type: string
                         antivirusDbVersion:
                           type: string
+                        sharedWith:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              id:
+                                type: string
+                              firstName:
+                                type: string
+                              lastName:
+                                type: string
+                              ppsn:
+                                type: string
+                              email:
+                                type: string
+                              phone:
+                                type: string
+                            required:
+                              - id
+                              - firstName
+                              - lastName
+                              - ppsn
                       required:
                         - fileName
                         - key
@@ -393,6 +415,252 @@ paths:
                         type: string
                       antivirusDbVersion:
                         type: string
+                      sharedWith:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            firstName:
+                              type: string
+                            lastName:
+                              type: string
+                            ppsn:
+                              type: string
+                            email:
+                              type: string
+                            phone:
+                              type: string
+                          required:
+                            - id
+                            - firstName
+                            - lastName
+                            - ppsn
+                    required:
+                      - fileName
+                      - key
+                      - fileSize
+                      - mimeType
+                      - createdAt
+                      - lastScan
+                      - infected
+                required:
+                  - data
+        4XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  requestId:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - requestId
+                  - name
+        5XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  requestId:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - requestId
+                  - name
+  /api/v1/metadata/share/:
+    post:
+      tags:
+        - Metadata share
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                fileId:
+                  type: string
+                userId:
+                  type: string
+              required:
+                - fileId
+                - userId
+        required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: {}
+                required:
+                  - data
+        4XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  requestId:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - requestId
+                  - name
+        5XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  requestId:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - requestId
+                  - name
+    delete:
+      tags:
+        - Metadata share
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                fileId:
+                  type: string
+                userId:
+                  type: string
+              required:
+                - fileId
+                - userId
+        required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      fileName:
+                        type: string
+                      id:
+                        type: string
+                      key:
+                        type: string
+                      owner:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          firstName:
+                            type: string
+                          lastName:
+                            type: string
+                          ppsn:
+                            type: string
+                          email:
+                            type: string
+                          phone:
+                            type: string
+                        required:
+                          - id
+                          - firstName
+                          - lastName
+                          - ppsn
+                      fileSize:
+                        type: number
+                      mimeType:
+                        type: string
+                      createdAt:
+                        type: string
+                      lastScan:
+                        type: string
+                      deleted:
+                        default: false
+                        type: boolean
+                      infected:
+                        type: boolean
+                      infectionDescription:
+                        type: string
+                      antivirusDbVersion:
+                        type: string
+                      sharedWith:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            firstName:
+                              type: string
+                            lastName:
+                              type: string
+                            ppsn:
+                              type: string
+                            email:
+                              type: string
+                            phone:
+                              type: string
+                          required:
+                            - id
+                            - firstName
+                            - lastName
+                            - ppsn
                     required:
                       - fileName
                       - key

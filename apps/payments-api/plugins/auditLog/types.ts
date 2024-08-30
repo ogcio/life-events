@@ -1,4 +1,4 @@
-import { AuditLogEventType } from ".";
+import { AuditLogEventType } from "./auditLogEvents";
 
 export type AuditLogEvent = {
   auditLogId: string;

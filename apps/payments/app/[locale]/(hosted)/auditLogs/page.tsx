@@ -53,57 +53,64 @@ export default async function ({
 
   return (
     <PageWrapper locale={locale} disableOrgSelector={true}>
-      <h1 className="govie-heading-m">{t("title")}</h1>
       <div className="table-container">
-        {auditLogsResponse?.data.length === 0 ? (
-          <EmptyStatus
-            title={t("emptyListTitle")}
-            description={t("emptyListDescription")}
-          />
-        ) : (
-          <div>
-            <table className="govie-table">
-              <thead className="govie-table__head">
-                <tr className="govie-table__row">
-                  <th scope="col" className="govie-table__header">
-                    {t("table.eventType")}
-                  </th>
-                  <th scope="col" className="govie-table__header">
-                    {t("table.creationDate")}
-                  </th>
-                  <th scope="col" className="govie-table__header">
-                    {t("table.user")}
-                  </th>
-                  <th scope="col" className="govie-table__header">
-                    {t("table.details")}
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="govie-table__body">
-                {auditLogsResponse?.data.map((event) => (
-                  <tr className="govie-table__row" key={event.auditLogId}>
-                    <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-                      {event.title}
-                    </td>
-                    <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-                      {dayjs(event.createdAt).format("DD/MM/YYYY - HH:mm")}
-                    </td>
+        <div
+          style={{
+            width: "100%",
+          }}
+        >
+          <h1 className="govie-heading-m">{t("title")}</h1>
 
-                    <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-                      {event.userId}
-                    </td>
-                    <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-                      <Link href={`/${locale}/auditLogs/${event.auditLogId}`}>
-                        {t("table.details")}
-                      </Link>
-                    </td>
+          {auditLogsResponse?.data.length === 0 ? (
+            <EmptyStatus
+              title={t("emptyListTitle")}
+              description={t("emptyListDescription")}
+            />
+          ) : (
+            <div>
+              <table className="govie-table">
+                <thead className="govie-table__head">
+                  <tr className="govie-table__row">
+                    <th scope="col" className="govie-table__header">
+                      {t("table.eventType")}
+                    </th>
+                    <th scope="col" className="govie-table__header">
+                      {t("table.creationDate")}
+                    </th>
+                    <th scope="col" className="govie-table__header">
+                      {t("table.user")}
+                    </th>
+                    <th scope="col" className="govie-table__header">
+                      {t("table.details")}
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-            <Pagination links={links} currentPage={currentPage}></Pagination>
-          </div>
-        )}
+                </thead>
+                <tbody className="govie-table__body">
+                  {auditLogsResponse?.data.map((event) => (
+                    <tr className="govie-table__row" key={event.auditLogId}>
+                      <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
+                        {event.title}
+                      </td>
+                      <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
+                        {dayjs(event.createdAt).format("DD/MM/YYYY - HH:mm")}
+                      </td>
+
+                      <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
+                        {event.userId}
+                      </td>
+                      <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
+                        <Link href={`/${locale}/auditLogs/${event.auditLogId}`}>
+                          {t("table.details")}
+                        </Link>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <Pagination links={links} currentPage={currentPage}></Pagination>
+            </div>
+          )}
+        </div>
       </div>
     </PageWrapper>
   );

@@ -17,6 +17,25 @@ export class Upload {
     this.client.use(authMiddleware);
   }
 
+  async shareFile(fileId: string, userId: string) {
+    const { data, error } = await this.client.POST("/api/v1/metadata/share/", {
+      body: { fileId, userId },
+    });
+
+    return { error, data: data?.data };
+  }
+
+  async removeFileSharing(fileId: string, userId: string) {
+    const { data, error } = await this.client.DELETE(
+      "/api/v1/metadata/share/",
+      {
+        body: { fileId, userId },
+      },
+    );
+
+    return { error, data: data?.data };
+  }
+
   async getFile(id: string) {
     try {
       const {

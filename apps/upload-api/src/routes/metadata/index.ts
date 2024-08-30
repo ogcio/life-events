@@ -1,6 +1,7 @@
 import { FastifyInstance } from "fastify";
 import { Permissions } from "../../types/permissions.js";
 import {
+  FileMetadata,
   FileMetadataType,
   FileOwnerType,
   getGenericResponseSchema,
@@ -15,6 +16,7 @@ import {
 import { NotFoundError, ServerError } from "shared-errors";
 import { getOwnedFiles, getOrganizationFiles } from "../utils/filesMetadata.js";
 import getFileMetadataById from "../utils/getFileMetadataById.js";
+import getFileSharings from "../utils/getFileSharings.js";
 
 const METADATA_INDEX = "METADATA_INDEX";
 const GET_METADATA = "GET_METADATA";
@@ -127,53 +129,64 @@ export default async function routes(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
-      const userId = ensureUserIdIsSet(request, GET_METADATA);
       const organizationId = request.userData?.organizationId;
 
       const fileId = request.params.id;
 
       let file: FileMetadataType | undefined = undefined;
       try {
-        const fileData = await getFileMetadataById(
-          app.pg,
-          fileId,
-          userId,
-          organizationId,
-        );
+        const fileData = await getFileMetadataById(app.pg, fileId);
         if (fileData.rows) {
           file = fileData.rows[0];
         }
       } catch (err) {
-        throw new ServerError(METADATA_INDEX, "Internal server error", err);
+        throw new ServerError(GET_METADATA, "Internal server error", err);
       }
 
       if (!file) {
         throw new NotFoundError(GET_METADATA, "File not found");
       }
 
+      const userIdsSharingThisFile: string[] = [];
+      try {
+        const sharingsData = await getFileSharings(app.pg, fileId);
+
+        if (sharingsData.rows) {
+          userIdsSharingThisFile.push(
+            ...sharingsData.rows.map(({ userId }) => userId),
+          );
+        }
+      } catch (err) {
+        throw new ServerError(GET_METADATA, "Internal server error", err);
+      }
+
       const profileSdk = await getProfileSdk(organizationId);
 
-      let userData: FileOwnerType | undefined = undefined;
-      try {
-        const usersResponse = await profileSdk.selectUsers(userId);
+      const usersToRetrieve = [file.ownerId, ...userIdsSharingThisFile];
 
-        if (usersResponse.error) {
-          app.log.error(usersResponse.error);
+      let users: FileOwnerType[] = [];
+      let fileOwner: FileOwnerType | undefined;
+      try {
+        const usersData = await profileSdk.selectUsers(usersToRetrieve);
+
+        if (usersData.error) {
+          app.log.error(usersData.error);
           throw new ServerError(
-            METADATA_INDEX,
+            GET_METADATA,
             "Internal server error",
-            usersResponse.error,
+            usersData.error,
           );
         }
 
-        if (usersResponse.data) {
-          userData = usersResponse.data[0];
+        if (usersData.data) {
+          fileOwner = usersData.data[0];
+          users = usersData.data.slice(1);
         }
       } catch (err) {
-        throw new ServerError(METADATA_INDEX, "Internal server error", err);
+        throw new ServerError(GET_METADATA, "Internal server error", err);
       }
 
-      const fileMetadata = { ...file, owner: userData };
+      const fileMetadata = { ...file, owner: fileOwner, sharedWith: users };
 
       return reply.send({ data: fileMetadata });
     },
