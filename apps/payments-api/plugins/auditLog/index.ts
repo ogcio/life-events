@@ -127,7 +127,7 @@ const buildPlugin = (repo: AuditLogRepo, log: FastifyBaseLogger) => {
   return {
     createEvent: buildCreateEvent(repo, log),
     getEvents: buildGetEvents(repo, log),
-    buildGetEventsTotalCount: buildGetEventsTotalCount(repo, log),
+    getEventsTotalCount: buildGetEventsTotalCount(repo, log),
     getEventById: buildGetEventById(repo, log),
     getEventTypes,
   };

@@ -1,5 +1,10 @@
 import { PostgresDb } from "@fastify/postgres";
-import { AuditLogEvent, AuditLogEventDetails, CreateAuditLog } from "./types";
+import {
+  AuditLogEvent,
+  AuditLogEventDetails,
+  AuditLogEventsFilters,
+  CreateAuditLog,
+} from "./types";
 import { QueryResult } from "pg";
 import { PaginationParams } from "../../types/pagination";
 
