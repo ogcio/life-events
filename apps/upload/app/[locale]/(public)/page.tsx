@@ -58,7 +58,13 @@ export default async (props: Props) => {
           <h3 className="govie-heading-m">{t("noFiles")}</h3>
         )}
         <div>
-          {files && <FileTable files={files} deleteFile={deleteFile} />}
+          {files && (
+            <FileTable
+              isPublicServant={isPublicServant}
+              files={files}
+              deleteFile={deleteFile}
+            />
+          )}
         </div>
 
         {isPublicServant && <FileUpload uploadFile={uploadFile} />}
