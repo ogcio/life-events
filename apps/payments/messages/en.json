@@ -8,6 +8,15 @@
       "creationDate": "Creation date",
       "user": "User",
       "details": "Details"
+    },
+    "details": {
+      "title": "Audit log details",
+      "eventTitle": "Event name",
+      "eventType": "Event type",
+      "timestamp": "Timestamp",
+      "userId": "User id",
+      "organizationId": "Organization id",
+      "metadata": "Metadata"
     }
   },
   "Common": {

@@ -54,13 +54,8 @@ export default async function ({
   return (
     <PageWrapper locale={locale} disableOrgSelector={true}>
       <div className="table-container">
-        <div
-          style={{
-            width: "100%",
-          }}
-        >
+        <div style={{ width: "100%" }}>
           <h1 className="govie-heading-m">{t("title")}</h1>
-
           {auditLogsResponse?.data.length === 0 ? (
             <EmptyStatus
               title={t("emptyListTitle")}
