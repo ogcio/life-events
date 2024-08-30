@@ -20,7 +20,7 @@ body:json {
     "contents": [
       {
         "templateName": "A {{randomTemplateName}}",
-        "lang": "en",
+        "language": "en",
         "subject": "update subj A {{var1}}",
         "excerpt": "update expt A {{var2en}} {{var2en2}}",
         "plainText": "update pt A",
@@ -28,7 +28,7 @@ body:json {
       },
       {
         "templateName": "B {{randomTemplateName}}",
-        "lang": "ga",
+        "language": "ga",
         "subject": "update subj B {{var1}}",
         "excerpt": "update expt B {{var2ga}}",
         "plainText": "update pt B",
@@ -37,24 +37,16 @@ body:json {
     ],
     "variables": [
       {
-        "name": "var1",
-        "type": "remove?",
-        "languages": ["en", "ga"]
+        "name": "var1"
       },
       {
-        "name": "var2en",
-        "type": "remove?",
-        "languages": ["en"]
+        "name": "var2en"
       },
       {
-        "name": "var2ga",
-        "type": "remove?",
-        "languages": ["ga"]
+        "name": "var2ga"
       },
       {
-        "name":"var2en2",
-        "type":"remove",
-        "languages":["en"]
+        "name":"var2en2"
       }
     ]
   }

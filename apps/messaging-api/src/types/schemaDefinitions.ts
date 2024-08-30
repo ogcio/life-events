@@ -129,7 +129,7 @@ export type CreateMessageOptions = Static<typeof CreateMessageOptionsSchema>;
 export const PaginationParamsSchema = Type.Object({
   offset: Type.Optional(
     Type.String({
-      pattern: "^[0-9][0-9]*|$",
+      pattern: "^[0-9][0-9]*|undefined$",
       default: PAGINATION_MIN_OFFSET.toString(),
       description:
         "Indicates where to start fetching data or how many records to skip, defining the initial position within the list",
@@ -138,7 +138,7 @@ export const PaginationParamsSchema = Type.Object({
   limit: Type.Optional(
     Type.String({
       default: PAGINATION_LIMIT_DEFAULT.toString(),
-      pattern: `^([1-9]|${PAGINATION_MAX_LIMIT})|$`,
+      pattern: `^([1-9]|${PAGINATION_MAX_LIMIT})|undefined$`,
       description: `Indicates the maximum number (${PAGINATION_MAX_LIMIT}) of items that will be returned in a single request`,
     }),
   ),
