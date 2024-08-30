@@ -12,6 +12,7 @@ import {
   getGenericResponseSchema,
   PaginationParams,
   PaginationParamsSchema,
+  TypeboxStringEnum,
 } from "../../types/schemaDefinitions.js";
 import {
   ensureOrganizationIdIsSet,
@@ -24,18 +25,18 @@ import {
 
 const tags = ["Templates"];
 
-type TemplateVariable = { name: string; type: string; languages: string[] };
+type TemplateVariable = { name: string };
 interface CreateTemplate {
   Body: {
     contents: {
       templateName: string;
-      lang: string;
+      language: string;
       subject: string;
       excerpt: string;
       richText: string;
       plainText: string;
     }[];
-    variables: TemplateVariable[];
+    variables?: TemplateVariable[];
   };
 }
 
@@ -43,7 +44,7 @@ interface UpdateTemplate {
   Body: {
     contents: {
       templateName: string;
-      lang: string;
+      language: string;
       subject: string;
       excerpt: string;
       richText: string;
@@ -74,14 +75,29 @@ interface GetTemplate {
 const TemplateContentType = Type.Object({
   templateName: Type.String({
     description: "Template name for the related language",
+    minLength: 1,
   }),
-  lang: Type.String({ description: "Current language" }),
-  subject: Type.String({ description: "Subject of the template" }),
+  language: TypeboxStringEnum(
+    ["en", "ga"],
+    undefined,
+    "Template content language",
+  ),
+  subject: Type.String({
+    description: "Subject of the template",
+    minLength: 1,
+  }),
   excerpt: Type.String({
     description: "Brief description of the template content",
+    minLength: 1,
   }),
-  plainText: Type.String({ description: "Plain text version of the template" }),
-  richText: Type.String({ description: "Rich text version of the template" }),
+  plainText: Type.String({
+    description: "Plain text version of the template",
+    minLength: 1,
+  }),
+  richText: Type.String({
+    description: "Rich text version of the template",
+    minLength: 1,
+  }),
 });
 
 export default async function templates(app: FastifyInstance) {
@@ -92,19 +108,7 @@ export default async function templates(app: FastifyInstance) {
         app.checkPermissions(req, res, [Permissions.Template.Read]),
       schema: {
         description: "Returns the providers matching the requested query",
-        querystring: Type.Optional(
-          Type.Composite([
-            Type.Object({
-              lang: Type.Optional(
-                Type.String({
-                  description:
-                    "If set, templates with the requested language are returned",
-                }),
-              ),
-            }),
-            PaginationParamsSchema,
-          ]),
-        ),
+        querystring: Type.Optional(PaginationParamsSchema),
         tags,
         response: {
           200: getGenericResponseSchema(
@@ -117,7 +121,7 @@ export default async function templates(app: FastifyInstance) {
                 contents: Type.Array(
                   Type.Object({
                     lang: Type.String({
-                      description: "Selected language",
+                      description: "Language key for template content",
                     }),
                     templateName: Type.String({
                       description: "Template name for the related language",
@@ -134,7 +138,7 @@ export default async function templates(app: FastifyInstance) {
     },
     async function handleGetAll(request, _reply) {
       const errorProcess = "TEMPLATES_GET_ALL";
-      const lang = request.query?.lang || "";
+
       const organisationId = ensureOrganizationIdIsSet(request, errorProcess);
       const { limit, offset } = sanitizePagination({
         limit: request.query.limit,
@@ -201,6 +205,9 @@ export default async function templates(app: FastifyInstance) {
       schema: {
         description: "Returns the requested template",
         tags,
+        params: {
+          templateId: Type.String({ format: "uuid" }),
+        },
         response: {
           200: getGenericResponseSchema(
             Type.Object({
@@ -209,7 +216,6 @@ export default async function templates(app: FastifyInstance) {
                 Type.Object(
                   {
                     fieldName: Type.String(),
-                    fieldType: Type.String(),
                   },
                   {
                     description:
@@ -238,17 +244,18 @@ export default async function templates(app: FastifyInstance) {
         description: "Creates a new template",
         tags,
         body: Type.Object({
-          contents: Type.Array(TemplateContentType),
-          variables: Type.Array(
-            Type.Object({
-              name: Type.String(),
-              type: Type.String(),
-              languages: Type.Array(Type.String()),
-            }),
-            {
-              description:
-                "List of the variables that are needed to be filled to create a message using this template",
-            },
+          contents: Type.Array(TemplateContentType, { minItems: 1 }),
+          variables: Type.Optional(
+            Type.Array(
+              Type.Object({
+                name: Type.String({ minLength: 1 }),
+              }),
+              {
+                minItems: 1,
+                description:
+                  "List of the variables that are needed to be filled to create a message using this template",
+              },
+            ),
           ),
         }),
         response: {
@@ -282,7 +289,7 @@ export default async function templates(app: FastifyInstance) {
           ensureOrganizationIdIsSet(request, errorCode),
         ];
         let index = 1;
-        for (const { templateName, lang } of contents) {
+        for (const { templateName, language: lang } of contents) {
           queryFilter.push(
             `(lower(template_name) = lower($${++index}) AND lang=$${++index})`,
           );
@@ -326,8 +333,14 @@ export default async function templates(app: FastifyInstance) {
         }
 
         for (const content of contents) {
-          const { excerpt, lang, templateName, plainText, richText, subject } =
-            content;
+          const {
+            excerpt,
+            language: lang,
+            templateName,
+            plainText,
+            richText,
+            subject,
+          } = content;
           await client.query(
             `
             insert into message_template_contents(
@@ -355,15 +368,16 @@ export default async function templates(app: FastifyInstance) {
           );
         }
 
-        for (const field of variables) {
+        for (const field of variables || []) {
           await client.query(
             `
-            insert into message_template_variables(template_meta_id, field_name, field_type)
-            values($1, $2, $3)
+            insert into message_template_variables(template_meta_id, field_name)
+            values($1, $2)
           `,
-            [templateMetaId, field.name, field.type],
+            [templateMetaId, field.name],
           );
         }
+
         await client.query("COMMIT");
       } catch (err) {
         client.query("ROLLBACK");
@@ -391,18 +405,23 @@ export default async function templates(app: FastifyInstance) {
       schema: {
         description: "Updates the requested template",
         tags,
+        params: {
+          templateId: Type.String({ format: "uuid" }),
+        },
         body: Type.Object({
           id: Type.String({ format: "uuid" }),
-          contents: Type.Array(TemplateContentType),
-          variables: Type.Array(
-            Type.Object({
-              name: Type.String(),
-              type: Type.String(),
-            }),
-            {
-              description:
-                "List of the variables that are needed to be filled to create a message using this template",
-            },
+          contents: Type.Array(TemplateContentType, { minItems: 1 }),
+          variables: Type.Optional(
+            Type.Array(
+              Type.Object({
+                name: Type.String({ minLength: 1 }),
+              }),
+              {
+                minItems: 1,
+                description:
+                  "List of the variables that are needed to be filled to create a message using this template",
+              },
+            ),
           ),
         }),
         response: {
@@ -432,7 +451,7 @@ export default async function templates(app: FastifyInstance) {
           templateId,
         ];
         let index = values.length;
-        for (const { templateName, lang } of contents) {
+        for (const { templateName, language: lang } of contents) {
           queryFilter.push(
             `(lower(template_name) = lower($${++index}) AND lang=$${++index})`,
           );
@@ -470,8 +489,14 @@ export default async function templates(app: FastifyInstance) {
           [templateId],
         );
         for (const content of contents) {
-          const { excerpt, lang, templateName, plainText, richText, subject } =
-            content;
+          const {
+            excerpt,
+            language: lang,
+            templateName,
+            plainText,
+            richText,
+            subject,
+          } = content;
           const values = [
             templateId,
             templateName,
@@ -510,26 +535,26 @@ export default async function templates(app: FastifyInstance) {
           [templateId],
         );
 
-        for (const variable of variables) {
-          const values = [templateId, variable.name, variable.type];
+        for (const variable of variables || []) {
+          const values = [templateId, variable.name];
           await client.query(
             `
-            insert into message_template_variables(template_meta_id, field_name, field_type)
-            values($1, $2, $3)
+            insert into message_template_variables(template_meta_id, field_name)
+            values($1, $2)
             on conflict(template_meta_id, field_name) do update set
-            field_name = $2,
-            field_type = $3
+            field_name = $2
             where message_template_variables.template_meta_id = $1 and message_template_variables.field_name = $2
           `,
             values,
           );
         }
         await client.query("COMMIT");
-      } catch (err) {
+      } catch (error) {
+        console.log(error);
         client.query("ROLLBACK");
-        throw isLifeEventsError(err)
-          ? err
-          : new ServerError(errorCode, "failed to update");
+        throw isLifeEventsError(error)
+          ? error
+          : new ServerError(errorCode, "failed to update", error);
       } finally {
         client.release();
       }
@@ -544,6 +569,9 @@ export default async function templates(app: FastifyInstance) {
       schema: {
         description: "Deletes the requested template",
         tags,
+        params: {
+          templateId: Type.String({ format: "uuid" }),
+        },
         response: {
           200: Type.Null(),
           "4xx": HttpError,
@@ -577,9 +605,8 @@ export default async function templates(app: FastifyInstance) {
       excerpt: string;
       plainText: string;
       richText: string;
-      lang: string;
+      language: string;
       fieldName?: string;
-      fieldType?: string;
     }>(
       `
           select
@@ -588,9 +615,8 @@ export default async function templates(app: FastifyInstance) {
             excerpt,
             plain_text as "plainText",
             rich_text as "richText",
-            lang,
-            v.field_name as "fieldName",
-            v.field_type as "fieldType"
+            lang as "language",
+            v.field_name as "fieldName"
           from message_template_meta m
           join message_template_contents c on c.template_meta_id = m.id
           left join message_template_variables v on v.template_meta_id = m.id
@@ -606,9 +632,9 @@ export default async function templates(app: FastifyInstance) {
         excerpt: string;
         plainText: string;
         richText: string;
-        lang: string;
+        language: string;
       }[];
-      fields: { fieldName: string; fieldType: string }[];
+      fields: { fieldName: string }[];
     } = {
       contents: [],
       fields: [],
@@ -622,12 +648,11 @@ export default async function templates(app: FastifyInstance) {
         subject,
         templateName,
         fieldName,
-        fieldType,
-        lang,
+        language,
       } = row;
 
       const content = template.contents?.find(
-        (content) => content.lang === lang,
+        (content) => content.language === language,
       );
 
       if (content) {
@@ -640,7 +665,7 @@ export default async function templates(app: FastifyInstance) {
       } else {
         template.contents.push({
           excerpt,
-          lang,
+          language,
           plainText,
           richText,
           subject,
@@ -652,7 +677,7 @@ export default async function templates(app: FastifyInstance) {
         fieldName &&
         !template.fields.some((field) => field.fieldName === fieldName)
       ) {
-        template.fields.push({ fieldName, fieldType: fieldType ?? "" });
+        template.fields.push({ fieldName });
       }
     }
 

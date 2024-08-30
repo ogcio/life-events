@@ -34,8 +34,17 @@ export class AuditLogRepo {
 
   getEvents(
     organizationId: string,
+    filters: AuditLogEventsFilters,
     pagination: PaginationParams,
   ): Promise<QueryResult<AuditLogEvent>> {
+    const params = [organizationId, pagination.limit, pagination.offset];
+    const conditions = [`organization_id = $1`];
+
+    if (filters.eventType) {
+      params.push(filters.eventType);
+      conditions.push(`event_type = $4`);
+    }
+
     return this.pg.query(
       `
         SELECT
@@ -45,25 +54,34 @@ export class AuditLogRepo {
           user_id as "userId",
           organization_id as "organizationId"
         FROM audit_logs
-        WHERE organization_id = $1
+        WHERE ${conditions.join(" AND ")}
         ORDER BY created_at DESC
         LIMIT $2 OFFSET $3
       `,
-      [organizationId, pagination.limit, pagination.offset],
+      params,
     );
   }
 
   getEventsTotalCount(
     organizationId: string,
+    filters: AuditLogEventsFilters,
   ): Promise<QueryResult<{ totalCount: number }>> {
+    const params = [organizationId];
+    const conditions = [`organization_id = $1`];
+
+    if (filters.eventType) {
+      params.push(filters.eventType);
+      conditions.push(`event_type = $2`);
+    }
+
     return this.pg.query(
       `
         SELECT
           count(*) as "totalCount"
         FROM audit_logs
-        WHERE organization_id = $1
+        WHERE ${conditions.join(" AND ")}
       `,
-      [organizationId],
+      params,
     );
   }
 

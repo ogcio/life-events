@@ -18,39 +18,6 @@ vars:pre-request {
   randomTemplateName: null
 }
 
-body:json {
-  {
-    "contents":[{
-      "templateName":"name A",
-      "lang":"en",
-      "subject":"subj A {{var1}}",
-      "excerpt":"expt A {{var2en}}",
-      "plainText":"pt A",
-      "richText":"rt A"
-    },{
-      "templateName":"name B",
-      "lang":"ga",
-      "subject":"subj B {{var1}}",
-      "excerpt":"expt B {{var2ga}}",
-      "plainText":"pt B",
-      "richText":"rt B"
-    }],
-    "variables":[{
-      "name":"var1",
-      "type":"remove?",
-      "languages":["en","ga"]
-    },{
-      "name":"var2en",
-      "type":"remove?",
-      "languages":["en"]
-    },{
-      "name":"var2ga",
-      "type":"remove?",
-      "languages":["ga"]
-    }]
-  }
-}
-
 vars:post-response {
   templateId: res.body.data.id
 }
@@ -64,7 +31,7 @@ script:pre-request {
   "contents": [
     {
       "templateName": `A ${randomTemplateName}`,
-      "lang": "en",
+      "language": "en",
       "subject": "subj A {{var1}}",
       "excerpt": "expt A {{var2en}}",
       "plainText": "pt A",
@@ -72,7 +39,7 @@ script:pre-request {
     },
     {
       "templateName": `B ${randomTemplateName}`,
-      "lang": "ga",
+      "language": "ga",
       "subject": "subj B {{var1}}",
       "excerpt": "expt B {{var2ga}}",
       "plainText": "pt B",
@@ -81,19 +48,13 @@ script:pre-request {
   ],
   "variables": [
     {
-      "name": "var1",
-      "type": "remove?",
-      "languages": ["en", "ga"]
+      "name": "var1"
     },
     {
-      "name": "var2en",
-      "type": "remove?",
-      "languages": ["en"]
+      "name": "var2en"
     },
     {
-      "name": "var2ga",
-      "type": "remove?",
-      "languages": ["ga"]
+      "name": "var2ga"
     }
   ]
   })

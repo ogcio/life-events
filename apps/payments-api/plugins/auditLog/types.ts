@@ -24,3 +24,7 @@ export type CreateAuditLog = Pick<
   AuditLogEventDetails,
   "eventType" | "userId" | "organizationId" | "metadata"
 >;
+
+export type AuditLogEventsFilters = {
+  eventType?: string;
+};

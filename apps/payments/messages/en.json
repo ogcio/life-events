@@ -17,6 +17,11 @@
       "userId": "User id",
       "organizationId": "Organization id",
       "metadata": "Metadata"
+    },
+    "filter": {
+      "label": "Filter by event type",
+      "action": "Filter",
+      "allEventsOption": "All"
     }
   },
   "Common": {
