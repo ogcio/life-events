@@ -1003,8 +1003,6 @@ export interface paths {
     get: {
       parameters: {
         query?: {
-          /** @description If set, templates with the requested language are returned */
-          lang?: string;
           /** @description Indicates where to start fetching data or how many records to skip, defining the initial position within the list */
           offset?: string;
           /** @description Indicates the maximum number (100) of items that will be returned in a single request */
@@ -1030,7 +1028,7 @@ export interface paths {
                  */
                 id: string;
                 contents: {
-                  /** @description Selected language */
+                  /** @description Language key for template content */
                   lang: string;
                   /** @description Template name for the related language */
                   templateName: string;
@@ -1137,8 +1135,11 @@ export interface paths {
             contents: {
               /** @description Template name for the related language */
               templateName: string;
-              /** @description Current language */
-              lang: string;
+              /**
+               * @description Template content language
+               * @enum {string}
+               */
+              language: "en" | "ga";
               /** @description Subject of the template */
               subject: string;
               /** @description Brief description of the template content */
@@ -1149,10 +1150,8 @@ export interface paths {
               richText: string;
             }[];
             /** @description List of the variables that are needed to be filled to create a message using this template */
-            variables: {
+            variables?: {
               name: string;
-              type: string;
-              languages: string[];
             }[];
           };
         };
@@ -1261,8 +1260,11 @@ export interface paths {
                 contents: {
                   /** @description Template name for the related language */
                   templateName: string;
-                  /** @description Current language */
-                  lang: string;
+                  /**
+                   * @description Template content language
+                   * @enum {string}
+                   */
+                  language: "en" | "ga";
                   /** @description Subject of the template */
                   subject: string;
                   /** @description Brief description of the template content */
@@ -1274,7 +1276,6 @@ export interface paths {
                 }[];
                 fields: {
                   fieldName: string;
-                  fieldType: string;
                 }[];
               };
               metadata?: {
@@ -1381,8 +1382,11 @@ export interface paths {
             contents: {
               /** @description Template name for the related language */
               templateName: string;
-              /** @description Current language */
-              lang: string;
+              /**
+               * @description Template content language
+               * @enum {string}
+               */
+              language: "en" | "ga";
               /** @description Subject of the template */
               subject: string;
               /** @description Brief description of the template content */
@@ -1393,9 +1397,8 @@ export interface paths {
               richText: string;
             }[];
             /** @description List of the variables that are needed to be filled to create a message using this template */
-            variables: {
+            variables?: {
               name: string;
-              type: string;
             }[];
           };
         };
@@ -3343,7 +3346,7 @@ export interface paths {
                  * Format: uuid
                  * @description Unique id of the event
                  */
-                eventId: string;
+                id: string;
                 /**
                  * Format: uuid
                  * @description Unique id of the related message
