@@ -93,6 +93,7 @@ export default async function auditLogs(app: FastifyInstance) {
       const { auditLogId } = request.params;
 
       if (!organizationId) {
+        throw app.httpErrors.unauthorized("Unauthorized!");
       }
 
       const eventDetails = await app.auditLog.getEventById(auditLogId);
