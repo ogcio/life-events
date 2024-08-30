@@ -179,7 +179,7 @@ const getCoreQuery = (params: {
   if (!params.isForCount) {
     fieldsToSelect = `
       SELECT 
-        users.id as "userId",
+        users.id as "id",
         users.user_profile_id as "userProfileId",
         users.phone as "phoneNumber",
         users.email as "emailAddress",

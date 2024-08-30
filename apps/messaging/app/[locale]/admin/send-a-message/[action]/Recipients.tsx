@@ -233,7 +233,7 @@ export default async (props: MessageCreateProps) => {
           </thead>
           <tbody className="govie-table__body">
             {users?.map((foundUser) => (
-              <tr className="govie-table__row" key={foundUser.userId}>
+              <tr className="govie-table__row" key={foundUser.id}>
                 <th className="govie-table__header govie-table__header--vertical-centralized govie-body-s">
                   {foundUser.firstName} {foundUser.lastName}
                 </th>
@@ -248,7 +248,7 @@ export default async (props: MessageCreateProps) => {
                     <input
                       type="hidden"
                       name="recipient"
-                      value={foundUser.userId}
+                      value={foundUser.id}
                     />
 
                     <div style={{ display: "flex", alignItems: "center" }}>
