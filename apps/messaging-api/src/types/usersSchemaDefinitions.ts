@@ -334,7 +334,11 @@ export const UserPerOrganisationSchema = Type.Composite([
     birthDate: NullableStringType({ description: "Birth date of the user" }),
     lang: NullableStringType({ description: "Preferred language of the user" }),
     ppsn: NullableStringType({ description: "PPSN of the user" }),
+    id: Type.String({
+      format: "uuid",
+      description: "Unique id of the related user",
+    }),
   }),
-  Type.Omit(OrganisationSettingSchema, ["id"]),
+  Type.Omit(OrganisationSettingSchema, ["id", "userId"]),
 ]);
 export type UserPerOrganisation = Static<typeof UserPerOrganisationSchema>;
