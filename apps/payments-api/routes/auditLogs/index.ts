@@ -78,7 +78,7 @@ export default async function auditLogs(app: FastifyInstance) {
     "/:auditLogId",
     {
       preValidation: (req, res) =>
-        app.checkPermissions(req, res, [authPermissions.TRANSACTION_ALL]), // TODO: CHange this later
+        app.checkPermissions(req, res, [authPermissions.TRANSACTION_ALL]), // TODO: Change this later
       schema: {
         tags: TAGS_AUDIT_LOGS,
         response: {
@@ -93,11 +93,13 @@ export default async function auditLogs(app: FastifyInstance) {
       const { auditLogId } = request.params;
 
       if (!organizationId) {
-        throw app.httpErrors.unauthorized("Unauthorized!");
       }
 
-      // shoudl we check for org id also?
       const eventDetails = await app.auditLog.getEventById(auditLogId);
+
+      if (eventDetails.organizationId !== organizationId) {
+        throw app.httpErrors.unauthorized("Unauthorized!");
+      }
 
       reply.send(eventDetails);
     },
