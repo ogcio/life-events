@@ -84,7 +84,6 @@ export class Upload {
         return formData;
       },
     });
-    console.log({ response: response.status });
 
     return { error };
   }
