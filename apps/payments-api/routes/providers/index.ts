@@ -15,7 +15,6 @@ import {
   UpdateProviderDO,
 } from "../../plugins/entities/providers/types";
 import { authPermissions } from "../../types/authPermissions";
-import { AuditLogEventType } from "../../plugins/auditLog";
 
 const TAGS = ["Providers"];
 
@@ -49,15 +48,6 @@ export default async function providers(app: FastifyInstance) {
         userId,
         organizationId,
       );
-
-      app.auditLog.createEvent({
-        eventType: AuditLogEventType.PROVIDER_CREATE,
-        userId,
-        organizationId,
-        metadata: {
-          providerId: result.id,
-        },
-      });
 
       reply.send(result);
     },

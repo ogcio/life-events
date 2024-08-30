@@ -7,20 +7,9 @@ import fp from "fastify-plugin";
 import { AuditLogRepo } from "./repo";
 import { AuditLogEvent, AuditLogEventDO, CreateAuditLog } from "./types";
 import { PaginationParams } from "../../types/pagination";
+import { AuditLogEventTitles, AuditLogEventType } from "./auditLogEvents";
 
 export type AuditLogPlugin = Awaited<ReturnType<typeof buildPlugin>>;
-
-export enum AuditLogEventType {
-  TRANSACTION_CREATE = "transaction.create",
-  PROVIDER_CREATE = "provider.create",
-}
-
-export const AuditLogEventTitles: Record<string, string> & {
-  [key in AuditLogEventType]: string;
-} = {
-  [AuditLogEventType.TRANSACTION_CREATE]: "Transaction created",
-  [AuditLogEventType.PROVIDER_CREATE]: "Provider created",
-};
 
 const getEventTitle = (eventType: AuditLogEventType) => {
   return AuditLogEventTitles[eventType];
