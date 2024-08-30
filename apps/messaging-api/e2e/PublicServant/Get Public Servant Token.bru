@@ -28,5 +28,5 @@ vars:post-response {
 assert {
   res.status: eq 200
   res.body.access_token: isDefined
-  res.body.scope: eq messaging:citizen:* messaging:provider:* messaging:template:* messaging:event:read
+  res.body.scope: eq messaging:provider:* messaging:event:read messaging:citizen:* messaging:template:*
 }
