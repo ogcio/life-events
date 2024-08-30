@@ -2,10 +2,10 @@ import { Type } from "@sinclair/typebox";
 import { FastifyInstance } from "fastify";
 import { Permissions } from "../../../types/permissions.js";
 import { HttpError } from "../../../types/httpErrors.js";
-import {
-  getGenericResponseSchema,
-  ResponseMetadata,
-} from "../../../types/schemaDefinitions.js";
+import { getGenericResponseSchema } from "../../../types/schemaDefinitions.js";
+import addFileSharing from "./utils/addFileSharing.js";
+import { ServerError } from "shared-errors";
+import removeFileSharing from "./utils/removeFileSharing.js";
 
 const SHARE_CREATE = "SHARE_CREATE";
 const SHARE_DELETE = "SHARE_DELETE";
@@ -25,8 +25,9 @@ export default async function routes(app: FastifyInstance) {
           userId: Type.String(),
         }),
         response: {
-          //TODO: CHANGE ME
-          200: getGenericResponseSchema(Type.Any()),
+          201: getGenericResponseSchema(
+            Type.Object({ fileId: Type.String(), userId: Type.String() }),
+          ),
           "4xx": HttpError,
           "5xx": HttpError,
         },
@@ -34,10 +35,13 @@ export default async function routes(app: FastifyInstance) {
     },
     async (request, reply) => {
       const { fileId, userId } = request.body;
-
-      // TODO: IMPLEMENT THIS
-
-      reply.send({ data: {} });
+      try {
+        await addFileSharing(app.pg, fileId, userId);
+      } catch (err) {
+        throw new ServerError(SHARE_CREATE, "Internal server error", err);
+      }
+      reply.status(201);
+      reply.send({ data: { fileId, userId } });
     },
   );
 
@@ -53,7 +57,6 @@ export default async function routes(app: FastifyInstance) {
           userId: Type.String(),
         }),
         response: {
-          200: getGenericResponseSchema(ResponseMetadata),
           "4xx": HttpError,
           "5xx": HttpError,
         },
@@ -62,9 +65,12 @@ export default async function routes(app: FastifyInstance) {
     async (request, reply) => {
       const { fileId, userId } = request.body;
 
-      // TODO: IMPLEMENT THIS
-
-      return reply.send({ data: {} });
+      try {
+        await removeFileSharing(app.pg, fileId, userId);
+      } catch (err) {
+        throw new ServerError(SHARE_DELETE, "Internal server error", err);
+      }
+      reply.send();
     },
   );
 }

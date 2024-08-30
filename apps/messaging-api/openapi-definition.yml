@@ -4248,7 +4248,7 @@ paths:
                           anyOf:
                             - type: "null"
                             - type: string
-                        userId:
+                        id:
                           format: uuid
                           description: Unique id of the related user
                           type: string
@@ -4404,7 +4404,7 @@ paths:
                         - birthDate
                         - lang
                         - ppsn
-                        - userId
+                        - id
                         - userProfileId
                         - phoneNumber
                         - emailAddress
@@ -4615,7 +4615,7 @@ paths:
                         anyOf:
                           - type: "null"
                           - type: string
-                      userId:
+                      id:
                         format: uuid
                         description: Unique id of the related user
                         type: string
@@ -4771,7 +4771,7 @@ paths:
                       - birthDate
                       - lang
                       - ppsn
-                      - userId
+                      - id
                       - userProfileId
                       - phoneNumber
                       - emailAddress

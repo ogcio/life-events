@@ -14,7 +14,11 @@ import {
   getProfileSdk,
 } from "../../utils/authentication-factory.js";
 import { NotFoundError, ServerError } from "shared-errors";
-import { getOwnedFiles, getOrganizationFiles } from "../utils/filesMetadata.js";
+import {
+  getOwnedFiles,
+  getOrganizationFiles,
+  getSharedFiles,
+} from "../utils/filesMetadata.js";
 import getFileMetadataById from "../utils/getFileMetadataById.js";
 import getFileSharings from "../utils/getFileSharings.js";
 
@@ -62,9 +66,22 @@ export default async function routes(app: FastifyInstance) {
             filesToExclude,
           );
 
-          if (organizationFilesData.rows.length > 0) {
+          if (organizationFilesData.rows.length) {
             files.push(...organizationFilesData.rows);
+            filesToExclude.push(
+              ...organizationFilesData.rows.map(({ id }) => id as string),
+            );
           }
+        }
+
+        const sharedFilesData = await getSharedFiles(
+          client,
+          userId,
+          filesToExclude,
+        );
+
+        if (sharedFilesData.rows.length) {
+          files.push(...sharedFilesData.rows);
         }
       } catch (err) {
         throw new ServerError(METADATA_INDEX, "Internal server error", err);
@@ -179,8 +196,8 @@ export default async function routes(app: FastifyInstance) {
         }
 
         if (usersData.data) {
-          fileOwner = usersData.data[0];
-          users = usersData.data.slice(1);
+          fileOwner = usersData.data.filter(({ id }) => file.ownerId === id)[0];
+          users = usersData.data.filter(({ id }) => file.ownerId !== id);
         }
       } catch (err) {
         throw new ServerError(GET_METADATA, "Internal server error", err);

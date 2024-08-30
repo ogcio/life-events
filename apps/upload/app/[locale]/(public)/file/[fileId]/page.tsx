@@ -4,14 +4,14 @@ import { getServerLogger } from "nextjs-logging-wrapper";
 import { FileMetadata } from "../../../../types";
 import { AbstractIntlMessages, NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
-import styles from "./page.module.css";
 import { redirect, RedirectType } from "next/navigation";
-import handleSearch from "./actions/handleSearch";
+import searchUser from "./actions/searchUser";
 import SearchBar from "./components/SearchBar";
 import shareFileAction from "./actions/shareFile";
 import SearchResultsTable from "./components/SearchResultsTable";
 import SharingTables from "./components/SharingTables";
 import FileDetails from "./components/FileDetails";
+import removeFileSharing from "./actions/removeFileSharing";
 
 type PageProps = {
   params: { fileId: string; locale: string };
@@ -43,8 +43,9 @@ export default async ({ params, searchParams }: PageProps) => {
   const uploadClient = await AuthenticationFactory.getUploadClient();
   const profileClient = await AuthenticationFactory.getProfileClient();
 
-  const handlesSearchWithId = handleSearch.bind(null, fileId);
-  const shareFileWithId = shareFileAction.bind(null, fileId);
+  const searchUserWithFileId = searchUser.bind(null, fileId);
+  const shareFileWithFileId = shareFileAction.bind(null, fileId);
+  const removeSharingWithFileId = removeFileSharing.bind(null, fileId);
 
   let users:
     | {
@@ -102,13 +103,18 @@ export default async ({ params, searchParams }: PageProps) => {
             {t("shareFileCaption")}
           </div>
           {/* Search bar */}
-          <SearchBar handleSearch={handlesSearchWithId} searchString={email} />
+          <SearchBar handleSearch={searchUserWithFileId} searchString={email} />
           {/* Search results table  */}
 
-          <SearchResultsTable users={users} shareFile={shareFileWithId} />
+          <SearchResultsTable users={users} shareFile={shareFileWithFileId} />
 
           {/* Sharing users table */}
-          {file.sharedWith && <SharingTables users={file.sharedWith} />}
+          {file.sharedWith && (
+            <SharingTables
+              removeSharing={removeSharingWithFileId}
+              users={file.sharedWith}
+            />
+          )}
 
           <div style={{ marginTop: "30px", marginBottom: "30px" }}>
             <form action={goBack}>

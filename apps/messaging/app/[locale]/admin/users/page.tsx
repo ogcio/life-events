@@ -17,7 +17,7 @@ import { notFound } from "next/navigation";
 import { AuthenticationFactory } from "../../../utils/authentication-factory";
 
 export interface UiUserInvitation {
-  userId: string;
+  id: string;
   userProfileId: string | null;
   organisationId: string;
   organisationInvitationStatus:
