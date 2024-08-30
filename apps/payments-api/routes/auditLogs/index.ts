@@ -16,14 +16,17 @@ import { formatAPIResponse } from "../../utils/responseFormatter";
 import { GenericResponse as GenericResponseType } from "../../types/genericResponse";
 import { PaginationParams as PaginationParamsType } from "../../types/pagination";
 import { authPermissions } from "../../types/authPermissions";
-import { AuditLogEvent as AuditLogEventDO } from "../../plugins/auditLog/types";
+import {
+  AuditLogEvent as AuditLogEventDO,
+  AuditLogEventsFilters,
+} from "../../plugins/auditLog/types";
 
 const TAGS_AUDIT_LOGS = ["AuditLogs"];
 
 export default async function auditLogs(app: FastifyInstance) {
   app.get<{
     Reply: GenericResponseType<AuditLogEventDO[]> | Error;
-    Querystring: PaginationParamsType & { eventType?: string };
+    Querystring: PaginationParamsType & AuditLogEventsFilters;
   }>(
     "/",
     {
@@ -51,13 +54,19 @@ export default async function auditLogs(app: FastifyInstance) {
         throw app.httpErrors.unauthorized("Unauthorized!");
       }
 
-      const events = await app.auditLog.getEvents(organizationId, eventType, {
-        offset,
-        limit,
-      });
+      const events = await app.auditLog.getEvents(
+        organizationId,
+        {
+          eventType,
+        },
+        {
+          offset,
+          limit,
+        },
+      );
       const totalCount = await app.auditLog.getEventsTotalCount(
         organizationId,
-        eventType,
+        { eventType },
       );
       const url = request.url.split("?")[0];
       const paginationDetails: PaginationDetails = {

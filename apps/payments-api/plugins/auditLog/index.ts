@@ -5,7 +5,12 @@ import {
 } from "fastify";
 import fp from "fastify-plugin";
 import { AuditLogRepo } from "./repo";
-import { AuditLogEvent, AuditLogEventDO, CreateAuditLog } from "./types";
+import {
+  AuditLogEvent,
+  AuditLogEventDO,
+  AuditLogEventsFilters,
+  CreateAuditLog,
+} from "./types";
 import { PaginationParams } from "../../types/pagination";
 import { AuditLogEventTitles, AuditLogEventType } from "./auditLogEvents";
 
@@ -43,13 +48,13 @@ const buildGetEvents =
   (repo: AuditLogRepo, log: FastifyBaseLogger) =>
   async (
     organizationId: string,
-    eventType: string | undefined,
+    filters: AuditLogEventsFilters,
     pagination: PaginationParams,
   ): Promise<AuditLogEvent[]> => {
     let result;
 
     try {
-      result = await repo.getEvents(organizationId, eventType, pagination);
+      result = await repo.getEvents(organizationId, filters, pagination);
     } catch (err) {
       log.error((err as Error).message);
     }
@@ -70,12 +75,12 @@ const buildGetEventsTotalCount =
   (repo: AuditLogRepo, log: FastifyBaseLogger) =>
   async (
     organizationId: string,
-    eventType: string | undefined,
+    filters: AuditLogEventsFilters,
   ): Promise<number> => {
     let result;
 
     try {
-      result = await repo.getEventsTotalCount(organizationId, eventType);
+      result = await repo.getEventsTotalCount(organizationId, filters);
     } catch (err) {
       log.error((err as Error).message);
     }

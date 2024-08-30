@@ -1,5 +1,5 @@
 import { PostgresDb } from "@fastify/postgres";
-import { AuditLogEvent, CreateAuditLog } from "./types";
+import { AuditLogEvent, AuditLogEventsFilters, CreateAuditLog } from "./types";
 import { QueryResult } from "pg";
 import { PaginationParams } from "../../types/pagination";
 
@@ -34,15 +34,15 @@ export class AuditLogRepo {
 
   getEvents(
     organizationId: string,
-    eventType: string | undefined,
+    filters: AuditLogEventsFilters,
     pagination: PaginationParams,
   ): Promise<QueryResult<AuditLogEvent>> {
     const params = [organizationId, pagination.limit, pagination.offset];
-    let filterByEventType = "";
+    const conditions = [`organization_id = $1`];
 
-    if (eventType) {
-      params.push(eventType);
-      filterByEventType = `AND event_type = $4`;
+    if (filters.eventType) {
+      params.push(filters.eventType);
+      conditions.push(`event_type = $4`);
     }
 
     return this.pg.query(
@@ -54,7 +54,7 @@ export class AuditLogRepo {
           user_id as "userId",
           organization_id as "organizationId"
         FROM audit_logs
-        WHERE organization_id = $1 ${filterByEventType}
+        WHERE ${conditions.join(" AND ")}
         ORDER BY created_at DESC
         LIMIT $2 OFFSET $3
       `,
@@ -64,14 +64,14 @@ export class AuditLogRepo {
 
   getEventsTotalCount(
     organizationId: string,
-    eventType: string | undefined,
+    filters: AuditLogEventsFilters,
   ): Promise<QueryResult<{ totalCount: number }>> {
     const params = [organizationId];
-    let filterByEventType = "";
+    const conditions = [`organization_id = $1`];
 
-    if (eventType) {
-      params.push(eventType);
-      filterByEventType = `AND event_type = $2`;
+    if (filters.eventType) {
+      params.push(filters.eventType);
+      conditions.push(`event_type = $2`);
     }
 
     return this.pg.query(
@@ -79,7 +79,7 @@ export class AuditLogRepo {
         SELECT
           count(*) as "totalCount"
         FROM audit_logs
-        WHERE organization_id = $1 ${filterByEventType}
+        WHERE ${conditions.join(" AND ")}
       `,
       params,
     );

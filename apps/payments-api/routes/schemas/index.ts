@@ -392,9 +392,11 @@ export const CreateAuditLog = Type.Pick(AuditLogEventDetails, [
 
 export const EventTypes = Type.Record(Type.String(), Type.String());
 
+export const AuditLogEventsFilters = Type.Object({
+  eventType: Type.Optional(Type.String()),
+});
+
 export const AuditLogEventsFiltersQueryString = Type.Composite([
   PaginationParams,
-  Type.Object({
-    eventType: Type.Optional(Type.String()),
-  }),
+  AuditLogEventsFilters,
 ]);
