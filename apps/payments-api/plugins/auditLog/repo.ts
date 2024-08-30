@@ -90,7 +90,10 @@ export class AuditLogRepo {
     );
   }
 
-  getEvent(eventId: string): Promise<QueryResult<AuditLogEventDetails>> {
+  getEvent(
+    eventId: string,
+    organizationId: string,
+  ): Promise<QueryResult<AuditLogEventDetails>> {
     return this.pg.query(
       `
         SELECT
@@ -101,9 +104,9 @@ export class AuditLogRepo {
           organization_id as "organizationId",
           metadata
         FROM audit_logs
-        WHERE audit_log_id = $1
+        WHERE audit_log_id = $1 AND organization_id = $2
       `,
-      [eventId],
+      [eventId, organizationId],
     );
   }
 }

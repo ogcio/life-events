@@ -99,11 +99,14 @@ const buildGetEventsTotalCount =
 
 const buildGetEventById =
   (repo: AuditLogRepo, log: FastifyBaseLogger) =>
-  async (eventId: string): Promise<AuditLogEventDetailsDO> => {
+  async (
+    eventId: string,
+    organizationId: string,
+  ): Promise<AuditLogEventDetailsDO> => {
     let result;
 
     try {
-      result = await repo.getEvent(eventId);
+      result = await repo.getEvent(eventId, organizationId);
     } catch (err) {
       log.error((err as Error).message);
     }
