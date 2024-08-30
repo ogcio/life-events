@@ -1,7 +1,10 @@
+import { PostgresDb } from "@fastify/postgres";
 import { FastifyInstance } from "fastify";
+import fp from "fastify-plugin";
+
 import t from "tap";
 
-t.test("under pressure handler should throw an error", async () => {
+t.test("under pressure handler should throw an error", async (t) => {
   let pressureHandler = (
     _req: string | null,
     _res: string | null,
@@ -18,6 +21,9 @@ t.test("under pressure handler should throw an error", async () => {
         ) => {
           pressureHandler = opts.pressureHandler;
         },
+      },
+      "@fastify/autoload": {
+        default: async () => {},
       },
     },
   );
