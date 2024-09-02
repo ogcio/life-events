@@ -118,6 +118,8 @@ export default async function providers(app: FastifyInstance) {
             with count_selection as(
                 select count(*) from email_providers
                 where organisation_id = $1
+                and deleted_at is null
+                and ${primaryFilter}
             )
             select
                 id,
@@ -150,6 +152,8 @@ export default async function providers(app: FastifyInstance) {
               with count_selection as(
                   select count(*) from sms_providers
                   where organisation_id = $1
+                  and deleted_at is null
+                  and ${primaryFilter}
               )
               select
                   id,
