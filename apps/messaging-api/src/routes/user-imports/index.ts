@@ -16,6 +16,8 @@ import {
 import {
   AcceptedQueryBooleanValues,
   getGenericResponseSchema,
+  PaginationParams,
+  PaginationParamsSchema,
   parseBooleanEnum,
   TypeboxBooleanEnum,
 } from "../../types/schemaDefinitions.js";
@@ -26,6 +28,10 @@ import {
 import { HttpError } from "../../types/httpErrors.js";
 import { BadRequestError } from "shared-errors";
 import { ensureOrganizationIdIsSet } from "../../utils/authentication-factory.js";
+import {
+  formatAPIResponse,
+  sanitizePagination,
+} from "../../utils/pagination.js";
 
 const tags = ["User Imports"];
 enum MimeTypes {
@@ -40,7 +46,7 @@ enum MimeTypes {
 export default async function userImports(app: FastifyInstance) {
   interface GetImportsSchema {
     Response: { data: Omit<UsersImport, "usersData">[] | string };
-    Querystring: unknown;
+    Querystring: PaginationParams;
   }
 
   app.get<GetImportsSchema>(
@@ -52,6 +58,7 @@ export default async function userImports(app: FastifyInstance) {
         description:
           "Retrieves the user import batches related to the current organisation",
         tags,
+        querystring: Type.Optional(PaginationParamsSchema),
         response: {
           200: getGenericResponseSchema(
             Type.Array(Type.Omit(UsersImportSchema, ["usersData"])),
@@ -59,17 +66,19 @@ export default async function userImports(app: FastifyInstance) {
         },
       },
     },
-    async (request: FastifyRequest, _reply: FastifyReply) => {
-      return {
-        data: await getUserImportsForOrganisation({
-          logger: request.log,
-          pool: app.pg.pool,
-          organisationId: ensureOrganizationIdIsSet(
-            request,
-            "GET_USER_IMPORTS",
-          ),
-        }),
-      };
+    async (request: FastifyRequest<GetImportsSchema>, _reply: FastifyReply) => {
+      const pagination = sanitizePagination(request.query);
+      const response = await getUserImportsForOrganisation({
+        logger: request.log,
+        pool: app.pg.pool,
+        organisationId: ensureOrganizationIdIsSet(request, "GET_USER_IMPORTS"),
+      });
+      return formatAPIResponse(response.data, {
+        limit: Number(pagination.limit),
+        offset: Number(pagination.offset),
+        url: new URL(`${app.listeningOrigin}${request.url}`),
+        totalCount: response.totalCount,
+      });
     },
   );
 
