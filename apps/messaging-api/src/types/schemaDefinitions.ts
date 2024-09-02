@@ -23,8 +23,8 @@ export const TypeboxStringEnum = <T extends string[]>(
 
 export type AcceptedQueryBooleanValues = "true" | "false" | "0" | "1";
 
-// Did this because without type coercion
-// the boolean type in query string is not working
+// Did this to allow boolean-like
+// query parameters
 export const TypeboxBooleanEnum = (
   defaultValue?: string,
   description?: string,
