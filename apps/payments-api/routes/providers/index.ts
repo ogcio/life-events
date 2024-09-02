@@ -54,7 +54,12 @@ export default async function providers(app: FastifyInstance) {
         eventType: AuditLogEventType.PROVIDER_CREATE,
         userId,
         organizationId,
-        metadata: {}
+        metadata: {
+          resource: {
+            type: "provider",
+            id: result.id,
+          },
+        },
       });
 
       reply.send(result);

@@ -128,4 +128,13 @@ export class ProvidersPage {
     const addRealexProviderPage = new AddRealexProviderPage(this.page);
     await addRealexProviderPage.create(name);
   }
+
+  async getProviderId(name: string) {
+    await this.editProvider(name);
+    await expect(this.page).toHaveURL(
+      new RegExp(`^${process.env.BASE_URL}${providersUrl}`),
+    );
+    const urlPaths = this.page.url().split("/");
+    return urlPaths.at(-1) ?? "";
+  }
 }
