@@ -4978,7 +4978,7 @@ paths:
                     items:
                       type: object
                       properties:
-                        eventId:
+                        id:
                           format: uuid
                           description: Unique id of the event
                           type: string
@@ -5002,7 +5002,7 @@ paths:
                           description: Date and time which describes when the message has to be sent
                           type: string
                       required:
-                        - eventId
+                        - id
                         - messageId
                         - subject
                         - receiverFullName

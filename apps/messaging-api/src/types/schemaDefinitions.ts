@@ -217,7 +217,7 @@ export type GenericResponse<T> = {
 
 export const MessageEventListSchema = Type.Array(
   Type.Object({
-    eventId: Type.String({
+    id: Type.String({
       format: "uuid",
       description: "Unique id of the event",
     }),

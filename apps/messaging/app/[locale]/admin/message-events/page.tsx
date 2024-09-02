@@ -198,7 +198,7 @@ export default async (props: {
               eventStatus,
               eventType,
               messageId,
-              eventId,
+              id,
               scheduledAt,
               receiverFullName,
               subject,
@@ -219,7 +219,7 @@ export default async (props: {
                     <Link
                       href={
                         new URL(
-                          `/en/admin/message-events/${eventId}`,
+                          `/en/admin/message-events/${id}`,
                           process.env.HOST_URL,
                         ).href
                       }
