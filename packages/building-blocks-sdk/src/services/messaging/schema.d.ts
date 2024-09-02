@@ -1028,8 +1028,11 @@ export interface paths {
                  */
                 id: string;
                 contents: {
-                  /** @description Language key for template content */
-                  lang: string;
+                  /**
+                   * @description Template content language
+                   * @enum {string}
+                   */
+                  language: "en" | "ga";
                   /** @description Template name for the related language */
                   templateName: string;
                 }[];

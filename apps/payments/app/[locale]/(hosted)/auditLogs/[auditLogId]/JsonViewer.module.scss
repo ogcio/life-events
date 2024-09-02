@@ -1,0 +1,21 @@
+.container {
+  padding: 0.5rem;
+  border-radius: 5px;
+  background-color: #282c34;
+  color: white;
+
+  pre {
+    line-height: 20px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+}
+
+.lineNumber {
+  display: inline-block;
+  color: #888;
+  padding-right: 10px;
+  text-align: right;
+  user-select: none;
+  width: 30px;
+}
