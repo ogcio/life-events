@@ -171,7 +171,7 @@ export const UsersImportSchema = Type.Object({
   lastRetryAt: Type.Union([Type.String({ format: "date-time" }), Type.Null()], {
     default: null,
   }),
-  importId: Type.String(),
+  id: Type.String({ format: "uuid" }),
 });
 export type UsersImport = Static<typeof UsersImportSchema>;
 

@@ -113,7 +113,7 @@ const updateUsersImport = async (params: {
         JSON.stringify(usersImport.usersData),
         usersImport.retryCount,
         usersImport.lastRetryAt,
-        usersImport.importId,
+        usersImport.id,
       ],
     );
 

@@ -126,7 +126,7 @@ export const getUserImports = async (params: {
             import_channel as "importChannel",
             retry_count as "retryCount",
             last_retry_at as "lastRetryAt",
-            import_id as "importId"
+            import_id as "id"
         FROM users_imports where ${params.whereClauses.join(operator)} ${limitClause}
       `,
       params.whereValues,

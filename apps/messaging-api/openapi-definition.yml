@@ -3555,7 +3555,8 @@ paths:
                             - format: date-time
                               type: string
                             - type: "null"
-                        importId:
+                        id:
+                          format: uuid
                           type: string
                       required:
                         - organisationId
@@ -3563,7 +3564,7 @@ paths:
                         - importChannel
                         - retryCount
                         - lastRetryAt
-                        - importId
+                        - id
                   metadata:
                     type: object
                     properties:
@@ -3998,7 +3999,8 @@ paths:
                           - format: date-time
                             type: string
                           - type: "null"
-                      importId:
+                      id:
+                        format: uuid
                         type: string
                     required:
                       - organisationId
@@ -4007,7 +4009,7 @@ paths:
                       - importChannel
                       - retryCount
                       - lastRetryAt
-                      - importId
+                      - id
                   metadata:
                     type: object
                     properties:
