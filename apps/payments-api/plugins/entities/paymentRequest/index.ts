@@ -209,7 +209,7 @@ const buildGetOrganizationIdFromPaymentRequest =
   (repo: PaymentRequestRepo, log: FastifyBaseLogger, httpErrors: HttpErrors) =>
   async (paymentRequestId: string): Promise<{ organizationId: string }> => {
     let result;
-    console.log(">>> ", paymentRequestId);
+
     try {
       result = await repo.getOrganizationIdFromPaymentRequest(paymentRequestId);
     } catch (err) {
