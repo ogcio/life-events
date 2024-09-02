@@ -2298,7 +2298,8 @@ export interface paths {
                 retryCount: number;
                 /** @default null */
                 lastRetryAt: string | null;
-                importId: string;
+                /** Format: uuid */
+                id: string;
               }[];
               metadata?: {
                 /** @description Object containing the links to the related endpoints */
@@ -2682,7 +2683,8 @@ export interface paths {
                 retryCount: number;
                 /** @default null */
                 lastRetryAt: string | null;
-                importId: string;
+                /** Format: uuid */
+                id: string;
               };
               metadata?: {
                 /** @description Object containing the links to the related endpoints */
