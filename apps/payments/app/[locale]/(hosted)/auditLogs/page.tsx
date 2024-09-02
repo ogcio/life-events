@@ -59,7 +59,7 @@ export default async function ({
     const queryItems: Array<string> = [];
 
     if (page) {
-      queryItems.push(`page=${page}`);
+      queryItems.push(`page=1`);
     }
 
     if (limit) {
