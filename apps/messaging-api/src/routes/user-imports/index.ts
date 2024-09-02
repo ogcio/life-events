@@ -13,7 +13,14 @@ import {
   UsersImport,
   UsersImportSchema,
 } from "../../types/usersSchemaDefinitions.js";
-import { getGenericResponseSchema } from "../../types/schemaDefinitions.js";
+import {
+  AcceptedQueryBooleanValues,
+  getGenericResponseSchema,
+  PaginationParams,
+  PaginationParamsSchema,
+  parseBooleanEnum,
+  TypeboxBooleanEnum,
+} from "../../types/schemaDefinitions.js";
 import {
   getUserImportForOrganisation,
   getUserImportsForOrganisation,
@@ -21,6 +28,10 @@ import {
 import { HttpError } from "../../types/httpErrors.js";
 import { BadRequestError } from "shared-errors";
 import { ensureOrganizationIdIsSet } from "../../utils/authentication-factory.js";
+import {
+  formatAPIResponse,
+  sanitizePagination,
+} from "../../utils/pagination.js";
 
 const tags = ["User Imports"];
 enum MimeTypes {
@@ -35,7 +46,7 @@ enum MimeTypes {
 export default async function userImports(app: FastifyInstance) {
   interface GetImportsSchema {
     Response: { data: Omit<UsersImport, "usersData">[] | string };
-    Querystring: unknown;
+    Querystring: PaginationParams;
   }
 
   app.get<GetImportsSchema>(
@@ -47,6 +58,7 @@ export default async function userImports(app: FastifyInstance) {
         description:
           "Retrieves the user import batches related to the current organisation",
         tags,
+        querystring: Type.Optional(PaginationParamsSchema),
         response: {
           200: getGenericResponseSchema(
             Type.Array(Type.Omit(UsersImportSchema, ["usersData"])),
@@ -54,17 +66,19 @@ export default async function userImports(app: FastifyInstance) {
         },
       },
     },
-    async (request: FastifyRequest, _reply: FastifyReply) => {
-      return {
-        data: await getUserImportsForOrganisation({
-          logger: request.log,
-          pool: app.pg.pool,
-          organisationId: ensureOrganizationIdIsSet(
-            request,
-            "GET_USER_IMPORTS",
-          ),
-        }),
-      };
+    async (request: FastifyRequest<GetImportsSchema>, _reply: FastifyReply) => {
+      const pagination = sanitizePagination(request.query);
+      const response = await getUserImportsForOrganisation({
+        logger: request.log,
+        pool: app.pg.pool,
+        organisationId: ensureOrganizationIdIsSet(request, "GET_USER_IMPORTS"),
+      });
+      return formatAPIResponse(response.data, {
+        limit: Number(pagination.limit),
+        offset: Number(pagination.offset),
+        url: new URL(`${app.listeningOrigin}${request.url}`),
+        totalCount: response.totalCount,
+      });
     },
   );
 
@@ -110,7 +124,7 @@ export default async function userImports(app: FastifyInstance) {
   );
 
   interface GetImportSchema {
-    Querystring: { includeImportedData?: boolean };
+    Querystring: { includeImportedData?: AcceptedQueryBooleanValues };
     Response: { data: UsersImport };
     Params: { importId: string };
   }
@@ -125,11 +139,12 @@ export default async function userImports(app: FastifyInstance) {
         tags,
         querystring: Type.Optional(
           Type.Object({
-            includeImportedData: Type.Boolean({
-              default: true,
-              description:
+            includeImportedData: Type.Optional(
+              TypeboxBooleanEnum(
+                "true",
                 "If true, it returns the data of the user sent in the import batch",
-            }),
+              ),
+            ),
           }),
         ),
         params: Type.Object({ importId: Type.String({ format: "uuid" }) }),
@@ -146,7 +161,9 @@ export default async function userImports(app: FastifyInstance) {
         pool: app.pg.pool,
         organisationId: ensureOrganizationIdIsSet(request, "GET_USER_IMPORT"),
         importId: request.params.importId,
-        includeUsersData: request.query.includeImportedData ?? true,
+        includeUsersData: parseBooleanEnum(
+          request.query.includeImportedData ?? "true",
+        ),
       }),
     }),
   );
