@@ -85,7 +85,7 @@ export default async function messages(app: FastifyInstance) {
           order by scheduled_at desc
           limit $3 offset $4
           ) select
-              l.id as "eventId",
+              l.id as "id",
               l.message_id as "messageId",
               m.count::int,
               (l.data ->> 'subject') as subject,
