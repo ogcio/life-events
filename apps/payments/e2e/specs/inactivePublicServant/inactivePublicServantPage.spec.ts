@@ -9,47 +9,42 @@ import {
 } from "allure-js-commons";
 import { InactivePublicServantPage } from "../../objects/inactivePublicSurvant/InactivePublicServantPage";
 import { ErrorPage } from "../../objects/errorPage/ErrorPage";
+import { deleteLogtoUser } from "../../utils/logto_utils";
+import { MyGovIdMockLoginPage } from "../../objects/MyGovIdMockLoginPage";
+import { inactivePublicServant, password } from "../../utils/constants";
 
 test.describe("Inactive public servant page", () => {
-  test.afterAll(async ({ inactivePublicServantPage, request }) => {
-    const cookies = await inactivePublicServantPage.context().cookies();
-    // console.log(cookies)
+  const baseURL = process.env.BASE_URL || "";
+  let page;
 
-    const logtoEndpoint = "http://localhost:3301";
-    const tokenEndpoint = `${logtoEndpoint}/oidc/token`;
-    const applicationId = "qrtllp45fgbvsdjyasd5";
-    const applicationSecret = "XXXXXX";
-
-    const result = await request.post(tokenEndpoint, {
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        Authorization: `Basic ${Buffer.from(
-          `${applicationId}:${applicationSecret}`,
-        ).toString("base64")}`,
-      },
-      data: new URLSearchParams({
-        grant_type: "client_credentials",
-        resource: `https://default.logto.app/api`,
-        scope: "all",
-      }).toString(),
+  test.beforeAll(async ({ browser }) => {
+    page = await browser.newPage({ storageState: undefined });
+    await page.goto(baseURL);
+    const logtoLoginBtn = await page.getByRole("button", {
+      name: "Continue with MyGovId",
     });
-    const accessToken = (await result.json()).access_token;
-    console.log(accessToken);
-    const r = await request.get(
-      `${logtoEndpoint}/api/users/${"dtndm92rkicd"}`,
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      },
-    );
-    const userInfo = await r.json();
-    console.log(userInfo);
+    await logtoLoginBtn.click();
+    const loginPage = new MyGovIdMockLoginPage(page);
+    await loginPage.selectUser(inactivePublicServant, "publicServant");
+    await loginPage.enterPassword(password);
+    await loginPage.submitLogin(inactivePublicServant);
   });
 
-  test("should see a dedicated page for inactive public servants @smoke @normal", async ({
-    inactivePublicServantPage,
-  }) => {
+  test.afterAll(async ({ request }) => {
+    const cookies = await page.context().cookies();
+    const userId = cookies
+      .filter((cookie) => cookie.name === "logtoUserId")
+      .map((cookie) => cookie.value);
+
+    if (!userId.length) {
+      console.error("User ID was not found");
+      return;
+    }
+
+    await deleteLogtoUser(request, userId[0]);
+  });
+
+  test("should see a dedicated page for inactive public servants @smoke @normal", async () => {
     await description(
       "This test checks the Inactive Public Servant page's content",
     );
@@ -57,16 +52,12 @@ test.describe("Inactive public servant page", () => {
     await tags("Inactive public servant page");
     await severity(Severity.NORMAL);
 
-    await inactivePublicServantPage.goto("/");
-    const inactivePubServentPage = new InactivePublicServantPage(
-      inactivePublicServantPage,
-    );
+    await page.goto("/");
+    const inactivePubServentPage = new InactivePublicServantPage(page);
     await inactivePubServentPage.checPageContent();
   });
 
-  test("should not be able to access any other pages @smoke @normal", async ({
-    inactivePublicServantPage,
-  }) => {
+  test("should not be able to access any other pages @smoke @normal", async () => {
     await description(
       "This test checks that an inactive public servant cannot access any pages of the application",
     );
@@ -74,12 +65,12 @@ test.describe("Inactive public servant page", () => {
     await tags("Inactive public servant page");
     await severity(Severity.NORMAL);
 
-    await inactivePublicServantPage.goto("/en/paymentSetup");
-    const page1 = new ErrorPage(inactivePublicServantPage);
+    await page.goto("/en/paymentSetup");
+    const page1 = new ErrorPage(page);
     await page1.checPageContent();
 
-    await inactivePublicServantPage.goto("/en/citizen/transactions");
-    const page2 = new ErrorPage(inactivePublicServantPage);
+    await page.goto("/en/citizen/transactions");
+    const page2 = new ErrorPage(page);
     await page2.checPageContent();
   });
 });

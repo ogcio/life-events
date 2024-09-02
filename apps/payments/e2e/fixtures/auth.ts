@@ -9,8 +9,8 @@ import {
   inactivePublicServant,
 } from "../utils/constants";
 
-const baseURL = process.env.BASE_URL;
-const loginUrl = process.env.LOGTO_ENDPOINT;
+const baseURL = process.env.BASE_URL || "";
+const loginUrl = process.env.LOGTO_ENDPOINT || "";
 
 export * from "@playwright/test";
 
@@ -49,9 +49,6 @@ const getWorkerStorageState = async (
     case "citizen":
       await loginPage.expectCitizenPaymentsPage();
       break;
-    case "inactivePublicServant":
-      await loginPage.expectInactivePaymentSetupPage();
-      break;
   }
 
   await page.context().storageState({ path: fileName });
@@ -66,7 +63,6 @@ export const test = baseTest.extend<
   {
     pubServantWorkerStorageState: string;
     secondPubServantWorkerStorageState: string;
-    inactivePubServantWorkerStorageState: string;
     userWorkerStorageState: string;
     secondUserWorkerStorageState: string;
   }
@@ -98,23 +94,6 @@ export const test = baseTest.extend<
         storagePath,
         publicServants[1],
         "publicServant",
-      );
-
-      await use(fileName);
-    },
-    { scope: "worker" },
-  ],
-
-  inactivePubServantWorkerStorageState: [
-    async ({ browser }, use) => {
-      const id = test.info().parallelIndex;
-      const storagePath = `.auth/inactive-public-servant-${id}.json`;
-
-      const fileName = await getWorkerStorageState(
-        browser,
-        storagePath,
-        inactivePublicServant,
-        "inactivePublicServant",
       );
 
       await use(fileName);
