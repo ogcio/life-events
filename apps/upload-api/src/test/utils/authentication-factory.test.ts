@@ -10,7 +10,7 @@ t.test("authentication-factory", async (t) => {
       typeof import("../../utils/authentication-factory.js")
     >("../../utils/authentication-factory.js", {
       "api-auth": {
-        getAccessToken: (config) => {
+        getAccessToken: (config: { resource: string }) => {
           profileBackendUrl = config.resource;
           return "accessToken";
         },
@@ -18,7 +18,7 @@ t.test("authentication-factory", async (t) => {
       },
       "building-blocks-sdk": {
         Profile: class Profile {
-          constructor(params) {
+          constructor(params: string) {
             usedToken = params;
           }
         },
@@ -42,7 +42,7 @@ t.test("authentication-factory", async (t) => {
         typeof import("../../utils/authentication-factory.js")
       >("../../utils/authentication-factory.js", {
         "api-auth": {
-          getAccessToken: (config) => {
+          getAccessToken: (config: { resource: string }) => {
             profileBackendUrl = config.resource;
             return "accessToken";
           },
@@ -50,7 +50,7 @@ t.test("authentication-factory", async (t) => {
         },
         "building-blocks-sdk": {
           Profile: class Profile {
-            constructor(params) {
+            constructor(params: string) {
               usedToken = params;
             }
           },
@@ -77,7 +77,7 @@ t.test("authentication-factory", async (t) => {
       },
       "building-blocks-sdk": {
         Profile: class Profile {
-          constructor(params) {
+          constructor(params: string) {
             usedToken = params;
           }
         },

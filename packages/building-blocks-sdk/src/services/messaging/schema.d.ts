@@ -2270,7 +2270,12 @@ export interface paths {
     /** @description Retrieves the user import batches related to the current organisation */
     get: {
       parameters: {
-        query?: never;
+        query?: {
+          /** @description Indicates where to start fetching data or how many records to skip, defining the initial position within the list */
+          offset?: string;
+          /** @description Indicates the maximum number (100) of items that will be returned in a single request */
+          limit?: string;
+        };
         header?: never;
         path?: never;
         cookie?: never;
@@ -2298,7 +2303,8 @@ export interface paths {
                 retryCount: number;
                 /** @default null */
                 lastRetryAt: string | null;
-                importId: string;
+                /** Format: uuid */
+                id: string;
               }[];
               metadata?: {
                 /** @description Object containing the links to the related endpoints */
@@ -2567,9 +2573,9 @@ export interface paths {
     /** @description Retrieves the requested user import batch */
     get: {
       parameters: {
-        query: {
+        query?: {
           /** @description If true, it returns the data of the user sent in the import batch */
-          includeImportedData: boolean;
+          includeImportedData?: "true" | "false" | "0" | "1";
         };
         header?: never;
         path: {
@@ -2682,7 +2688,8 @@ export interface paths {
                 retryCount: number;
                 /** @default null */
                 lastRetryAt: string | null;
-                importId: string;
+                /** Format: uuid */
+                id: string;
               };
               metadata?: {
                 /** @description Object containing the links to the related endpoints */

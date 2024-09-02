@@ -288,7 +288,7 @@ t.test("files", async (t) => {
             url: "/files",
           })
           .then((response) => {
-            t.equal(response.statusCode, 200);
+            t.equal(response.statusCode, 201);
             t.end();
           });
 
@@ -298,7 +298,7 @@ t.test("files", async (t) => {
         await nextTick();
         uploadEventEmitter.emit("fileUploaded", { Key: "key" });
         await nextTick();
-        pgEventEmitter.emit("done");
+        pgEventEmitter.emit("done", [{ id: "1" }]);
         await nextTick();
         antivirusPassthrough.emit("scan-complete", { isInfected: false });
       },
