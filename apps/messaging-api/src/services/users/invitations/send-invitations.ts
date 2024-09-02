@@ -65,7 +65,7 @@ export const sendInvitationsForUsersImport = async (params: {
       userIds,
       organisationId: toImportUsers.organisationId,
       client,
-      importId: params.toImportUsers.importId,
+      importId: params.toImportUsers.id,
     });
 
     const toSend = prepareInvitations({

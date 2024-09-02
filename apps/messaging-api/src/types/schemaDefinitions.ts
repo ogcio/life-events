@@ -4,6 +4,7 @@ import {
   PAGINATION_MAX_LIMIT,
   PAGINATION_MIN_OFFSET,
 } from "../utils/pagination.js";
+import { Value } from "@sinclair/typebox/value";
 
 export const AVAILABLE_LANGUAGES = ["en", "ga"];
 export const DEFAULT_LANGUAGE = "en";
@@ -19,6 +20,29 @@ export const TypeboxStringEnum = <T extends string[]>(
     default: defaultValue,
     description,
   });
+
+export type AcceptedQueryBooleanValues = "true" | "false" | "0" | "1";
+
+// Did this to allow boolean-like
+// query parameters
+export const TypeboxBooleanEnum = (
+  defaultValue?: string,
+  description?: string,
+) => TypeboxStringEnum(["true", "false", "0", "1"], defaultValue, description);
+
+export const TypeboxBooleanEnumParser = Type.Transform(
+  Type.Union([
+    Type.Literal("true"),
+    Type.Literal("false"),
+    Type.Literal("0"),
+    Type.Literal("1"),
+  ]),
+)
+  .Decode((stringValue) => Boolean(stringValue))
+  .Encode((boolVal) => (boolVal ? "true" : "false"));
+
+export const parseBooleanEnum = (inputValue: AcceptedQueryBooleanValues) =>
+  Value.Decode(TypeboxBooleanEnumParser, inputValue);
 
 export const EditableProviderTypesSchema = TypeboxStringEnum(
   ["sms", "email"],
@@ -217,7 +241,7 @@ export type GenericResponse<T> = {
 
 export const MessageEventListSchema = Type.Array(
   Type.Object({
-    eventId: Type.String({
+    id: Type.String({
       format: "uuid",
       description: "Unique id of the event",
     }),

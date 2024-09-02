@@ -10,7 +10,7 @@ export const getUserImportsForOrganisation = async (params: {
   logger: FastifyBaseLogger;
   organisationId: string;
   pool: Pool;
-}): Promise<Omit<UsersImport, "usersData">[]> => {
+}): Promise<{ data: Omit<UsersImport, "usersData">[]; totalCount: number }> => {
   const client = await params.pool.connect();
   try {
     return await getUserImports({
@@ -43,14 +43,14 @@ export const getUserImportForOrganisation = async (params: {
       includeUsersData: params.includeUsersData,
     });
 
-    if (results.length === 0) {
+    if (results.data.length === 0) {
       throw new NotFoundError(
         READ_USER_IMPORTS_ERROR,
         `Users import with id ${params.importId} and organisation ${params.organisationId} not found`,
       );
     }
 
-    return results[0];
+    return results.data[0];
   } finally {
     client.release();
   }

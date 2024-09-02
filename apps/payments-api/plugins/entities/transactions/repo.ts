@@ -205,4 +205,16 @@ export class TransactionsRepo {
       [extPaymentId],
     );
   }
+
+  getPaymentRequestIdFromTransaction(
+    transactionId: string,
+  ): Promise<QueryResult<{ paymentRequestId: string }>> {
+    return this.pg.query(
+      `SELECT
+        t.payment_request_id as "paymentRequestId"
+      FROM payment_transactions t
+      WHERE t.transaction_id = $1`,
+      [transactionId],
+    );
+  }
 }

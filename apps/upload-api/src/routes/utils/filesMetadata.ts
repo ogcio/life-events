@@ -37,7 +37,7 @@ const getSharedFiles = (
   userId: string,
   toExclude: string[],
 ) => {
-  let query = `${baseQuery}, files_users WHERE files_users.user_id = $1`;
+  let query = `${baseQuery} INNER JOIN files_users ON files.id = files_users.file_id WHERE files_users.user_id = $1`;
 
   if (toExclude.length) {
     let i = 2;

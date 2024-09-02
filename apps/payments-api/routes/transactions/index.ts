@@ -27,6 +27,7 @@ import {
 } from "../../plugins/entities/transactions/types";
 import { TransactionStatusesEnum } from "../../plugins/entities/transactions";
 import { authPermissions } from "../../types/authPermissions";
+import { AuditLogEventType } from "../../plugins/auditLog/auditLogEvents";
 
 const TAGS = ["Transactions"];
 
@@ -137,11 +138,27 @@ export default async function transactions(app: FastifyInstance) {
     async (request, reply) => {
       const { transactionId } = request.params;
       const { status } = request.body;
+      const userId = request.userData?.userId;
 
       await app.transactions.updateTransactionStatus(
         transactionId,
         status as TransactionStatusesEnum,
       );
+
+      const paymentRequestIdResult =
+        await app.transactions.getPaymentRequestIdFromTransaction(
+          transactionId,
+        );
+      const orgIdResult =
+        await app.paymentRequest.getOrganizationIdFromPaymentRequest(
+          paymentRequestIdResult.paymentRequestId,
+        );
+      app.auditLog.createEvent({
+        eventType: AuditLogEventType.TRANSACTION_STATUS_UPDATE,
+        userId,
+        organizationId: orgIdResult.organizationId,
+        metadata: {},
+      });
 
       reply.send();
     },
@@ -178,6 +195,18 @@ export default async function transactions(app: FastifyInstance) {
         userId,
         request.body,
       );
+
+      const orgIdResult =
+        await app.paymentRequest.getOrganizationIdFromPaymentRequest(
+          request.body.paymentRequestId,
+        );
+      app.auditLog.createEvent({
+        eventType: AuditLogEventType.TRANSACTION_CREATE,
+        userId,
+        organizationId: orgIdResult.organizationId,
+        metadata: {},
+      });
+
       reply.send(
         formatAPIResponse({
           id: result.transactionId,

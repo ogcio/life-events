@@ -1,7 +1,6 @@
 import { FastifyInstance } from "fastify";
 import { Permissions } from "../../types/permissions.js";
 import {
-  FileMetadata,
   FileMetadataType,
   FileOwnerType,
   getGenericResponseSchema,
@@ -51,12 +50,14 @@ export default async function routes(app: FastifyInstance) {
       const files: FileMetadataType[] = [];
 
       const client = await app.pg.pool.connect();
+      const userIds = new Set<string>();
       try {
         const ownedFilesData = await getOwnedFiles(client, userId);
+
         const ownedFiles = ownedFilesData.rows;
 
         files.push(...ownedFiles);
-
+        files.forEach(({ ownerId }) => userIds.add(ownerId as string));
         const filesToExclude = ownedFiles.map(({ id }) => id as string);
 
         if (organizationId) {
@@ -68,6 +69,9 @@ export default async function routes(app: FastifyInstance) {
 
           if (organizationFilesData.rows.length) {
             files.push(...organizationFilesData.rows);
+            organizationFilesData.rows.forEach(({ ownerId }) =>
+              userIds.add(ownerId),
+            );
             filesToExclude.push(
               ...organizationFilesData.rows.map(({ id }) => id as string),
             );
@@ -81,6 +85,7 @@ export default async function routes(app: FastifyInstance) {
         );
 
         if (sharedFilesData.rows.length) {
+          sharedFilesData.rows.map(({ ownerId }) => userIds.add(ownerId));
           files.push(...sharedFilesData.rows);
         }
       } catch (err) {
@@ -89,7 +94,6 @@ export default async function routes(app: FastifyInstance) {
         client.release();
       }
 
-      const userIds = files.map((f) => f.ownerId);
       let usersData: { [key: string]: FileOwnerType };
 
       if (files.length === 0) {
@@ -98,7 +102,9 @@ export default async function routes(app: FastifyInstance) {
 
       const profileSdk = await getProfileSdk(organizationId);
       try {
-        const usersResponse = await profileSdk.selectUsers(userIds);
+        const usersResponse = await profileSdk.selectUsers(
+          Array.from(userIds.keys()),
+        );
 
         if (usersResponse.error) {
           app.log.error(usersResponse.error);
@@ -151,26 +157,25 @@ export default async function routes(app: FastifyInstance) {
       const fileId = request.params.id;
 
       let file: FileMetadataType | undefined = undefined;
+      const usersToRetrieve = new Set<string>();
+
       try {
         const fileData = await getFileMetadataById(app.pg, fileId);
         if (fileData.rows) {
           file = fileData.rows[0];
         }
-      } catch (err) {
-        throw new ServerError(GET_METADATA, "Internal server error", err);
-      }
 
-      if (!file) {
-        throw new NotFoundError(GET_METADATA, "File not found");
-      }
+        if (!file) {
+          return new NotFoundError(GET_METADATA, "File not found");
+        }
 
-      const userIdsSharingThisFile: string[] = [];
-      try {
+        usersToRetrieve.add(file.ownerId);
+
         const sharingsData = await getFileSharings(app.pg, fileId);
 
         if (sharingsData.rows) {
-          userIdsSharingThisFile.push(
-            ...sharingsData.rows.map(({ userId }) => userId),
+          sharingsData.rows.forEach(({ userId }) =>
+            usersToRetrieve.add(userId),
           );
         }
       } catch (err) {
@@ -179,16 +184,15 @@ export default async function routes(app: FastifyInstance) {
 
       const profileSdk = await getProfileSdk(organizationId);
 
-      const usersToRetrieve = [file.ownerId, ...userIdsSharingThisFile];
-
       let users: FileOwnerType[] = [];
       let fileOwner: FileOwnerType | undefined;
       try {
-        const usersData = await profileSdk.selectUsers(usersToRetrieve);
+        const usersData = await profileSdk.selectUsers(
+          Array.from(usersToRetrieve.keys()),
+        );
 
         if (usersData.error) {
-          app.log.error(usersData.error);
-          throw new ServerError(
+          return new ServerError(
             GET_METADATA,
             "Internal server error",
             usersData.error,
