@@ -108,7 +108,7 @@ export const getUserImports = async (params: {
   logicalWhereOperator?: string;
   limit?: number;
   includeUsersData: boolean;
-}): Promise<UsersImport[]> => {
+}): Promise<{ data: UsersImport[]; totalCount: number }> => {
   try {
     const usersDataClause = params.includeUsersData
       ? 'users_data as "usersData",'
@@ -117,22 +117,34 @@ export const getUserImports = async (params: {
     const operator = params.logicalWhereOperator
       ? ` ${params.logicalWhereOperator} `
       : " AND ";
-    const result = await params.client.query<UsersImport>(
-      `
+    const toSelectFields = `
         SELECT 
-            organisation_id as "organisationId",
-            imported_at as "importedAt",
-            ${usersDataClause}
-            import_channel as "importChannel",
-            retry_count as "retryCount",
-            last_retry_at as "lastRetryAt",
-            import_id as "id"
-        FROM users_imports where ${params.whereClauses.join(operator)} ${limitClause}
+          organisation_id as "organisationId",
+          imported_at as "importedAt",
+          ${usersDataClause}
+          import_channel as "importChannel",
+          retry_count as "retryCount",
+          last_retry_at as "lastRetryAt",
+          import_id as "id"
+      `;
+    const fromQuery = `FROM users_imports where ${params.whereClauses.join(operator)}`;
+    const result = params.client.query<UsersImport>(
+      `
+        ${toSelectFields}
+        ${fromQuery}
+        ${limitClause}
       `,
       params.whereValues,
     );
-
-    return result.rows;
+    const countResult = params.client.query<{ totalCount: number }>(
+      `
+        SELECT COUNT(*) as totalCount ${fromQuery};
+      `,
+    );
+    return {
+      data: (await result).rows,
+      totalCount: (await countResult).rows[0].totalCount,
+    };
   } catch (error) {
     const message = isNativeError(error) ? error.message : "unknown error";
     throw new ServerError(
