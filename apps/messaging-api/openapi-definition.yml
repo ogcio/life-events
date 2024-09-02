@@ -3822,11 +3822,16 @@ paths:
       description: Retrieves the requested user import batch
       parameters:
         - schema:
-            default: true
-            type: boolean
+            type: string
+            enum:
+              - "true"
+              - "false"
+              - "0"
+              - "1"
+            default: "true"
           in: query
           name: includeImportedData
-          required: true
+          required: false
           description: If true, it returns the data of the user sent in the import batch
         - schema:
             format: uuid

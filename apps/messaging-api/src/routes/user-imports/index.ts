@@ -13,7 +13,12 @@ import {
   UsersImport,
   UsersImportSchema,
 } from "../../types/usersSchemaDefinitions.js";
-import { getGenericResponseSchema } from "../../types/schemaDefinitions.js";
+import {
+  AcceptedQueryBooleanValues,
+  getGenericResponseSchema,
+  parseBooleanEnum,
+  TypeboxBooleanEnum,
+} from "../../types/schemaDefinitions.js";
 import {
   getUserImportForOrganisation,
   getUserImportsForOrganisation,
@@ -110,7 +115,7 @@ export default async function userImports(app: FastifyInstance) {
   );
 
   interface GetImportSchema {
-    Querystring: { includeImportedData?: boolean };
+    Querystring: { includeImportedData?: AcceptedQueryBooleanValues };
     Response: { data: UsersImport };
     Params: { importId: string };
   }
@@ -125,11 +130,12 @@ export default async function userImports(app: FastifyInstance) {
         tags,
         querystring: Type.Optional(
           Type.Object({
-            includeImportedData: Type.Boolean({
-              default: true,
-              description:
+            includeImportedData: Type.Optional(
+              TypeboxBooleanEnum(
+                "true",
                 "If true, it returns the data of the user sent in the import batch",
-            }),
+              ),
+            ),
           }),
         ),
         params: Type.Object({ importId: Type.String({ format: "uuid" }) }),
@@ -146,7 +152,9 @@ export default async function userImports(app: FastifyInstance) {
         pool: app.pg.pool,
         organisationId: ensureOrganizationIdIsSet(request, "GET_USER_IMPORT"),
         importId: request.params.importId,
-        includeUsersData: request.query.includeImportedData ?? true,
+        includeUsersData: parseBooleanEnum(
+          request.query.includeImportedData ?? "true",
+        ),
       }),
     }),
   );

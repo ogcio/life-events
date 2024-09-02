@@ -437,14 +437,17 @@ export class Messaging {
     return { error, data: data?.data };
   }
 
-  async getUsersImport(importId: string, includeUsersData?: boolean) {
+  async getUsersImport(
+    importId: string,
+    includeUsersData?: "true" | "false" | "0" | "1",
+  ) {
     const { error, data } = await this.client.GET(
       "/api/v1/user-imports/{importId}",
       {
         params: {
           path: { importId },
           query: {
-            includeImportedData: Boolean(includeUsersData),
+            includeImportedData: includeUsersData,
           },
         },
       },
