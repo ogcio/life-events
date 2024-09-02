@@ -432,8 +432,17 @@ export class Messaging {
     return data;
   }
 
-  async getUsersImports() {
-    const { error, data } = await this.client.GET("/api/v1/user-imports/");
+  async getUsersImports(
+    pagination: { limit: number; offset: number } = { limit: 100, offset: 0 },
+  ) {
+    const { error, data } = await this.client.GET("/api/v1/user-imports/", {
+      params: {
+        query: {
+          limit: toStringOrUndefined(pagination?.limit),
+          offset: toStringOrUndefined(pagination?.offset),
+        },
+      },
+    });
     return { error, data: data?.data };
   }
 

@@ -140,6 +140,7 @@ export const getUserImports = async (params: {
       `
         SELECT COUNT(*) as totalCount ${fromQuery};
       `,
+      params.whereValues,
     );
     return {
       data: (await result).rows,
