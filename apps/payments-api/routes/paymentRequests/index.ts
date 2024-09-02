@@ -29,6 +29,7 @@ import {
   PaymentRequestDetailsDO,
   PaymentRequestDO,
 } from "../../plugins/entities/paymentRequest/types";
+import { AuditLogEventType } from "../../plugins/auditLog/auditLogEvents";
 
 const TAGS = ["PaymentRequests"];
 
@@ -168,6 +169,14 @@ export default async function paymentRequests(app: FastifyInstance) {
         userId,
         organizationId,
       );
+
+      app.auditLog.createEvent({
+        eventType: AuditLogEventType.PAYMENT_REQUEST_CREATE,
+        userId,
+        organizationId,
+        metadata: {},
+      });
+
       reply.send(requestId);
     },
   );
@@ -184,6 +193,7 @@ export default async function paymentRequests(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
+      const userId = request.userData?.userId;
       const organizationId = request.userData?.organizationId;
 
       if (!organizationId) {
@@ -194,6 +204,14 @@ export default async function paymentRequests(app: FastifyInstance) {
         request.body,
         organizationId,
       );
+
+      app.auditLog.createEvent({
+        eventType: AuditLogEventType.PAYMENT_REQUEST_UPDATE,
+        userId,
+        organizationId,
+        metadata: {},
+      });
+
       reply.send(requestId);
     },
   );
@@ -216,6 +234,7 @@ export default async function paymentRequests(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
+      const userId = request.userData?.userId;
       const organizationId = request.userData?.organizationId;
       const { requestId } = request.params;
 
@@ -236,6 +255,13 @@ export default async function paymentRequests(app: FastifyInstance) {
       }
 
       await app.paymentRequest.deletePaymentRequest(requestId, organizationId);
+
+      app.auditLog.createEvent({
+        eventType: AuditLogEventType.PAYMENT_REQUEST_DELETE,
+        userId,
+        organizationId,
+        metadata: {},
+      });
 
       reply.send();
     },

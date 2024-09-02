@@ -261,4 +261,17 @@ export class PaymentRequestRepo {
       [paymentRequestId, organizationId],
     );
   }
+
+  getOrganizationIdFromPaymentRequest(
+    requestId: string,
+  ): Promise<QueryResult<{ organizationId: string }>> {
+    return this.pg.query(
+      `
+        SELECT pr.organization_id as "organizationId"
+        FROM payment_requests pr
+        WHERE pr.payment_request_id = $1
+      `,
+      [requestId],
+    );
+  }
 }
