@@ -3521,6 +3521,25 @@ paths:
       tags: &a5
         - User Imports
       description: Retrieves the user import batches related to the current organisation
+      parameters:
+        - schema:
+            pattern: ^[0-9][0-9]*|undefined$
+            default: "0"
+            type: string
+          in: query
+          name: offset
+          required: false
+          description: Indicates where to start fetching data or how many records to skip,
+            defining the initial position within the list
+        - schema:
+            default: "20"
+            pattern: ^([1-9]|100)|undefined$
+            type: string
+          in: query
+          name: limit
+          required: false
+          description: Indicates the maximum number (100) of items that will be returned
+            in a single request
       responses:
         "200":
           description: Default Response
@@ -3555,7 +3574,8 @@ paths:
                             - format: date-time
                               type: string
                             - type: "null"
-                        importId:
+                        id:
+                          format: uuid
                           type: string
                       required:
                         - organisationId
@@ -3563,7 +3583,7 @@ paths:
                         - importChannel
                         - retryCount
                         - lastRetryAt
-                        - importId
+                        - id
                   metadata:
                     type: object
                     properties:
@@ -3821,11 +3841,16 @@ paths:
       description: Retrieves the requested user import batch
       parameters:
         - schema:
-            default: true
-            type: boolean
+            type: string
+            enum:
+              - "true"
+              - "false"
+              - "0"
+              - "1"
+            default: "true"
           in: query
           name: includeImportedData
-          required: true
+          required: false
           description: If true, it returns the data of the user sent in the import batch
         - schema:
             format: uuid
@@ -3998,7 +4023,8 @@ paths:
                           - format: date-time
                             type: string
                           - type: "null"
-                      importId:
+                      id:
+                        format: uuid
                         type: string
                     required:
                       - organisationId
@@ -4007,7 +4033,7 @@ paths:
                       - importChannel
                       - retryCount
                       - lastRetryAt
-                      - importId
+                      - id
                   metadata:
                     type: object
                     properties:
