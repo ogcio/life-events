@@ -141,14 +141,14 @@ const getUsersImport = async (params: {
     includeUsersData: true,
   });
 
-  if (results.length === 0) {
+  if (results.data.length === 0) {
     throw new NotFoundError(
       IMPORT_USERS_ERROR,
       `Users import with id ${params.importId} not found`,
     );
   }
 
-  return results[0];
+  return results.data[0];
 };
 
 const processUser = async (params: {
