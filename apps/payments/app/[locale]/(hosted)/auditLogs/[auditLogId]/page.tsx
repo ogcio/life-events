@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { AuthenticationFactory } from "../../../../../libraries/authentication-factory";
 import { errorHandler } from "../../../../utils";
 import { PageWrapper } from "../../PageWrapper";
+import { JsonViewer } from "./JsonViewer";
 
 async function getAuditLogDetails(auditLogId: string) {
   const paymentsApi = await AuthenticationFactory.getPaymentsClient();
@@ -57,13 +58,9 @@ export default async function ({
                 {details.organizationId}
               </dt>
             </div>
-            <div className="govie-summary-list__row">
-              <dt className="govie-summary-list__key">{t("metadata")}</dt>
-              <dt className="govie-summary-list__value">
-                {JSON.stringify(details.metadata)}
-              </dt>
-            </div>
           </dl>
+          <h3 className="govie-heading-m">{t("metadata")}</h3>
+          <JsonViewer json={details.metadata} />
         </div>
       </div>
     </PageWrapper>
