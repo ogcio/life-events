@@ -144,6 +144,7 @@ const scanAndUpload = async (app: FastifyInstance, request: FastifyRequest) => {
         organizationId,
         antivirusDbVersion: dbVersion,
       });
+
       eventEmitter.emit("fileUploaded", data.rows[0].id);
     })
     .catch((err) => {
