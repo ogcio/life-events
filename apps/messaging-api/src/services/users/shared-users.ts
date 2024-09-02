@@ -136,15 +136,15 @@ export const getUserImports = async (params: {
       `,
       params.whereValues,
     );
-    const countResult = params.client.query<{ totalCount: number }>(
+    const countResult = params.client.query<{ total: number }>(
       `
-        SELECT COUNT(*) as totalCount ${fromQuery};
+        SELECT COUNT(*) as total ${fromQuery};
       `,
       params.whereValues,
     );
     return {
       data: (await result).rows,
-      totalCount: (await countResult).rows[0].totalCount,
+      totalCount: (await countResult).rows[0].total,
     };
   } catch (error) {
     const message = isNativeError(error) ? error.message : "unknown error";
