@@ -14,7 +14,7 @@ pr:
 parameters:
   - name: buildBranches
     type: object
-    default: ["dev", "sta", "uat"]
+    default: ["dev", "sta", "uat", "18848-trigger-smoke-tests-on-deployment-to-dev"]
 
   - name: validEnvironments
     type: object
@@ -32,6 +32,8 @@ variables:
     - template: pipeline-variables/${{ coalesce(variables['Build.SourceBranchName'], 'fallback') }}.yml
   - ${{ else }}:
     - template: pipeline-variables/dev.yml
+    - name: runSmokeTest
+    value: ${{ "18848-trigger-smoke-tests-on-deployment-to-dev", variables['Build.SourceBranchName']) }}
 
 resources:
   repositories:
@@ -130,7 +132,7 @@ stages:
           clusterName: life-events-ecs
     - stage: Smoke_Tests_${{ replace(serviceName, '-', '_') }}
       displayName: Run smoke tests - ${{ serviceName }}
-      condition: and(succeeded(), eq(variables['Build.SourceBranchName'], 'dev'))
+      condition: and(succeeded(), ${{ variables.runSmokeTests }}))
       pool:
          vmImage: ${{ parameters.vmImage }}
       dependsOn: Deploy_${{ replace(serviceName, '-', '_') }}
