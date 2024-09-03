@@ -35,7 +35,7 @@ test.describe("Audit Logs", () => {
     await detailsPage.checkEventName(eventType);
     await detailsPage.checkTimestampLabel();
     await detailsPage.checkEventType(eventType);
-    await detailsPage.checkUserIdLabel();
+    await detailsPage.checkUserId();
     await detailsPage.checkOrganizationId(ORGANISATIONS[0].id);
     await detailsPage.checkMetadata(bankTransferProvider.id, "provider");
   });
@@ -72,7 +72,7 @@ test.describe("Audit Logs", () => {
     await detailsPage.checkEventName(eventType);
     await detailsPage.checkTimestampLabel();
     await detailsPage.checkEventType(eventType);
-    await detailsPage.checkUserIdLabel();
+    await detailsPage.checkUserId();
     await detailsPage.checkOrganizationId(ORGANISATIONS[0].id);
     await detailsPage.checkMetadata(bankTransferProvider.id, "provider");
   });
