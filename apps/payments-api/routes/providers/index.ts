@@ -162,7 +162,12 @@ export default async function providers(app: FastifyInstance) {
         eventType: AuditLogEventType.PROVIDER_UPDATE,
         userId,
         organizationId,
-        metadata: {},
+        metadata: {
+          resource: {
+            type: "provider",
+            id: providerId,
+          },
+        },
       });
 
       reply.send({ ok: true });

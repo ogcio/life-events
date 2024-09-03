@@ -42,8 +42,12 @@ export class AuditLogDetailsPage {
     ).toBeVisible();
   }
 
-  async checkUserIdLabel() {
+  async checkUserId() {
     await expect(this.userIdLabel).toBeVisible();
+    const cookies = await this.page.context().cookies();
+    const userId =
+      cookies.find((cookie) => cookie.name === "logtoUserId")?.value ?? "";
+    await expect(this.page.getByText(userId)).toBeVisible();
   }
 
   async checkOrganizationId(orgId: string) {
