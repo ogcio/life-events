@@ -22,16 +22,21 @@ test.describe("Audit Logs", () => {
     await tags("Audit Logs", "Providers");
     await severity(Severity.NORMAL);
 
-    const eventName = AuditLogEventType.PROVIDER_CREATE;
+    const eventType = AuditLogEventType.PROVIDER_CREATE;
     const auditLogsPage = new AuditLogsListPage(publicServantPage);
     await auditLogsPage.goto();
     await auditLogsPage.checkHeader();
-    await auditLogsPage.checkAuditLog(bankTransferProvider.id, eventName);
-    await auditLogsPage.goToDetails(eventName);
+    await auditLogsPage.checkFilters();
+    await auditLogsPage.checkAuditLog(bankTransferProvider.id, eventType);
+    await auditLogsPage.goToDetails(bankTransferProvider.id);
 
     const detailsPage = new AuditLogDetailsPage(publicServantPage);
-    await detailsPage.checkEventName(eventName);
+    await detailsPage.checkEventName(eventType);
     await detailsPage.checkTimestampLabel();
+    await detailsPage.checkEventType(eventType);
+    await detailsPage.checkUserIdLabel();
+    await detailsPage.checkOrganizationId("ogcio");
+    await detailsPage.checkMetadata(bankTransferProvider.id, "provider");
   });
 
   //   should create an audit log event when a new provider is updated

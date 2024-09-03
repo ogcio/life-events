@@ -46,17 +46,22 @@ export class AuditLogDetailsPage {
     await expect(this.userIdLabel).toBeVisible();
   }
 
-  async checkOrganizationId(type: AuditLogEventType) {
+  async checkOrganizationId(orgId: string) {
     await expect(
       this.page
         .locator("div")
         .filter({ hasText: "Organization id" })
         .last()
-        .getByText(type),
+        .getByText(orgId),
     ).toBeVisible();
   }
 
   async checkMetadata(resourceId: string, resourceType: AuditLogResourceType) {
     await expect(this.metadataHeader).toBeVisible();
+    await expect(this.page.getByText(`"resource"`)).toBeVisible();
+    await expect(this.page.getByText(`"id"`)).toBeVisible();
+    await expect(this.page.getByText(`"${resourceId}`)).toBeVisible();
+    await expect(this.page.getByText(`"type"`)).toBeVisible();
+    await expect(this.page.getByText(`"${resourceType}`)).toBeVisible();
   }
 }
