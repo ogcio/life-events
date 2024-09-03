@@ -48,7 +48,7 @@ test.describe("Payment Request with multiple providers", () => {
     await createPaymentRequestPage.enterTitle(name);
     await createPaymentRequestPage.enterDescription(paymentRequestDescription);
     await createPaymentRequestPage.selectManualBankTransferAccount(
-      bankTransferProvider,
+      bankTransferProvider.name,
     );
     await createPaymentRequestPage.selectOpenBankingAccount(
       openBankingProvider,
@@ -68,7 +68,7 @@ test.describe("Payment Request with multiple providers", () => {
     await detailsPage.checkDescription(paymentRequestDescription);
     await detailsPage.checkStatus("inactive");
     await detailsPage.checkAccounts([
-      { name: bankTransferProvider, type: "banktransfer" },
+      { name: bankTransferProvider.name, type: "banktransfer" },
       { name: openBankingProvider, type: "openbanking" },
       { name: realexProvider, type: "realex" },
     ]);
@@ -90,7 +90,7 @@ test.describe("Payment Request with multiple providers", () => {
     await paymentRequestsPage.checkHeader();
     await paymentRequestsPage.checkRequestIsVisible(name);
     await paymentRequestsPage.checkBeneficiaryAccounts(name, [
-      bankTransferProvider,
+      bankTransferProvider.name,
       openBankingProvider,
       realexProvider,
     ]);
@@ -122,7 +122,7 @@ test.describe("Payment Request with multiple providers", () => {
     await createPaymentRequestPage.enterTitle(name);
     await createPaymentRequestPage.enterDescription(paymentRequestDescription);
     await createPaymentRequestPage.selectManualBankTransferAccount(
-      bankTransferProvider,
+      bankTransferProvider.name,
     );
     await createPaymentRequestPage.selectOpenBankingAccount(
       openBankingProvider,
@@ -142,7 +142,7 @@ test.describe("Payment Request with multiple providers", () => {
     await detailsPage.checkDescription(paymentRequestDescription);
     await detailsPage.checkStatus("active");
     await detailsPage.checkAccounts([
-      { name: bankTransferProvider, type: "banktransfer" },
+      { name: bankTransferProvider.name, type: "banktransfer" },
       { name: openBankingProvider, type: "openbanking" },
       { name: stripeProvider, type: "stripe" },
     ]);
@@ -174,7 +174,7 @@ test.describe("Payment Request with multiple providers", () => {
     await paymentRequestsPage.checkHeader();
     await paymentRequestsPage.checkRequestIsVisible(name);
     await paymentRequestsPage.checkBeneficiaryAccounts(name, [
-      bankTransferProvider,
+      bankTransferProvider.name,
       openBankingProvider,
       stripeProvider,
     ]);
@@ -206,7 +206,7 @@ test.describe("Payment Request with multiple providers", () => {
     await createPaymentRequestPage.enterTitle("");
     await createPaymentRequestPage.enterDescription(paymentRequestDescription);
     await createPaymentRequestPage.selectManualBankTransferAccount(
-      bankTransferProvider,
+      bankTransferProvider.name,
     );
     await createPaymentRequestPage.selectOpenBankingAccount(
       openBankingProvider,
@@ -245,7 +245,7 @@ test.describe("Payment Request with multiple providers", () => {
     await createPaymentRequestPage.enterTitle(name);
     await createPaymentRequestPage.enterDescription(paymentRequestDescription);
     await createPaymentRequestPage.selectManualBankTransferAccount(
-      bankTransferProvider,
+      bankTransferProvider.name,
     );
     await createPaymentRequestPage.selectOpenBankingAccount(
       openBankingProvider,
@@ -288,7 +288,7 @@ test.describe("Payment Request with multiple providers", () => {
     await createPaymentRequestPage.enterTitle(name);
     await createPaymentRequestPage.enterDescription(paymentRequestDescription);
     await createPaymentRequestPage.selectManualBankTransferAccount(
-      bankTransferProvider,
+      bankTransferProvider.name,
     );
     await createPaymentRequestPage.selectOpenBankingAccount(
       openBankingProvider,
@@ -331,7 +331,7 @@ test.describe("Payment Request with multiple providers", () => {
     await createPaymentRequestPage.enterTitle(name);
     await createPaymentRequestPage.enterDescription(paymentRequestDescription);
     await createPaymentRequestPage.selectManualBankTransferAccount(
-      bankTransferProvider,
+      bankTransferProvider.name,
     );
     await createPaymentRequestPage.selectOpenBankingAccount(
       openBankingProvider,

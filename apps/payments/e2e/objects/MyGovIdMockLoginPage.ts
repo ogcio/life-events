@@ -43,4 +43,12 @@ export class MyGovIdMockLoginPage {
     });
     await expect(heading).toBeVisible();
   }
+
+  async expectInactivePaymentSetupPage() {
+    const heading = await this.page.getByRole("heading", {
+      name: "Your account is under review",
+      exact: true,
+    });
+    await expect(heading).toBeVisible();
+  }
 }
