@@ -38,7 +38,7 @@ resources:
     - repository: pipeline-templates
       type: github
       name: ogcio/building-blocks-pipelines
-      ref: main
+      ref: upgrade-gitleaks
       endpoint: ogcio
 
 stages:
