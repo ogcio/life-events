@@ -3,13 +3,13 @@ import { AuditLogEventTitles, AuditLogEventType } from "../../utils/constants";
 
 export class AuditLogsListPage {
   private readonly header: Locator;
-  private readonly filtersDescription: Locator;
   private readonly filtersBtn: Locator;
+  private readonly filtersSelect: Locator;
 
   constructor(public readonly page: Page) {
     this.header = page.getByRole("heading", { name: "Audit Logs" });
-    this.filtersDescription = page.getByText("Filter by event type");
     this.filtersBtn = page.getByRole("button", { name: "Filter" });
+    this.filtersSelect = page.getByLabel("Filter by event type");
   }
 
   async goto() {
@@ -21,9 +21,8 @@ export class AuditLogsListPage {
   }
 
   async checkFilters() {
-    await expect(this.filtersDescription).toBeVisible();
     await expect(this.filtersBtn).toBeVisible();
-    // check select option
+    await expect(this.filtersSelect).toHaveValue("");
   }
 
   async checkAuditLog(resourceId: string, eventType: AuditLogEventType) {
