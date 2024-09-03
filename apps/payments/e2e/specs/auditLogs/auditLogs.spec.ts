@@ -76,10 +76,4 @@ test.describe("Audit Logs", () => {
     await detailsPage.checkOrganizationId(ORGANISATIONS[0].id);
     await detailsPage.checkMetadata(bankTransferProvider.id, "provider");
   });
-
-  //   should create an audit log event when a new payment request is created
-  //   should create an audit log event when a payment request is updated
-  //   should create an audit log event when a transaction is created
-  //   should create an audit log event when a transaction is updated
-  //   should filter audit logs by event type
 });
