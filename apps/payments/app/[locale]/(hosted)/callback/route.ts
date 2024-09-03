@@ -15,6 +15,10 @@ export async function GET(request: NextRequest) {
 
   const user = await AuthenticationFactory.getInstance().getUser();
 
+  /**
+   * In some scenarios in E2E tests, user ID is required. Because this information
+   * is not on the page, we must store it in a cookie for later usage.
+   */
   cookies().set(logtoUserIdCookieName, user.id);
 
   const postRedirectUrl = cookies().get(postLoginRedirectUrlCookieName)?.value;
