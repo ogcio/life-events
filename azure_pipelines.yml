@@ -132,7 +132,7 @@ stages:
           clusterName: life-events-ecs
     - stage: Smoke_Tests_${{ replace(serviceName, '-', '_') }}
       displayName: Run smoke tests - ${{ serviceName }}
-      condition: and(succeeded(), ${{ variables.runSmokeTests }})
+      condition: ${{ variables.runSmokeTests }}
       pool:
          vmImage: ${{ parameters.vmImage }}
       dependsOn: Deploy_${{ replace(serviceName, '-', '_') }}
