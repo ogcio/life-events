@@ -32,7 +32,7 @@ variables:
     - template: pipeline-variables/${{ coalesce(variables['Build.SourceBranchName'], 'fallback') }}.yml
   - ${{ else }}:
     - template: pipeline-variables/dev.yml
-    - name: runSmokeTest
+  - name: runSmokeTest
     value: ${{ eq("18848-trigger-smoke-tests-on-deployment-to-dev", variables['Build.SourceBranchName']) }}
 
 resources:
