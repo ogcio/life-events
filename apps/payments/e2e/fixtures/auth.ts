@@ -2,10 +2,15 @@ import { test as baseTest, Browser, expect } from "@playwright/test";
 import fs from "fs";
 import path from "path";
 import { MyGovIdMockLoginPage } from "../objects/MyGovIdMockLoginPage";
-import { password, publicServants, citizens } from "../utils/constants";
+import {
+  password,
+  publicServants,
+  citizens,
+  inactivePublicServant,
+} from "../utils/constants";
 
-const baseURL = process.env.BASE_URL;
-const loginUrl = process.env.LOGTO_ENDPOINT;
+const baseURL = process.env.BASE_URL || "";
+const loginUrl = process.env.LOGTO_ENDPOINT || "";
 
 export * from "@playwright/test";
 
@@ -37,10 +42,13 @@ const getWorkerStorageState = async (
   await loginPage.enterPassword(password);
   await loginPage.submitLogin(userName);
 
-  if (role === "publicServant") {
-    await loginPage.expectPaymentSetupPage();
-  } else {
-    await loginPage.expectCitizenPaymentsPage();
+  switch (role) {
+    case "publicServant":
+      await loginPage.expectPaymentSetupPage();
+      break;
+    case "citizen":
+      await loginPage.expectCitizenPaymentsPage();
+      break;
   }
 
   await page.context().storageState({ path: fileName });
