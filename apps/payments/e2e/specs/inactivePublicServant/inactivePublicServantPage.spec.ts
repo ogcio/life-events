@@ -54,7 +54,7 @@ test.describe("Inactive public servant page", () => {
 
     await page.goto("/");
     const inactivePubServentPage = new InactivePublicServantPage(page);
-    await inactivePubServentPage.checPageContent();
+    await inactivePubServentPage.checkPageContent();
   });
 
   test("should not be able to access any other pages @smoke @normal", async () => {
@@ -66,11 +66,11 @@ test.describe("Inactive public servant page", () => {
     await severity(Severity.NORMAL);
 
     await page.goto("/en/paymentSetup");
-    const page1 = new ErrorPage(page);
-    await page1.checPageContent();
+    const paymentSetupErrorPage = new ErrorPage(page);
+    await paymentSetupErrorPage.checkPageContent();
 
     await page.goto("/en/citizen/transactions");
-    const page2 = new ErrorPage(page);
-    await page2.checPageContent();
+    const citizenTransactionsErrorPage = new ErrorPage(page);
+    await citizenTransactionsErrorPage.checkPageContent();
   });
 });

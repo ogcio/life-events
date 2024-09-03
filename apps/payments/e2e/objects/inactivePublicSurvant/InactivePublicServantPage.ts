@@ -15,7 +15,7 @@ export class InactivePublicServantPage {
     this.description = this.page.getByText(this.pageDescription);
   }
 
-  async checPageContent() {
+  async checkPageContent() {
     await expect(this.title).toBeVisible();
     await expect(this.description).toBeVisible();
   }

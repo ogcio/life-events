@@ -19,7 +19,7 @@ export class ErrorPage {
     });
   }
 
-  async checPageContent() {
+  async checkPageContent() {
     await expect(this.title).toBeVisible();
     await expect(this.description).toBeVisible();
     await expect(this.homeBttn).toBeVisible();
