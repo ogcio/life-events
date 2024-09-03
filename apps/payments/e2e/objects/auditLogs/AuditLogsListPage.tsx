@@ -26,23 +26,28 @@ export class AuditLogsListPage {
   }
 
   async checkAuditLog(resourceId: string, eventType: AuditLogEventType) {
-    const auditLogRow = await this.page.locator(
-      `tr[data-resource-id="${resourceId}"]`,
-    );
     await expect(
-      auditLogRow.getByRole("cell", { name: AuditLogEventTitles[eventType] }),
-    ).toBeVisible();
-    await expect(
-      auditLogRow.getByRole("link", { name: "Details" }),
+      this.page
+        .locator(`tr[data-resource-id="${resourceId}"]`)
+        .filter({
+          has: this.page.getByRole("cell", {
+            name: AuditLogEventTitles[eventType],
+          }),
+        })
+        .filter({ has: this.page.getByRole("link", { name: "Details" }) }),
     ).toBeVisible();
   }
 
   async filterAuditLog() {}
 
-  async goToDetails(resourceId: string) {
-    const auditLogRow = await this.page.locator(
-      `tr[data-resource-id="${resourceId}"]`,
-    );
+  async goToDetails(resourceId: string, eventType: AuditLogEventType) {
+    const auditLogRow = await this.page
+      .locator(`tr[data-resource-id="${resourceId}"]`)
+      .filter({
+        has: this.page.getByRole("cell", {
+          name: AuditLogEventTitles[eventType],
+        }),
+      });
     const link = auditLogRow.getByRole("link", { name: "Details" });
     await link.click();
   }
