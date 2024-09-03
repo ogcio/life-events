@@ -118,3 +118,8 @@ export type AuditLogResourceType =
   | "provider"
   | "transaction"
   | "payment_request";
+
+export const ORGANISATIONS = [
+  { name: "First Testing Organisation", id: "first-testing" },
+  { name: "Second Testing Organisation", id: "second-testing" },
+];

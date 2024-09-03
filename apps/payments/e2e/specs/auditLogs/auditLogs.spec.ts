@@ -8,7 +8,7 @@ import {
 } from "allure-js-commons";
 import { AuditLogsListPage } from "../../objects/auditLogs/AuditLogsListPage";
 import { AuditLogDetailsPage } from "../../objects/auditLogs/AuditLogDetailsPage";
-import { AuditLogEventType } from "../../utils/constants";
+import { AuditLogEventType, ORGANISATIONS } from "../../utils/constants";
 
 test.describe("Audit Logs", () => {
   test("should create an audit log event when a new provider is created @regression @normal", async ({
@@ -35,7 +35,7 @@ test.describe("Audit Logs", () => {
     await detailsPage.checkTimestampLabel();
     await detailsPage.checkEventType(eventType);
     await detailsPage.checkUserIdLabel();
-    await detailsPage.checkOrganizationId("ogcio");
+    await detailsPage.checkOrganizationId(ORGANISATIONS[0].id);
     await detailsPage.checkMetadata(bankTransferProvider.id, "provider");
   });
 
