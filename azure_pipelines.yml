@@ -33,7 +33,7 @@ variables:
   - ${{ else }}:
     - template: pipeline-variables/dev.yml
   - name: runSmokeTest
-    value: ${{ eq("18848-trigger-smoke-tests-on-deployment-to-dev", variables['Build.SourceBranchName']) }}
+    value: ${{ eq('18848-trigger-smoke-tests-on-deployment-to-dev', variables['Build.SourceBranchName']) }}
 
 resources:
   repositories:
