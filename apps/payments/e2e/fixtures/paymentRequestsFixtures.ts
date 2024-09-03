@@ -26,7 +26,7 @@ export const test = base.extend<paymentRequestsFixtures>({
     await paymentRequestCreatePage.goto();
     await paymentRequestCreatePage.create({
       title: paymentRequestTitle,
-      bankTransferProvider: bankTransferProvider,
+      bankTransferProvider: bankTransferProvider.name,
       openBankingProvider: openBankingProvider,
       cardProvider: stripeProvider,
     });
@@ -45,7 +45,7 @@ export const test = base.extend<paymentRequestsFixtures>({
     await paymentRequestCreatePage.goto();
     await paymentRequestCreatePage.create({
       title: paymentRequestTitle,
-      bankTransferProvider: bankTransferProvider,
+      bankTransferProvider: bankTransferProvider.name,
     });
 
     await use(paymentRequestTitle);
