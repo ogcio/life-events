@@ -130,7 +130,7 @@ stages:
           clusterName: life-events-ecs
     - stage: E2E_Test_${{ replace(serviceName, '-', '_') }}
       displayName: Run smoke tests - ${{ serviceName }}
-      condition: eq( parameters.validEnvironments, "dev"))
+      condition: eq( parameters.validEnvironments, "dev")
       pool:
          vmImage: ${{ parameters.vmImage }}
       dependsOn: Deploy_${{ replace(serviceName, '-', '_') }}
