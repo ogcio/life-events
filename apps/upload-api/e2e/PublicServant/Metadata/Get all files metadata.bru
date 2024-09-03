@@ -1,0 +1,15 @@
+meta {
+  name: Get all files metadata
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/v1/metadata
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{accessToken}}
+}
