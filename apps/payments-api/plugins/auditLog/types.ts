@@ -6,6 +6,7 @@ export type AuditLogEvent = {
   eventType: AuditLogEventType;
   userId?: string;
   organizationId?: string;
+  metadata: Record<string, unknown>;
 };
 
 export type AuditLogEventDetails = AuditLogEvent & {
@@ -14,6 +15,7 @@ export type AuditLogEventDetails = AuditLogEvent & {
 
 export type AuditLogEventDO = AuditLogEvent & {
   title: string;
+  resourceId?: string;
 };
 
 export type AuditLogEventDetailsDO = AuditLogEventDetails & {

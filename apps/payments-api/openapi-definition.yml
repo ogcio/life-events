@@ -2601,6 +2601,8 @@ paths:
                           type: string
                         organizationId:
                           type: string
+                        resourceId:
+                          type: string
                       required:
                         - auditLogId
                         - createdAt

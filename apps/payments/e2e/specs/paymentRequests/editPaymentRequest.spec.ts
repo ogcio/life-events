@@ -43,7 +43,7 @@ test.describe("Edit payment Request", () => {
     await createPaymentRequestPage.goto();
     await createPaymentRequestPage.create({
       title: name,
-      bankTransferProvider: bankTransferProvider,
+      bankTransferProvider: bankTransferProvider.name,
       cardProvider: stripeProvider,
     });
 
@@ -98,7 +98,7 @@ test.describe("Edit payment Request", () => {
     await createPaymentRequestPage.goto();
     await createPaymentRequestPage.create({
       title: name,
-      bankTransferProvider: bankTransferProvider,
+      bankTransferProvider: bankTransferProvider.name,
     });
 
     const detailsPage = new PaymentRequestDetailsPage(publicServantPage);
@@ -135,7 +135,7 @@ test.describe("Edit payment Request", () => {
     await createPaymentRequestPage.goto();
     await createPaymentRequestPage.create({
       title: name,
-      bankTransferProvider: bankTransferProvider,
+      bankTransferProvider: bankTransferProvider.name,
     });
 
     const detailsPage = new PaymentRequestDetailsPage(publicServantPage);
