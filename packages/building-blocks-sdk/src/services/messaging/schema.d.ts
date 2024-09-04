@@ -3470,6 +3470,8 @@ export interface paths {
                                     receiverFullName: string;
                                     /** @description PPSN of the recipient */
                                     receiverPPSN: string;
+                                    /** @description User id of recipient */
+                                    receiverUserId: string;
                                     /** @description Subject of the related message */
                                     subject: string;
                                     /** @description Language of the related message */

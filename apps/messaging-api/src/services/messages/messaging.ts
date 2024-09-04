@@ -127,7 +127,7 @@ export function newMessagingService(
         params.threadName,
         params.organisationId,
         params.scheduleAt,
-        params.senderUserProfileId,
+        "thisIsntReal", // params.senderUserProfileId,
       ];
 
       const values = valueArray.map((_, i) => `$${i + 1}`).join(", ");

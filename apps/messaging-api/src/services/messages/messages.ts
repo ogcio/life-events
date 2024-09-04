@@ -519,21 +519,22 @@ export const processMessages = async (params: {
     );
   }
   organizationId = organizationId ?? senderUser.organizationId;
-  const profileSdk = await getProfileSdk(organizationId);
-  const senderUserProfile = await profileSdk.getUser(senderUser.profileId);
-  if (!senderUserProfile.data) {
-    throw new NotFoundError(errorProcess, "Sender user cannot be found");
-  }
-  if (senderUserProfile.error) {
-    throw new ThirdPartyError(
-      errorProcess,
-      senderUserProfile.error.detail,
-      senderUserProfile.error,
-    );
-  }
+  // const profileSdk = await getProfileSdk(organizationId);
+  // const senderUserProfile = await profileSdk.getUser(senderUser.profileId);
+  // if (senderUserProfile.error) {
+  //   throw new ThirdPartyError(
+  //     errorProcess,
+  //     senderUserProfile.error.detail,
+  //     senderUserProfile.error,
+  //   );
+  // }
 
-  const senderFullName =
-    `${senderUserProfile.data.firstName} ${senderUserProfile.data.lastName}`.trim();
+  // if (!senderUserProfile.data) {
+  //   throw new NotFoundError(errorProcess, "Sender user cannot be found");
+  // }
+
+  // const senderFullName =
+  //   `${senderUserProfile.data.firstName} ${senderUserProfile.data.lastName}`.trim();
 
   const poolClient = await pgPool.connect();
   try {
@@ -553,8 +554,9 @@ export const processMessages = async (params: {
           createMessageWithLog({
             createMessageParams: toCreate,
             sender: {
-              ...senderUserProfile.data,
-              fullName: senderFullName,
+              fullName: "M2M User todo",
+              // ...senderUserProfile.data,
+              // fullName: senderFullName,
               userProfileId: senderUser.profileId,
             },
             messageService,

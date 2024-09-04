@@ -5222,10 +5222,13 @@ paths:
                                 receiverPPSN:
                                   description: PPSN of the recipient
                                   type: string
+                                receiverUserId:
+                                  description: User id of recipient
+                                  type: string
                                 subject:
                                   description: Subject of the related message
                                   type: string
-                                lang:
+                                language:
                                   description: Language of the related message
                                   type: string
                                 excerpt:
@@ -5275,8 +5278,9 @@ paths:
                                 - messageId
                                 - receiverFullName
                                 - receiverPPSN
+                                - receiverUserId
                                 - subject
-                                - lang
+                                - language
                                 - excerpt
                                 - richText
                                 - plainText

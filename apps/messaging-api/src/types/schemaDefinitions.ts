@@ -280,8 +280,9 @@ export const MessageEventSchema = Type.Array(
         receiverPPSN: Type.String({
           description: "PPSN of the recipient",
         }),
+        receiverUserId: Type.String({ description: "User id of recipient" }),
         subject: Type.String({ description: "Subject of the related message" }),
-        lang: Type.String({ description: "Language of the related message" }),
+        language: Type.String({ description: "Language of the related message" }),
         excerpt: Type.String({ description: "Excerpt of the related message" }),
         richText: Type.String({
           description: "Rich text content of the related message",

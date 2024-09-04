@@ -1,0 +1,23 @@
+meta {
+  name: Find created message event
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/v1/message-events?search={{messageSubject}}
+  body: none
+  auth: bearer
+}
+
+query {
+  search: {{messageSubject}}
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+script:post-response {
+  bru.setVar("eventId",res.body.data[0].id)
+}
