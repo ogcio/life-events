@@ -75,7 +75,10 @@ export default async function auditLogs(app: FastifyInstance) {
           firstname?: string;
           lastname?: string;
           email?: string;
-        } = {};
+          strict?: boolean;
+        } = {
+          strict: true,
+        };
 
         if (user.includes("@")) {
           findBy.email = user;
