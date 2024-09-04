@@ -76,6 +76,7 @@ test.describe("Public servant transactions view", async () => {
   test("Should update the status of a manual bank transfer transaction @smoke @critical", async ({
     manualBankTransferTransaction,
     publicServantPage,
+    citizenPage,
   }) => {
     await description(
       "This test checks that a manual bank transfer transaction created by a citizen can be updated by a public servant",
@@ -99,9 +100,16 @@ test.describe("Public servant transactions view", async () => {
     await detailsPage.checkStatus(manualBankTransferTransaction.status);
     await detailsPage.confirmTransaction();
     await transactionsListPage.goto();
-    await transactionsListPage.checkTransaction({
+    const updatedTransaction = {
       ...manualBankTransferTransaction,
       status: "succeeded",
+    };
+    await transactionsListPage.checkTransaction(updatedTransaction);
+
+    const transactionsPage = new TransactionsListPage(citizenPage, {
+      isCitizen: true,
     });
+    await transactionsPage.goto();
+    await transactionsPage.checkTransaction(updatedTransaction);
   });
 });
