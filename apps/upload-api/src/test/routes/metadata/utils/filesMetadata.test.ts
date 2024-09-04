@@ -1,10 +1,10 @@
 import t from "tap";
 import { PoolClient } from "pg";
 import {
-  getOrganizationFiles,
   getOwnedFiles,
+  getOrganizationFiles,
   getSharedFiles,
-} from "../../../routes/utils/filesMetadata.js";
+} from "../../../../routes/metadata/utils/filesMetadata.js";
 
 // Mock the PoolClient query method
 class MockPoolClient {
