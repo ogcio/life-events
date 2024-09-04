@@ -945,6 +945,11 @@ paths:
           in: query
           name: phone
           required: false
+        - schema:
+            type: boolean
+          in: query
+          name: strict
+          required: false
       responses:
         "200":
           description: Default Response
