@@ -49,7 +49,7 @@ type CreatedTemplateMessage = {
 export type CreateMessageParams = {
   receiverUserId: string;
   excerpt: string;
-  lang: string;
+  language: string;
   plainText: string;
   richText: string;
   subject: string;
@@ -120,7 +120,7 @@ export function newMessagingService(
         params.plainText,
         params.richText,
         params.security,
-        params.lang,
+        params.language,
         params.preferredTransports.length
           ? utils.postgresArrayify(params.preferredTransports)
           : null,

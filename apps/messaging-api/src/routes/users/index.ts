@@ -13,7 +13,6 @@ import {
 } from "../../types/schemaDefinitions.js";
 import { getUser, getUsers } from "../../services/users/users.js";
 import {
-  PaginationDetails,
   formatAPIResponse,
   sanitizePagination,
 } from "../../utils/pagination.js";
@@ -109,17 +108,11 @@ export default async function users(app: FastifyInstance) {
       };
       const recipientsResponse = await getUsers(params);
 
-      const paginationDetails: PaginationDetails = {
-        limit: Number(pagination.limit),
-        offset: Number(pagination.offset),
+      return formatAPIResponse({
+        data: recipientsResponse.recipients,
+        request,
         totalCount: recipientsResponse.total,
-        url: new URL(`${app.listeningOrigin}${request.url}`),
-      };
-
-      return formatAPIResponse(
-        recipientsResponse.recipients,
-        paginationDetails,
-      );
+      });
     },
   );
 

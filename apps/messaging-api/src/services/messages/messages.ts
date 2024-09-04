@@ -694,7 +694,7 @@ const createMessageWithLog = async (params: {
       excerpt: createMessage.excerpt,
       richText: createMessage.richText,
       plainText: createMessage.plainText,
-      lang: createMessage.lang,
+      language: createMessage.language,
       senderFullName: params.sender.fullName,
       senderPPSN: params.sender.ppsn || "",
       senderUserId: params.sender.userProfileId,
