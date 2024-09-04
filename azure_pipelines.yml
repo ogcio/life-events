@@ -142,3 +142,5 @@ stages:
         - template: test/smoke_test.yml@pipeline-templates
           parameters:
             serviceName: ${{ serviceName }}
+            testPath: ${{ testPath }}
+
