@@ -13,7 +13,7 @@ export default defineConfig({
   reporter: [
     ["line"],
     ["allure-playwright"],
-    ["html"],
+    ["html", { open: "never" }],
     ["junit", { outputFile: "./e2e/test-results/results.xml" }],
   ], // Test directory
   testDir: path.join(__dirname, "e2e"),
