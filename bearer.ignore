@@ -11,4 +11,10 @@
     "false_positive": true,
     "ignored_at": "2024-08-23T07:56:16Z"
   }
+  "34d49370a59a9d0ad02af89400022770_0": {
+    "author": "francescomaida",
+    "comment": "Test password used in E2E tests",
+    "false_positive": true,
+    "ignored_at": "2024-09-04T09:27:24Z"
+  }
 }
