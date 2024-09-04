@@ -22,6 +22,7 @@ import {
   AuditLogEventsFilters,
 } from "../../plugins/auditLog/types";
 import { getProfileSdk } from "../../utils/authenticationFactory";
+import { findUser } from "../../services/findUser";
 
 const TAGS_AUDIT_LOGS = ["AuditLogs"];
 
@@ -60,6 +61,8 @@ export default async function auditLogs(app: FastifyInstance) {
         throw app.httpErrors.unauthorized("Unauthorized!");
       }
 
+      const url = request.url.split("?")[0];
+
       const filters: AuditLogEventsFilters = {
         eventType: undefined,
         userId: undefined,
@@ -70,29 +73,22 @@ export default async function auditLogs(app: FastifyInstance) {
       filters.eventType = `${resource ?? "%"}.${action ?? "%"}`;
 
       if (user) {
-        const profileSdk = await getProfileSdk(organizationId);
-        const findBy: {
-          firstname?: string;
-          lastname?: string;
-          email?: string;
-          strict?: boolean;
-        } = {};
+        const userDetails = await findUser(user, organizationId);
 
-        if (user.includes("@")) {
-          findBy.email = user;
-        } else {
-          const [firstname, lastname] = user.split(" ");
-          findBy.firstname = firstname;
-          findBy.lastname = lastname;
+        if (!userDetails) {
+          // User was not found, empty result will be returned
+          reply.send(
+            formatAPIResponse([], {
+              offset,
+              limit,
+              totalCount: 0,
+              url: url,
+            }),
+          );
+          return;
         }
 
-        const userDetails = await profileSdk.findUser(findBy);
-
-        if (userDetails.data === undefined) {
-          // ...
-        } else {
-          filters.userId = userDetails.data.id;
-        }
+        filters.userId = userDetails.id;
       }
 
       const events = await app.auditLog.getEvents(organizationId, filters, {
@@ -104,7 +100,7 @@ export default async function auditLogs(app: FastifyInstance) {
         organizationId,
         filters,
       );
-      const url = request.url.split("?")[0];
+
       const paginationDetails: PaginationDetails = {
         offset,
         limit,
