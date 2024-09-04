@@ -215,7 +215,8 @@ export class Messaging {
           type: "email",
           limit: toStringOrUndefined(limit),
           offset: toStringOrUndefined(offset),
-          primary,
+          primary:
+            primary !== undefined ? (primary ? "true" : "false") : undefined,
         },
       },
     });
@@ -315,7 +316,8 @@ export class Messaging {
           type: "sms",
           limit: toStringOrUndefined(limit),
           offset: toStringOrUndefined(offset),
-          primary,
+          primary:
+            primary !== undefined ? (primary ? "true" : "false") : undefined,
         },
       },
     });
