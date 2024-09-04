@@ -15,13 +15,18 @@ export const getUserImportsForOrganisation = async (params: {
 }): Promise<{ data: Omit<UsersImport, "usersData">[]; totalCount: number }> => {
   const client = await params.pool.connect();
   try {
-    // TODO MISSING PAGINATION MANAGEMENT
     return await getUserImports({
       client,
       whereClauses: ["organisation_id = $1"],
       whereValues: [params.organisationId],
       errorCode: READ_USER_IMPORTS_ERROR,
       includeUsersData: false,
+      limit: params.pagination.limit
+        ? Number(params.pagination.limit)
+        : undefined,
+      offset: params.pagination.offset
+        ? Number(params.pagination.offset)
+        : undefined,
     });
   } finally {
     client.release();

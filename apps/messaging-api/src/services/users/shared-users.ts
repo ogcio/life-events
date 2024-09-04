@@ -108,6 +108,7 @@ export const getUserImports = async (params: {
   errorCode: string;
   logicalWhereOperator?: string;
   limit?: number;
+  offset?: number;
   includeUsersData: boolean;
 }): Promise<{ data: UsersImport[]; totalCount: number }> => {
   try {
@@ -115,6 +116,7 @@ export const getUserImports = async (params: {
       ? 'users_data as "usersData",'
       : "";
     const limitClause = params.limit ? `LIMIT ${params.limit}` : "";
+    const offsetClause = params.offset ? `OFFSET ${params.offset}` : "";
     const operator = params.logicalWhereOperator
       ? ` ${params.logicalWhereOperator} `
       : " AND ";
@@ -134,6 +136,7 @@ export const getUserImports = async (params: {
         ${toSelectFields}
         ${fromQuery}
         ${limitClause}
+        ${offsetClause}
       `,
       params.whereValues,
     );
