@@ -32,7 +32,7 @@ export default ({ deleteFile, id }: DeleteFileProps) => {
           </svg>
           <span className="govie-visually-hidden">Close</span>
         </button>
-        <input type="text" name="file-key" hidden defaultValue={id} />
+        <input type="text" name="file-key" hidden value={id} readOnly />
         <span className="govie-tooltip govie-tooltip--top">Close</span>
         {state.error && (
           <p id="file-delete-error" className="govie-error-message">

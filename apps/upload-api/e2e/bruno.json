@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "upload-api",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}
