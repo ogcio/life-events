@@ -41,6 +41,7 @@
     "@fastify/under-pressure": "^8.3.0",
     "@sinclair/typebox": "^0.32.31",
     "api-auth": "*",
+    "building-blocks-sdk": "*",
     "dotenv": "^16.4.5",
     "error-handler": "*",
     "fastify": "^4.27.0",
