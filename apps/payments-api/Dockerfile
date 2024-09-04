@@ -7,6 +7,7 @@ COPY ./packages/api-auth/package*.json /app/packages/api-auth/
 COPY ./packages/logging-wrapper/package*.json /app/packages/logging-wrapper/
 COPY ./packages/error-handler/package*.json /app/packages/error-handler/
 COPY ./packages/shared-errors/package*.json /app/packages/shared-errors/
+COPY ./packages/building-blocks-sdk/ /app/packages/building-blocks-sdk/
 
 RUN npm ci
 
@@ -46,6 +47,10 @@ COPY --from=builder /app/packages/error-handler/package.json /app/packages/error
 COPY --from=builder /app/packages/api-auth/dist /app/packages/api-auth/dist
 COPY --from=builder /app/packages/api-auth/node_modules /app/packages/api-auth/node_modules
 COPY --from=builder /app/packages/api-auth/package.json /app/packages/api-auth/
+
+COPY --from=builder /app/packages/building-blocks-sdk/dist /app/packages/building-blocks-sdk/dist
+COPY --from=builder /app/packages/building-blocks-sdk/node_modules /app/packages/building-blocks-sdk/node_modules
+COPY --from=builder /app/packages/building-blocks-sdk/package.json /app/packages/building-blocks-sdk/
 
 RUN npm prune --omit=dev
 
