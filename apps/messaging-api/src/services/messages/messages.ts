@@ -552,7 +552,7 @@ export const processMessages = async (params: {
         createPromises.push(
           createMessageWithLog({
             createMessageParams: toCreate,
-            sender: {
+            senderUser: {
               ...senderUserProfile.data,
               fullName: senderFullName,
               userProfileId: senderUser.profileId,
@@ -638,7 +638,12 @@ const scheduleMessagesWithLog = async (params: {
 };
 
 const createMessageWithLog = async (params: {
-  sender: { fullName: string; ppsn?: string | null; userProfileId: string };
+  senderUser?: {
+    fullName: string;
+    ppsn?: string | null;
+    userProfileId: string;
+  };
+  senderApplication?: { id: string };
   messageService: MessagingService;
   eventLogger: MessagingEventLogger;
   createMessageParams: CreateMessageParams;
@@ -695,9 +700,10 @@ const createMessageWithLog = async (params: {
       richText: createMessage.richText,
       plainText: createMessage.plainText,
       language: createMessage.language,
-      senderFullName: params.sender.fullName,
-      senderPPSN: params.sender.ppsn || "",
-      senderUserId: params.sender.userProfileId,
+      senderFullName: params.senderUser?.fullName,
+      senderPPSN: params.senderUser?.ppsn || undefined,
+      senderUserId: params.senderUser?.userProfileId,
+      senderApplicationId: params.senderApplication?.id,
       receiverFullName: receiverFullName,
       receiverPPSN: receiverUserProfiles[0].ppsn,
       receiverUserId: receiverUserProfiles[0].id,
