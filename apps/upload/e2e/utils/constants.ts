@@ -7,5 +7,3 @@ export const myGovIdMockSettings = {
   publicServantEmailDomain: "gov.ie",
   citizenEmailDomain: "mail.ie",
 };
-
-export const SAFE_PID_FILENAME = "ngrok.pid";

@@ -27,20 +27,4 @@ export class MyGovIdMockLoginPage {
   async submitLogin(userName: string) {
     await this.page.getByRole("button", { name: `Login ${userName}` }).click();
   }
-
-  async expectPaymentSetupPage() {
-    const heading = await this.page.getByRole("heading", {
-      name: "Payments",
-      exact: true,
-    });
-    await expect(heading).toBeVisible();
-  }
-
-  async expectCitizenPaymentsPage() {
-    const heading = await this.page.getByRole("heading", {
-      name: "My Payments",
-      exact: true,
-    });
-    await expect(heading).toBeVisible();
-  }
 }

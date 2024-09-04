@@ -1,4 +1,3 @@
-import { Page } from "@playwright/test";
 import { test } from "@playwright/test";
 
 import {
@@ -13,13 +12,10 @@ import { password, publicServants } from "../../utils/constants";
 import { MyGovIdMockLoginPage } from "../../objects/MyGovIdMockLoginPage";
 
 test.describe("Auth", () => {
-  let page: Page;
-
-  test.beforeAll(async ({ browser }) => {
-    page = await browser.newPage();
-  });
-
-  test("should redirect to the requested url after successful login with Public Servant @smoke @critical", async () => {
+  test("should redirect to the requested url after successful login with Public Servant @smoke @critical", async ({
+    browser,
+  }) => {
+    const page = await browser.newPage();
     await description(
       "This test checks that the user is redirected to the initial requested page after a successful login with Public Servant",
     );
