@@ -1,0 +1,36 @@
+meta {
+  name: Get Public Servant Token
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{logtoApiUrl}}/oidc/token
+  body: formUrlEncoded
+  auth: none
+}
+
+headers {
+  Content-Type: application/x-www-form-urlencoded
+  Authorization: Basic {{process.env.BRUNO_BASIC_TOKEN}}
+}
+
+body:form-urlencoded {
+  grant_type: client_credentials
+  scope: upload:file:* profile:user:read
+  organization_id: first-testing
+}
+
+vars:pre-request {
+  : 
+}
+
+vars:post-response {
+  accessToken: res.body.access_token
+}
+
+assert {
+  res.status: eq 200
+  res.body.access_token: isDefined 
+  res.body.scope: eq profile:user:read upload:file:*
+}

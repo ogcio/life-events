@@ -5258,6 +5258,9 @@ paths:
                                 senderPPSN:
                                   description: PPSN of the sender
                                   type: string
+                                senderApplicationId:
+                                  description: Unique id of the M2M application that sent the message
+                                  type: string
                                 organisationName:
                                   description: Organisation related to the sender
                                   type: string
@@ -5283,9 +5286,6 @@ paths:
                                 - threadName
                                 - transports
                                 - scheduledAt
-                                - senderUserId
-                                - senderFullName
-                                - senderPPSN
                                 - organisationName
                                 - security
                                 - bypassConsent
