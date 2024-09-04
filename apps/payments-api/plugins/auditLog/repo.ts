@@ -47,7 +47,12 @@ export class AuditLogRepo {
 
     if (filters.eventType) {
       params.push(filters.eventType);
-      conditions.push(`event_type = $4`);
+      conditions.push(`event_type LIKE $4`);
+    }
+
+    if (filters.userId) {
+      params.push(filters.userId);
+      conditions.push(`user_id = $5`);
     }
 
     return this.pg.query(
@@ -77,7 +82,12 @@ export class AuditLogRepo {
 
     if (filters.eventType) {
       params.push(filters.eventType);
-      conditions.push(`event_type = $2`);
+      conditions.push(`event_type LIKE $2`);
+    }
+
+    if (filters.userId) {
+      params.push(filters.userId);
+      conditions.push(`user_id = $3`);
     }
 
     return this.pg.query(

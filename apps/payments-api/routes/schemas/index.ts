@@ -405,10 +405,17 @@ export type ParamsWithAuditLogId = Static<typeof ParamsWithAuditLogId>;
 export const EventTypes = Type.Record(Type.String(), Type.String());
 
 export const AuditLogEventsFilters = Type.Object({
-  eventType: Type.Optional(Type.String()),
+  resource: Type.Optional(Type.String()),
+  action: Type.Optional(Type.String()),
+  user: Type.Optional(Type.String()),
+  from: Type.Optional(Type.String()),
+  to: Type.Optional(Type.String()),
 });
 
 export const AuditLogEventsFiltersQueryString = Type.Composite([
   PaginationParams,
   AuditLogEventsFilters,
 ]);
+export type AuditLogEventsFiltersQueryString = Static<
+  typeof AuditLogEventsFiltersQueryString
+>;

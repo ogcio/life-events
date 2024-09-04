@@ -15,20 +15,20 @@ import {
 } from "../../utils/pagination";
 import { formatAPIResponse } from "../../utils/responseFormatter";
 import { GenericResponse as GenericResponseType } from "../../types/genericResponse";
-import { PaginationParams as PaginationParamsType } from "../../types/pagination";
 import { authPermissions } from "../../types/authPermissions";
 import {
   AuditLogEventDetailsDO,
   AuditLogEvent as AuditLogEventDO,
   AuditLogEventsFilters,
 } from "../../plugins/auditLog/types";
+import { getProfileSdk } from "../../utils/authenticationFactory";
 
 const TAGS_AUDIT_LOGS = ["AuditLogs"];
 
 export default async function auditLogs(app: FastifyInstance) {
   app.get<{
     Reply: GenericResponseType<AuditLogEventDO[]> | Error;
-    Querystring: PaginationParamsType & AuditLogEventsFilters;
+    Querystring: AuditLogEventsFiltersQueryString;
   }>(
     "/",
     {
@@ -49,27 +49,59 @@ export default async function auditLogs(app: FastifyInstance) {
       const {
         offset = PAGINATION_OFFSET_DEFAULT,
         limit = PAGINATION_LIMIT_DEFAULT,
-        eventType,
+        resource,
+        action,
+        user,
+        from,
+        to,
       } = request.query;
 
       if (!organizationId) {
         throw app.httpErrors.unauthorized("Unauthorized!");
       }
 
-      const events = await app.auditLog.getEvents(
-        organizationId,
-        {
-          eventType,
-        },
-        {
-          offset,
-          limit,
-        },
-      );
+      const filters: AuditLogEventsFilters = {
+        eventType: undefined,
+        userId: undefined,
+        from,
+        to,
+      };
+
+      filters.eventType = `${resource ?? "%"}.${action ?? "%"}`;
+
+      if (user) {
+        const profileSdk = await getProfileSdk(organizationId);
+        const findBy: {
+          firstname?: string;
+          lastname?: string;
+          email?: string;
+        } = {};
+
+        if (user.includes("@")) {
+          findBy.email = user;
+        } else {
+          const [firstname, lastname] = user.split(" ");
+          findBy.firstname = firstname;
+          findBy.lastname = lastname;
+        }
+
+        const userDetails = await profileSdk.findUser(findBy);
+
+        if (userDetails.data === undefined) {
+          // ...
+        } else {
+          filters.userId = userDetails.data.id;
+        }
+      }
+
+      const events = await app.auditLog.getEvents(organizationId, filters, {
+        offset,
+        limit,
+      });
 
       const totalCount = await app.auditLog.getEventsTotalCount(
         organizationId,
-        { eventType },
+        filters,
       );
       const url = request.url.split("?")[0];
       const paginationDetails: PaginationDetails = {
