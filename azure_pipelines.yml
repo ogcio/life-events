@@ -139,4 +139,4 @@ stages:
       jobs:
         - template: test/smoke_test.yml@pipeline-templates
           parameters:
-            serviceName: ${{ serviceName }}-service
+            serviceName: ${{ serviceName }}
