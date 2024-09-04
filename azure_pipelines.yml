@@ -34,6 +34,8 @@ variables:
     - template: pipeline-variables/dev.yml
   - name: runSmokeTest
     value: ${{ eq('18848-trigger-smoke-tests-on-deployment-to-dev', variables['Build.SourceBranchName']) }}
+  - name: testPath
+    value: "./apps/"
 
 resources:
   repositories:
