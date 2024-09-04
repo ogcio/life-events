@@ -24,6 +24,7 @@ RUN npm run build --workspace=packages/shared-errors && \
     npm run build --workspace=packages/logging-wrapper && \
     npm run build --workspace=packages/error-handler && \
     npm run build --workspace=packages/api-auth && \
+    npm run build --workspace=packages/building-blocks-sdk && \
     npm run build --workspace=apps/payments-api
 
 FROM deps AS assembler
