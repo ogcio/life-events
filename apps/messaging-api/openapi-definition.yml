@@ -256,7 +256,7 @@ paths:
                       description: Rich text version of the message
                       minLength: 1
                       type: string
-                    lang:
+                    language:
                       type: string
                       enum:
                         - en
@@ -267,7 +267,7 @@ paths:
                     - excerpt
                     - plainText
                     - richText
-                    - lang
+                    - language
               required:
                 - preferredTransports
                 - recipientUserId
