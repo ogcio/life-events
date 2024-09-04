@@ -399,7 +399,7 @@ export interface paths {
             parameters: {
                 query: {
                     /** @description If set, returns only the primary providers if true, otherwise the non-primary ones */
-                    primary?: boolean;
+                    primary?: "true" | "false" | "0" | "1";
                     /** @description Provider types that can be manipulated */
                     type: "sms" | "email";
                     /** @description Indicates where to start fetching data or how many records to skip, defining the initial position within the list */
