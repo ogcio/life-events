@@ -1,0 +1,20 @@
+meta {
+  name: Get messages without params
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/v1/messages
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{citizenAccessToken}}
+}
+
+assert {
+  res.status: eq 403
+  res.body.name: eq AUTHORIZATION_ERROR
+}

@@ -1,0 +1,24 @@
+meta {
+  name: Get messages with not existent user
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/api/v1/messages?recipientUserId=do-not-exist
+  body: none
+  auth: bearer
+}
+
+query {
+  recipientUserId: do-not-exist
+}
+
+auth:bearer {
+  token: {{citizenAccessToken}}
+}
+
+assert {
+  res.status: eq 404
+  res.body.name: eq NOT_FOUND_ERROR
+}
