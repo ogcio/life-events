@@ -433,8 +433,15 @@ paths:
                           - public
                         description: Confidentiality level of the message
                       senderUserProfileId:
-                        description: Unique id of the sender from the Life Events building block
-                        type: string
+                        anyOf:
+                          - description: Unique id of the sender from the Life Events building block
+                            type: string
+                          - type: "null"
+                      senderApplicationId:
+                        anyOf:
+                          - description: Unique id of the M2M application that sent the message
+                            type: string
+                          - type: "null"
                     required:
                       - subject
                       - createdAt
@@ -447,6 +454,7 @@ paths:
                       - isSeen
                       - security
                       - senderUserProfileId
+                      - senderApplicationId
                   metadata:
                     type: object
                     properties:
