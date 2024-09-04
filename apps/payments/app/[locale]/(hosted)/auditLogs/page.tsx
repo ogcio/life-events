@@ -145,7 +145,11 @@ export default async function ({
                 </thead>
                 <tbody className="govie-table__body">
                   {auditLogsResponse?.data.map((event) => (
-                    <tr className="govie-table__row" key={event.auditLogId}>
+                    <tr
+                      className="govie-table__row"
+                      key={event.auditLogId}
+                      data-resource-id={event.resourceId}
+                    >
                       <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
                         {event.title}
                       </td>

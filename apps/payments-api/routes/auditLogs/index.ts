@@ -66,6 +66,7 @@ export default async function auditLogs(app: FastifyInstance) {
           limit,
         },
       );
+
       const totalCount = await app.auditLog.getEventsTotalCount(
         organizationId,
         { eventType },

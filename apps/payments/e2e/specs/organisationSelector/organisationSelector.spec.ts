@@ -9,11 +9,7 @@ import {
 import { OrganizationSelector } from "../../objects/components/OrganisationSelector";
 import { ProvidersPage } from "../../objects/providers/ProvidersPage";
 import { PaymentRequestsPage } from "../../objects/paymentRequests/PaymentRequestsListPage";
-
-const ORGANISATIONS = [
-  "First Testing Organisation",
-  "Second Testing Organisation",
-];
+import { ORGANISATIONS } from "../../utils/constants";
 
 test.describe("Organisation selector", () => {
   test("should be visible if the user has multiple organisations @regression @normal", async ({
@@ -59,17 +55,17 @@ test.describe("Organisation selector", () => {
 
     const providersPage = new ProvidersPage(publicServantPage);
     await providersPage.goto();
-    await providersPage.checkProviderVisible(bankTransferProvider);
+    await providersPage.checkProviderVisible(bankTransferProvider.name);
 
     await publicServantPage.goto("/");
     const orgSelector = new OrganizationSelector(publicServantPage);
-    await orgSelector.hasOrganisationSelected(ORGANISATIONS[0]);
-    await orgSelector.selectOrganization(ORGANISATIONS[1]);
+    await orgSelector.hasOrganisationSelected(ORGANISATIONS[0].name);
+    await orgSelector.selectOrganization(ORGANISATIONS[1].name);
     await orgSelector.submitSelection();
 
-    await orgSelector.hasOrganisationSelected(ORGANISATIONS[1]);
+    await orgSelector.hasOrganisationSelected(ORGANISATIONS[1].name);
     await providersPage.goto();
-    await providersPage.checkProviderNotVisible(bankTransferProvider);
+    await providersPage.checkProviderNotVisible(bankTransferProvider.name);
   });
 
   test("should disable organisation switch if user is not on the front page @regression @normal", async ({

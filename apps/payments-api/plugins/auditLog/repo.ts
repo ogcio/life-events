@@ -57,7 +57,8 @@ export class AuditLogRepo {
           created_at as "createdAt",
           event_type as "eventType",
           user_id as "userId",
-          organization_id as "organizationId"
+          organization_id as "organizationId",
+          metadata
         FROM audit_logs
         WHERE ${conditions.join(" AND ")}
         ORDER BY created_at DESC
