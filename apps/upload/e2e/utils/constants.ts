@@ -1,4 +1,4 @@
-export const landingPageUrl = "http://localhost:3008";
+export const landingPageUrl = "/";
 
 export const password = "123";
 export const citizens = ["Peter Parker", "Bruce Wayne"];
