@@ -38,7 +38,7 @@
   "devDependencies": {
     "@faker-js/faker": "^8.4.1",
     "@playwright/test": "^1.46.0",
-    "@types/node": "20.14.14",
+    "@types/node": "22.5.3",
     "@types/pg": "^8.11.6",
     "@types/react": "18.3.3",
     "typescript": "5.5.4"
