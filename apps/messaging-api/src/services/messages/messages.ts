@@ -42,21 +42,22 @@ export const getMessage = async (params: {
   const data = await params.pg.query<ReadMessage>(
     `
         select 
-            subject as "subject", 
-            excerpt as "excerpt", 
-            plain_text as "plainText",
-            rich_text as "richText",
-            created_at as "createdAt",
-            thread_name as "threadName",
-            organisation_id as "organisationId",
-            user_id as "recipientUserId",
-            is_seen as "isSeen",
-            sender_user_profile_id as "senderUserProfileId",
-            security_level as "security",
-            sender_application_id as "senderApplicationId"
+            messages.subject as "subject", 
+            messages.excerpt as "excerpt", 
+            messages.plain_text as "plainText",
+            messages.rich_text as "richText",
+            messages.created_at as "createdAt",
+            messages.thread_name as "threadName",
+            messages.organisation_id as "organisationId",
+            messages.user_id as "recipientUserId",
+            messages.is_seen as "isSeen",
+            messages.sender_user_profile_id as "senderUserProfileId",
+            messages.security_level as "security",
+            messages.sender_application_id as "senderApplicationId"
         from messages
-        where user_id = $1 and id=$2
-        order by created_at desc
+        left join users on users.id::text = messages.user_id
+        where (messages.user_id = $1 or users.user_profile_id::text = $1) and messages.id=$2
+        order by messages.created_at desc
     `,
     [params.userId, params.messageId],
   );

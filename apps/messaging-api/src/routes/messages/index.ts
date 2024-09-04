@@ -238,7 +238,12 @@ export default async function messages(app: FastifyInstance) {
         },
       },
     },
+
     async function getMessageHandler(request, _reply) {
+      console.log({
+        userIdHere: ensureUserIdIsSet(request, "TESTING"),
+        messageId: request.params.messageId,
+      });
       return {
         data: await getMessage({
           pg: app.pg,
