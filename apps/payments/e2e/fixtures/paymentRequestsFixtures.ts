@@ -2,8 +2,11 @@ import { PaymentRequestFormPage } from "../objects/paymentRequests/PaymentReques
 import { test as base } from "./providersFixtures";
 
 type paymentRequestsFixtures = {
+  paymentRequestWithManualBankTransferProvider: {
+    id: string;
+    name: string;
+  };
   paymentRequestWithMultipleProviders: string;
-  paymentRequestWithManualBankTransferProvider: string;
   paymentRequestWithOpenBankingProvider: string;
   paymentRequestWithStripeProvider: string;
   paymentRequestWithRealexProvider: string;
@@ -43,12 +46,11 @@ export const test = base.extend<paymentRequestsFixtures>({
       publicServantPage,
     );
     await paymentRequestCreatePage.goto();
-    await paymentRequestCreatePage.create({
+    const id = await paymentRequestCreatePage.create({
       title: paymentRequestTitle,
       bankTransferProvider: bankTransferProvider.name,
     });
-
-    await use(paymentRequestTitle);
+    await use({ name: paymentRequestTitle, id });
   },
 
   paymentRequestWithOpenBankingProvider: async (

@@ -1,4 +1,4 @@
-import { test } from "../../fixtures/providersFixtures";
+import { test } from "../../fixtures/paymentRequestsFixtures";
 import {
   Severity,
   owner,
@@ -75,5 +75,42 @@ test.describe("Audit Logs", () => {
     await detailsPage.checkUserId();
     await detailsPage.checkOrganizationId(ORGANISATIONS[0].id);
     await detailsPage.checkMetadata(bankTransferProvider.id, "provider");
+  });
+
+  test("should create an audit log event when a new payment request is created @regression @normal", async ({
+    paymentRequestWithManualBankTransferProvider,
+    publicServantPage,
+  }) => {
+    await description(
+      "This test checks the successful creation of an audit log when a new payment request is created.",
+    );
+    await owner("OGCIO");
+    await tags("Audit Logs", "Providers");
+    await severity(Severity.NORMAL);
+
+    const eventType = AuditLogEventType.PAYMENT_REQUEST_CREATE;
+    const auditLogsPage = new AuditLogsListPage(publicServantPage);
+    await auditLogsPage.goto();
+    await auditLogsPage.checkHeader();
+    await auditLogsPage.checkFilters();
+    await auditLogsPage.checkAuditLog(
+      paymentRequestWithManualBankTransferProvider.id,
+      eventType,
+    );
+    await auditLogsPage.goToDetails(
+      paymentRequestWithManualBankTransferProvider.id,
+      eventType,
+    );
+
+    const detailsPage = new AuditLogDetailsPage(publicServantPage);
+    await detailsPage.checkEventName(eventType);
+    await detailsPage.checkTimestampLabel();
+    await detailsPage.checkEventType(eventType);
+    await detailsPage.checkUserId();
+    await detailsPage.checkOrganizationId(ORGANISATIONS[0].id);
+    await detailsPage.checkMetadata(
+      paymentRequestWithManualBankTransferProvider.id,
+      "payment_request",
+    );
   });
 });
