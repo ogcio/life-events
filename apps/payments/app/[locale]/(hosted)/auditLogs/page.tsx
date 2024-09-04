@@ -14,17 +14,55 @@ import Pagination from "../../../components/pagination";
 import { redirect, RedirectType } from "next/navigation";
 import { AuthenticationFactory } from "../../../../libraries/authentication-factory";
 import { PageWrapper } from "../PageWrapper";
+import InputField from "../../../components/InputField";
 
 type Props = {
   params: {
     locale: string;
   };
-  searchParams: { page?: string; limit?: string; eventType?: string };
+  searchParams: {
+    page?: string;
+    limit?: string;
+    resource?: string;
+    action?: string;
+    user?: string;
+    from?: string;
+    to?: string;
+  };
+};
+
+const transformToTitle = (name: string) => {
+  return name
+    .split("_")
+    .map((word) => {
+      return word[0].toUpperCase() + word.slice(1);
+    })
+    .join(" ");
+};
+
+const getResourcesAndActions = (eventTypes: Record<string, string>) => {
+  return Object.keys(eventTypes).reduce<{
+    resources: Record<string, string>;
+    actions: Record<string, string>;
+  }>(
+    (acc, eventType) => {
+      const [resource, action] = eventType.split(".");
+
+      acc.resources[resource] = transformToTitle(resource);
+      acc.actions[action] = transformToTitle(action);
+
+      return acc;
+    },
+    {
+      resources: {},
+      actions: {},
+    },
+  );
 };
 
 export default async function ({
   params: { locale },
-  searchParams: { page, limit, eventType },
+  searchParams: { page, limit, resource, action, user, from, to },
 }: Props) {
   const t = await getTranslations("AuditLogs");
   const paymentsApi = await AuthenticationFactory.getPaymentsClient();
@@ -35,7 +73,11 @@ export default async function ({
   const params = {
     offset: pageToOffset(currentPage, pageLimit),
     limit: pageLimit,
-    eventType,
+    resource,
+    action,
+    user,
+    from,
+    to,
   };
 
   const { data: auditLogsResponse, error } =
@@ -51,28 +93,29 @@ export default async function ({
     await paymentsApi.getAuditLogEventTypes();
   const eventTypes = eventTypesResponse?.data ?? {};
 
+  const { resources, actions } = getResourcesAndActions(eventTypes);
+
   const url = `/${locale}/${routeDefinitions.auditLogs.path()}`;
   const links = buildPaginationLinks(url, auditLogsResponse?.metadata?.links);
 
   const setFilterParam = async (formData: FormData) => {
     "use server";
-    const queryItems: Array<string> = [];
+    const queryItems = {
+      page: page ? 1 : undefined,
+      limit,
+      user: formData.get("user"),
+      resource: formData.get("resource"),
+      action: formData.get("action"),
+    };
 
-    if (page) {
-      queryItems.push(`page=1`);
-    }
+    const queryString = Object.entries(queryItems)
+      .filter(([_, value]) => !!value)
+      .map(([name, value]) => {
+        return `${name}=${value}`;
+      })
+      .join("&");
 
-    if (limit) {
-      queryItems.push(`limit=${limit}`);
-    }
-
-    const selectedEventType = formData.get("eventType");
-
-    if (selectedEventType) {
-      queryItems.push(`eventType=${selectedEventType}`);
-    }
-
-    redirect(`?${queryItems.join("&")}`);
+    redirect(`?${queryString}`);
   };
 
   return (
@@ -81,6 +124,12 @@ export default async function ({
         <div style={{ width: "100%" }}>
           <h1 className="govie-heading-m">{t("title")}</h1>
           <form action={setFilterParam}>
+            <InputField
+              name="user"
+              label={t("filters.user")}
+              defaultValue={user}
+            />
+
             <div
               style={{
                 display: "flex",
@@ -88,35 +137,56 @@ export default async function ({
                 gap: "12px",
               }}
             >
-              <div className="govie-form-group">
-                <label htmlFor="event-type" className="govie-label--s">
-                  {t("filter.label")}
+              <div className="govie-form-group" style={{ width: "50%" }}>
+                <label htmlFor="resource" className="govie-label--s">
+                  {t("filters.resource")}
                 </label>
                 <br />
                 <select
-                  id="event-type"
-                  name="eventType"
+                  id="resource"
+                  name="resource"
                   className="govie-select"
-                  defaultValue={eventType ?? ""}
-                  style={{ width: "150px" }}
+                  defaultValue={resource ?? ""}
+                  style={{ width: "100%" }}
                 >
-                  <option value={""}>{t("filter.allEventsOption")}</option>
-                  {Object.entries(eventTypes).map(([type, title]) => (
-                    <option key={type} value={type}>
+                  <option value={""}>{t("filters.allOption")}</option>
+                  {Object.entries(resources).map(([resource, title]) => (
+                    <option key={resource} value={resource}>
                       {title}
                     </option>
                   ))}
                 </select>
               </div>
 
-              <button
-                type="submit"
-                data-module="govie-button"
-                className="govie-button govie-button--medium"
-              >
-                {t("filter.action")}
-              </button>
+              <div className="govie-form-group" style={{ width: "50%" }}>
+                <label htmlFor="action" className="govie-label--s">
+                  {t("filters.action")}
+                </label>
+                <br />
+                <select
+                  id="action"
+                  name="action"
+                  className="govie-select"
+                  defaultValue={action ?? ""}
+                  style={{ width: "100%" }}
+                >
+                  <option value={""}>{t("filters.allOption")}</option>
+                  {Object.entries(actions).map(([action, title]) => (
+                    <option key={action} value={action}>
+                      {title}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
+
+            <button
+              type="submit"
+              data-module="govie-button"
+              className="govie-button govie-button--medium"
+            >
+              {t("filters.submit")}
+            </button>
           </form>
 
           {auditLogsResponse?.data.length === 0 ? (

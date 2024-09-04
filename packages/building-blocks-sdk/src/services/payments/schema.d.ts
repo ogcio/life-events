@@ -1309,7 +1309,11 @@ export interface paths {
         query?: {
           offset?: number;
           limit?: number;
-          eventType?: string;
+          resource?: string;
+          action?: string;
+          user?: string;
+          from?: string;
+          to?: string;
         };
       };
       responses: {

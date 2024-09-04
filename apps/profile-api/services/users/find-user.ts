@@ -55,6 +55,7 @@ export const findUser = async (params: {
     findByEmailAddress,
     findByPhoneNumber,
     findByBirthDate,
+    findByName,
   ];
 
   try {
@@ -71,25 +72,79 @@ export const findUser = async (params: {
   return undefined;
 };
 
+const extendQueryWithUserName = (
+  userParams: FindUserParams,
+  queryFields: string[],
+  queryValues: string[],
+) => {
+  if (!userParams.firstname || !userParams.lastname) {
+    return undefined;
+  }
+
+  return {
+    queryFields: [...queryFields, "firstname ILIKE $2", "lastname ILIKE $3"],
+    queryValues: [...queryValues, userParams.firstname, userParams.lastname],
+  };
+};
+
+const findByName = async (params: {
+  client: PoolClient;
+  findUserParams: FindUserParams;
+}): Promise<FoundUser | undefined> => {
+  const userParams = params.findUserParams;
+
+  if (!userParams.firstname || !userParams.lastname) {
+    return undefined;
+  }
+
+  const queryFields = ["firstname ILIKE $1", "lastname ILIKE $2"];
+  const queryValues = [userParams.firstname, userParams.lastname];
+
+  const query = buildFindQuery(queryFields);
+
+  const found = await runFindQuery({
+    client: params.client,
+    query,
+    values: queryValues,
+  });
+
+  return found ? { ...found, matchQuality: "exact" } : undefined;
+};
+
 const findByPhoneNumber = async (params: {
   client: PoolClient;
   findUserParams: FindUserParams;
 }): Promise<FoundUser | undefined> => {
   const userParams = params.findUserParams;
-  if (!userParams.firstname || !userParams.lastname || !userParams.phone) {
+
+  if (!userParams.phone) {
     return undefined;
   }
 
-  const query = buildFindQuery([
-    "firstname ILIKE $1",
-    "lastname ILIKE $2",
-    "phone ILIKE $3",
-  ]);
+  let queryFields = ["phone ILIKE $1"];
+  let queryValues = [userParams.phone];
+
+  if (userParams.strict) {
+    const extendedResult = extendQueryWithUserName(
+      userParams,
+      queryFields,
+      queryValues,
+    );
+
+    if (!extendedResult) {
+      return undefined;
+    }
+
+    queryFields = extendedResult.queryFields;
+    queryValues = extendedResult.queryValues;
+  }
+
+  const query = buildFindQuery(queryFields);
 
   const found = await runFindQuery({
     client: params.client,
     query,
-    values: [userParams.firstname, userParams.lastname, userParams.phone],
+    values: queryValues,
   });
 
   return found ? { ...found, matchQuality: "exact" } : undefined;
@@ -100,11 +155,8 @@ const findByBirthDate = async (params: {
   findUserParams: FindUserParams;
 }): Promise<FoundUser | undefined> => {
   const userParams = params.findUserParams;
-  if (
-    !userParams.firstname ||
-    !userParams.lastname ||
-    !userParams.dateOfBirth
-  ) {
+
+  if (!userParams.dateOfBirth) {
     return undefined;
   }
 
@@ -117,16 +169,32 @@ const findByBirthDate = async (params: {
   const timezoneToUse = "Europe/Rome";
   process.env.TZ = timezoneToUse;
 
-  const query = buildFindQuery([
-    "firstname ILIKE $1",
-    "lastname ILIKE $2",
-    `to_char(timezone('${timezoneToUse}',"date_of_birth"),'YYYY-MM-DD') = $3`,
-  ]);
+  let queryFields = [
+    `to_char(timezone('${timezoneToUse}',"date_of_birth"),'YYYY-MM-DD') = $1`,
+  ];
+  let queryValues = [userParams.dateOfBirth];
+
+  if (userParams.strict) {
+    const extendedResult = extendQueryWithUserName(
+      userParams,
+      queryFields,
+      queryValues,
+    );
+
+    if (!extendedResult) {
+      return undefined;
+    }
+
+    queryFields = extendedResult.queryFields;
+    queryValues = extendedResult.queryValues;
+  }
+
+  const query = buildFindQuery(queryFields);
 
   const found = await runFindQuery({
     client: params.client,
     query,
-    values: [userParams.firstname, userParams.lastname, userParams.dateOfBirth],
+    values: queryValues,
   });
 
   process.env.TZ = oldTz;
@@ -143,12 +211,30 @@ const findByEmailAddress = async (params: {
     return undefined;
   }
 
-  const query = buildFindQuery(["email ILIKE $1"]);
+  let queryFields = ["email ILIKE $1"];
+  let queryValues = [userParams.email];
+
+  if (userParams.strict) {
+    const extendedResult = extendQueryWithUserName(
+      userParams,
+      queryFields,
+      queryValues,
+    );
+
+    if (!extendedResult) {
+      return undefined;
+    }
+
+    queryFields = extendedResult.queryFields;
+    queryValues = extendedResult.queryValues;
+  }
+
+  const query = buildFindQuery(queryFields);
 
   const found = await runFindQuery({
     client: params.client,
     query,
-    values: [userParams.email],
+    values: queryValues,
   });
 
   return found ? { ...found, matchQuality: "exact" } : undefined;

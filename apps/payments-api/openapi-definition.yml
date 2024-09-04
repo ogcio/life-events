@@ -2574,7 +2574,27 @@ paths:
         - schema:
             type: string
           in: query
-          name: eventType
+          name: resource
+          required: false
+        - schema:
+            type: string
+          in: query
+          name: action
+          required: false
+        - schema:
+            type: string
+          in: query
+          name: user
+          required: false
+        - schema:
+            type: string
+          in: query
+          name: from
+          required: false
+        - schema:
+            type: string
+          in: query
+          name: to
           required: false
       responses:
         "200":
