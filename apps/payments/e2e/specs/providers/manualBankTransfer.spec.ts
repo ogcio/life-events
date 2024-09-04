@@ -228,7 +228,7 @@ testWithProvider.describe("Manual bank transfer provider editing", () => {
       await tags("Providers", "Manual Bank Transfer");
       await severity(Severity.NORMAL);
 
-      const providerName = bankTransferProvider;
+      const providerName = bankTransferProvider.name;
       const newProviderName = `${providerName} edited`;
 
       await publicServantPage.goto(paymentSetupUrl);
@@ -284,18 +284,18 @@ testWithProvider.describe("Manual bank transfer provider editing", () => {
       await providersMenuLink.click();
 
       const providersPage = new ProvidersPage(publicServantPage);
-      await providersPage.editProvider(bankTransferProvider);
+      await providersPage.editProvider(bankTransferProvider.name);
       const editProviderPage = new EditManualBankTransferProviderPage(
         publicServantPage,
       );
       await editProviderPage.checkHeaderVisible();
       await editProviderPage.disableProvider();
-      await providersPage.checkProviderIsDisabled(bankTransferProvider);
+      await providersPage.checkProviderIsDisabled(bankTransferProvider.name);
 
-      await providersPage.editProvider(bankTransferProvider);
+      await providersPage.editProvider(bankTransferProvider.name);
       await editProviderPage.checkHeaderVisible();
       await editProviderPage.enableProvider();
-      await providersPage.checkProviderIsEnabled(bankTransferProvider);
+      await providersPage.checkProviderIsEnabled(bankTransferProvider.name);
     },
   );
 
@@ -317,12 +317,12 @@ testWithProvider.describe("Manual bank transfer provider editing", () => {
       await providersMenuLink.click();
 
       const providersPage = new ProvidersPage(publicServantPage);
-      await providersPage.editProvider(bankTransferProvider);
+      await providersPage.editProvider(bankTransferProvider.name);
       const editProviderPage = new EditManualBankTransferProviderPage(
         publicServantPage,
       );
       await editProviderPage.checkHeaderVisible();
-      await editProviderPage.providerForm.checkName(bankTransferProvider);
+      await editProviderPage.providerForm.checkName(bankTransferProvider.name);
       await editProviderPage.providerForm.enterName("");
       await editProviderPage.saveChanges();
       await editProviderPage.providerForm.expectValidationError("nameRequired");
@@ -347,7 +347,7 @@ testWithProvider.describe("Manual bank transfer provider editing", () => {
       await providersMenuLink.click();
 
       const providersPage = new ProvidersPage(publicServantPage);
-      await providersPage.editProvider(bankTransferProvider);
+      await providersPage.editProvider(bankTransferProvider.name);
       const editProviderPage = new EditManualBankTransferProviderPage(
         publicServantPage,
       );
@@ -362,7 +362,7 @@ testWithProvider.describe("Manual bank transfer provider editing", () => {
       );
 
       await providersPage.goto();
-      await providersPage.editProvider(bankTransferProvider);
+      await providersPage.editProvider(bankTransferProvider.name);
       await editProviderPage.providerForm.checkAccountHolderName(
         mockAccountHolderName,
       );
@@ -387,7 +387,7 @@ testWithProvider.describe("Manual bank transfer provider editing", () => {
       await providersMenuLink.click();
 
       const providersPage = new ProvidersPage(publicServantPage);
-      await providersPage.editProvider(bankTransferProvider);
+      await providersPage.editProvider(bankTransferProvider.name);
       const editProviderPage = new EditManualBankTransferProviderPage(
         publicServantPage,
       );
@@ -398,7 +398,7 @@ testWithProvider.describe("Manual bank transfer provider editing", () => {
       await editProviderPage.providerForm.expectValidationError("ibanRequired");
 
       await providersPage.goto();
-      await providersPage.editProvider(bankTransferProvider);
+      await providersPage.editProvider(bankTransferProvider.name);
       await editProviderPage.providerForm.checkIban(mockIban);
     },
   );
@@ -421,7 +421,7 @@ testWithProvider.describe("Manual bank transfer provider editing", () => {
       await providersMenuLink.click();
 
       const providersPage = new ProvidersPage(publicServantPage);
-      await providersPage.editProvider(bankTransferProvider);
+      await providersPage.editProvider(bankTransferProvider.name);
       const editProviderPage = new EditManualBankTransferProviderPage(
         publicServantPage,
       );
@@ -432,7 +432,7 @@ testWithProvider.describe("Manual bank transfer provider editing", () => {
       await editProviderPage.providerForm.expectValidationError("ibanInvalid");
 
       await providersPage.goto();
-      await providersPage.editProvider(bankTransferProvider);
+      await providersPage.editProvider(bankTransferProvider.name);
       await editProviderPage.providerForm.checkIban(mockIban);
     },
   );

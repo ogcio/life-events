@@ -374,7 +374,14 @@ export const AuditLogEvent = Type.Object({
   organizationId: Type.Optional(Type.String()),
 });
 
-export const AuditLogEvents = Type.Array(AuditLogEvent);
+export const AuditLogEvents = Type.Array(
+  Type.Composite([
+    AuditLogEvent,
+    Type.Object({
+      resourceId: Type.Optional(Type.String()),
+    }),
+  ]),
+);
 
 export const AuditLogEventDetails = Type.Composite([
   AuditLogEvent,

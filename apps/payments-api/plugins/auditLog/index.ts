@@ -22,6 +22,10 @@ const getEventTitle = (eventType: AuditLogEventType) => {
   return AuditLogEventTitles[eventType];
 };
 
+const getResourceId = (metadata: Record<string, unknown>) => {
+  return (metadata.resource as { id?: unknown })?.id;
+};
+
 const buildCreateEvent =
   (repo: AuditLogRepo, log: FastifyBaseLogger) =>
   async (event: CreateAuditLog): Promise<AuditLogEventDO> => {
@@ -69,6 +73,7 @@ const buildGetEvents =
       return {
         ...event,
         title: getEventTitle(event.eventType),
+        resourceId: getResourceId(event.metadata),
       };
     });
   };

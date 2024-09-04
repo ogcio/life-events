@@ -66,3 +66,5 @@ export default {
 export const postSignoutRedirect =
   process.env.NEXT_PUBLIC_PAYMENTS_SERVICE_ENTRY_POINT;
 export const postLoginRedirectUrlCookieName = "logtoPostLoginRedirectUrl";
+
+export const logtoUserIdCookieName = "logtoUserId";

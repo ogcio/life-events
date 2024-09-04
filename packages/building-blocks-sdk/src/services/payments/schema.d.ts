@@ -1324,6 +1324,7 @@ export interface paths {
                 title: string;
                 userId?: string;
                 organizationId?: string;
+                resourceId?: string;
               }[];
               metadata?: {
                 links?: {

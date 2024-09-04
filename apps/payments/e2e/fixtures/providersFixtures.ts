@@ -5,7 +5,7 @@ type providersFixtures = {
   realexProvider: string;
   stripeProvider: string;
   openBankingProvider: string;
-  bankTransferProvider: string;
+  bankTransferProvider: { name: string; id: string };
 };
 
 export const test = base.extend<providersFixtures>({
@@ -38,6 +38,7 @@ export const test = base.extend<providersFixtures>({
     await providersPage.goto();
     const providerName = `Test bank transfer ${Date.now()}`;
     await providersPage.addProvider(providerName, "banktransfer");
-    await use(providerName);
+    const providerId = await providersPage.getProviderId(providerName);
+    await use({ name: providerName, id: providerId });
   },
 });

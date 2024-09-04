@@ -46,7 +46,7 @@ test.describe("Payment Request with manual bank transfer provider", () => {
     await createPaymentRequestPage.enterTitle(name);
     await createPaymentRequestPage.enterDescription(paymentRequestDescription);
     await createPaymentRequestPage.selectManualBankTransferAccount(
-      bankTransferProvider,
+      bankTransferProvider.name,
     );
     await createPaymentRequestPage.enterReference(mockPaymentRequestReference);
     await createPaymentRequestPage.enterAmount(mockAmount);
@@ -62,7 +62,7 @@ test.describe("Payment Request with manual bank transfer provider", () => {
     await detailsPage.checkDescription(paymentRequestDescription);
     await detailsPage.checkStatus("inactive");
     await detailsPage.checkAccounts([
-      { name: bankTransferProvider, type: "banktransfer" },
+      { name: bankTransferProvider.name, type: "banktransfer" },
     ]);
     await detailsPage.checkAmount(mockAmount);
     await detailsPage.checkRedirectUrl(mockRedirectUrl);
@@ -82,7 +82,7 @@ test.describe("Payment Request with manual bank transfer provider", () => {
     await paymentRequestsPage.checkHeader();
     await paymentRequestsPage.checkRequestIsVisible(name);
     await paymentRequestsPage.checkBeneficiaryAccounts(name, [
-      bankTransferProvider,
+      bankTransferProvider.name,
     ]);
     await paymentRequestsPage.checkAmount(name, mockAmount);
     await paymentRequestsPage.checkStatus(name, "inactive");
@@ -110,7 +110,7 @@ test.describe("Payment Request with manual bank transfer provider", () => {
     await createPaymentRequestPage.enterTitle(name);
     await createPaymentRequestPage.enterDescription(paymentRequestDescription);
     await createPaymentRequestPage.selectManualBankTransferAccount(
-      bankTransferProvider,
+      bankTransferProvider.name,
     );
     await createPaymentRequestPage.enterReference(mockPaymentRequestReference);
     await createPaymentRequestPage.enterAmount(mockAmount);
@@ -124,7 +124,7 @@ test.describe("Payment Request with manual bank transfer provider", () => {
     await detailsPage.checkDescription(paymentRequestDescription);
     await detailsPage.checkStatus("active");
     await detailsPage.checkAccounts([
-      { name: bankTransferProvider, type: "banktransfer" },
+      { name: bankTransferProvider.name, type: "banktransfer" },
     ]);
     await detailsPage.checkAmount(mockAmount);
     await detailsPage.checkRedirectUrl(mockRedirectUrl);
@@ -154,7 +154,7 @@ test.describe("Payment Request with manual bank transfer provider", () => {
     await paymentRequestsPage.checkHeader();
     await paymentRequestsPage.checkRequestIsVisible(name);
     await paymentRequestsPage.checkBeneficiaryAccounts(name, [
-      bankTransferProvider,
+      bankTransferProvider.name,
     ]);
     await paymentRequestsPage.checkAmount(name, mockAmount);
     await paymentRequestsPage.checkStatus(name, "active");
