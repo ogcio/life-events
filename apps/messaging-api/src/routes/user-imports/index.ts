@@ -72,12 +72,12 @@ export default async function userImports(app: FastifyInstance) {
         logger: request.log,
         pool: app.pg.pool,
         organisationId: ensureOrganizationIdIsSet(request, "GET_USER_IMPORTS"),
+        pagination,
       });
-      return formatAPIResponse(response.data, {
-        limit: Number(pagination.limit),
-        offset: Number(pagination.offset),
-        url: new URL(`${app.listeningOrigin}${request.url}`),
+      return formatAPIResponse({
+        data: response.data,
         totalCount: response.totalCount,
+        request,
       });
     },
   );
