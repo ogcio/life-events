@@ -521,5 +521,6 @@ const getUserProfile = async (params: {
     dateOfBirth: toImportUser.birthDate ?? undefined,
     email: toImportUser.emailAddress ?? undefined,
     phone: toImportUser.phoneNumber ?? undefined,
+    strict: true,
   });
 };

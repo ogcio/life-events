@@ -128,7 +128,7 @@ export const MessageInputSchema = Type.Object({
     description: "Rich text version of the message",
     minLength: 1,
   }),
-  lang: TypeboxStringEnum(
+  language: TypeboxStringEnum(
     ["en", "ga"],
     undefined,
     "Language used to send the message",

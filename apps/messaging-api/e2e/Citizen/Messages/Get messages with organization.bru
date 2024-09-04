@@ -1,0 +1,24 @@
+meta {
+  name: Get messages with organization
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/api/v1/messages?organisationId=not-valid
+  body: none
+  auth: bearer
+}
+
+query {
+  organisationId: not-valid
+}
+
+auth:bearer {
+  token: {{citizenAccessToken}}
+}
+
+assert {
+  res.status: eq 403
+  res.body.name: eq AUTHORIZATION_ERROR
+}

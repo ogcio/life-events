@@ -3,6 +3,7 @@ import { Pool } from "pg";
 import { getUserImports } from "../shared-users.js";
 import { UsersImport } from "../../../types/usersSchemaDefinitions.js";
 import { NotFoundError } from "shared-errors";
+import { PaginationParams } from "../../../types/schemaDefinitions.js";
 
 export const READ_USER_IMPORTS_ERROR = "READ_USER_IMPORTS_ERROR";
 
@@ -10,9 +11,11 @@ export const getUserImportsForOrganisation = async (params: {
   logger: FastifyBaseLogger;
   organisationId: string;
   pool: Pool;
+  pagination: Required<PaginationParams>;
 }): Promise<{ data: Omit<UsersImport, "usersData">[]; totalCount: number }> => {
   const client = await params.pool.connect();
   try {
+    // TODO MISSING PAGINATION MANAGEMENT
     return await getUserImports({
       client,
       whereClauses: ["organisation_id = $1"],

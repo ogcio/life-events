@@ -17,6 +17,9 @@ export const envSchema = {
     "LOGTO_JWK_ENDPOINT",
     "LOGTO_OIDC_ENDPOINT",
     "LOGTO_API_RESOURCE_INDICATOR",
+    "LOGTO_M2M_PROFILE_APP_ID",
+    "LOGTO_M2M_PROFILE_APP_SECRET",
+    "PROFILE_BACKEND_URL",
   ],
   properties: {
     POSTGRES_USER: {
@@ -65,6 +68,15 @@ export const envSchema = {
       type: "string",
     },
     LOGTO_API_RESOURCE_INDICATOR: {
+      type: "string",
+    },
+    LOGTO_M2M_PROFILE_APP_ID: {
+      type: "string",
+    },
+    LOGTO_M2M_PROFILE_APP_SECRET: {
+      type: "string",
+    },
+    PROFILE_BACKEND_URL: {
       type: "string",
     },
   },
