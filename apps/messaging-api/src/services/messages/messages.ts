@@ -486,6 +486,7 @@ export const processMessages = async (params: {
   pgPool: Pool;
   logger: FastifyBaseLogger;
   senderUser: { profileId: string; organizationId?: string };
+  isM2MApplicationSender: boolean;
   organizationId?: string;
   allOrNone: boolean;
 }): Promise<{
@@ -500,40 +501,15 @@ export const processMessages = async (params: {
     logger,
     senderUser,
     allOrNone,
+    isM2MApplicationSender,
   } = params;
-  let { organizationId } = params;
+  const { organizationId } = params;
   if (!organizationId && !senderUser.organizationId) {
     throw new BadRequestError(
       errorProcess,
       "You have to set organization id to send messages",
     );
   }
-  if (
-    senderUser.organizationId &&
-    organizationId &&
-    organizationId !== senderUser.organizationId
-  ) {
-    throw new BadRequestError(
-      errorProcess,
-      "You can't send messages to a different organization you are logged in to",
-    );
-  }
-  organizationId = organizationId ?? senderUser.organizationId;
-  const profileSdk = await getProfileSdk(organizationId);
-  const senderUserProfile = await profileSdk.getUser(senderUser.profileId);
-  if (!senderUserProfile.data) {
-    throw new NotFoundError(errorProcess, "Sender user cannot be found");
-  }
-  if (senderUserProfile.error) {
-    throw new ThirdPartyError(
-      errorProcess,
-      senderUserProfile.error.detail,
-      senderUserProfile.error,
-    );
-  }
-
-  const senderFullName =
-    `${senderUserProfile.data.firstName} ${senderUserProfile.data.lastName}`.trim();
 
   const poolClient = await pgPool.connect();
   try {
@@ -545,6 +521,12 @@ export const processMessages = async (params: {
       scheduledMessages: { jobId: string; userId: string; entityId: string }[];
       errors: LifeEventsError[];
     } = { scheduledMessages: [], errors: [] };
+    const senderData = await getSenderData({
+      senderUser,
+      organizationId,
+      isM2MApplicationSender,
+      errorProcess,
+    });
     try {
       await poolClient.query("BEGIN");
       const createPromises = [];
@@ -552,11 +534,7 @@ export const processMessages = async (params: {
         createPromises.push(
           createMessageWithLog({
             createMessageParams: toCreate,
-            senderUser: {
-              ...senderUserProfile.data,
-              fullName: senderFullName,
-              userProfileId: senderUser.profileId,
-            },
+            ...senderData,
             messageService,
             eventLogger,
             poolClient,
@@ -613,6 +591,67 @@ export const processMessages = async (params: {
   } finally {
     poolClient.release();
   }
+};
+
+const getSenderData = async (params: {
+  senderUser: { profileId: string; organizationId?: string };
+  isM2MApplicationSender: boolean;
+  organizationId?: string;
+  errorProcess: string;
+}): Promise<
+  | {
+      senderUser: {
+        fullName: string;
+        ppsn?: string | null;
+        userProfileId: string;
+      };
+    }
+  | {
+      senderApplication: {
+        id: string;
+      };
+    }
+> => {
+  const { senderUser, isM2MApplicationSender, organizationId, errorProcess } =
+    params;
+  if (
+    senderUser.organizationId &&
+    organizationId &&
+    organizationId !== senderUser.organizationId
+  ) {
+    throw new BadRequestError(
+      errorProcess,
+      "You can't send messages to a different organization you are logged in to",
+    );
+  }
+  const toUseOrganizationId = organizationId ?? senderUser.organizationId;
+
+  if (isM2MApplicationSender) {
+    return { senderApplication: { id: senderUser.profileId } };
+  }
+  const profileSdk = await getProfileSdk(toUseOrganizationId);
+  const senderUserProfile = await profileSdk.getUser(senderUser.profileId);
+  if (!senderUserProfile.data) {
+    throw new NotFoundError(errorProcess, "Sender user cannot be found");
+  }
+  if (senderUserProfile.error) {
+    throw new ThirdPartyError(
+      errorProcess,
+      senderUserProfile.error.detail,
+      senderUserProfile.error,
+    );
+  }
+
+  const senderFullName =
+    `${senderUserProfile.data.firstName} ${senderUserProfile.data.lastName}`.trim();
+
+  return {
+    senderUser: {
+      ...senderUserProfile.data,
+      fullName: senderFullName,
+      userProfileId: senderUser.profileId,
+    },
+  };
 };
 
 const scheduleMessagesWithLog = async (params: {
