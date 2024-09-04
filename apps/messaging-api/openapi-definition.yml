@@ -256,7 +256,7 @@ paths:
                       description: Rich text version of the message
                       minLength: 1
                       type: string
-                    lang:
+                    language:
                       type: string
                       enum:
                         - en
@@ -267,7 +267,7 @@ paths:
                     - excerpt
                     - plainText
                     - richText
-                    - lang
+                    - language
               required:
                 - preferredTransports
                 - recipientUserId
@@ -594,7 +594,12 @@ paths:
       description: Returns the providers matching the requested query
       parameters:
         - schema:
-            type: boolean
+            type: string
+            enum:
+              - "true"
+              - "false"
+              - "0"
+              - "1"
           in: query
           name: primary
           required: false
