@@ -480,7 +480,7 @@ const scheduleMessage = async (
 };
 
 export const processMessages = async (params: {
-  inputMessages: CreateMessageParams[];
+  inputMessages: Omit<CreateMessageParams, "senderApplicationId">[];
   scheduleAt: string;
   errorProcess: string;
   pgPool: Pool;
@@ -685,7 +685,7 @@ const createMessageWithLog = async (params: {
   senderApplication?: { id: string };
   messageService: MessagingService;
   eventLogger: MessagingEventLogger;
-  createMessageParams: CreateMessageParams;
+  createMessageParams: Omit<CreateMessageParams, "senderApplicationId">;
   poolClient: PoolClient;
   errorProcess: string;
 }): Promise<{
@@ -715,7 +715,15 @@ const createMessageWithLog = async (params: {
     `${receiverUserProfiles[0].firstName} ${receiverUserProfiles[0].lastName}`.trim();
   let message = null;
   try {
-    message = await params.messageService.createMessage(createMessage);
+    const senderData = {
+      senderApplicationId: params.senderApplication?.id ?? null,
+      senderUserProfileId: params.senderUser?.userProfileId ?? null,
+    };
+
+    message = await params.messageService.createMessage({
+      ...createMessage,
+      ...senderData,
+    });
   } catch (error) {
     return {
       error: new ServerError(

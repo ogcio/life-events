@@ -239,9 +239,9 @@ const sendInvitations = async (params: {
   invitedToMessaging: string[];
   invitedToOrganisation: string[];
   welcomed: string[];
-  toCreateMessages: CreateMessageParams[];
+  toCreateMessages: Omit<CreateMessageParams, "senderApplicationId">[];
 }> => {
-  const sending: CreateMessageParams[] = [];
+  const sending: Omit<CreateMessageParams, "senderApplicationId">[] = [];
   const output: {
     invitedToMessaging: string[];
     invitedToOrganisation: string[];
