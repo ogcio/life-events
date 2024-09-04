@@ -109,17 +109,17 @@ export class Messaging {
 
   async buildMessage(
     messages: paths["/api/v1/messages/"]["post"]["requestBody"]["content"]["application/json"]["message"][],
-    lang: string,
+    language: string,
     vars: Record<string, string | null | undefined>,
   ) {
-    if (!lang) {
+    if (!language) {
       throw new Error("no language provided");
     }
 
-    const message = messages.find((m) => m.lang === lang);
+    const message = messages.find((m) => m.language === language);
 
     if (!message) {
-      throw new Error(`template not found for language ${lang}`);
+      throw new Error(`template not found for language ${language}`);
     }
 
     const illegalValueKeys: string[] = [];
@@ -170,7 +170,7 @@ export class Messaging {
       excerpt: keys.reduce(interpolator, message.excerpt),
       richText: keys.reduce(interpolator, message.richText),
       plainText: keys.reduce(interpolator, message.plainText),
-      lang: message.lang,
+      language: message.language,
     };
   }
 

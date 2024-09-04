@@ -252,7 +252,7 @@ const sendInvitations = async (params: {
       sending.push({
         bypassConsent: true,
         excerpt: messageInput.excerpt,
-        lang: messageInput.lang,
+        language: messageInput.language,
         organisationId: params.organisationId,
         plainText: messageInput.plainText,
         preferredTransports: ALL_TRANSPORTS,
@@ -283,7 +283,7 @@ const sendInvitations = async (params: {
       sending.push({
         bypassConsent: true,
         excerpt: messageInput.excerpt,
-        lang: messageInput.lang,
+        language: messageInput.language,
         organisationId: params.organisationId,
         plainText: messageInput.plainText,
         preferredTransports: ALL_TRANSPORTS,
@@ -309,7 +309,7 @@ const sendInvitations = async (params: {
       sending.push({
         bypassConsent: true,
         excerpt: messageInput.excerpt,
-        lang: messageInput.lang,
+        language: messageInput.language,
         organisationId: params.organisationId,
         plainText: messageInput.plainText,
         preferredTransports: ALL_TRANSPORTS,
@@ -367,7 +367,7 @@ const getJoinMessagingMessageForLanguage = (language: string): MessageInput => {
     plainText: "Click here to join our platform",
     richText: "Click here to join our platform",
     threadName: "JoinMessaging",
-    lang: defaultLang(language),
+    language: defaultLang(language),
   };
 };
 
@@ -379,7 +379,7 @@ const getJoinOrgMessageForLanguage = (language: string): MessageInput => {
     plainText: "Click here to join our platform",
     richText: "Click here to join our platform",
     threadName: "JoinOrganisation",
-    lang: defaultLang(language),
+    language: defaultLang(language),
   };
 };
 
@@ -391,7 +391,7 @@ const getWelcomeMessageForLanguage = (language: string): MessageInput => {
     plainText: "Click here to join our platform",
     richText: "Click here to join our platform",
     threadName: "JoinOrganisation",
-    lang: defaultLang(language),
+    language: defaultLang(language),
   };
 };
 
