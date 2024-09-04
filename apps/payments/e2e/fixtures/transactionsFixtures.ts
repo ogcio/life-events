@@ -27,7 +27,7 @@ export const test = base.extend<transactionFixtures>({
     const paymentRequestsPage = new PaymentRequestsPage(publicServantPage);
     await paymentRequestsPage.goto();
     await paymentRequestsPage.gotoDetails(
-      paymentRequestWithManualBankTransferProvider,
+      paymentRequestWithManualBankTransferProvider.name,
     );
 
     const detailsPage = new PaymentRequestDetailsPage(publicServantPage);
@@ -48,7 +48,7 @@ export const test = base.extend<transactionFixtures>({
     await use({
       referenceCode,
       amount,
-      paymentRequestTitle: paymentRequestWithManualBankTransferProvider,
+      paymentRequestTitle: paymentRequestWithManualBankTransferProvider.name,
       status: "pending",
     });
   },
