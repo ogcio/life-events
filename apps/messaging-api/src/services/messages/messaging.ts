@@ -112,6 +112,7 @@ export function newMessagingService(
 ): Readonly<MessagingService> {
   return Object.freeze<MessagingService>({
     async createMessage(params: CreateMessageParams) {
+      // TODO Here manage the senderApplicationId
       const valueArray = [
         false,
         params.receiverUserId,
