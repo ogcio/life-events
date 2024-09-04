@@ -155,7 +155,10 @@ export const getInvitationStatus = async (params: {
   }
 
   if (!statusResponse || statusResponse.rowCount === 0) {
-    throw new NotFoundError(ACCEPT_INVITATIONS_ERROR, "Cannot find the user");
+    throw new NotFoundError(
+      ACCEPT_INVITATIONS_ERROR,
+      "Cannot find accepted invitations for the user",
+    );
   }
 
   return statusResponse.rows[0];

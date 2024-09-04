@@ -1,0 +1,32 @@
+meta {
+  name: Upload a file
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/v1/files
+  body: multipartForm
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{accessToken}}
+}
+
+body:multipart-form {
+  file: @file(dummy.txt)
+}
+
+vars:post-response {
+  fileId: res.body.data.id
+}
+
+assert {
+  res.status: eq 201
+  res.body.data.id: isString
+}
+
+script:post-response {
+  console.log(res)
+}

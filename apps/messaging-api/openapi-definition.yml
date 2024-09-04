@@ -594,7 +594,12 @@ paths:
       description: Returns the providers matching the requested query
       parameters:
         - schema:
-            type: boolean
+            type: string
+            enum:
+              - "true"
+              - "false"
+              - "0"
+              - "1"
           in: query
           name: primary
           required: false
