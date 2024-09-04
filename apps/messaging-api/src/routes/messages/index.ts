@@ -10,7 +10,6 @@ import {
   MessageListSchema,
   MessageListItemSchema,
   IdParamsSchema,
-  GenericResponse,
 } from "../../types/schemaDefinitions.js";
 import {
   getMessage,
@@ -21,10 +20,9 @@ import { Permissions } from "../../types/permissions.js";
 import { ensureUserCanAccessUser } from "api-auth";
 import { QueryResult } from "pg";
 import { ServerError, AuthorizationError, NotFoundError } from "shared-errors";
-import { utils } from "../../utils.js";
 import {
   sanitizePagination,
-  getPaginationLinks,
+  formatAPIResponse,
 } from "../../utils/pagination.js";
 import { ensureUserIdIsSet } from "../../utils/authentication-factory.js";
 
@@ -71,15 +69,6 @@ export default async function messages(app: FastifyInstance) {
     },
     async function getMessagesHandler(request, _reply) {
       const errorProcess = "GET_MESSAGES";
-      let url: URL | undefined;
-      try {
-        url = utils.apiV1Url({
-          resourcePath: prefix,
-          base: process.env.HOST_URL || "",
-        });
-      } catch (error) {
-        throw new ServerError(errorProcess, "failed to build link url", error);
-      }
 
       const queryRecipientUserId = request.query.recipientUserId;
       const queryOrganisationId = request.query.organisationId;
@@ -202,38 +191,28 @@ export default async function messages(app: FastifyInstance) {
 
       const totalCount = messagesQueryResult?.rows.at(0)?.count || 0;
 
-      const links = getPaginationLinks({
+      return formatAPIResponse({
+        data:
+          messagesQueryResult?.rows.map(
+            ({
+              id,
+              createdAt,
+              subject,
+              organisationId,
+              threadName,
+              recipientUserId,
+            }) => ({
+              id,
+              subject,
+              createdAt,
+              threadName,
+              organisationId,
+              recipientUserId,
+            }),
+          ) ?? [],
+        request,
         totalCount,
-        url,
-        limit: Number(limit),
-        offset: Number(offset),
       });
-      const response: GenericResponse<Static<typeof MessageListItemSchema>[]> =
-        {
-          data:
-            messagesQueryResult?.rows.map(
-              ({
-                id,
-                createdAt,
-                subject,
-                organisationId,
-                threadName,
-                recipientUserId,
-              }) => ({
-                id,
-                subject,
-                createdAt,
-                threadName,
-                organisationId,
-                recipientUserId,
-              }),
-            ) ?? [],
-          metadata: {
-            totalCount,
-            links,
-          },
-        };
-      return response;
     },
   );
 
