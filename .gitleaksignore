@@ -4,4 +4,4 @@
 /src/apps/payments/e2e/utils/mocks.ts:generic-api-key:7
 /src/apps/messaging-api/e2e/.env.sample:generic-api-key:2
 /src/apps/messaging-api/e2e/.env.sample:generic-api-key:1
-/src/apps/upload-api/e2e/.env.sample:generic-api-key:8
+/src/apps/upload/e2e/utils/mocks.ts:generic-api-key:7
