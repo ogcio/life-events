@@ -1,4 +1,4 @@
-import { test } from "../../fixtures/paymentRequestsFixtures";
+import { test } from "../../fixtures/transactionsFixtures";
 import {
   Severity,
   owner,
@@ -37,7 +37,7 @@ test.describe("Audit Logs", () => {
     await detailsPage.checkEventName(eventType);
     await detailsPage.checkTimestampLabel();
     await detailsPage.checkEventType(eventType);
-    await detailsPage.checkUserId();
+    await detailsPage.checkUserId(publicServantPage);
     await detailsPage.checkOrganizationId(ORGANISATIONS[0].id);
     await detailsPage.checkMetadata(bankTransferProvider.id, "provider");
   });
@@ -74,7 +74,7 @@ test.describe("Audit Logs", () => {
     await detailsPage.checkEventName(eventType);
     await detailsPage.checkTimestampLabel();
     await detailsPage.checkEventType(eventType);
-    await detailsPage.checkUserId();
+    await detailsPage.checkUserId(publicServantPage);
     await detailsPage.checkOrganizationId(ORGANISATIONS[0].id);
     await detailsPage.checkMetadata(bankTransferProvider.id, "provider");
   });
@@ -87,7 +87,7 @@ test.describe("Audit Logs", () => {
       "This test checks the successful creation of an audit log when a new payment request is created.",
     );
     await owner("OGCIO");
-    await tags("Audit Logs", "Providers");
+    await tags("Audit Logs", "Payment Request");
     await severity(Severity.NORMAL);
 
     const eventType = AuditLogEventType.PAYMENT_REQUEST_CREATE;
@@ -108,7 +108,7 @@ test.describe("Audit Logs", () => {
     await detailsPage.checkEventName(eventType);
     await detailsPage.checkTimestampLabel();
     await detailsPage.checkEventType(eventType);
-    await detailsPage.checkUserId();
+    await detailsPage.checkUserId(publicServantPage);
     await detailsPage.checkOrganizationId(ORGANISATIONS[0].id);
     await detailsPage.checkMetadata(
       paymentRequestWithManualBankTransferProvider.id,
@@ -124,7 +124,7 @@ test.describe("Audit Logs", () => {
       "This test checks the successful creation of an audit log when a payment request is updated.",
     );
     await owner("OGCIO");
-    await tags("Audit Logs", "Providers");
+    await tags("Audit Logs", "Payment Request");
     await severity(Severity.NORMAL);
 
     const prDetailsPage = new PaymentRequestDetailsPage(publicServantPage);
@@ -153,7 +153,7 @@ test.describe("Audit Logs", () => {
     await detailsPage.checkEventName(eventType);
     await detailsPage.checkTimestampLabel();
     await detailsPage.checkEventType(eventType);
-    await detailsPage.checkUserId();
+    await detailsPage.checkUserId(publicServantPage);
     await detailsPage.checkOrganizationId(ORGANISATIONS[0].id);
     await detailsPage.checkMetadata(
       paymentRequestWithManualBankTransferProvider.id,
@@ -169,7 +169,7 @@ test.describe("Audit Logs", () => {
       "This test checks the successful creation of an audit log when a payment request is deleted.",
     );
     await owner("OGCIO");
-    await tags("Audit Logs", "Providers");
+    await tags("Audit Logs", "Payment Request");
     await severity(Severity.NORMAL);
 
     const prDetailsPage = new PaymentRequestDetailsPage(publicServantPage);
@@ -194,11 +194,49 @@ test.describe("Audit Logs", () => {
     await detailsPage.checkEventName(eventType);
     await detailsPage.checkTimestampLabel();
     await detailsPage.checkEventType(eventType);
-    await detailsPage.checkUserId();
+    await detailsPage.checkUserId(publicServantPage);
     await detailsPage.checkOrganizationId(ORGANISATIONS[0].id);
     await detailsPage.checkMetadata(
       paymentRequestWithManualBankTransferProvider.id,
       "payment_request",
+    );
+  });
+
+  test("should create an audit log event when a transaction is created @regression @normal", async ({
+    manualBankTransferTransaction,
+    publicServantPage,
+    citizenPage,
+  }) => {
+    await description(
+      "This test checks the successful creation of an audit log when a transaction is created.",
+    );
+    await owner("OGCIO");
+    await tags("Audit Logs", "Transaction");
+    await severity(Severity.NORMAL);
+
+    const eventType = AuditLogEventType.TRANSACTION_CREATE;
+    const auditLogsPage = new AuditLogsListPage(publicServantPage);
+    await auditLogsPage.goto();
+    await auditLogsPage.checkHeader();
+    await auditLogsPage.checkFilters();
+    await auditLogsPage.checkAuditLog(
+      manualBankTransferTransaction.referenceCode,
+      eventType,
+    );
+    await auditLogsPage.goToDetails(
+      manualBankTransferTransaction.referenceCode,
+      eventType,
+    );
+
+    const detailsPage = new AuditLogDetailsPage(publicServantPage);
+    await detailsPage.checkEventName(eventType);
+    await detailsPage.checkTimestampLabel();
+    await detailsPage.checkEventType(eventType);
+    await detailsPage.checkUserId(citizenPage);
+    await detailsPage.checkOrganizationId(ORGANISATIONS[0].id);
+    await detailsPage.checkMetadata(
+      manualBankTransferTransaction.referenceCode,
+      "transaction",
     );
   });
 });
