@@ -124,7 +124,7 @@ const findByPhoneNumber = async (params: {
   let queryFields = ["phone ILIKE $1"];
   let queryValues = [userParams.phone];
 
-  if (!userParams.strict) {
+  if (userParams.strict) {
     const extendedResult = extendQueryWithUserName(
       userParams,
       queryFields,

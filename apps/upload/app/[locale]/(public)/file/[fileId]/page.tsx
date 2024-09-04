@@ -58,7 +58,6 @@ export default async ({ params, searchParams }: PageProps) => {
   try {
     const { data, error } = await profileClient.findUser({
       email,
-      strict: true,
     });
     users = data ? [data] : undefined;
 
