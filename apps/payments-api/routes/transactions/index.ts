@@ -157,7 +157,12 @@ export default async function transactions(app: FastifyInstance) {
         eventType: AuditLogEventType.TRANSACTION_STATUS_UPDATE,
         userId,
         organizationId: orgIdResult.organizationId,
-        metadata: {},
+        metadata: {
+          resource: {
+            type: "transaction",
+            id: transactionId,
+          },
+        },
       });
 
       reply.send();
@@ -200,11 +205,17 @@ export default async function transactions(app: FastifyInstance) {
         await app.paymentRequest.getOrganizationIdFromPaymentRequest(
           request.body.paymentRequestId,
         );
+
       app.auditLog.createEvent({
         eventType: AuditLogEventType.TRANSACTION_CREATE,
         userId,
         organizationId: orgIdResult.organizationId,
-        metadata: {},
+        metadata: {
+          resource: {
+            type: "transaction",
+            id: result.extPaymentId,
+          },
+        },
       });
 
       reply.send(

@@ -112,7 +112,7 @@ const buildCreateTransaction =
   async (
     userId: string,
     transaction: CreateTransactionBodyDO,
-  ): Promise<{ transactionId: string }> => {
+  ): Promise<{ transactionId: string; extPaymentId: string }> => {
     let result;
 
     try {
