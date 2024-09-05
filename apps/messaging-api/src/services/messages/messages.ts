@@ -523,12 +523,25 @@ export const processMessages = async (params: {
       scheduledMessages: { jobId: string; userId: string; entityId: string }[];
       errors: LifeEventsError[];
     } = { scheduledMessages: [], errors: [] };
-    const senderData = await getSenderData({
-      senderUser,
-      organizationId,
-      isM2MApplicationSender,
-      errorProcess,
-    });
+    if (
+      senderUser.organizationId &&
+      organizationId &&
+      organizationId !== senderUser.organizationId
+    ) {
+      throw new BadRequestError(
+        errorProcess,
+        "You can't send messages to a different organization you are logged in to",
+      );
+    }
+    const toUseOrganizationId = organizationId ?? senderUser.organizationId;
+    const senderData = isM2MApplicationSender
+      ? getApplicationSenderData(senderUser.profileId)
+      : await getUserProfileSenderData({
+          senderUserId: senderUser.profileId,
+          organizationId: toUseOrganizationId,
+          errorProcess,
+        });
+
     try {
       await poolClient.query("BEGIN");
       const createPromises = [];
@@ -595,44 +608,29 @@ export const processMessages = async (params: {
   }
 };
 
-const getSenderData = async (params: {
-  senderUser: { profileId: string; organizationId?: string };
-  isM2MApplicationSender: boolean;
+const getApplicationSenderData = (
+  senderUserId: string,
+): {
+  senderApplication: {
+    id: string;
+  };
+} => ({ senderApplication: { id: senderUserId } });
+
+const getUserProfileSenderData = async (params: {
+  senderUserId: string;
   organizationId?: string;
   errorProcess: string;
-}): Promise<
-  | {
-      senderUser: {
-        fullName: string;
-        ppsn?: string | null;
-        userProfileId: string;
-      };
-    }
-  | {
-      senderApplication: {
-        id: string;
-      };
-    }
-> => {
-  const { senderUser, isM2MApplicationSender, organizationId, errorProcess } =
-    params;
-  if (
-    senderUser.organizationId &&
-    organizationId &&
-    organizationId !== senderUser.organizationId
-  ) {
-    throw new BadRequestError(
-      errorProcess,
-      "You can't send messages to a different organization you are logged in to",
-    );
-  }
-  const toUseOrganizationId = organizationId ?? senderUser.organizationId;
+}): Promise<{
+  senderUser: {
+    fullName: string;
+    ppsn?: string | null;
+    userProfileId: string;
+  };
+}> => {
+  const { senderUserId, organizationId, errorProcess } = params;
 
-  if (isM2MApplicationSender) {
-    return { senderApplication: { id: senderUser.profileId } };
-  }
-  const profileSdk = await getProfileSdk(toUseOrganizationId);
-  const senderUserProfile = await profileSdk.getUser(senderUser.profileId);
+  const profileSdk = await getProfileSdk(organizationId);
+  const senderUserProfile = await profileSdk.getUser(senderUserId);
   if (!senderUserProfile.data) {
     throw new NotFoundError(errorProcess, "Sender user cannot be found");
   }
@@ -651,7 +649,7 @@ const getSenderData = async (params: {
     senderUser: {
       ...senderUserProfile.data,
       fullName: senderFullName,
-      userProfileId: senderUser.profileId,
+      userProfileId: senderUserId,
     },
   };
 };
