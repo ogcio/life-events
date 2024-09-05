@@ -1,7 +1,7 @@
 meta {
   name: Create message
   type: http
-  seq: 3
+  seq: 4
 }
 
 post {
@@ -16,6 +16,10 @@ auth:bearer {
 
 vars:post-response {
   messageId: res.body.data.id
+}
+
+assert {
+  res.body.data.id: isDefined 
 }
 
 script:pre-request {
