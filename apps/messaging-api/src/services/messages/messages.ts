@@ -51,9 +51,7 @@ export const getMessage = async (params: {
             messages.organisation_id as "organisationId",
             messages.user_id as "recipientUserId",
             messages.is_seen as "isSeen",
-            messages.sender_user_profile_id as "senderUserProfileId",
-            messages.security_level as "security",
-            messages.sender_application_id as "senderApplicationId"
+            messages.security_level as "security"
         from messages
         left join users on users.id::text = messages.user_id
         where (messages.user_id = $1 or users.user_profile_id::text = $1) and messages.id=$2
