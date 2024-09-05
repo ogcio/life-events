@@ -238,6 +238,7 @@ export default async function messages(app: FastifyInstance) {
         },
       },
     },
+
     async function getMessageHandler(request, _reply) {
       return {
         data: await getMessage({
@@ -283,7 +284,10 @@ export default async function messages(app: FastifyInstance) {
         request.body.recipientUserId,
         errorKey,
       );
-
+      const senderUser = {
+        profileId: userData.userId,
+        organizationId: userData.organizationId,
+      };
       const messages = await processMessages({
         inputMessages: [
           {
@@ -298,10 +302,8 @@ export default async function messages(app: FastifyInstance) {
         errorProcess: errorKey,
         pgPool: app.pg.pool,
         logger: request.log,
-        senderUser: {
-          profileId: userData.userId,
-          organizationId: userData.organizationId,
-        },
+        senderUser,
+        isM2MApplicationSender: request.userData?.isM2MApplication ?? false,
         allOrNone: true,
       });
       if (messages.errors.length > 0) {
