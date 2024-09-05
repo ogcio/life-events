@@ -12,20 +12,20 @@ post {
 
 headers {
   Content-Type: application/x-www-form-urlencoded
-  Authorization: Basic {{value}}
+  Authorization: Basic {{process.env.BRUNO_BASIC_MESSAGING_APP_TOKEN}}
 }
 
 body:form-urlencoded {
   grant_type: urn:ietf:params:oauth:grant-type:token-exchange
-  scope: messaging:message.self:read
-  resource: http://localhost:8002/
-  client_id: 4695d8onfb9f3bv18phtq
+  scope: messaging:message.self:read messaging:citizen.self:read messaging:citizen.self:write
+  resource: {{process.env.MESSAGING_API_RESOURCE_INDICATOR}}
+  client_id: {{process.env.BRUNO_MESSAGING_APP_ID}}
   subject_token: {{subjectToken}}
   subject_token_type: urn:ietf:params:oauth:token-type:access_token
 }
 
 vars:post-response {
-  accessToken: res.body.access_token
+  citizenAccessToken: res.body.access_token
 }
 
 assert {

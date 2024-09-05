@@ -1,7 +1,7 @@
 meta {
-  name: Get Public Servant Token
+  name: Get Management API Token
   type: http
-  seq: 1
+  seq: 2
 }
 
 post {
@@ -17,16 +17,16 @@ headers {
 
 body:form-urlencoded {
   grant_type: client_credentials
-  scope: profile:user:read messaging:provider:* messaging:event:read messaging:citizen:* messaging:template:*
-  organization_id: first-testing
+  scope: all
+  resource: https://default.logto.app/api
 }
 
 vars:post-response {
-  accessToken: res.body.access_token
+  managementAccessToken: res.body.access_token
 }
 
 assert {
   res.status: eq 200
   res.body.access_token: isDefined
-  res.body.scope: eq messaging:provider:* messaging:citizen:* messaging:event:read profile:user:read messaging:template:*
+  ~res.body.scope: eq messaging:provider:* messaging:citizen:* messaging:event:read profile:user:read messaging:template:*
 }
