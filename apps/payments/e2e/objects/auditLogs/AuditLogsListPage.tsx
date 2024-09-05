@@ -1,18 +1,28 @@
 import { type Page, type Locator, expect } from "@playwright/test";
 import { AuditLogEventTitles, AuditLogEventType } from "../../utils/constants";
-import { getUserId } from "../../utils/logto_utils";
 
+type FilterParams = {
+  user?: string;
+  resource?: string;
+  action?: string;
+};
+
+type EventParams = {
+  resourceId: string;
+  eventType: AuditLogEventType;
+  userId: string;
+};
 export class AuditLogsListPage {
   private readonly header: Locator;
   private readonly filtersBtn: Locator;
-  private readonly userFilterSelect: Locator;
+  private readonly userFilterInput: Locator;
   private readonly resourceFilterSelect: Locator;
   private readonly actionFilterSelect: Locator;
 
   constructor(public readonly page: Page) {
     this.header = page.getByRole("heading", { name: "Audit Logs" });
     this.filtersBtn = page.getByRole("button", { name: "Submit" });
-    this.userFilterSelect = page.getByLabel("User");
+    this.userFilterInput = page.getByLabel("User");
     this.resourceFilterSelect = page.getByLabel("Resource");
     this.actionFilterSelect = page.getByLabel("Action");
   }
@@ -25,14 +35,30 @@ export class AuditLogsListPage {
     await expect(this.header).toBeVisible();
   }
 
-  async checkFilters() {
+  async checkFilters({
+    user = "",
+    resource = "",
+    action = "",
+  }: FilterParams = {}) {
     await expect(this.filtersBtn).toBeVisible();
-    await expect(this.userFilterSelect).toHaveValue("");
-    await expect(this.resourceFilterSelect).toHaveValue("");
-    await expect(this.actionFilterSelect).toHaveValue("");
+    await expect(this.userFilterInput).toHaveValue(user);
+    await expect(this.resourceFilterSelect).toHaveValue(resource);
+    await expect(this.actionFilterSelect).toHaveValue(action);
   }
 
-  async checkAuditLog(resourceId: string, eventType: AuditLogEventType) {
+  async filterByUser(user: string) {
+    await this.userFilterInput.fill(user);
+    await this.filtersBtn.click();
+  }
+
+  async clearFilters() {
+    await this.userFilterInput.clear();
+    await this.resourceFilterSelect.selectOption("");
+    await this.actionFilterSelect.selectOption("");
+    await this.filtersBtn.click();
+  }
+
+  async checkAuditLog({ resourceId, userId, eventType }: EventParams) {
     await expect(
       this.page
         .locator(`tr[data-resource-id="${resourceId}"]`)
@@ -41,8 +67,35 @@ export class AuditLogsListPage {
             name: AuditLogEventTitles[eventType],
           }),
         })
+        .filter({
+          has: this.page.getByRole("cell", {
+            name: userId,
+          }),
+        })
         .filter({ has: this.page.getByRole("link", { name: "Details" }) }),
     ).toBeVisible();
+  }
+
+  async checkAuditLogNotVisible({
+    resourceId,
+    userId,
+    eventType,
+  }: EventParams) {
+    await expect(
+      this.page
+        .locator(`tr[data-resource-id="${resourceId}"]`)
+        .filter({
+          has: this.page.getByRole("cell", {
+            name: AuditLogEventTitles[eventType],
+          }),
+        })
+        .filter({
+          has: this.page.getByRole("cell", {
+            name: userId,
+          }),
+        })
+        .filter({ has: this.page.getByRole("link", { name: "Details" }) }),
+    ).not.toBeVisible();
   }
 
   async checkMultipleAuditLogs(params: {
@@ -62,14 +115,7 @@ export class AuditLogsListPage {
     ).toHaveCount(params.number);
   }
 
-  async filterAuditLog() {}
-
-  async goToDetails(
-    resourceId: string,
-    eventType: AuditLogEventType,
-    page = this.page,
-  ) {
-    const userId = await getUserId(page);
+  async goToDetails({ resourceId, userId, eventType }: EventParams) {
     const auditLogRow = await this.page
       .locator(`tr[data-resource-id="${resourceId}"]`)
       .filter({
