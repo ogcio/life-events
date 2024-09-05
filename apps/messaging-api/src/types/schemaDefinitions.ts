@@ -98,19 +98,6 @@ export const ReadMessageSchema = Type.Object({
     description: "True if the message has already been seen by the recipient",
   }),
   security: SecurityLevelsSchema,
-  senderUserProfileId: Type.Union([
-    Type.String({
-      description:
-        "Unique id of the sender from the Life Events building block",
-    }),
-    Type.Null(),
-  ]),
-  senderApplicationId: Type.Union([
-    Type.String({
-      description: "Unique id of the M2M application that sent the message",
-    }),
-    Type.Null(),
-  ]),
 });
 export type ReadMessage = Static<typeof ReadMessageSchema>;
 
