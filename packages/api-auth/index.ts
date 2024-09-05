@@ -11,6 +11,7 @@ import {
 type ExtractedUserData = {
   userId: string;
   organizationId?: string;
+  isM2MApplication: boolean;
   accessToken: string;
 };
 
@@ -82,10 +83,16 @@ export const checkPermissions = async (
 ): Promise<ExtractedUserData> => {
   const token = extractBearerToken(authHeader);
   const payload = await decodeLogtoToken(token, config);
-  const { scope, sub, aud } = payload as {
+  const {
+    scope,
+    sub,
+    aud,
+    client_id: clientId,
+  } = payload as {
     scope: string;
     sub: string;
     aud: string;
+    client_id: string;
   };
   const scopesMap = getMapFromScope(scope);
 
@@ -101,10 +108,12 @@ export const checkPermissions = async (
   const organizationId = aud.includes("urn:logto:organization:")
     ? aud.split("urn:logto:organization:")[1]
     : undefined;
+
   return {
     userId: sub,
     organizationId: organizationId,
     accessToken: token,
+    isM2MApplication: sub === clientId,
   };
 };
 

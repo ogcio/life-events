@@ -18,10 +18,12 @@
       "organizationId": "Organization id",
       "metadata": "Metadata"
     },
-    "filter": {
-      "label": "Filter by event type",
-      "action": "Filter",
-      "allEventsOption": "All"
+    "filters": {
+      "user": "User",
+      "resource": "Resource",
+      "action": "Action",
+      "submit": "Submit",
+      "allOption": "All"
     }
   },
   "Common": {

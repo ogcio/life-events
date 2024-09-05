@@ -59,7 +59,8 @@ export type CreateMessageParams = {
   security: SecurityLevels;
   preferredTransports: Array<AllProviderTypes>;
   organisationId: string;
-  senderUserProfileId: string;
+  senderUserProfileId: string | null;
+  senderApplicationId: string | null;
 };
 
 export interface MessagingService {
@@ -112,6 +113,7 @@ export function newMessagingService(
 ): Readonly<MessagingService> {
   return Object.freeze<MessagingService>({
     async createMessage(params: CreateMessageParams) {
+      // TODO Here manage the senderApplicationId
       const valueArray = [
         false,
         params.receiverUserId,
@@ -127,7 +129,8 @@ export function newMessagingService(
         params.threadName,
         params.organisationId,
         params.scheduleAt,
-        "thisIsntReal", // params.senderUserProfileId,
+        params.senderUserProfileId,
+        params.senderApplicationId,
       ];
 
       const values = valueArray.map((_, i) => `$${i + 1}`).join(", ");
@@ -150,7 +153,8 @@ export function newMessagingService(
             thread_name,
             organisation_id,
             scheduled_at,
-            sender_user_profile_id
+            sender_user_profile_id,
+            sender_application_id
         ) values (${values})
         returning 
           id, user_id

@@ -163,6 +163,7 @@ export const FindUserParamsSchema = Type.Object({
   ppsn: OptionalString,
   gender: OptionalString,
   phone: OptionalString,
+  strict: Type.Optional(Type.Boolean()),
 });
 export type FindUserParams = Static<typeof FindUserParamsSchema>;
 

@@ -57,12 +57,12 @@ export class TransactionsRepo {
   updateTransactionStatus(
     transactionId: string,
     status: TransactionStatusesEnum,
-  ): Promise<QueryResult<{ transactionId: string }>> {
+  ): Promise<QueryResult<{ transactionId: string; extPaymentId: string }>> {
     return this.pg.query(
       `UPDATE payment_transactions
         SET status = $2, updated_at = now()
         WHERE transaction_id = $1
-        RETURNING transaction_id as "transactionId"`,
+        RETURNING transaction_id as "transactionId", ext_payment_id as "extPaymentId"`,
       [transactionId, status],
     );
   }
@@ -111,12 +111,12 @@ export class TransactionsRepo {
   createTransaction(
     userId: string,
     transaction: CreateTransactionBodyDO,
-  ): Promise<QueryResult<{ transactionId: string }>> {
+  ): Promise<QueryResult<{ transactionId: string; extPaymentId: string }>> {
     return this.pg.query(
       `INSERT INTO payment_transactions
         (payment_request_id, ext_payment_id, integration_reference, amount, status, created_at, updated_at, payment_provider_id, user_id, user_data)
         VALUES ($1, $2, $3, $4, $5, now(), now(), $6, $7, $8)
-        RETURNING transaction_id as "transactionId";
+        RETURNING transaction_id as "transactionId", ext_payment_id as "extPaymentId";
       `,
       [
         transaction.paymentRequestId,

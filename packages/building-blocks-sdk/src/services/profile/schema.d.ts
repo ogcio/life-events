@@ -570,6 +570,7 @@ export interface paths {
           ppsn?: string;
           gender?: string;
           phone?: string;
+          strict?: boolean;
         };
       };
       responses: {
