@@ -1547,7 +1547,12 @@ export interface paths {
     /** @description Returns the organisation settings for the logged in user */
     get: {
       parameters: {
-        query?: never;
+        query?: {
+          /** @description Indicates where to start fetching data or how many records to skip, defining the initial position within the list */
+          offset?: string;
+          /** @description Indicates the maximum number (100) of items that will be returned in a single request */
+          limit?: string;
+        };
         header?: never;
         path?: never;
         cookie?: never;
@@ -2499,11 +2504,18 @@ export interface paths {
       };
       responses: {
         /** @description Default Response */
-        202: {
+        200: {
           headers: {
             [name: string]: unknown;
           };
-          content?: never;
+          content: {
+            "application/json": {
+              data: {
+                /** Format: uuid */
+                id: string;
+              };
+            };
+          };
         };
         /** @description Default Response */
         "5XX": {
