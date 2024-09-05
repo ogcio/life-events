@@ -2402,6 +2402,25 @@ paths:
       tags: &a4
         - Organisation Settings
       description: Returns the organisation settings for the logged in user
+      parameters:
+        - schema:
+            pattern: ^[0-9][0-9]*|undefined$
+            default: "0"
+            type: string
+          in: query
+          name: offset
+          required: false
+          description: Indicates where to start fetching data or how many records to skip,
+            defining the initial position within the list
+        - schema:
+            default: "20"
+            pattern: ^([1-9]|100)|undefined$
+            type: string
+          in: query
+          name: limit
+          required: false
+          description: Indicates the maximum number (100) of items that will be returned
+            in a single request
       responses:
         "200":
           description: Default Response

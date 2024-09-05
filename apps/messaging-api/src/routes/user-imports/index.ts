@@ -74,6 +74,7 @@ export default async function userImports(app: FastifyInstance) {
         organisationId: ensureOrganizationIdIsSet(request, "GET_USER_IMPORTS"),
         pagination,
       });
+
       return formatAPIResponse({
         data: response.data,
         totalCount: response.totalCount,

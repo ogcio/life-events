@@ -13,9 +13,17 @@ import {
   updateOrganisationFeedback,
 } from "../../services/users/invitations/accept-invitations.js";
 import { Permissions } from "../../types/permissions.js";
-import { getGenericResponseSchema } from "../../types/schemaDefinitions.js";
+import {
+  getGenericResponseSchema,
+  PaginationParams,
+  PaginationParamsSchema,
+} from "../../types/schemaDefinitions.js";
 import { getSettingsPerUserProfile } from "../../services/users/shared-users.js";
 import { ensureUserIdIsSet } from "../../utils/authentication-factory.js";
+import {
+  formatAPIResponse,
+  sanitizePagination,
+} from "../../utils/pagination.js";
 
 const tags = ["Organisation Settings"];
 
@@ -23,7 +31,7 @@ const tags = ["Organisation Settings"];
  * The routes in this file are meant to be used on the "citizen" side
  */
 export default async function organisationSettings(app: FastifyInstance) {
-  app.get(
+  app.get<{ Querystring: PaginationParams }>(
     "/",
     {
       preValidation: (req, res) =>
@@ -31,6 +39,7 @@ export default async function organisationSettings(app: FastifyInstance) {
       schema: {
         description: "Returns the organisation settings for the logged in user",
         tags,
+        querystring: Type.Optional(PaginationParamsSchema),
         response: {
           200: getGenericResponseSchema(Type.Array(OrganisationSettingSchema)),
           400: HttpError,
@@ -39,17 +48,28 @@ export default async function organisationSettings(app: FastifyInstance) {
         },
       },
     },
-    async (request: FastifyRequest, _reply: FastifyReply) => {
+    async (
+      request: FastifyRequest<{ Querystring: PaginationParams }>,
+      _reply: FastifyReply,
+    ) => {
       const errorCode = "GET_ORGANISATION_SETTINGS";
       const client = await app.pg.pool.connect();
       try {
-        return {
-          data: await getSettingsPerUserProfile({
-            userProfileId: ensureUserIdIsSet(request, errorCode),
-            client,
-            errorCode,
+        const dbData = await getSettingsPerUserProfile({
+          userProfileId: ensureUserIdIsSet(request, errorCode),
+          client,
+          errorCode,
+          pagination: sanitizePagination({
+            limit: request.query.limit,
+            offset: request.query.offset,
           }),
-        };
+        });
+
+        return formatAPIResponse({
+          data: dbData.data,
+          request,
+          totalCount: dbData.totalCount,
+        });
       } finally {
         client.release();
       }
