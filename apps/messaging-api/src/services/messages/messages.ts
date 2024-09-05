@@ -748,9 +748,10 @@ const createMessageWithLog = async (params: {
       senderFullName: params.senderUser?.fullName || "",
       senderPPSN: params.senderUser?.ppsn || "",
       senderUserId: params.senderUser?.userProfileId || "",
-      receiverFullName: receiverFullName,
-      receiverPPSN: receiverUserProfiles[0].ppsn,
-      receiverUserId: receiverUserProfiles[0].id,
+      receiverFullName: receiverFullName || "",
+      receiverPPSN: receiverUserProfiles[0].ppsn || "",
+      receiverUserId: receiverUserProfiles[0].id || "",
+      senderApplicationId: params.senderApplication?.id || "",
     },
   ]);
 

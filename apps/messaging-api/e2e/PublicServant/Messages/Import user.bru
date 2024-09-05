@@ -27,8 +27,6 @@ body:json {
 script:post-response {
   const axios = require('axios')
   
-  console.log(bru.getEnvVar("baseUrl"))
-  console.log(bru.getVar("accessToken"))
   const importRequest = await axios(`${bru.getEnvVar("baseUrl")}/api/v1/user-imports`,{
     headers: {
                 'Content-Type': 'application/json',
@@ -37,7 +35,6 @@ script:post-response {
   })
   
   const firstImportId = importRequest.data.data.at(0).id
-  console.log({firstImportId})
   
   const userRequest = await axios(`${bru.getEnvVar("baseUrl")}/api/v1/users?importId=${firstImportId}&activeOnly=false`,{
     headers: {
