@@ -5,6 +5,8 @@ type FilterParams = {
   user?: string;
   resource?: string;
   action?: string;
+  from?: string;
+  to?: string;
 };
 
 type EventParams = {
@@ -23,6 +25,8 @@ export class AuditLogsListPage {
   private readonly userFilterInput: Locator;
   private readonly resourceFilterSelect: Locator;
   private readonly actionFilterSelect: Locator;
+  private readonly fromDateFilterInput: Locator;
+  private readonly toDateFilterInput: Locator;
 
   constructor(public readonly page: Page) {
     this.header = page.getByRole("heading", { name: "Audit Logs" });
@@ -30,6 +34,8 @@ export class AuditLogsListPage {
     this.userFilterInput = page.getByLabel("User");
     this.resourceFilterSelect = page.getByLabel("Resource");
     this.actionFilterSelect = page.getByLabel("Action");
+    this.fromDateFilterInput = page.getByLabel("From");
+    this.toDateFilterInput = page.getByLabel("To");
   }
 
   async goto() {
@@ -44,11 +50,15 @@ export class AuditLogsListPage {
     user = "",
     resource = "",
     action = "",
+    from = "",
+    to = "",
   }: FilterParams = {}) {
     await expect(this.filtersBtn).toBeVisible();
     await expect(this.userFilterInput).toHaveValue(user);
     await expect(this.resourceFilterSelect).toHaveValue(resource);
     await expect(this.actionFilterSelect).toHaveValue(action);
+    await expect(this.fromDateFilterInput).toHaveValue(from);
+    await expect(this.toDateFilterInput).toHaveValue(to);
   }
 
   async filterByUser(user: string) {
@@ -63,6 +73,11 @@ export class AuditLogsListPage {
 
   async filterByAction(action: Action) {
     await this.actionFilterSelect.selectOption(action);
+    await this.filtersBtn.click();
+  }
+
+  async filterByFromDate(date: string) {
+    await this.fromDateFilterInput.fill(date);
     await this.filtersBtn.click();
   }
 

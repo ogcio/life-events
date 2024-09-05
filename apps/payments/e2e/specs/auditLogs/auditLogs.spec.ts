@@ -275,8 +275,6 @@ test.describe("Audit Logs", () => {
       isCitizen: false,
     });
     await transactionsListPage.goto();
-    await transactionsListPage.checkHeader();
-    await transactionsListPage.checkTransaction(manualBankTransferTransaction);
     await transactionsListPage.gotoDetails(manualBankTransferTransaction);
     const transactionDetailsPage = new PublicServantTransactionDetailsPage(
       publicServantPage,
@@ -484,6 +482,122 @@ test.describe("Audit Logs", () => {
       resourceId: bankTransferProvider.id,
       eventType: AuditLogEventType.PROVIDER_CREATE,
       userId,
+    });
+  });
+
+  test("should filter audit logs by date @regression @normal", async ({
+    bankTransferProvider,
+    publicServantPage,
+  }) => {
+    await description(
+      "This test checks the successful filtering of audit logs by date.",
+    );
+    await owner("OGCIO");
+    await tags("Audit Logs", "Filter");
+    await severity(Severity.NORMAL);
+
+    const userId = await getUserId(publicServantPage);
+    const auditLogsPage = new AuditLogsListPage(publicServantPage);
+    await auditLogsPage.goto();
+    await auditLogsPage.checkHeader();
+    await auditLogsPage.checkFilters();
+    await auditLogsPage.checkAuditLog({
+      resourceId: bankTransferProvider.id,
+      eventType: AuditLogEventType.PROVIDER_CREATE,
+      userId,
+    });
+
+    await auditLogsPage.filterByFromDate("2040-05-01");
+    await auditLogsPage.checkAuditLogNotVisible({
+      resourceId: bankTransferProvider.id,
+      eventType: AuditLogEventType.PROVIDER_CREATE,
+      userId,
+    });
+    await auditLogsPage.clearFilters();
+    const today = new Intl.DateTimeFormat("en-CA", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).format(new Date());
+    await auditLogsPage.filterByFromDate(today);
+    await auditLogsPage.checkAuditLog({
+      resourceId: bankTransferProvider.id,
+      eventType: AuditLogEventType.PROVIDER_CREATE,
+      userId,
+    });
+  });
+
+  test("should filter audit logs with a combination of filters @regression @normal", async ({
+    bankTransferProvider,
+    paymentRequestWithManualBankTransferProvider,
+    manualBankTransferTransaction,
+    publicServantPage,
+    citizenPage,
+  }) => {
+    await description(
+      "This test checks the successful filtering of audit logs with a combination of filters.",
+    );
+    await owner("OGCIO");
+    await tags("Audit Logs", "Filter");
+    await severity(Severity.NORMAL);
+
+    const transactionsListPage = new TransactionsListPage(publicServantPage, {
+      isCitizen: false,
+    });
+    await transactionsListPage.goto();
+    await transactionsListPage.gotoDetails(manualBankTransferTransaction);
+    const transactionDetailsPage = new PublicServantTransactionDetailsPage(
+      publicServantPage,
+    );
+    await transactionDetailsPage.confirmTransaction();
+
+    const publicServantUserId = await getUserId(publicServantPage);
+    const citizenUserId = await getUserId(citizenPage);
+    const auditLogsPage = new AuditLogsListPage(publicServantPage);
+    await auditLogsPage.goto();
+    await auditLogsPage.checkHeader();
+    await auditLogsPage.checkFilters();
+    await auditLogsPage.checkAuditLog({
+      resourceId: bankTransferProvider.id,
+      eventType: AuditLogEventType.PROVIDER_CREATE,
+      userId: publicServantUserId,
+    });
+    await auditLogsPage.checkAuditLog({
+      resourceId: paymentRequestWithManualBankTransferProvider.id,
+      eventType: AuditLogEventType.PAYMENT_REQUEST_CREATE,
+      userId: publicServantUserId,
+    });
+    await auditLogsPage.checkAuditLog({
+      resourceId: manualBankTransferTransaction.referenceCode,
+      eventType: AuditLogEventType.TRANSACTION_CREATE,
+      userId: citizenUserId,
+    });
+    await auditLogsPage.checkAuditLog({
+      resourceId: manualBankTransferTransaction.referenceCode,
+      eventType: AuditLogEventType.TRANSACTION_STATUS_UPDATE,
+      userId: publicServantUserId,
+    });
+    await auditLogsPage.filterByUser(publicServants[0]);
+    await auditLogsPage.filterByResource("transaction");
+    await auditLogsPage.checkAuditLogNotVisible({
+      resourceId: bankTransferProvider.id,
+      eventType: AuditLogEventType.PROVIDER_CREATE,
+      userId: publicServantUserId,
+    });
+    await auditLogsPage.checkAuditLogNotVisible({
+      resourceId: paymentRequestWithManualBankTransferProvider.id,
+      eventType: AuditLogEventType.PAYMENT_REQUEST_CREATE,
+      userId: publicServantUserId,
+    });
+    await auditLogsPage.checkAuditLogNotVisible({
+      resourceId: manualBankTransferTransaction.referenceCode,
+      eventType: AuditLogEventType.TRANSACTION_CREATE,
+      userId: citizenUserId,
+    });
+    await auditLogsPage.checkAuditLog({
+      resourceId: manualBankTransferTransaction.referenceCode,
+      eventType: AuditLogEventType.TRANSACTION_STATUS_UPDATE,
+      userId: publicServantUserId,
     });
   });
 });
