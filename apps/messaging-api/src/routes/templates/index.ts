@@ -19,7 +19,7 @@ import {
   ensureUserIdIsSet,
 } from "../../utils/authentication-factory.js";
 import {
-  getPaginationLinks,
+  formatAPIResponse,
   sanitizePagination,
 } from "../../utils/pagination.js";
 
@@ -155,7 +155,9 @@ export default async function templates(app: FastifyInstance) {
         `
         with meta_count as(
           select count(*) from message_template_meta
-          where organisation_id = $1
+          where 
+            organisation_id = $1 
+            and deleted_at is null
         )
         select  
           m.id as "templateMetaId",
@@ -163,6 +165,7 @@ export default async function templates(app: FastifyInstance) {
           (select count from meta_count) as "count"
         from message_template_meta m
         where
+          organisation_id = $1 and
           m.deleted_at is null
           limit $2
           offset $3
@@ -181,21 +184,7 @@ export default async function templates(app: FastifyInstance) {
 
       const totalCount = result.rows.at(0)?.count || 0;
 
-      const url = new URL(`/api/v1/templates`, process.env.HOST_URL);
-      const links = getPaginationLinks({
-        totalCount,
-        url,
-        limit: Number(limit),
-        offset: Number(offset),
-      });
-
-      return {
-        data,
-        metadata: {
-          totalCount,
-          links,
-        },
-      };
+      return formatAPIResponse({ data, request, totalCount });
     },
   );
 

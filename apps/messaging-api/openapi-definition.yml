@@ -256,7 +256,7 @@ paths:
                       description: Rich text version of the message
                       minLength: 1
                       type: string
-                    lang:
+                    language:
                       type: string
                       enum:
                         - en
@@ -267,7 +267,7 @@ paths:
                     - excerpt
                     - plainText
                     - richText
-                    - lang
+                    - language
               required:
                 - preferredTransports
                 - recipientUserId
@@ -432,9 +432,6 @@ paths:
                           - confidential
                           - public
                         description: Confidentiality level of the message
-                      senderUserProfileId:
-                        description: Unique id of the sender from the Life Events building block
-                        type: string
                     required:
                       - subject
                       - createdAt
@@ -446,7 +443,6 @@ paths:
                       - richText
                       - isSeen
                       - security
-                      - senderUserProfileId
                   metadata:
                     type: object
                     properties:
@@ -594,7 +590,12 @@ paths:
       description: Returns the providers matching the requested query
       parameters:
         - schema:
-            type: boolean
+            type: string
+            enum:
+              - "true"
+              - "false"
+              - "0"
+              - "1"
           in: query
           name: primary
           required: false
@@ -5253,6 +5254,9 @@ paths:
                                 senderPPSN:
                                   description: PPSN of the sender
                                   type: string
+                                senderApplicationId:
+                                  description: Unique id of the M2M application that sent the message
+                                  type: string
                                 organisationName:
                                   description: Organisation related to the sender
                                   type: string
@@ -5278,9 +5282,6 @@ paths:
                                 - threadName
                                 - transports
                                 - scheduledAt
-                                - senderUserId
-                                - senderFullName
-                                - senderPPSN
                                 - organisationName
                                 - security
                                 - bypassConsent

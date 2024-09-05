@@ -23,6 +23,7 @@ export const sendInvitationsForUsersImport = async (params: {
   toImportUsers: UsersImport;
   requestUserId: string;
   requestOrganizationId: string;
+  isM2MApplicationSender: boolean;
 }): Promise<void> => {
   const { pg, toImportUsers } = params;
   const importedUserIds: { userProfileId: string; userId: string }[] = [];
@@ -90,6 +91,7 @@ export const sendInvitationsForUsersImport = async (params: {
         organizationId: params.requestOrganizationId,
       },
       allOrNone: true,
+      isM2MApplicationSender: params.isM2MApplicationSender,
     });
 
     await setImportedAsInvited({
@@ -237,9 +239,9 @@ const sendInvitations = async (params: {
   invitedToMessaging: string[];
   invitedToOrganisation: string[];
   welcomed: string[];
-  toCreateMessages: CreateMessageParams[];
+  toCreateMessages: Omit<CreateMessageParams, "senderApplicationId">[];
 }> => {
-  const sending: CreateMessageParams[] = [];
+  const sending: Omit<CreateMessageParams, "senderApplicationId">[] = [];
   const output: {
     invitedToMessaging: string[];
     invitedToOrganisation: string[];
@@ -252,7 +254,7 @@ const sendInvitations = async (params: {
       sending.push({
         bypassConsent: true,
         excerpt: messageInput.excerpt,
-        lang: messageInput.lang,
+        language: messageInput.language,
         organisationId: params.organisationId,
         plainText: messageInput.plainText,
         preferredTransports: ALL_TRANSPORTS,
@@ -283,7 +285,7 @@ const sendInvitations = async (params: {
       sending.push({
         bypassConsent: true,
         excerpt: messageInput.excerpt,
-        lang: messageInput.lang,
+        language: messageInput.language,
         organisationId: params.organisationId,
         plainText: messageInput.plainText,
         preferredTransports: ALL_TRANSPORTS,
@@ -309,7 +311,7 @@ const sendInvitations = async (params: {
       sending.push({
         bypassConsent: true,
         excerpt: messageInput.excerpt,
-        lang: messageInput.lang,
+        language: messageInput.language,
         organisationId: params.organisationId,
         plainText: messageInput.plainText,
         preferredTransports: ALL_TRANSPORTS,
@@ -367,7 +369,7 @@ const getJoinMessagingMessageForLanguage = (language: string): MessageInput => {
     plainText: "Click here to join our platform",
     richText: "Click here to join our platform",
     threadName: "JoinMessaging",
-    lang: defaultLang(language),
+    language: defaultLang(language),
   };
 };
 
@@ -379,7 +381,7 @@ const getJoinOrgMessageForLanguage = (language: string): MessageInput => {
     plainText: "Click here to join our platform",
     richText: "Click here to join our platform",
     threadName: "JoinOrganisation",
-    lang: defaultLang(language),
+    language: defaultLang(language),
   };
 };
 
@@ -391,7 +393,7 @@ const getWelcomeMessageForLanguage = (language: string): MessageInput => {
     plainText: "Click here to join our platform",
     richText: "Click here to join our platform",
     threadName: "JoinOrganisation",
-    lang: defaultLang(language),
+    language: defaultLang(language),
   };
 };
 

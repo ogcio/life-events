@@ -22,6 +22,7 @@ interface RequestUser {
   userId: string;
   organizationId?: string;
   accessToken: string;
+  isM2MApplication: boolean;
 }
 
 export const importCsvFileFromRequest = async (params: {
@@ -145,6 +146,7 @@ const importUsers = async (params: {
     logger: params.logger,
     requestUserId: params.requestUser.userId,
     requestOrganizationId: params.requestUser.organizationId!,
+    isM2MApplicationSender: params.requestUser.isM2MApplication,
   });
 
   return importedUsers;

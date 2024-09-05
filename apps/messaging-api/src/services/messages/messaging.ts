@@ -49,7 +49,7 @@ type CreatedTemplateMessage = {
 export type CreateMessageParams = {
   receiverUserId: string;
   excerpt: string;
-  lang: string;
+  language: string;
   plainText: string;
   richText: string;
   subject: string;
@@ -59,7 +59,8 @@ export type CreateMessageParams = {
   security: SecurityLevels;
   preferredTransports: Array<AllProviderTypes>;
   organisationId: string;
-  senderUserProfileId: string;
+  senderUserProfileId: string | null;
+  senderApplicationId: string | null;
 };
 
 export interface MessagingService {
@@ -120,14 +121,13 @@ export function newMessagingService(
         params.plainText,
         params.richText,
         params.security,
-        params.lang,
+        params.language,
         params.preferredTransports.length
           ? utils.postgresArrayify(params.preferredTransports)
           : null,
         params.threadName,
         params.organisationId,
         params.scheduleAt,
-        params.senderUserProfileId,
       ];
 
       const values = valueArray.map((_, i) => `$${i + 1}`).join(", ");
@@ -149,8 +149,7 @@ export function newMessagingService(
             preferred_transports,
             thread_name,
             organisation_id,
-            scheduled_at,
-            sender_user_profile_id
+            scheduled_at
         ) values (${values})
         returning 
           id, user_id

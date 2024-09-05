@@ -96,13 +96,14 @@ type MessageUpsertEvent = {
   excerpt: string;
   richText: string;
   plainText: string;
-  lang: string;
+  language: string;
   transports: string[];
   receiverFullName: string;
   receiverPPSN: string;
-  senderFullName: string;
-  senderPPSN: string;
-  senderUserId: string;
+  senderFullName?: string;
+  senderPPSN?: string;
+  senderUserId?: string;
+  senderApplicationId?: string;
   templateName?: string;
   templateId?: string;
   organisationName: string;

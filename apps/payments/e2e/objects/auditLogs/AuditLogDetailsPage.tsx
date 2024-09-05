@@ -4,6 +4,7 @@ import {
   AuditLogEventType,
   AuditLogResourceType,
 } from "../../utils/constants";
+import { getUserId } from "../../utils/logto_utils";
 
 export class AuditLogDetailsPage {
   private readonly timestampLabel: Locator;
@@ -42,11 +43,9 @@ export class AuditLogDetailsPage {
     ).toBeVisible();
   }
 
-  async checkUserId() {
+  async checkUserId(page) {
     await expect(this.userIdLabel).toBeVisible();
-    const cookies = await this.page.context().cookies();
-    const userId =
-      cookies.find((cookie) => cookie.name === "logtoUserId")?.value ?? "";
+    const userId = await getUserId(page);
     await expect(this.page.getByText(userId)).toBeVisible();
   }
 

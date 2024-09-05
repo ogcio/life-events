@@ -160,7 +160,7 @@ export interface paths {
                * @description Language used to send the message
                * @enum {string}
                */
-              lang: "en" | "ga";
+              language: "en" | "ga";
             };
           };
         };
@@ -290,8 +290,6 @@ export interface paths {
                  * @enum {string}
                  */
                 security: "confidential" | "public";
-                /** @description Unique id of the sender from the Life Events building block */
-                senderUserProfileId: string;
               };
               metadata?: {
                 /** @description Object containing the links to the related endpoints */
@@ -399,7 +397,7 @@ export interface paths {
       parameters: {
         query: {
           /** @description If set, returns only the primary providers if true, otherwise the non-primary ones */
-          primary?: boolean;
+          primary?: "true" | "false" | "0" | "1";
           /** @description Provider types that can be manipulated */
           type: "sms" | "email";
           /** @description Indicates where to start fetching data or how many records to skip, defining the initial position within the list */
@@ -3526,11 +3524,13 @@ export interface paths {
                        */
                       scheduledAt: string;
                       /** @description Unique user id of the sender */
-                      senderUserId: string;
+                      senderUserId?: string;
                       /** @description Full name of the sender */
-                      senderFullName: string;
+                      senderFullName?: string;
                       /** @description PPSN of the sender */
-                      senderPPSN: string;
+                      senderPPSN?: string;
+                      /** @description Unique id of the M2M application that sent the message */
+                      senderApplicationId?: string;
                       /** @description Organisation related to the sender */
                       organisationName: string;
                       /**
