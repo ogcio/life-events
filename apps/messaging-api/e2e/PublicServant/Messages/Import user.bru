@@ -1,0 +1,53 @@
+meta {
+  name: Import user
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/v1/user-imports
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  [{
+    "importIndex" : 1,
+    "emailAddress":"test@test.se",
+    "collectedConsent":true,
+    "lastName":"Testsson",
+    "firstName":"Test"
+  }]
+}
+
+script:post-response {
+  const axios = require('axios')
+  
+  console.log(bru.getEnvVar("baseUrl"))
+  console.log(bru.getVar("accessToken"))
+  const importRequest = await axios(`${bru.getEnvVar("baseUrl")}/api/v1/user-imports`,{
+    headers: {
+                'Content-Type': 'application/json',
+                'Authorization':`Bearer ${bru.getVar("accessToken")}`
+            },
+  })
+  
+  const firstImportId = importRequest.data.data.at(0).id
+  console.log({firstImportId})
+  
+  const userRequest = await axios(`${bru.getEnvVar("baseUrl")}/api/v1/users?importId=${firstImportId}&activeOnly=false`,{
+    headers: {
+                'Content-Type': 'application/json',
+                'Authorization':`Bearer ${bru.getVar("accessToken")}`
+            },
+  })
+  
+  const userId = userRequest.data.data.at(0).id
+  
+  bru.setVar("userId",userId)
+  
+}

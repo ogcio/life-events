@@ -1,7 +1,7 @@
 meta {
   name: Create message
   type: http
-  seq: 1
+  seq: 3
 }
 
 post {
@@ -24,7 +24,7 @@ script:pre-request {
   bru.setVar("messageSubject",messageSubject)
   req.setBody({
     "preferredTransports": [],
-    "recipientUserId": "6fc8e9be-4243-4b5a-ad5f-f196d2a90ad9",
+    "recipientUserId": "{{userId}}",
     "security": "public",
     "bypassConsent": true,
     "scheduleAt": "2024-08-26T10:05:04.865Z",
