@@ -4,7 +4,6 @@ import {
   AuditLogEventType,
   AuditLogResourceType,
 } from "../../utils/constants";
-import { getUserId } from "../../utils/logto_utils";
 
 export class AuditLogDetailsPage {
   private readonly timestampLabel: Locator;
@@ -43,9 +42,8 @@ export class AuditLogDetailsPage {
     ).toBeVisible();
   }
 
-  async checkUserId(page) {
+  async checkUserId(userId: string) {
     await expect(this.userIdLabel).toBeVisible();
-    const userId = await getUserId(page);
     await expect(this.page.getByText(userId)).toBeVisible();
   }
 
