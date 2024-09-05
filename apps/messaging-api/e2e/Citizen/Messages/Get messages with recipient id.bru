@@ -5,13 +5,14 @@ meta {
 }
 
 get {
-  url: {{baseUrl}}/api/v1/messages?recipientUserId={{process.env.CITIZEN_RECIPIENT_ID}}
+  url: {{baseUrl}}/api/v1/messages?recipientUserId={{process.env.CITIZEN_USER_PROFILE_ID}}&status=delivered
   body: none
   auth: bearer
 }
 
 query {
-  recipientUserId: {{process.env.CITIZEN_RECIPIENT_ID}}
+  recipientUserId: {{process.env.CITIZEN_USER_PROFILE_ID}}
+  status: delivered
 }
 
 auth:bearer {
