@@ -140,7 +140,7 @@ export default async function transactions(app: FastifyInstance) {
       const { status } = request.body;
       const userId = request.userData?.userId;
 
-      await app.transactions.updateTransactionStatus(
+      const { extPaymentId } = await app.transactions.updateTransactionStatus(
         transactionId,
         status as TransactionStatusesEnum,
       );
@@ -160,7 +160,7 @@ export default async function transactions(app: FastifyInstance) {
         metadata: {
           resource: {
             type: "transaction",
-            id: transactionId,
+            id: extPaymentId,
           },
         },
       });

@@ -12,6 +12,8 @@ import { AuditLogEventType, ORGANISATIONS } from "../../utils/constants";
 import { EditManualBankTransferProviderPage } from "../../objects/providers/EditManualBankTransferProviderPage";
 import { PaymentRequestDetailsPage } from "../../objects/paymentRequests/PaymentRequestDetailsPage";
 import { PaymentRequestFormPage } from "../../objects/paymentRequests/PaymentRequestFormPage";
+import { TransactionsListPage } from "../../objects/transactions/TransactionsListPage";
+import { PublicServantTransactionDetailsPage } from "../../objects/transactions/PublicServantTransactionDetailsPage";
 
 test.describe("Audit Logs", () => {
   test("should create an audit log event when a new provider is created @regression @normal", async ({
@@ -226,6 +228,7 @@ test.describe("Audit Logs", () => {
     await auditLogsPage.goToDetails(
       manualBankTransferTransaction.referenceCode,
       eventType,
+      citizenPage,
     );
 
     const detailsPage = new AuditLogDetailsPage(publicServantPage);
@@ -233,6 +236,56 @@ test.describe("Audit Logs", () => {
     await detailsPage.checkTimestampLabel();
     await detailsPage.checkEventType(eventType);
     await detailsPage.checkUserId(citizenPage);
+    await detailsPage.checkOrganizationId(ORGANISATIONS[0].id);
+    await detailsPage.checkMetadata(
+      manualBankTransferTransaction.referenceCode,
+      "transaction",
+    );
+  });
+
+  test("should create an audit log event when a transaction is updated @regression @normal", async ({
+    manualBankTransferTransaction,
+    publicServantPage,
+  }) => {
+    await description(
+      "This test checks the successful creation of an audit log when a transaction is updated.",
+    );
+    await owner("OGCIO");
+    await tags("Audit Logs", "Transaction");
+    await severity(Severity.NORMAL);
+
+    const transactionsListPage = new TransactionsListPage(publicServantPage, {
+      isCitizen: false,
+    });
+    await transactionsListPage.goto();
+    await transactionsListPage.checkHeader();
+    await transactionsListPage.checkTransaction(manualBankTransferTransaction);
+    await transactionsListPage.gotoDetails(manualBankTransferTransaction);
+    const transactionDetailsPage = new PublicServantTransactionDetailsPage(
+      publicServantPage,
+    );
+    await transactionDetailsPage.confirmTransaction();
+
+    const eventType = AuditLogEventType.TRANSACTION_STATUS_UPDATE;
+    const auditLogsPage = new AuditLogsListPage(publicServantPage);
+    await auditLogsPage.goto();
+    await auditLogsPage.checkHeader();
+    await auditLogsPage.checkFilters();
+    await auditLogsPage.checkMultipleAuditLogs({
+      resourceId: manualBankTransferTransaction.referenceCode,
+      eventType,
+      number: 2,
+    });
+    await auditLogsPage.goToDetails(
+      manualBankTransferTransaction.referenceCode,
+      eventType,
+    );
+
+    const detailsPage = new AuditLogDetailsPage(publicServantPage);
+    await detailsPage.checkEventName(eventType);
+    await detailsPage.checkTimestampLabel();
+    await detailsPage.checkEventType(eventType);
+    await detailsPage.checkUserId(publicServantPage);
     await detailsPage.checkOrganizationId(ORGANISATIONS[0].id);
     await detailsPage.checkMetadata(
       manualBankTransferTransaction.referenceCode,
