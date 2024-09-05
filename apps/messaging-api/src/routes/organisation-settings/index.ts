@@ -85,7 +85,6 @@ export default async function organisationSettings(app: FastifyInstance) {
       }>,
       _reply: FastifyReply,
     ) => ({
-      //TODO manca paginazione qui
       data: await getOrganisationSettingsForProfile({
         userProfileId: ensureUserIdIsSet(request, "GET_ORGANIZATION_SETTING"),
         organisationSettingId: request.params.organisationSettingId,
