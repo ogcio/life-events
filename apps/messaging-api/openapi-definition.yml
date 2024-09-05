@@ -3773,8 +3773,23 @@ paths:
                 - {}
           application/json: *a6
       responses:
-        "202":
+        "200":
           description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        format: uuid
+                        type: string
+                    required:
+                      - id
+                required:
+                  - data
         5XX:
           description: Default Response
           content:
