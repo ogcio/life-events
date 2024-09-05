@@ -90,9 +90,6 @@ export default async function auditLogs(app: FastifyInstance) {
         filters.userId = userDetails.id;
       }
 
-      console.log(">>>>");
-      console.log(filters);
-
       const events = await app.auditLog.getEvents(organizationId, filters, {
         offset,
         limit,
