@@ -174,7 +174,12 @@ export default async function paymentRequests(app: FastifyInstance) {
         eventType: AuditLogEventType.PAYMENT_REQUEST_CREATE,
         userId,
         organizationId,
-        metadata: {},
+        metadata: {
+          resource: {
+            type: "payment_request",
+            id: requestId.id,
+          },
+        },
       });
 
       reply.send(requestId);
@@ -209,7 +214,12 @@ export default async function paymentRequests(app: FastifyInstance) {
         eventType: AuditLogEventType.PAYMENT_REQUEST_UPDATE,
         userId,
         organizationId,
-        metadata: {},
+        metadata: {
+          resource: {
+            type: "payment_request",
+            id: requestId.id,
+          },
+        },
       });
 
       reply.send(requestId);
@@ -260,7 +270,12 @@ export default async function paymentRequests(app: FastifyInstance) {
         eventType: AuditLogEventType.PAYMENT_REQUEST_DELETE,
         userId,
         organizationId,
-        metadata: {},
+        metadata: {
+          resource: {
+            type: "payment_request",
+            id: requestId,
+          },
+        },
       });
 
       reply.send();
