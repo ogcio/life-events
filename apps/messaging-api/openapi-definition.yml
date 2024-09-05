@@ -432,9 +432,6 @@ paths:
                           - confidential
                           - public
                         description: Confidentiality level of the message
-                      senderUserProfileId:
-                        description: Unique id of the sender from the Life Events building block
-                        type: string
                     required:
                       - subject
                       - createdAt
@@ -446,7 +443,6 @@ paths:
                       - richText
                       - isSeen
                       - security
-                      - senderUserProfileId
                   metadata:
                     type: object
                     properties:
@@ -2406,6 +2402,25 @@ paths:
       tags: &a4
         - Organisation Settings
       description: Returns the organisation settings for the logged in user
+      parameters:
+        - schema:
+            pattern: ^[0-9][0-9]*|undefined$
+            default: "0"
+            type: string
+          in: query
+          name: offset
+          required: false
+          description: Indicates where to start fetching data or how many records to skip,
+            defining the initial position within the list
+        - schema:
+            default: "20"
+            pattern: ^([1-9]|100)|undefined$
+            type: string
+          in: query
+          name: limit
+          required: false
+          description: Indicates the maximum number (100) of items that will be returned
+            in a single request
       responses:
         "200":
           description: Default Response
@@ -3758,8 +3773,23 @@ paths:
                 - {}
           application/json: *a6
       responses:
-        "202":
+        "200":
           description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        format: uuid
+                        type: string
+                    required:
+                      - id
+                required:
+                  - data
         5XX:
           description: Default Response
           content:
@@ -5222,10 +5252,13 @@ paths:
                                 receiverPPSN:
                                   description: PPSN of the recipient
                                   type: string
+                                receiverUserId:
+                                  description: User id of recipient
+                                  type: string
                                 subject:
                                   description: Subject of the related message
                                   type: string
-                                lang:
+                                language:
                                   description: Language of the related message
                                   type: string
                                 excerpt:
@@ -5258,6 +5291,9 @@ paths:
                                 senderPPSN:
                                   description: PPSN of the sender
                                   type: string
+                                senderApplicationId:
+                                  description: Unique id of the M2M application that sent the message
+                                  type: string
                                 organisationName:
                                   description: Organisation related to the sender
                                   type: string
@@ -5275,17 +5311,15 @@ paths:
                                 - messageId
                                 - receiverFullName
                                 - receiverPPSN
+                                - receiverUserId
                                 - subject
-                                - lang
+                                - language
                                 - excerpt
                                 - richText
                                 - plainText
                                 - threadName
                                 - transports
                                 - scheduledAt
-                                - senderUserId
-                                - senderFullName
-                                - senderPPSN
                                 - organisationName
                                 - security
                                 - bypassConsent
