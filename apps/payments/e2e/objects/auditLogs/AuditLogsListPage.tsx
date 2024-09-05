@@ -5,12 +5,16 @@ import { getUserId } from "../../utils/logto_utils";
 export class AuditLogsListPage {
   private readonly header: Locator;
   private readonly filtersBtn: Locator;
-  private readonly filtersSelect: Locator;
+  private readonly userFilterSelect: Locator;
+  private readonly resourceFilterSelect: Locator;
+  private readonly actionFilterSelect: Locator;
 
   constructor(public readonly page: Page) {
     this.header = page.getByRole("heading", { name: "Audit Logs" });
-    this.filtersBtn = page.getByRole("button", { name: "Filter" });
-    this.filtersSelect = page.getByLabel("Filter by event type");
+    this.filtersBtn = page.getByRole("button", { name: "Submit" });
+    this.userFilterSelect = page.getByLabel("User");
+    this.resourceFilterSelect = page.getByLabel("Resource");
+    this.actionFilterSelect = page.getByLabel("Action");
   }
 
   async goto() {
@@ -23,7 +27,9 @@ export class AuditLogsListPage {
 
   async checkFilters() {
     await expect(this.filtersBtn).toBeVisible();
-    await expect(this.filtersSelect).toHaveValue("");
+    await expect(this.userFilterSelect).toHaveValue("");
+    await expect(this.resourceFilterSelect).toHaveValue("");
+    await expect(this.actionFilterSelect).toHaveValue("");
   }
 
   async checkAuditLog(resourceId: string, eventType: AuditLogEventType) {
