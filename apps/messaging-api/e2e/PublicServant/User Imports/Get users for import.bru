@@ -34,7 +34,6 @@ tests {
       const currentBody = res.getBody().data;
       const currentUserIds = currentBody.map(user => user.userId).sort().join(",");
       const userDataUserIds = usersData.filter(user => user.importStatus !== "missing_contacts").map(user => user.relatedUserId).sort().join(",");
-      console.log(JSON.stringify({currentUserIds, userDataUserIds}));
      expect(currentUserIds).to.equal(userDataUserIds);
   });
 }

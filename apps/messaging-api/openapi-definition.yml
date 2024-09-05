@@ -3773,8 +3773,23 @@ paths:
                 - {}
           application/json: *a6
       responses:
-        "202":
+        "200":
           description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        format: uuid
+                        type: string
+                    required:
+                      - id
+                required:
+                  - data
         5XX:
           description: Default Response
           content:
@@ -5237,10 +5252,13 @@ paths:
                                 receiverPPSN:
                                   description: PPSN of the recipient
                                   type: string
+                                receiverUserId:
+                                  description: User id of recipient
+                                  type: string
                                 subject:
                                   description: Subject of the related message
                                   type: string
-                                lang:
+                                language:
                                   description: Language of the related message
                                   type: string
                                 excerpt:
@@ -5293,8 +5311,9 @@ paths:
                                 - messageId
                                 - receiverFullName
                                 - receiverPPSN
+                                - receiverUserId
                                 - subject
-                                - lang
+                                - language
                                 - excerpt
                                 - richText
                                 - plainText

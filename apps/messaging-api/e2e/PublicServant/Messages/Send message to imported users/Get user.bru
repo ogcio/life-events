@@ -1,0 +1,28 @@
+meta {
+  name: Get user
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/api/v1/users?importId={{firstImportId}}&activeOnly=false
+  body: none
+  auth: bearer
+}
+
+query {
+  importId: {{firstImportId}}
+  activeOnly: false
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+vars:post-response {
+  ~userId: res.body.data.at(0).id
+}
+
+assert {
+  res.body.data.at(0).id: isDefined 
+}
