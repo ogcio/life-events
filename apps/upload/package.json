@@ -37,11 +37,12 @@
     "@types/node": "20.10.4",
     "@types/pg": "^8.11.0",
     "@types/react": "18.2.45",
-    "typescript": "5.3.3",
+    "allure-playwright": "^3.0.0-beta.11",
     "chrome-launcher": "^1.1.2",
     "fs": "0.0.1-security",
     "lighthouse": "^12.1.0",
     "puppeteer": "^22.12.1",
-    "request": "^2.88.2"
+    "request": "^2.88.2",
+    "typescript": "5.3.3"
   }
 }
