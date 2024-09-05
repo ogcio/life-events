@@ -23,7 +23,9 @@
       "resource": "Resource",
       "action": "Action",
       "submit": "Submit",
-      "allOption": "All"
+      "allOption": "All",
+      "from": "From",
+      "to": "To"
     }
   },
   "Common": {
