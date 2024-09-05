@@ -55,14 +55,14 @@ const getSettingPerProfileId = async (params: {
     organisationSettingId,
   });
 
-  if (invitations.length === 0) {
+  if (invitations.data.length === 0) {
     throw new BadRequestError(
       ACCEPT_INVITATIONS_ERROR,
       "This user has no related invitations",
     );
   }
 
-  return invitations[0];
+  return invitations.data[0];
 };
 
 const ensureUserIsActive = (userInvitation: OrganisationSetting): void => {
