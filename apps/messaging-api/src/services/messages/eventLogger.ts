@@ -100,9 +100,10 @@ type MessageUpsertEvent = {
   transports: string[];
   receiverFullName: string;
   receiverPPSN: string;
-  senderFullName: string;
-  senderPPSN: string;
-  senderUserId: string;
+  senderFullName?: string;
+  senderPPSN?: string;
+  senderUserId?: string;
+  senderApplicationId?: string;
   templateName?: string;
   templateId?: string;
   organisationName: string;

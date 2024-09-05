@@ -29,4 +29,7 @@ export type CreateAuditLog = Pick<
 
 export type AuditLogEventsFilters = {
   eventType?: string;
+  userId?: string;
+  from?: string;
+  to?: string;
 };

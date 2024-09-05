@@ -290,8 +290,6 @@ export interface paths {
                  * @enum {string}
                  */
                 security: "confidential" | "public";
-                /** @description Unique id of the sender from the Life Events building block */
-                senderUserProfileId: string;
               };
               metadata?: {
                 /** @description Object containing the links to the related endpoints */
@@ -3531,11 +3529,13 @@ export interface paths {
                        */
                       scheduledAt: string;
                       /** @description Unique user id of the sender */
-                      senderUserId: string;
+                      senderUserId?: string;
                       /** @description Full name of the sender */
-                      senderFullName: string;
+                      senderFullName?: string;
                       /** @description PPSN of the sender */
-                      senderPPSN: string;
+                      senderPPSN?: string;
+                      /** @description Unique id of the M2M application that sent the message */
+                      senderApplicationId?: string;
                       /** @description Organisation related to the sender */
                       organisationName: string;
                       /**

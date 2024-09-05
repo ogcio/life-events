@@ -6,7 +6,7 @@ import {
   severity,
   description,
 } from "allure-js-commons";
-import { CitizenTransactionsPage } from "../../objects/transactions/CitizenTransactionsPage";
+import { TransactionsListPage } from "../../objects/transactions/TransactionsListPage";
 import { CitizenTransactionDetailsPage } from "../../objects/transactions/CitizenTransactionDetailsPage";
 import { citizens, myGovIdMockSettings } from "../../utils/constants";
 
@@ -22,7 +22,9 @@ test.describe("Citizen transactions page", async () => {
     await tags("Citizen", "Transaction");
     await severity(Severity.NORMAL);
 
-    const transactionsPage = new CitizenTransactionsPage(citizenPage);
+    const transactionsPage = new TransactionsListPage(citizenPage, {
+      isCitizen: true,
+    });
     await transactionsPage.goto();
 
     await transactionsPage.checkHeader();
@@ -40,7 +42,9 @@ test.describe("Citizen transactions page", async () => {
     await tags("Citizen", "Transaction");
     await severity(Severity.NORMAL);
 
-    const transactions2Page = new CitizenTransactionsPage(secondCitizenPage);
+    const transactions2Page = new TransactionsListPage(secondCitizenPage, {
+      isCitizen: true,
+    });
     await transactions2Page.goto();
 
     await transactions2Page.checkHeader();
@@ -61,7 +65,9 @@ test.describe("Citizen transactions page", async () => {
     await tags("Citizen", "Transaction");
     await severity(Severity.NORMAL);
 
-    const transactionsPage = new CitizenTransactionsPage(citizenPage);
+    const transactionsPage = new TransactionsListPage(citizenPage, {
+      isCitizen: true,
+    });
     await transactionsPage.goto();
 
     const detailsPage = new CitizenTransactionDetailsPage(citizenPage);

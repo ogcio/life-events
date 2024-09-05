@@ -98,9 +98,6 @@ export const ReadMessageSchema = Type.Object({
     description: "True if the message has already been seen by the recipient",
   }),
   security: SecurityLevelsSchema,
-  senderUserProfileId: Type.String({
-    description: "Unique id of the sender from the Life Events building block",
-  }),
 });
 export type ReadMessage = Static<typeof ReadMessageSchema>;
 
@@ -300,15 +297,27 @@ export const MessageEventSchema = Type.Array(
           description:
             "Date and time which describes when the message has to be sent",
         }),
-        senderUserId: Type.String({
-          description: "Unique user id of the sender",
-        }),
-        senderFullName: Type.String({
-          description: "Full name of the sender",
-        }),
-        senderPPSN: Type.String({
-          description: "PPSN of the sender",
-        }),
+        senderUserId: Type.Optional(
+          Type.String({
+            description: "Unique user id of the sender",
+          }),
+        ),
+        senderFullName: Type.Optional(
+          Type.String({
+            description: "Full name of the sender",
+          }),
+        ),
+        senderPPSN: Type.Optional(
+          Type.String({
+            description: "PPSN of the sender",
+          }),
+        ),
+        senderApplicationId: Type.Optional(
+          Type.String({
+            description:
+              "Unique id of the M2M application that sent the message",
+          }),
+        ),
         organisationName: Type.String({
           description: "Organisation related to the sender",
         }),
