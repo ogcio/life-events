@@ -33,12 +33,3 @@ assert {
   res.body.access_token: isDefined
   ~res.body.scope: eq messaging:provider:* messaging:citizen:* messaging:event:read profile:user:read messaging:template:*
 }
-
-docs {
-  grant_type=urn:ietf:params:oauth:grant-type:token-exchange
-  &client_id=techcorp_support_app
-  &scope=resource:read
-  &subject_token=alx_7h32jf8sK3j2
-  &subject_token_type=urn:ietf:params:oauth:token-type:access_token
-  &resource=https://api.techcorp.com/customer-data
-}
