@@ -2504,11 +2504,18 @@ export interface paths {
       };
       responses: {
         /** @description Default Response */
-        202: {
+        200: {
           headers: {
             [name: string]: unknown;
           };
-          content?: never;
+          content: {
+            "application/json": {
+              data: {
+                /** Format: uuid */
+                id: string;
+              };
+            };
+          };
         };
         /** @description Default Response */
         "5XX": {

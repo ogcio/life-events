@@ -405,7 +405,7 @@ export class Messaging {
 
   async importUsers(toImport: { file?: File; records?: object[] }) {
     if (toImport.file) {
-      const { error } = await this.client.POST("/api/v1/user-imports/", {
+      const { data, error } = await this.client.POST("/api/v1/user-imports/", {
         body: {
           file: toImport.file,
         } as any,
@@ -415,7 +415,7 @@ export class Messaging {
           return formData;
         },
       });
-      return { error };
+      return { data: data?.data, error };
     }
 
     const { error } = await this.client.POST("/api/v1/user-imports/", {
