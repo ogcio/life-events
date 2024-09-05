@@ -12,6 +12,11 @@ type EventParams = {
   eventType: AuditLogEventType;
   userId: string;
 };
+
+type Resource = "provider" | "transaction" | "payment_request";
+
+type Action = "create" | "status_update" | "update" | "delete";
+
 export class AuditLogsListPage {
   private readonly header: Locator;
   private readonly filtersBtn: Locator;
@@ -48,6 +53,16 @@ export class AuditLogsListPage {
 
   async filterByUser(user: string) {
     await this.userFilterInput.fill(user);
+    await this.filtersBtn.click();
+  }
+
+  async filterByResource(resource: Resource) {
+    await this.resourceFilterSelect.selectOption(resource);
+    await this.filtersBtn.click();
+  }
+
+  async filterByAction(action: Action) {
+    await this.actionFilterSelect.selectOption(action);
     await this.filtersBtn.click();
   }
 

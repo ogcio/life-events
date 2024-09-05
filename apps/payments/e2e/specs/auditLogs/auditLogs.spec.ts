@@ -399,6 +399,91 @@ test.describe("Audit Logs", () => {
     });
   });
 
-  // should filter audit logs by resource
-  // should filter audit logs by action
+  test("should filter audit logs by resource @regression @normal", async ({
+    bankTransferProvider,
+    paymentRequestWithManualBankTransferProvider,
+    publicServantPage,
+  }) => {
+    await description(
+      "This test checks the successful filtering of audit logs by resource.",
+    );
+    await owner("OGCIO");
+    await tags("Audit Logs", "Filter");
+    await severity(Severity.NORMAL);
+
+    const userId = await getUserId(publicServantPage);
+    const auditLogsPage = new AuditLogsListPage(publicServantPage);
+    await auditLogsPage.goto();
+    await auditLogsPage.checkHeader();
+    await auditLogsPage.checkFilters();
+    await auditLogsPage.checkAuditLog({
+      resourceId: bankTransferProvider.id,
+      eventType: AuditLogEventType.PROVIDER_CREATE,
+      userId,
+    });
+    await auditLogsPage.checkAuditLog({
+      resourceId: paymentRequestWithManualBankTransferProvider.id,
+      eventType: AuditLogEventType.PAYMENT_REQUEST_CREATE,
+      userId,
+    });
+    await auditLogsPage.filterByResource("provider");
+    await auditLogsPage.checkAuditLog({
+      resourceId: bankTransferProvider.id,
+      eventType: AuditLogEventType.PROVIDER_CREATE,
+      userId,
+    });
+    await auditLogsPage.checkAuditLogNotVisible({
+      resourceId: paymentRequestWithManualBankTransferProvider.id,
+      eventType: AuditLogEventType.PAYMENT_REQUEST_CREATE,
+      userId,
+    });
+  });
+
+  test("should filter audit logs by action @regression @normal", async ({
+    bankTransferProvider,
+    publicServantPage,
+  }) => {
+    await description(
+      "This test checks the successful filtering of audit logs by action.",
+    );
+    await owner("OGCIO");
+    await tags("Audit Logs", "Filter");
+    await severity(Severity.NORMAL);
+
+    const editProviderPage = new EditManualBankTransferProviderPage(
+      publicServantPage,
+    );
+    await editProviderPage.checkHeaderVisible();
+    await editProviderPage.providerForm.enterName(
+      `${bankTransferProvider.name} updated`,
+    );
+    await editProviderPage.saveChanges();
+
+    const userId = await getUserId(publicServantPage);
+    const auditLogsPage = new AuditLogsListPage(publicServantPage);
+    await auditLogsPage.goto();
+    await auditLogsPage.checkHeader();
+    await auditLogsPage.checkFilters();
+    await auditLogsPage.checkAuditLog({
+      resourceId: bankTransferProvider.id,
+      eventType: AuditLogEventType.PROVIDER_CREATE,
+      userId,
+    });
+    await auditLogsPage.checkAuditLog({
+      resourceId: bankTransferProvider.id,
+      eventType: AuditLogEventType.PROVIDER_UPDATE,
+      userId,
+    });
+    await auditLogsPage.filterByAction("update");
+    await auditLogsPage.checkAuditLog({
+      resourceId: bankTransferProvider.id,
+      eventType: AuditLogEventType.PROVIDER_UPDATE,
+      userId,
+    });
+    await auditLogsPage.checkAuditLogNotVisible({
+      resourceId: bankTransferProvider.id,
+      eventType: AuditLogEventType.PROVIDER_CREATE,
+      userId,
+    });
+  });
 });
