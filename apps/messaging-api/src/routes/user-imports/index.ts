@@ -91,7 +91,11 @@ export default async function userImports(app: FastifyInstance) {
         tags,
         body: Type.Union([Type.Array(CsvRecordSchema), Type.Unknown()]),
         response: {
-          202: Type.Null(),
+          200: Type.Object({
+            data: Type.Object({
+              id: Type.String({ format: "uuid" }),
+            }),
+          }),
           "5xx": HttpError,
           "4xx": HttpError,
         },
@@ -105,21 +109,24 @@ export default async function userImports(app: FastifyInstance) {
         request.headers["content-type"] &&
         request.headers["content-type"].startsWith(MimeTypes.FormData)
       ) {
-        await importCsvFileFromRequest({
+        const importedId = await importCsvFileFromRequest({
           filepath: await saveRequestFile(request),
           user: request.userData!,
           pg: app.pg,
           logger: request.log,
         });
-        return;
+
+        return { data: { id: importedId } };
       }
 
-      await importCsvRecords({
+      const importedId = await importCsvRecords({
         pg: app.pg,
         logger: request.log,
         csvRecords: request.body as CsvRecord[],
         requestUser: request.userData!,
       });
+
+      return { data: { id: importedId } };
     },
   );
 
