@@ -57,12 +57,12 @@ export class TransactionsRepo {
   updateTransactionStatus(
     transactionId: string,
     status: TransactionStatusesEnum,
-  ): Promise<QueryResult<{ transactionId: string }>> {
+  ): Promise<QueryResult<{ transactionId: string; extPaymentId: string }>> {
     return this.pg.query(
       `UPDATE payment_transactions
         SET status = $2, updated_at = now()
         WHERE transaction_id = $1
-        RETURNING transaction_id as "transactionId"`,
+        RETURNING transaction_id as "transactionId", ext_payment_id as "extPaymentId"`,
       [transactionId, status],
     );
   }

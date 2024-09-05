@@ -9,7 +9,7 @@ import {
 } from "allure-js-commons";
 import { InactivePublicServantPage } from "../../objects/inactivePublicSurvant/InactivePublicServantPage";
 import { ErrorPage } from "../../objects/errorPage/ErrorPage";
-import { deleteLogtoUser } from "../../utils/logto_utils";
+import { deleteLogtoUser, getUserId } from "../../utils/logto_utils";
 import { MyGovIdMockLoginPage } from "../../objects/MyGovIdMockLoginPage";
 import { inactivePublicServant, password } from "../../utils/constants";
 
@@ -31,12 +31,9 @@ test.describe("Inactive public servant page", () => {
   });
 
   test.afterAll(async ({ request }) => {
-    const cookies = await page.context().cookies();
-    const userId = cookies
-      .filter((cookie) => cookie.name === "logtoUserId")
-      .map((cookie) => cookie.value);
+    const userId = await getUserId(page);
 
-    if (!userId.length) {
+    if (!userId) {
       console.error("User ID was not found");
       return;
     }
