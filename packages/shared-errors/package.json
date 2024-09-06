@@ -13,6 +13,6 @@
     "build": "rm -rf dist && tsc -p tsconfig.prod.json"
   },
   "devDependencies": {
-    "typescript": "5.4.5"
+    "typescript": "5.5.4"
   }
 }

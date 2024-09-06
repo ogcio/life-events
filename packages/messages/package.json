@@ -13,7 +13,7 @@
   "devDependencies": {
     "@types/node": "20.14.2",
     "@types/nodemailer": "^6.4.15",
-    "typescript": "5.4.5"
+    "typescript": "5.5.4"
   },
   "dependencies": {
     "@nearform/sql": "^1.10.5",
