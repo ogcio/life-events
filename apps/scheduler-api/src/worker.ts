@@ -49,7 +49,7 @@ async function callbackWebHooks(
       if ([200, 202, 204].includes(result.value.status)) {
         results.push({ id: result.value.id, status: "delivered" });
       } else {
-        let error = String(result.value.status);
+        const error = String(result.value.status);
         let logStatus: WebhookCallbackStatus = "error";
         if (error.startsWith("TimeoutError")) {
           logStatus = "timeout";

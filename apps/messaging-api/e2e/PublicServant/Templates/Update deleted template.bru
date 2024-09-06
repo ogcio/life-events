@@ -1,0 +1,65 @@
+meta {
+  name: Update deleted template
+  type: http
+  seq: 14
+}
+
+put {
+  url: {{baseUrl}}/api/v1/templates/{{templateId}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "id": "{{templateId}}",
+    "contents": [
+      {
+        "templateName": "A {{randomTemplateName}}",
+        "language": "en",
+        "subject": "update subj A {{var1}}",
+        "excerpt": "update expt A {{var2en}} {{var2en2}}",
+        "plainText": "update pt A",
+        "richText": "update rt A"
+      },
+      {
+        "templateName": "B {{randomTemplateName}}",
+        "language": "ga",
+        "subject": "update subj B {{var1}}",
+        "excerpt": "update expt B {{var2ga}}",
+        "plainText": "update pt B",
+        "richText": "update rt B"
+      }
+    ],
+    "variables": [
+      {
+        "name": "var1"
+      },
+      {
+        "name": "var2en"
+      },
+      {
+        "name": "var2ga"
+      },
+      {
+        "name":"var2en2"
+      }
+    ]
+  }
+}
+
+assert {
+  res.status: eq 404
+  res.body.code: eq NOT_FOUND_ERROR
+  res.body.requestId: isDefined
+}
+
+script:pre-request {
+  const baseUrl = bru.getEnvVar("baseUrl")
+  const templateId = bru.getEnvVar("templateId")
+  req.setUrl(`${baseUrl}/api/v1/templates/${templateId}`)
+}
