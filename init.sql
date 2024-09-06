@@ -6,6 +6,7 @@ CREATE DATABASE shared;
 CREATE DATABASE profile;
 CREATE DATABASE scheduler;
 CREATE DATABASE upload;
+CREATE DATABASE integrator;
 
 
 -- Setup Extensions
