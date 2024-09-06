@@ -1,0 +1,35 @@
+meta {
+  name: Get Subject Token
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{logtoApiUrl}}/api/subject-tokens
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{managementAccessToken}}
+}
+
+body:json {
+  {
+    "userId" : "{{process.env.CITIZEN_USER_PROFILE_ID}}"
+  }
+}
+
+body:form-urlencoded {
+  grant_type: client_credentials
+  scope: profile:user:read messaging:provider:* messaging:event:read messaging:citizen:* messaging:template:*
+  organization_id: first-testing
+}
+
+vars:post-response {
+  subjectToken: res.body.subjectToken
+}
+
+assert {
+  res.status: eq 200
+}

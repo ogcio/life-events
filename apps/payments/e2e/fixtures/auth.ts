@@ -2,12 +2,7 @@ import { test as baseTest, Browser, expect } from "@playwright/test";
 import fs from "fs";
 import path from "path";
 import { MyGovIdMockLoginPage } from "../objects/MyGovIdMockLoginPage";
-import {
-  password,
-  publicServants,
-  citizens,
-  inactivePublicServant,
-} from "../utils/constants";
+import { password, publicServants, citizens } from "../utils/constants";
 
 const baseURL = process.env.BASE_URL || "";
 const loginUrl = process.env.LOGTO_ENDPOINT || "";
