@@ -14,10 +14,6 @@ auth:bearer {
   token: {{accessToken}}
 }
 
-vars:post-response {
-  templateId: res.body.data && res.body.data[0] ?  res.body.data[0].id : undefined
-}
-
 assert {
   res.status: eq 200
   res.body.data: isDefined
