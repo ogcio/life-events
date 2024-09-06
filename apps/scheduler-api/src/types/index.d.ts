@@ -20,5 +20,11 @@ declare module "fastify" {
     Logger = FastifyLoggerInstance,
   > {
     config: { [key: string]: string | number };
+    checkPermissions: (
+      request: FastifyRequest,
+      reply: FastifyReply,
+      permissions: string[],
+      matchConfig?: { method: "AND" | "OR" },
+    ) => Promise<void>;
   }
 }
