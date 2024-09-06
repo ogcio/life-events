@@ -1,7 +1,7 @@
 meta {
-  name: Get templates
+  name: Get templates again
   type: http
-  seq: 6
+  seq: 12
 }
 
 get {
@@ -21,8 +21,14 @@ vars:post-response {
 assert {
   res.status: eq 200
   res.body.data: isDefined
-  res.body.data[0]: isDefined
-  res.body.data[0].id: isDefined
-  res.body.metadata.totalCount: gt 0
+  res.body.metadata.totalCount: gte 0
   res.body.metadata.links: isDefined
+}
+
+tests {
+  test("should not contain deleted id", function(){
+    const body = res.getBody()
+    const deletedItem = body.data.find(item => item.id === bru.getEnvVar("templateId"))
+    expect(deletedItem).equals(undefined)
+  })
 }
