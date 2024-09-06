@@ -1,10 +1,11 @@
 import { writeFile } from "fs/promises";
 
-import { build } from "./app";
-import { worker } from "./worker";
+import { build } from "./app.js";
+import { worker } from "./worker.js";
 import { randomUUID } from "crypto";
+import { getLoggingConfiguration } from "logging-wrapper";
 
-const app = await build({ logger: true });
+const app = await build(getLoggingConfiguration());
 
 const scheduler = await worker(app, randomUUID().toString());
 
