@@ -1,6 +1,7 @@
 import { FastifyInstance } from "fastify";
-import { HttpError } from "../../types/httpErrors";
+import { HttpError } from "../../types/httpErrors.js";
 import { Static, Type } from "@sinclair/typebox";
+import { ServerError } from "shared-errors";
 
 type RequestBody = {
   executeAt: string;
@@ -8,11 +9,12 @@ type RequestBody = {
   webhookAuth: string;
 }[];
 
+const SCHEDULE_TASK = "SCHEDULE_TASK";
+
 export default async function tasks(app: FastifyInstance) {
   app.post<{ Body: RequestBody }>(
     "/",
     {
-      preValidation: app.verifyUser,
       schema: {
         body: Type.Array(
           Type.Object({
@@ -47,16 +49,9 @@ export default async function tasks(app: FastifyInstance) {
           values,
         );
       } catch (err) {
-        reply.statusCode = 500;
-        const httpError: Static<typeof HttpError> = {
-          code: "failed_to_parse",
-          error: JSON.stringify(err),
-          message: "failed to parse request",
-          statusCode: 500,
-          time: new Date().toISOString(),
-        };
-        return httpError;
+        return new ServerError(SCHEDULE_TASK, "failed to parse request", err);
       }
+      return reply.status(202);
     },
   );
 }
