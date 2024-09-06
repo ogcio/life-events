@@ -1,7 +1,8 @@
 import { FastifyInstance } from "fastify";
 import { HttpError } from "../../types/httpErrors.js";
-import { Static, Type } from "@sinclair/typebox";
+import { Type } from "@sinclair/typebox";
 import { ServerError } from "shared-errors";
+import { Permissions } from "../../types/permissions.js";
 
 type RequestBody = {
   executeAt: string;
@@ -15,6 +16,9 @@ export default async function tasks(app: FastifyInstance) {
   app.post<{ Body: RequestBody }>(
     "/",
     {
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.Scheduler.Write]),
+
       schema: {
         body: Type.Array(
           Type.Object({
