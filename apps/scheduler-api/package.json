@@ -2,28 +2,21 @@
   "name": "scheduler-api",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
-    "test": "node --import=tsx --test ./test/**/*.ts",
-    "test:e2e" : "cd ./e2e && bru run --env local",
+    "test": "TAP_RCFILE=tap.yml tap",
+    "test:e2e": "cd ./e2e && bru run --env local",
     "test:smoke:e2e": "cd ./e2e && mkdir -p test-results && bru run --env dev --output ./test-results/results.xml --format junit",
     "test:regression:e2e": "cd ./e2e && mkdir -p test-results && bru run --env dev --output ./test-results/results.xml --format junit",
-    "start": "node --import tsx index.ts & node --import tsx worker.ts",
-    "dev": "nodemon | pino-pretty",
+    "start": "node dist/index.js",
+    "dev": "node --watch --import tsx src/index.ts | pino-pretty",
     "lint": "eslint . --ext .ts",
-    "generate-ts-client": "npx openapi-typescript ./openapi-definition.yml -o ../../packages/building-blocks-sdk/src/services/scheduler/schema.d.ts"
+    "generate-ts-client": "npx openapi-typescript ./openapi-definition.yml -o ../../packages/building-blocks-sdk/src/services/scheduler/schema.d.ts",
+    "build": "rm -rf dist && tsc -p tsconfig.prod.json && cp src/logo.png dist/",
+    "migrate": "node db/create-db.js && db-migrate --migrations-dir db/migrations --config db/database.json up",
+    "migrate-down": "db-migrate --migrations-dir db/migrations --config db/database.json down"
   },
   "type": "module",
-  "nodemonConfig": {
-    "watch": [
-      "../../packages/auth/src/**/*",
-      "../../packages/feature-flags/src/**/*",
-      "../../packages/messages/src/**/*",
-      "./**/*"
-    ],
-    "ext": "ts,json",
-    "exec": "node --import tsx index.ts"
-  },
   "author": "",
   "license": "ISC",
   "dependencies": {
@@ -37,22 +30,21 @@
     "@fastify/type-provider-typebox": "^4.0.0",
     "@fastify/under-pressure": "^8.3.0",
     "@sinclair/typebox": "^0.32.16",
-    "auth": "*",
-    "dotenv": "^16.4.5",
+    "db-migrate": "^0.11.14",
+    "db-migrate-pg": "^1.5.2",
+    "error-handler": "*",
     "fastify": "^4.26.2",
     "fastify-plugin": "^4.5.1",
-    "pg": "^8.11.5",
-    "error-handler": "*",
-    "logging-wrapper": "*"
+    "logging-wrapper": "*",
+    "pg": "^8.11.5"
   },
   "devDependencies": {
     "@openapitools/openapi-generator-cli": "^2.13.1",
     "@types/node": "^20.11.28",
+    "@types/pg": "^8.11.8",
     "@typescript-eslint/eslint-plugin": "^7.5.0",
     "@typescript-eslint/parser": "^7.5.0",
     "@usebruno/cli": "^1.20.4",
-    "db-migrate": "^0.11.14",
-    "db-migrate-pg": "^1.5.2",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.1.3",
@@ -60,8 +52,7 @@
     "pino-pretty": "^11.0.0",
     "prettier": "^3.2.5",
     "tap": "^18.8.0",
-    "ts-node": "^10.9.2",
     "tsx": "^4.7.1",
-    "typescript": "^5.4.2"
+    "typescript": "^5.5.4"
   }
 }

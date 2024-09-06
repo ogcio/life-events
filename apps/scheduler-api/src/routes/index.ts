@@ -1,4 +1,4 @@
-import tasks from "./tasks";
+import tasks from "./tasks/index.js";
 import { FastifyInstance } from "fastify";
 
 export default async function routes(app: FastifyInstance) {
