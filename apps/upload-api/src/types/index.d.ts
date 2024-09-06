@@ -23,7 +23,6 @@ declare module "fastify" {
       RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
     Logger = FastifyLoggerInstance,
   > {
-    verifyUser: (request: FastifyRequest, reply: FastifyReply) => Promise<void>;
     avClient: NodeClam;
     s3Client: S3ClientConfig;
     config: { [key: string]: string | number };

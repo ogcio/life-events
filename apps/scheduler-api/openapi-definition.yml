@@ -13,6 +13,51 @@ paths:
           description: Default Response
   /api/v1/tasks/:
     post:
+      tags:
+        - Tasks
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+                properties:
+                  webhookUrl:
+                    format: uri
+                    type: string
+                  webhookAuth:
+                    type: string
+                  executeAt:
+                    format: date-time
+                    type: string
+                required:
+                  - webhookUrl
+                  - webhookAuth
+                  - executeAt
       responses:
-        "200":
+        "202":
           description: Default Response
+        "500":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                  code:
+                    type: string
+                  error:
+                    type: string
+                  message:
+                    type: string
+                  time:
+                    type: string
+                required:
+                  - statusCode
+                  - code
+                  - error
+                  - message
+                  - time
