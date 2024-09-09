@@ -88,11 +88,12 @@ run-services:
 	"npm run dev --workspace=home" \
 	"npm run dev --workspace=forms" \
 	"npm run dev --workspace=upload" \
-	"npm run dev --workspace=upload-api"
+	"npm run dev --workspace=upload-api" \
+	"npm run dev --workspace=scheduler-api"
 start-services: install-concurrently run-services
 	
 kill-services:
-	sleep 2 && lsof -ti:8000,8001,8002,8003,8004,3000,3001,3002,3003,3004,3005,3006 | xargs sudo kill -9
+	sleep 2 && lsof -ti:8000,8001,8002,8003,8004,8005,3000,3001,3002,3003,3004,3005,3006 | xargs sudo kill -9
 kill-logto:
 	sleep 2 && lsof -ti:3301,3302 | xargs sudo kill -9
 kill-all: install-concurrently concurrently kill-services kill-logto
@@ -108,9 +109,8 @@ start-migrate-logto:
 	"$(MAKE) init-logto" \
 	"sleep 5 && $(MAKE) migrate"
 start: init start-docker start-migrate
-start-no-scheduler: init start-docker-no-scheduler start-migrate kill-services
 start-full: init start-docker start-migrate-logto
-start-logto: init start-docker-no-scheduler start-migrate-logto
+start-logto: init start-docker start-migrate-logto
 
 security-privacy-report: 
 	docker run --rm -v $(shell pwd):/tmp/scan bearer/bearer:latest scan --report privacy -f html /tmp/scan > bearer-privacy-report.html
