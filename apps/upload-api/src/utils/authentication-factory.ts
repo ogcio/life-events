@@ -62,8 +62,6 @@ export const getSchedulerSdk = async (
 ): Promise<Scheduler> => {
   const token = await getOrganizationSchedulerToken(organizationId);
 
-  console.log({ token });
-
   return new Scheduler(token);
 };
 
