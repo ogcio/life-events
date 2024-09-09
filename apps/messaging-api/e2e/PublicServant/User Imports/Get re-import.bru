@@ -1,0 +1,52 @@
+meta {
+  name: Get re-import
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{baseUrl}}/api/v1/user-imports/{{lastUserImportId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+vars:post-response {
+  reUsersData: res.body.data ? res.body.data.usersData : undefined
+}
+
+assert {
+  res.status: eq 200
+  res.body.data: isDefined
+  res.body.data.id: isDefined
+}
+
+script:post-response {
+  const users = res.body.data.usersData;
+  
+  const consentUserId = users.find(user => user.emailAddress === bru.getVar("userWithConsentEmail")).relatedUserId;
+  
+  const noConsentUserId = users.find(user => user.emailAddress === bru.getVar("userWithoutConsentEmail")).relatedUserId;
+  
+  const oldConsentId = bru.getVar("consentRelatedUserId");
+  const oldNoConsentId = bru.getVar("noConsentRelatedUserId", noConsentUserId);
+}
+
+tests {
+  test("users must be the same as first import", function () {
+    const users = res.body.data.usersData;
+  
+  const consentUserId = users.find(user => user.emailAddress === bru.getVar("userWithConsentEmail")).relatedUserId;
+  
+  const noConsentUserId = users.find(user => user.emailAddress === bru.getVar("userWithoutConsentEmail")).relatedUserId;
+  
+  const oldConsentId = bru.getVar("consentRelatedUserId");
+  const oldNoConsentId = bru.getVar("noConsentRelatedUserId", noConsentUserId);
+    
+    expect(consentUserId).to.equal(oldConsentId);
+    expect(noConsentUserId).to.equal(oldNoConsentId);
+  });
+}

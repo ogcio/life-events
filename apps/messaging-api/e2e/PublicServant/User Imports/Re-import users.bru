@@ -1,7 +1,7 @@
 meta {
-  name: Import users
+  name: Re-import users
   type: http
-  seq: 1
+  seq: 6
 }
 
 post {
@@ -21,14 +21,14 @@ body:json {
       "emailAddress": "{{userWithConsentEmail}}",
       "collectedConsent": true,
       "lastName": "Consentsson",
-      "firstName": "Test"
+      "firstName": "TestB"
     },
     {
       "importIndex": 2,
       "emailAddress": "{{userWithoutConsentEmail}}",
       "collectedConsent": false,
       "lastName": "NoConsentsson",
-      "firstName": "Test"
+      "firstName": "TestB"
     }
   ]
 }
@@ -41,14 +41,4 @@ assert {
   res.status: eq 200
   res.body.data: isDefined
   res.body.data.id: isString
-}
-
-script:pre-request {
-  const uuid = require("uuid");
-  
-  const userWithConsentEmail = `${uuid.v4()}@test.se`;
-  const userWithoutConsentEmail = `${uuid.v4()}@test.se`;
-  bru.setVar("userWithConsentEmail", userWithConsentEmail);
-  bru.setVar("userWithoutConsentEmail", userWithoutConsentEmail);
-  
 }

@@ -5,13 +5,13 @@ meta {
 }
 
 get {
-  url: {{baseUrl}}/api/v1/users?importId={{userImportId}}&activeOnly=false&limit=100
+  url: {{baseUrl}}/api/v1/users?importId={{lastUserImportId}}&activeOnly=false&limit=100
   body: none
   auth: bearer
 }
 
 query {
-  importId: {{userImportId}}
+  importId: {{lastUserImportId}}
   activeOnly: false
   limit: 100
 }
