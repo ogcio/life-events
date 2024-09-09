@@ -44,9 +44,6 @@ init: init-packages init-env init-ds build-docker
 start-docker: 
 	docker compose down && \
 	DOCKER_BUILDKIT=1 docker compose up --build --remove-orphans -d --wait
-start-docker-no-scheduler: 
-	docker compose -f docker-compose-no-scheduler.yaml down && \
-	DOCKER_BUILDKIT=1 docker compose -f docker-compose-no-scheduler.yaml up --build --remove-orphans -d --wait
 reset-docker:
 	docker compose down && \
 	docker system prune -a -f && \
