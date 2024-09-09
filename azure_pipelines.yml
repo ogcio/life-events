@@ -79,7 +79,7 @@ stages:
           parameters:
             serviceName: ${{ serviceName }}
             testPath: './apps/'
-            dependenciesBuild: 'npm run build --prefix ./packages/shared-errors && npm run build --prefix ./packages/logging-wrapper && npm run build --prefix ./packages/nextjs-logging-wrapper && npm run build --prefix ./packages/api-auth && npm run build --prefix ./packages/error-handler && npm run build --prefix ./packages/building-blocks-sdk'
+            dependenciesBuild: 'npm run build --prefix ./packages/design-system && npm run build --prefix ./packages/shared-errors && npm run build --prefix ./packages/logging-wrapper && npm run build --prefix ./packages/nextjs-logging-wrapper && npm run build --prefix ./packages/api-auth && npm run build --prefix ./packages/error-handler && npm run build --prefix ./packages/building-blocks-sdk'
     - stage: Build_${{ replace(serviceName, '-', '_') }}
       displayName: Build ${{ serviceName }}
       pool:
