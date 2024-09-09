@@ -19,7 +19,7 @@ vars:post-response {
 }
 
 assert {
-  res.body.data.id: isDefined 
+  res.body.data.id: isDefined
 }
 
 script:pre-request {
@@ -28,7 +28,7 @@ script:pre-request {
   bru.setVar("messageSubject",messageSubject)
   req.setBody({
     "preferredTransports": [],
-    "recipientUserId": "{{userId}}",
+    "recipientUserId": bru.getVar("consentUserId"),
     "security": "public",
     "bypassConsent": true,
     "scheduleAt": "2024-08-26T10:05:04.865Z",
