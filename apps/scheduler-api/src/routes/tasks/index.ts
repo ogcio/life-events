@@ -52,7 +52,7 @@ export default async function tasks(app: FastifyInstance) {
           values,
         );
       } catch (err) {
-        return new ServerError(SCHEDULE_TASK, "failed to parse request", err);
+        throw new ServerError(SCHEDULE_TASK, "failed to parse request", err);
       }
 
       reply.status(202);
