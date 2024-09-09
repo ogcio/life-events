@@ -32,7 +32,7 @@ tests {
       // get single user import post-response vars
       const usersData = bru.getVar("usersData");
       const currentBody = res.getBody().data;
-      const currentUserIds = currentBody.map(user => user.userId).sort().join(",");
+      const currentUserIds = currentBody.map(user => user.id).sort().join(",");
       const userDataUserIds = usersData.filter(user => user.importStatus !== "missing_contacts").map(user => user.relatedUserId).sort().join(",");
      expect(currentUserIds).to.equal(userDataUserIds);
   });
