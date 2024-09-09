@@ -23,5 +23,7 @@ vars:post-response {
 }
 
 assert {
-  res.body.data.at(0).id: isDefined 
+  res.body.data.at(0).id: isDefined
+  res.body.data.at(0).subject: eq {{messageSubject}}
+  res.status: eq 200
 }

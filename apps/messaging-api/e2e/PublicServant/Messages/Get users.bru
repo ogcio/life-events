@@ -23,6 +23,11 @@ vars:post-response {
   userWithConsentId: 
 }
 
+assert {
+  res.status: eq 200
+  res.body.data.length: gte 2
+}
+
 script:post-response {
   const users = res.body.data
   

@@ -14,6 +14,11 @@ auth:bearer {
   token: {{accessToken}}
 }
 
+assert {
+  res.status: eq 200
+  res.body.data.id: isString 
+}
+
 script:pre-request {
   const uuid = require("uuid")
   
