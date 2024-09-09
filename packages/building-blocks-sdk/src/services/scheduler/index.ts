@@ -23,7 +23,7 @@ export class Scheduler {
     };
 
     this.client = createClient<paths>({
-      baseUrl: process.env.PROFILE_BACKEND_URL,
+      baseUrl: process.env.SCHEDULER_BACKEND_URL,
     });
     this.client.use(authMiddleware);
   }
