@@ -5,6 +5,7 @@
     "dev": "nodemon",
     "build": "next build",
     "start": "next start -p 3003",
+    "test": "echo \"Error: no test specified\" && exit 0",
     "test:e2e": "playwright test",
     "test:smoke:e2e": "echo \"Error: no test specified\" && exit 0",
     "test:regression:e2e": "echo \"Error: no test specified\" && exit 0",

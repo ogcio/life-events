@@ -38,7 +38,7 @@ resources:
     - repository: pipeline-templates
       type: github
       name: ogcio/building-blocks-pipelines
-      ref: main
+      ref: specify_node_version
       endpoint: ogcio
 
 stages:
@@ -67,6 +67,19 @@ stages:
     jobs:
       - template: pipeline-templates/build_dependencies.yml
   - ${{ each serviceName in split(replace(variables.services, ' ', ''), ',') }}:
+    - stage: Unit_Tests_${{ replace(serviceName, '-', '_') }}
+      displayName: Run unit tests - ${{ serviceName }}
+      pool:
+         vmImage: ${{ parameters.vmImage }}
+      dependsOn: 
+        - securityScan
+        - BuildDeps
+      jobs:
+        - template: test/unit_test.yml@pipeline-templates
+          parameters:
+            serviceName: ${{ serviceName }}
+            testPath: './apps/'
+            dependenciesBuild: npm run build —-prefix ./packages/shared-errors && npm run build —-prefix ./packages/logging-wrapper && npm run build --prefix ./packages/nextjs-logging-wrapper && npm run build --prefix ./packages/api-auth && npm run build --prefix ./packages/error-handler && npm run build --prefix ./packages/building-blocks-sdk
     - stage: Build_${{ replace(serviceName, '-', '_') }}
       displayName: Build ${{ serviceName }}
       pool:

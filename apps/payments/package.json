@@ -5,6 +5,7 @@
     "dev": "nodemon",
     "build": "next build",
     "start": "next start -p 3001",
+    "test": "echo \"Error: no test specified\" && exit 0",
     "test:headed:e2e": "playwright test --headed",
     "test:headless:e2e": "playwright test",
     "test:debug:e2e": "playwright test --ui",
