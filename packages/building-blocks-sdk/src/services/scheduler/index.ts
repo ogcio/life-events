@@ -35,10 +35,10 @@ export class Scheduler {
       executeAt: string;
     }[],
   ) {
-    const { error } = await this.client.POST("/api/v1/tasks/", {
-      body: tasks,
-    });
-
-    return { error };
+    return formatQueryResult(
+      this.client.POST("/api/v1/tasks/", {
+        body: tasks,
+      }),
+    );
   }
 }

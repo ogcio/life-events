@@ -6,13 +6,13 @@
 
 import { PoolClient } from "pg";
 import { utils } from "../../utils.js";
-import { isNativeError } from "util/types";
 import { BadRequestError, ServerError, ThirdPartyError } from "shared-errors";
 import { randomUUID } from "crypto";
 import {
   AllProviderTypes,
   SecurityLevels,
 } from "../../types/schemaDefinitions.js";
+import { getSchedulerSdk } from "../../utils/authentication-factory.js";
 
 type TemplateContent = {
   subject: string;
@@ -359,25 +359,12 @@ export function newMessagingService(
         };
       });
 
-      const scheduleUrl = new URL(
-        "/api/v1/tasks",
-        process.env.SCHEDULER_API_URL,
-      );
-
-      try {
-        await fetch(scheduleUrl.toString(), {
-          method: "POST",
-          body: JSON.stringify(scheduleBody),
-          headers: { "x-user-id": "123", "Content-Type": "application/json" },
-        });
-      } catch (err) {
-        throw new ThirdPartyError(
-          "failed to post messages",
-          isNativeError(err)
-            ? (err.cause?.toString() ?? "")
-            : (err?.toString() ?? ""),
-        );
+      const schedulerSdk = await getSchedulerSdk(organisationId);
+      const { error } = await schedulerSdk.scheduleTasks(scheduleBody);
+      if (error) {
+        throw new ThirdPartyError("SCHEDULE_MESSAGES", error.message, error);
       }
+
       return jobs;
     },
   });
