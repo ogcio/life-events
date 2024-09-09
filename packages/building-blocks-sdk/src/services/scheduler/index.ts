@@ -1,11 +1,15 @@
 import createClient, { FetchResponse, type Middleware } from "openapi-fetch";
 import type { paths } from "./schema.js";
+import { error } from "console";
 
 const formatQueryResult = async <T, O>(
   promise: Promise<FetchResponse<T, O, "application/json">>,
 ) => {
   try {
     const result = await promise;
+    if (result === undefined) {
+      return { data: undefined, error: undefined };
+    }
     return { data: result.data, error: result.error };
   } catch (error) {
     return { data: undefined, error };
