@@ -29,6 +29,14 @@ body:json {
       "collectedConsent": false,
       "lastName": "NoConsentsson",
       "firstName": "Test"
+    },
+    {
+      "importIndex": 3,
+      "emailAddress": "{{alreadyExistsEmail}}",
+      "collectedConsent": false,
+      "lastName": "ExistsByPPSN",
+      "firstName": "OnProfileAPI",
+      "publicIdentityId": "{{process.env.CITIZEN_USER_PROFILE_PPSN}}"
     }
   ]
 }
@@ -50,5 +58,6 @@ script:pre-request {
   const userWithoutConsentEmail = `${uuid.v4()}@test.se`;
   bru.setVar("userWithConsentEmail", userWithConsentEmail);
   bru.setVar("userWithoutConsentEmail", userWithoutConsentEmail);
+  bru.setVar("alreadyExistsEmail","already-exist@email.com");
   
 }
