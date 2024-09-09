@@ -43,7 +43,6 @@ export default async function tasks(app: FastifyInstance) {
           values.push(set.webhookUrl, set.webhookAuth, set.executeAt);
           args.push(`($${++i}, $${++i}, $${++i})`);
         }
-
         await app.pg.pool.query(
           `
             insert into scheduled_events(
@@ -55,7 +54,8 @@ export default async function tasks(app: FastifyInstance) {
       } catch (err) {
         return new ServerError(SCHEDULE_TASK, "failed to parse request", err);
       }
-      return reply.status(202);
+
+      reply.status(202);
     },
   );
 }

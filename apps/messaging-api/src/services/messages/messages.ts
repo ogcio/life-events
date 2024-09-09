@@ -532,6 +532,7 @@ export const processMessages = async (params: {
       );
     }
     const toUseOrganizationId = organizationId ?? senderUser.organizationId;
+
     const senderData = isM2MApplicationSender
       ? getApplicationSenderData(senderUser.profileId)
       : await getUserProfileSenderData({
@@ -596,7 +597,7 @@ export const processMessages = async (params: {
       messageService,
       eventLogger,
       toScheduleMessages,
-      organizationId: organizationId!,
+      organizationId: toUseOrganizationId!,
       scheduleAt,
     });
 

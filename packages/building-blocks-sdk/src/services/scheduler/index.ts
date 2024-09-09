@@ -6,6 +6,9 @@ const formatQueryResult = async <T, O>(
 ) => {
   try {
     const result = await promise;
+    if (result === undefined) {
+      return { data: undefined, error: undefined };
+    }
     return { data: result.data, error: result.error };
   } catch (error) {
     return { data: undefined, error };
@@ -23,8 +26,22 @@ export class Scheduler {
     };
 
     this.client = createClient<paths>({
-      baseUrl: process.env.PROFILE_BACKEND_URL,
+      baseUrl: process.env.SCHEDULER_BACKEND_URL,
     });
     this.client.use(authMiddleware);
+  }
+
+  async scheduleTasks(
+    tasks: {
+      webhookUrl: string;
+      webhookAuth: string;
+      executeAt: string;
+    }[],
+  ) {
+    return formatQueryResult(
+      this.client.POST("/api/v1/tasks/", {
+        body: tasks,
+      }),
+    );
   }
 }
