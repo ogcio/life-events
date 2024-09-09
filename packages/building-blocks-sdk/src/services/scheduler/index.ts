@@ -27,4 +27,18 @@ export class Scheduler {
     });
     this.client.use(authMiddleware);
   }
+
+  async scheduleTasks(
+    tasks: {
+      webhookUrl: string;
+      webhookAuth: string;
+      executeAt: string;
+    }[],
+  ) {
+    const { error } = await this.client.POST("/api/v1/tasks/", {
+      body: tasks,
+    });
+
+    return { error };
+  }
 }
