@@ -1,11 +1,11 @@
 meta {
   name: Get single user import
   type: http
-  seq: 2
+  seq: 3
 }
 
 get {
-  url: {{baseUrl}}/api/v1/user-imports/{{userImportId}}
+  url: {{baseUrl}}/api/v1/user-imports/{{lastUserImportId}}
   body: none
   auth: bearer
 }
@@ -22,4 +22,30 @@ assert {
   res.status: eq 200
   res.body.data: isDefined
   res.body.data.id: isDefined
+}
+
+script:post-response {
+  const users = res.body.data.usersData;
+  
+  const consentUserId = users.find(user => user.emailAddress === bru.getVar("userWithConsentEmail")).relatedUserId;
+  
+  const noConsentUserId = users.find(user => user.emailAddress === bru.getVar("userWithoutConsentEmail")).relatedUserId;
+  
+  bru.setVar("consentRelatedUserId", consentUserId);
+  bru.setVar("noConsentRelatedUserId", noConsentUserId);
+}
+
+tests {
+  test("users must be the same as when imported", function () {
+    const users = res.getBody().data.usersData;
+    const consentUserEmail = bru.getVar("userWithConsentEmail");
+  
+  const noConsentUserEmail = bru.getVar("userWithoutConsentEmail");
+    const currentUserEmails = users
+      .map((user) => user.emailAddress)
+      .sort()
+      .join(",");
+    const fromVarEmails = [consentUserEmail, noConsentUserEmail].sort().join(",");
+    expect(currentUserEmails).to.equal(fromVarEmails);
+  });
 }

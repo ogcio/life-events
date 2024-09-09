@@ -1,0 +1,55 @@
+meta {
+  name: Import users
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/v1/user-imports
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  [
+    {
+      "importIndex": 1,
+      "emailAddress": "{{userWithConsentEmail}}",
+      "collectedConsent": true,
+      "lastName": "Consentsson",
+      "firstName": "Test"
+    },
+    {
+      "importIndex": 2,
+      "emailAddress": "{{userWithoutConsentEmail}}",
+      "collectedConsent": false,
+      "lastName": "NoConsentsson",
+      "firstName": "Test"
+    }
+  ]
+}
+
+vars:post-response {
+  ~lastUserImportId: res.body.data ? res.body.data.id : undefined
+}
+
+assert {
+  response.status: eq 200
+  response.body.data: isDefined
+  response.body.data.id: isString
+}
+
+script:pre-request {
+  const uuid = require("uuid")
+  
+    const userWithConsentEmail = `${uuid.v4()}@test.se`
+    const userWithoutConsentEmail = `${uuid.v4()}@test.se`
+    bru.setVar("userWithConsentEmail",userWithConsentEmail)
+    bru.setVar("userWithoutConsentEmail",userWithoutConsentEmail)
+  
+    //req.setBody()
+}
