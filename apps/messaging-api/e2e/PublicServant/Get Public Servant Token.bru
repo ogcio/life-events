@@ -17,8 +17,12 @@ headers {
 
 body:form-urlencoded {
   grant_type: client_credentials
-  scope: messaging:message:write scheduler:jobs:write profile:user:read messaging:provider:* messaging:event:read messaging:citizen:* messaging:template:*
+  scope: {{scopes}}
   organization_id: first-testing
+}
+
+vars:pre-request {
+  scopes: messaging:message:* profile:user:read messaging:provider:* messaging:event:read messaging:citizen:* messaging:template:*
 }
 
 vars:post-response {
@@ -28,5 +32,19 @@ vars:post-response {
 assert {
   res.status: eq 200
   res.body.access_token: isDefined
-  res.body.scope: eq messaging:provider:* messaging:citizen:* messaging:event:read profile:user:read messaging:template:*
+}
+
+tests {
+  test("returned scopes are the expected ones", function() {
+      const data = res.getBody().scope;
+  
+      const requestScopes = bru.getVar("scopes").split(" ")
+        .sort()
+        .join(",")
+      
+      const responseScopes = data.split(" ")
+        .sort()
+        .join(",")
+      expect(responseScopes).to.equal(requestScopes);
+    });
 }
