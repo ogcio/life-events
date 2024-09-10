@@ -1,10 +1,10 @@
 meta {
-  name: Delete template
+  name: Get deleted template
   type: http
-  seq: 11
+  seq: 13
 }
 
-delete {
+get {
   url: {{baseUrl}}/api/v1/templates/{{templateId}}
   body: none
   auth: bearer
@@ -15,12 +15,13 @@ auth:bearer {
 }
 
 assert {
-  res.status: eq 200
+  res.status: eq 404
+  res.body.code: eq NOT_FOUND_ERROR
+  res.body.requestId: isDefined
 }
 
 script:pre-request {
   const baseUrl = bru.getEnvVar("baseUrl")
   const templateId = bru.getEnvVar("templateId")
-  console.log("deleting url id to ", templateId)
   req.setUrl(`${baseUrl}/api/v1/templates/${templateId}`)
 }

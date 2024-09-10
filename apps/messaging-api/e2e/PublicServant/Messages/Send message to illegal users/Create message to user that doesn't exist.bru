@@ -1,0 +1,40 @@
+meta {
+  name: Create message to user that doesn't exist
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/v1/messages
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+    {
+      "preferredTransports": [],
+      "recipientUserId": "aaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+      "security": "public",
+      "bypassConsent": true,
+      "scheduleAt": "2024-08-26T10:05:04.865Z",
+      "message": {
+        "threadName": "threadName",
+        "subject": "subject",
+        "excerpt": "excerpt",
+        "plainText": "plainText",
+        "richText": "richText",
+        "language": "en"
+      }
+  }
+}
+
+assert {
+  res.status: eq 404
+  res.body.requestId: isDefined
+  res.body.code: eq NOT_FOUND_ERROR
+  res.body.detail: eq User with profile id aaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa not found
+}
