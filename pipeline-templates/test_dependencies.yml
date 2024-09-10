@@ -8,7 +8,7 @@ parameters:
       - nextjs-logging-wrapper
       - api-auth
       - error-handler
-#      - building-blocks-sdk
+      - building-blocks-sdk
       - auth
       - feature-flags
       - messages
@@ -39,6 +39,7 @@ jobs:
         displayName: 'Run test for ${{ dependency }}'
         inputs:
           script: npm run build  --prefix packages/${{ dependency }} && npm run test  --prefix packages/${{ dependency }}
+        condition: succeededOrFailed()
     - ${{ each dependency in parameters.dependencies }}:
       - task: PublishTestResults@2
         inputs:
