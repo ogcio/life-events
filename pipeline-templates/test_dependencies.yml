@@ -30,6 +30,10 @@ jobs:
       displayName: 'npm install'
       inputs:
         command: install
+    - task: CmdLine@2
+      displayName: 'Set local env files for build'
+      inputs:
+        script: node scripts/init-env.mjs
     - ${{ each dependency in parameters.dependencies }}:
       - task: CmdLine@2
         displayName: 'Run test for ${{ dependency }}'
