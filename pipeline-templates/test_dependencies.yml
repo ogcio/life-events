@@ -2,18 +2,19 @@ parameters:
   - name: dependencies
     type: object
     default:
-      - analytics
-      - api-auth
-      - auth
-      - building-blocks-sdk
       - design-system
-      - error-handler
-      - feature-flags
-      - logging-wrapper
-      - messages
-      - nextjs-logging-wrapper
-      - shared-components
       - shared-errors
+      - logging-wrapper
+      - nextjs-logging-wrapper
+      - api-auth
+      - error-handler
+      - building-blocks-sdk
+      - auth
+      - feature-flags
+      - messages
+      - shared-components
+      - analytics
+
 
 
 jobs:
