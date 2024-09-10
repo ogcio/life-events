@@ -1,6 +1,4 @@
 parameters:
-  - name: dependency
-    default: ""
   - name: dependencies
     type: object
     default:
@@ -33,14 +31,14 @@ jobs:
         command: install
     - ${{ each dependency in split(replace(variables.dependencies, ' ', ''), ',') }}:
     - task: CmdLine@2
-      displayName: 'Run test for ${{ parameters.dependency }}'
+      displayName: 'Run test for ${{ dependency }}'
       inputs:
-        script: npm run test  --prefix packages${{ parameters.dependency }}
+        script: npm run test  --prefix packages${{ dependency }}
     - ${{ each dependency in split(replace(variables.dependencies, ' ', ''), ',') }}:   
     - task: PublishTestResults@2
       inputs:
-        testResultsFiles: 'packages${{ parameters.dependency }}/results.xml'
-        testRunTitle: 'Unit test results for ${{ parameters.dependency }}:$(Build.BuildId)'
+        testResultsFiles: 'packages${{ dependency }}/results.xml'
+        testRunTitle: 'Unit test results for ${{ dependency }}:$(Build.BuildId)'
       condition: succeededOrFailed()
 
  
