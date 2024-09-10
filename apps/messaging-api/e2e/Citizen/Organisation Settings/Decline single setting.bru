@@ -1,0 +1,29 @@
+meta {
+  name: Decline single setting
+  type: http
+  seq: 6
+}
+
+patch {
+  url: {{baseUrl}}/api/v1/organisation-settings/{{organisationSettingId}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{citizenAccessToken}}
+}
+
+body:json {
+  {
+    "invitationStatusFeedback": "declined",
+    "preferredTransports": []
+  }
+}
+
+assert {
+  res.status: eq 200
+  res.body.data: isDefined
+  res.body.data.id: eq {{organisationSettingId}}
+  res.body.data.organisationInvitationStatus: eq declined
+}
