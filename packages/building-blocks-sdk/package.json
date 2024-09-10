@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "test": "TAP_RCFILE=tap.yml tap",
+    "test": "TAP_RCFILE=tap.yml tap --reporter junit --reporter-file results.xml",
     "build": "rm -rf dist && tsc -p tsconfig.prod.json"
   },
   "exports": {
