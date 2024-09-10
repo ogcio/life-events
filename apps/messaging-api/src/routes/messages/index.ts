@@ -69,7 +69,8 @@ export default async function messages(app: FastifyInstance) {
     },
     async function getMessagesHandler(request, _reply) {
       const errorProcess = "GET_MESSAGES";
-
+      const loggedInOrgId = request?.userData?.organizationId;
+      const loggedInProfileId = request?.userData?.userId;
       const queryRecipientUserId = request.query.recipientUserId;
       const queryOrganisationId = request.query.organisationId;
 
@@ -77,6 +78,13 @@ export default async function messages(app: FastifyInstance) {
         throw new AuthorizationError(
           errorProcess,
           "not allowed to access messages from all organisations",
+        );
+      }
+
+      if (queryOrganisationId && !queryRecipientUserId && !loggedInOrgId) {
+        throw new AuthorizationError(
+          errorProcess,
+          "As a citizen you have to set the query recipient user id",
         );
       }
 
@@ -98,7 +106,7 @@ export default async function messages(app: FastifyInstance) {
         // There is the possibility that a messages.users entry is not set
         // for the logged in user when it has not been imported by
         // any organization yet
-        if (!allUserIds && request.userData?.userId === queryRecipientUserId) {
+        if (!allUserIds && loggedInProfileId === queryRecipientUserId) {
           throw new NotFoundError(
             errorProcess,
             "You have not been registered yet in messaging building block",
@@ -107,14 +115,14 @@ export default async function messages(app: FastifyInstance) {
 
         // As a public servant, requested messages
         // for a user that is not been imported yet
-        if (!allUserIds && request.userData?.organizationId) {
+        if (!allUserIds && loggedInOrgId) {
           throw new NotFoundError(errorProcess, "No user found");
         }
 
         // As a citizen, request other user's
         // messages
         if (!allUserIds) {
-          throw new NotFoundError(
+          throw new AuthorizationError(
             errorProcess,
             "Can't access other users' messages",
           );
@@ -152,8 +160,8 @@ export default async function messages(app: FastifyInstance) {
       // Only query organisation you're allowed to see
       if (
         queryOrganisationId &&
-        request.userData?.organizationId &&
-        queryOrganisationId !== request.userData?.organizationId
+        loggedInOrgId &&
+        queryOrganisationId !== loggedInOrgId
       ) {
         throw new AuthorizationError(
           errorProcess,
