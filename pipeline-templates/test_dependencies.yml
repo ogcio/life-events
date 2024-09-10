@@ -8,7 +8,7 @@ parameters:
       - nextjs-logging-wrapper
       - api-auth
       - error-handler
-      - building-blocks-sdk
+#      - building-blocks-sdk
       - auth
       - feature-flags
       - messages
