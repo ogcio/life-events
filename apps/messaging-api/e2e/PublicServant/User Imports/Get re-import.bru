@@ -32,7 +32,7 @@ script:post-response {
   const noConsentUserId = users.find(user => user.emailAddress === bru.getVar("userWithoutConsentEmail")).relatedUserId;
   
   const oldConsentId = bru.getVar("consentRelatedUserId");
-  const oldNoConsentId = bru.getVar("noConsentRelatedUserId", noConsentUserId);
+  const oldNoConsentId = bru.getVar("noConsentRelatedUserId");
 }
 
 tests {
@@ -44,7 +44,7 @@ tests {
   const noConsentUserId = users.find(user => user.emailAddress === bru.getVar("userWithoutConsentEmail")).relatedUserId;
   
   const oldConsentId = bru.getVar("consentRelatedUserId");
-  const oldNoConsentId = bru.getVar("noConsentRelatedUserId", noConsentUserId);
+  const oldNoConsentId = bru.getVar("noConsentRelatedUserId");
     
     expect(consentUserId).to.equal(oldConsentId);
     expect(noConsentUserId).to.equal(oldNoConsentId);
