@@ -8,7 +8,7 @@ export const ERRORS = {
   DELETE_ERROR: "deleteError",
 };
 
-const deleteFile = async (prevState, formData: FormData) => {
+const scheduleFileForDeletion = async (prevState, formData: FormData) => {
   "use server";
   const key = formData.get("file-key")?.toString();
 
@@ -19,7 +19,7 @@ const deleteFile = async (prevState, formData: FormData) => {
   const uploadClient = await AuthenticationFactory.getUploadClient();
 
   try {
-    const { error } = await uploadClient.deleteFile(key);
+    const { error } = await uploadClient.scheduleFileDeletion(key);
     if (error) {
       getServerLogger().error(error);
       return { error: ERRORS.DELETE_ERROR };
@@ -33,4 +33,4 @@ const deleteFile = async (prevState, formData: FormData) => {
   return {};
 };
 
-export default authenticatedAction(deleteFile);
+export default authenticatedAction(scheduleFileForDeletion);
