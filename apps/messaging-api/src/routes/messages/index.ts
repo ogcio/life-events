@@ -80,17 +80,6 @@ export default async function messages(app: FastifyInstance) {
         );
       }
 
-      if (
-        queryRecipientUserId &&
-        !request.userData?.organizationId &&
-        request.userData?.userId !== queryRecipientUserId
-      ) {
-        throw new AuthorizationError(
-          errorProcess,
-          "As a citizen you can't access other users' messages",
-        );
-      }
-
       const userIdsRepresentingUser: string[] = [];
       if (queryRecipientUserId) {
         // we must make sure that we consider a user to have theoretically two ids from two separate tables (or databases if the separation occurs)
@@ -105,16 +94,42 @@ export default async function messages(app: FastifyInstance) {
           [queryRecipientUserId],
         );
         const allUserIds = allUserIdsQueryResult.rows.at(0);
-        if (!allUserIds) {
-          throw new NotFoundError(errorProcess, "user not found");
+        // Requested messages for yourself
+        // There is the possibility that a messages.users entry is not set
+        // for the logged in user when it has not been imported by
+        // any organization yet
+        if (!allUserIds && request.userData?.userId === queryRecipientUserId) {
+          throw new NotFoundError(
+            errorProcess,
+            "You have not been registered yet in messaging building block",
+          );
         }
 
+        // As a public servant, requested messages
+        // for a user that is not been imported yet
+        if (!allUserIds && request.userData?.organizationId) {
+          throw new NotFoundError(errorProcess, "No user found");
+        }
+
+        // As a citizen, request other user's
+        // messages
+        if (!allUserIds) {
+          throw new NotFoundError(
+            errorProcess,
+            "Can't access other users' messages",
+          );
+        }
         if (
           allUserIds.profileId
             ? allUserIds.profileId !== queryRecipientUserId
-            : true && allUserIds.messageUserId !== queryRecipientUserId
+            : true &&
+              allUserIds &&
+              allUserIds.messageUserId !== queryRecipientUserId
         ) {
-          throw new AuthorizationError(errorProcess, "illegal user id request");
+          throw new AuthorizationError(
+            errorProcess,
+            "Can't access other users' messages",
+          );
         }
 
         userIdsRepresentingUser.push(allUserIds.messageUserId);
