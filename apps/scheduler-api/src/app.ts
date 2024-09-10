@@ -17,6 +17,7 @@ import v8 from "v8";
 import fastifySwagger from "@fastify/swagger";
 import fastifyUnderPressure from "@fastify/under-pressure";
 import { CustomError } from "shared-errors";
+import apiAuthPlugin from "api-auth";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -30,6 +31,13 @@ export async function build(opts?: FastifyServerOptions) {
   await app.register(fastifyEnv, {
     schema: envSchema,
     dotenv: true,
+  });
+
+  app.register(apiAuthPlugin, {
+    jwkEndpoint: app.config.LOGTO_JWK_ENDPOINT as string,
+    oidcEndpoint: app.config.LOGTO_OIDC_ENDPOINT as string,
+    currentApiResourceIndicator: app.config
+      .LOGTO_API_RESOURCE_INDICATOR as string,
   });
 
   app.register(fastifySwagger, {
