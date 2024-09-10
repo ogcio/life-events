@@ -84,9 +84,7 @@ stages:
       displayName: Build ${{ serviceName }}
       pool:
         vmImage: ${{ parameters.vmImage }}
-      dependsOn: 
-        - securityScan
-        - BuildDeps
+      dependsOn: Unit_Tests_${{ replace(serviceName, '-', '_') }}
       jobs:
       - template: build/build_service.yml@pipeline-templates
         parameters:
