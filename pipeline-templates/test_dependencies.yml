@@ -29,12 +29,12 @@ jobs:
       displayName: 'npm install'
       inputs:
         command: install
-    - ${{ each dependency in split(replace(variables.dependencies, ' ', ''), ',') }}:
+    - ${{ each dependency in parameters.dependencies }}:
     - task: CmdLine@2
       displayName: 'Run test for ${{ dependency }}'
       inputs:
         script: npm run test  --prefix packages${{ dependency }}
-    - ${{ each dependency in split(replace(variables.dependencies, ' ', ''), ',') }}:   
+    - ${{ each dependency in parameters.dependencies }}:
     - task: PublishTestResults@2
       inputs:
         testResultsFiles: 'packages${{ dependency }}/results.xml'
