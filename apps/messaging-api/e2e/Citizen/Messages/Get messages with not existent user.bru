@@ -19,6 +19,6 @@ auth:bearer {
 }
 
 assert {
-  res.status: eq 404
-  res.body.name: eq NOT_FOUND_ERROR
+  res.status: eq 403
+  res.body.name: eq AUTHORIZATION_ERROR
 }

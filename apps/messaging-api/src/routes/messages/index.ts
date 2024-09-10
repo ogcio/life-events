@@ -80,6 +80,17 @@ export default async function messages(app: FastifyInstance) {
         );
       }
 
+      if (
+        queryRecipientUserId &&
+        !request.userData?.organizationId &&
+        request.userData?.userId !== queryRecipientUserId
+      ) {
+        throw new AuthorizationError(
+          errorProcess,
+          "As a citizen you can't access other users' messages",
+        );
+      }
+
       const userIdsRepresentingUser: string[] = [];
       if (queryRecipientUserId) {
         // we must make sure that we consider a user to have theoretically two ids from two separate tables (or databases if the separation occurs)
