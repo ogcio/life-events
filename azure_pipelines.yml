@@ -134,7 +134,7 @@ stages:
       displayName: Run smoke tests - ${{ serviceName }}
       condition: ${{ variables.runSmokeTests }}
       pool:
-         vmImage: ${{ parameters.vmImage }}
+         vmImage: 'Openshift'
       dependsOn: Deploy_${{ replace(serviceName, '-', '_') }}
       jobs:
         - template: test/smoke_test.yml@pipeline-templates
