@@ -6,5 +6,13 @@
   },
   "Footer": {
     "license": "All content is available under the <link>Open Government Licence v3.0</link>, except where otherwise stated"
+  },
+  "Journeys": {
+    "title": "Journeys",
+    "createJourney": "Create a new journey",
+    "createJourneyDescription": "Combine building blocks to form a journey",
+    "listJourneys": "List of existing journeys",
+    "listJourneysDescription": "View and choose existing journey",
+    "tutorialVideo": "Tutorial video"
   }
 }

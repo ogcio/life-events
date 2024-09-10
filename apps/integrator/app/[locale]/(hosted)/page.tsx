@@ -23,9 +23,5 @@ export default async (props: Props) => {
     // Redirect to front page for citizen
   }
 
-  return (
-    <PageWrapper locale={props.params.locale}>
-      <h1>{t("title")}</h1>
-    </PageWrapper>
-  );
+  return redirect("/journeys", RedirectType.replace);
 };
