@@ -12,17 +12,20 @@ import {
   ensureUserIdIsSet,
   getProfileSdk,
 } from "../../utils/authentication-factory.js";
-import { NotFoundError, ServerError } from "shared-errors";
+import { BadRequestError, NotFoundError, ServerError } from "shared-errors";
 import {
   getOwnedFiles,
   getOrganizationFiles,
   getSharedFiles,
-} from "../utils/filesMetadata.js";
+} from "./utils/filesMetadata.js";
 import getFileMetadataById from "../utils/getFileMetadataById.js";
-import getFileSharings from "../utils/getFileSharings.js";
+import getFileSharings from "./utils/getFileSharings.js";
+import scheduleFileForDeletion from "./utils/scheduleFileForDeletion.js";
+import removeAllFileSharings from "./utils/removeAllFileSharings.js";
 
 const METADATA_INDEX = "METADATA_INDEX";
 const GET_METADATA = "GET_METADATA";
+const SCHEDULE_DELETION = "SCHEDULE_DELETION";
 
 const API_DOCS_TAG = "Metadata";
 
@@ -210,6 +213,53 @@ export default async function routes(app: FastifyInstance) {
       const fileMetadata = { ...file, owner: fileOwner, sharedWith: users };
 
       return reply.send({ data: fileMetadata });
+    },
+  );
+
+  app.delete<{ Body: { fileId: string } }>(
+    "/",
+    {
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.Upload.Write]),
+      schema: {
+        tags: [API_DOCS_TAG],
+        body: Type.Object({ fileId: Type.String() }),
+        response: {
+          200: getGenericResponseSchema(Type.Object({ id: Type.String() })),
+          "4xx": HttpError,
+          "5xx": HttpError,
+        },
+      },
+    },
+    async (request, reply) => {
+      const fileId = request.body.fileId;
+
+      if (!fileId) {
+        throw new BadRequestError(SCHEDULE_DELETION, "File key not provided");
+      }
+
+      const fileData = await getFileMetadataById(app.pg, fileId);
+
+      const file = fileData.rows?.[0];
+
+      if (!file) {
+        throw new NotFoundError(SCHEDULE_DELETION);
+      }
+
+      try {
+        const currentDate = new Date();
+
+        const deletionDate = new Date(currentDate);
+        deletionDate.setDate(currentDate.getDate() + 30);
+
+        await scheduleFileForDeletion(app.pg, fileId, deletionDate);
+
+        await removeAllFileSharings(app.pg, fileId);
+      } catch (err) {
+        throw new ServerError(SCHEDULE_DELETION, "Internal server error", err);
+      }
+
+      reply.send({ data: { id: fileId } });
     },
   );
 }

@@ -3,16 +3,19 @@ import { useFormState } from "react-dom";
 import { useTranslations } from "next-intl";
 
 type DeleteFileProps = {
-  deleteFile: (formData: FormData) => Promise<{ error: string }>;
+  scheduleFileForDeletion: (formData: FormData) => Promise<{ error: string }>;
   id: string;
 };
 
 const initialState = {};
 
-export default ({ deleteFile, id }: DeleteFileProps) => {
+export default ({ scheduleFileForDeletion, id }: DeleteFileProps) => {
   const t = useTranslations();
   const tError = useTranslations("Errors");
-  const [state, formAction] = useFormState(deleteFile, initialState);
+  const [state, formAction] = useFormState(
+    scheduleFileForDeletion,
+    initialState,
+  );
 
   return (
     <form action={formAction} style={{ display: "inline" }}>

@@ -1,6 +1,6 @@
 import t from "tap";
 import { PostgresDb } from "@fastify/postgres";
-import getFileSharings from "../../../routes/utils/getFileSharings.js";
+import getFileSharings from "../../../../routes/metadata/utils/getFileSharings.js";
 
 t.test("getFileSharings", async () => {
   t.test("executes query with correct params", async (t) => {
