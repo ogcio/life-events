@@ -152,6 +152,7 @@ export default async function messages(app: FastifyInstance) {
       // Only query organisation you're allowed to see
       if (
         queryOrganisationId &&
+        request.userData?.organizationId &&
         queryOrganisationId !== request.userData?.organizationId
       ) {
         throw new AuthorizationError(
