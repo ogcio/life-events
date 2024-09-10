@@ -4,7 +4,6 @@ import FileUpload from "./components/FileUpload";
 import { AbstractIntlMessages, NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
 import uploadFile from "./actions/uploadFile";
-import deleteFile from "./actions/deleteFile";
 
 import FileTable from "./components/FileTable";
 import { FileMetadata } from "../../types";
@@ -59,11 +58,7 @@ export default async (props: Props) => {
         )}
         <div>
           {files && (
-            <FileTable
-              isPublicServant={isPublicServant}
-              files={files}
-              deleteFile={deleteFile}
-            />
+            <FileTable isPublicServant={isPublicServant} files={files} />
           )}
         </div>
 

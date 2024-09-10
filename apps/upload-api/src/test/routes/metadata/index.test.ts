@@ -11,6 +11,8 @@ const buildApp = async ({
   getSharedFiles,
   getFileMetadataById,
   getFileSharings,
+  scheduleFileForDeletion,
+  removeAllFileSharings,
 }: {
   profileSdkResponse?: () => Promise<unknown>;
   getOwnedFiles?: () => Promise<unknown>;
@@ -18,6 +20,8 @@ const buildApp = async ({
   getSharedFiles?: () => Promise<unknown>;
   getFileMetadataById?: () => Promise<unknown>;
   getFileSharings?: () => Promise<unknown>;
+  scheduleFileForDeletion?: () => Promise<unknown>;
+  removeAllFileSharings?: () => Promise<unknown>;
 }) => {
   const { build } = await t.mockImport<typeof import("../../../app.js")>(
     "../../../app.js",
@@ -76,7 +80,7 @@ const buildApp = async ({
           }),
       },
     ),
-    "../../../routes/utils/filesMetadata.js": {
+    "../../../routes/metadata/utils/filesMetadata.js": {
       getOwnedFiles,
       getOrganizationFiles,
       getSharedFiles,
@@ -84,7 +88,15 @@ const buildApp = async ({
     "../../../routes/utils/getFileMetadataById.js": {
       default: getFileMetadataById,
     },
-    "../../../routes/utils/getFileSharings.js": { default: getFileSharings },
+    "../../../routes/metadata/utils/getFileSharings.js": {
+      default: getFileSharings,
+    },
+    "../../../routes/metadata/utils/scheduleFileForDeletion.js": {
+      default: scheduleFileForDeletion,
+    },
+    "../../../routes/metadata/utils/removeAllFileSharings.js": {
+      default: removeAllFileSharings,
+    },
   });
 
   const app = await build();
@@ -621,6 +633,151 @@ t.test("metadata", async (t) => {
         url: "/metadata/1",
       });
       t.equal(response.statusCode, 500);
+    });
+  });
+
+  t.test("delete", async (t) => {
+    const OriginalDate = Date;
+
+    t.beforeEach(() => {
+      Date = class extends Date {
+        constructor() {
+          super("01-01-2024");
+        }
+      };
+    });
+
+    t.afterEach(() => {
+      Date = OriginalDate;
+    });
+
+    t.test(
+      "Should schedule a file metadata for deletion and return scheduled file id",
+      async (t) => {
+        const paramsUsed: string[] = [];
+
+        app = await buildApp({
+          getFileMetadataById: () =>
+            Promise.resolve({
+              rows: [
+                {
+                  fileName: "fileName",
+                  id: "1",
+                  key: "user/fileName",
+                  ownerId: "user",
+                  fileSize: 100,
+                  mimeType: "image/png",
+                  createdAt: "2024-08-12T13:12:18.681Z",
+                  lastScan: "2024-08-12T13:12:18.681Z",
+                  deleted: false,
+                  infected: false,
+                  infectionDescription: null,
+                  antivirusDbVersion: "1",
+                },
+              ],
+            }),
+          scheduleFileForDeletion: (...params) => {
+            paramsUsed.push(...params);
+            return Promise.resolve({ rows: [] });
+          },
+          removeAllFileSharings: () => Promise.resolve(),
+        });
+
+        const response = await app.inject({
+          method: "DELETE",
+          url: "/metadata/",
+          body: {
+            fileId: "1",
+          },
+        });
+
+        t.match(
+          (paramsUsed[2] as unknown as Date).toISOString(),
+          "2024-01-30T23:00:00.000Z",
+        );
+
+        t.match(response.json(), {
+          data: {
+            id: "1",
+          },
+        });
+
+        t.match(response.statusCode, 200);
+      },
+    );
+
+    t.test(
+      "Should throw a bad request error if file id is not provided",
+      async (t) => {
+        app = await buildApp({
+          getFileMetadataById: () =>
+            Promise.resolve({
+              rows: [],
+            }),
+        });
+
+        const response = await app.inject({
+          method: "DELETE",
+          url: "/metadata/",
+          body: { fileId: "" },
+        });
+
+        t.match(response.statusCode, 400);
+      },
+    );
+
+    t.test("Should throw a 404 when the metadata is not found", async (t) => {
+      app = await buildApp({
+        getFileMetadataById: () =>
+          Promise.resolve({
+            rows: [],
+          }),
+      });
+
+      const response = await app.inject({
+        method: "DELETE",
+        url: "/metadata/",
+        body: {
+          fileId: "1",
+        },
+      });
+
+      t.match(response.statusCode, 404);
+    });
+
+    t.test("Should throw a 500 when a query operation throws", async (t) => {
+      app = await buildApp({
+        getFileMetadataById: () =>
+          Promise.resolve({
+            rows: [
+              {
+                fileName: "fileName",
+                id: "1",
+                key: "user/fileName",
+                ownerId: "user",
+                fileSize: 100,
+                mimeType: "image/png",
+                createdAt: "2024-08-12T13:12:18.681Z",
+                lastScan: "2024-08-12T13:12:18.681Z",
+                deleted: false,
+                infected: false,
+                infectionDescription: null,
+                antivirusDbVersion: "1",
+              },
+            ],
+          }),
+        scheduleFileForDeletion: () => Promise.reject("error"),
+      });
+
+      const response = await app.inject({
+        method: "DELETE",
+        url: "/metadata/",
+        body: {
+          fileId: "1",
+        },
+      });
+
+      t.match(response.statusCode, 500);
     });
   });
 });

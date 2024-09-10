@@ -1,0 +1,33 @@
+meta {
+  name: Verify message event content bypass
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/api/v1/message-events/{{eventId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+tests {
+  test("create message event should have all relevant message information", function(){
+    const body = res.getBody()
+    const createData = body.data.find(element => element.eventType === "message_create")?.data
+    
+    expect(createData.messageId).equal(bru.getVar("messageId"))
+    expect(createData.subject).equal(bru.getVar("messageSubject"))
+    expect(createData.excerpt).equal("excerpt")
+    expect(createData.richText).equal("richText")
+    expect(createData.plainText).equal("plainText")
+    expect(createData.threadName).equal("threadName")
+    expect(createData.transports).to.be.instanceOf(Array).and.lengthOf(0);
+    expect(createData.organisationName).equal("first-testing")
+    expect(createData.security).equal("public")
+    expect(createData.bypassConsent).equal(true)
+  })
+}
