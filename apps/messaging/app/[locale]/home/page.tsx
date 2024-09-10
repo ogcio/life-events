@@ -1,8 +1,14 @@
-import { Footer, Heading, PhaseBanner, Link, Container } from "@govie-react/ds";
+import { Footer, PhaseBanner, Link, Container } from "@govie-react/ds";
 import Header from "../Header";
 import { getTranslations } from "next-intl/server";
 import { getLinks } from "../../utils/messaging";
 
+/***
+ * There's no real layouts currently available from the govie-ds
+ * and we need something placeholder to let main take appropriate size.
+ *
+ * The body is styled as a flex column
+ */
 function Main({ children }: React.PropsWithChildren) {
   return <main style={{ flex: "auto" }}>{children}</main>;
 }
