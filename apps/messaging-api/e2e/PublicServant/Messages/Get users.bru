@@ -1,0 +1,40 @@
+meta {
+  name: Get users
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/v1/users?importId={{usersImportId}}&activeOnly=false
+  body: none
+  auth: bearer
+}
+
+query {
+  importId: {{usersImportId}}
+  activeOnly: false
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+vars:post-response {
+  userWithConsentId: 
+}
+
+assert {
+  res.status: eq 200
+  res.body.data.length: gte 2
+}
+
+script:post-response {
+  const users = res.body.data
+  
+  const consentUserId = users.find(user => user.emailAddress === bru.getVar("userWithConsentEmail")).id
+  
+  const noConsentUserId = users.find(user => user.emailAddress === bru.getVar("userWithoutConsentEmail")).id
+  
+  bru.setVar("consentUserId", consentUserId)
+  bru.setVar("noConsentUserId", noConsentUserId)
+}

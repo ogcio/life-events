@@ -1,7 +1,7 @@
 meta {
-  name: Find created message event
+  name: Find created message event bypass
   type: http
-  seq: 5
+  seq: 2
 }
 
 get {
@@ -23,5 +23,5 @@ vars:post-response {
 }
 
 assert {
-  res.body.data.at(0).id: isDefined 
+  res.body.data.at(0).id: isDefined
 }

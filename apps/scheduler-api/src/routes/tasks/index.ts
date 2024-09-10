@@ -1,7 +1,8 @@
 import { FastifyInstance } from "fastify";
 import { HttpError } from "../../types/httpErrors.js";
-import { Static, Type } from "@sinclair/typebox";
+import { Type } from "@sinclair/typebox";
 import { ServerError } from "shared-errors";
+import { Permissions } from "../../types/permissions.js";
 
 type RequestBody = {
   executeAt: string;
@@ -15,6 +16,9 @@ export default async function tasks(app: FastifyInstance) {
   app.post<{ Body: RequestBody }>(
     "/",
     {
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.Scheduler.Write]),
+
       schema: {
         body: Type.Array(
           Type.Object({
@@ -39,7 +43,6 @@ export default async function tasks(app: FastifyInstance) {
           values.push(set.webhookUrl, set.webhookAuth, set.executeAt);
           args.push(`($${++i}, $${++i}, $${++i})`);
         }
-
         await app.pg.pool.query(
           `
             insert into scheduled_events(
@@ -49,9 +52,10 @@ export default async function tasks(app: FastifyInstance) {
           values,
         );
       } catch (err) {
-        return new ServerError(SCHEDULE_TASK, "failed to parse request", err);
+        throw new ServerError(SCHEDULE_TASK, "failed to parse request", err);
       }
-      return reply.status(202);
+
+      reply.status(202);
     },
   );
 }
