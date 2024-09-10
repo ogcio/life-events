@@ -60,6 +60,12 @@ stages:
             - script: |
                 docker run --rm -v $(pwd):/tmp/scan bearer/bearer:latest-amd64 scan --no-color --hide-progress-bar --fail-on-severity critical,high /tmp/scan
               displayName: Code Scan
+  - stage: TestDeps
+    displayName: Test service dependencies
+    pool:
+      vmImage: ${{ parameters.vmImage }}
+    jobs:
+      - template: pipeline-templates/test_dependencies.yml
   - stage: BuildDeps
     displayName: Build service dependencies
     pool:
