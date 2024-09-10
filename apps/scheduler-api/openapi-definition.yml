@@ -45,19 +45,36 @@ paths:
               schema:
                 type: object
                 properties:
-                  statusCode:
-                    type: number
                   code:
+                    description: Code used to categorize the error
                     type: string
-                  error:
+                  detail:
+                    description: Description of the error
                     type: string
-                  message:
+                  requestId:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
                     type: string
-                  time:
+                  name:
+                    description: Name of the error type
+                    type: string
+                  validation:
+                    description: List of the validation errors
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        fieldName:
+                          type: string
+                        message:
+                          type: string
+                      required:
+                        - fieldName
+                        - message
+                  validationContext:
                     type: string
                 required:
-                  - statusCode
                   - code
-                  - error
-                  - message
-                  - time
+                  - detail
+                  - requestId
+                  - name

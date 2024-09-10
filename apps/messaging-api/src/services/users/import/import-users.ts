@@ -109,8 +109,12 @@ const normalizeCsvValue = (value: string | undefined | null): string | null => {
 };
 
 const normalizeBooleanCsvValue = (
-  value: string | undefined | null,
+  value: string | undefined | null | boolean,
 ): boolean => {
+  if (typeof value === "boolean") {
+    return value;
+  }
+
   const normalizedString = normalizeCsvValue(value);
 
   if (!normalizedString) {

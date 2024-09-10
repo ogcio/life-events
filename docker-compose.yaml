@@ -47,18 +47,6 @@ services:
       - './.localstack:/var/lib/localstack'
       - '/var/run/docker.sock:/var/run/docker.sock'
       - './init-localstack.sh:/etc/localstack/init/ready.d/init-localstack.sh' # ready hook
-
-  scheduler:
-    image: scheduler-api-container:latest
-    build:
-      context: .
-      dockerfile: ./apps/scheduler-api/Dockerfile
-    ports:
-      - 8005:8005
-    env_file:
-      - './apps/scheduler-api/.env'
-    environment:
-      - POSTGRES_HOST=postgresql
         
 volumes:
   db:

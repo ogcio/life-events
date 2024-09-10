@@ -1,0 +1,43 @@
+meta {
+  name: Create message without bypass consent
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/api/v1/messages
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+assert {
+  res.status: eq 403
+  res.body.requestId: isDefined
+  res.body.name: eq AUTHORIZATION_ERROR
+}
+
+script:pre-request {
+  const uuid = require("uuid")
+  const messageSubject = uuid.v4()
+  bru.setVar("messageSubject",messageSubject)
+  const noConsentUserId = bru.getVar("noConsentUserId")
+  req.setBody({
+    "preferredTransports": [],
+    "recipientUserId": noConsentUserId,
+    "security": "public",
+    "bypassConsent": false,
+    "scheduleAt": "2024-08-26T10:05:04.865Z",
+    "message": {
+      "threadName": "threadName",
+      "subject": messageSubject,
+      "excerpt": "excerpt",
+      "plainText": "plainText",
+      "richText": "richText",
+      "language": "en"
+    }
+  })
+}

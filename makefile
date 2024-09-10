@@ -44,9 +44,6 @@ init: init-packages init-env init-ds build-docker
 start-docker: 
 	docker compose down && \
 	DOCKER_BUILDKIT=1 docker compose up --build --remove-orphans -d --wait
-start-docker-no-scheduler: 
-	docker compose -f docker-compose-no-scheduler.yaml down && \
-	DOCKER_BUILDKIT=1 docker compose -f docker-compose-no-scheduler.yaml up --build --remove-orphans -d --wait
 reset-docker:
 	docker compose down && \
 	docker system prune -a -f && \
@@ -60,7 +57,8 @@ migrate:
 	npm run migrate --workspace=messages && \
 	npm run migrate --workspace=profile && \
 	npm run migrate --workspace=scheduler-api && \
-	npm run migrate --workspace=upload-api 
+	npm run migrate --workspace=upload-api && \
+	npm run migrate --workspace=integrator
 
 ## Logto ##
 init-logto:
@@ -88,11 +86,15 @@ run-services:
 	"npm run dev --workspace=home" \
 	"npm run dev --workspace=forms" \
 	"npm run dev --workspace=upload" \
-	"npm run dev --workspace=upload-api"
+	"npm run dev --workspace=upload-api" \
+	"npm run dev --workspace=scheduler-api" \
+	"npm run dev --workspace=integrator"
+
 start-services: install-concurrently run-services
 	
 kill-services:
-	sleep 2 && lsof -ti:8000,8001,8002,8003,8004,3000,3001,3002,3003,3004,3005,3006 | xargs sudo kill -9
+	sleep 2 && lsof -ti:8000,8001,8002,8003,8004,8005,3000,3001,3002,3003,3004,3005,3006,3009 | xargs sudo kill -9
+
 kill-logto:
 	sleep 2 && lsof -ti:3301,3302 | xargs sudo kill -9
 kill-all: install-concurrently concurrently kill-services kill-logto
@@ -108,9 +110,8 @@ start-migrate-logto:
 	"$(MAKE) init-logto" \
 	"sleep 5 && $(MAKE) migrate"
 start: init start-docker start-migrate
-start-no-scheduler: init start-docker-no-scheduler start-migrate kill-services
 start-full: init start-docker start-migrate-logto
-start-logto: init start-docker-no-scheduler start-migrate-logto
+start-logto: init start-docker start-migrate-logto
 
 security-privacy-report: 
 	docker run --rm -v $(shell pwd):/tmp/scan bearer/bearer:latest scan --report privacy -f html /tmp/scan > bearer-privacy-report.html
