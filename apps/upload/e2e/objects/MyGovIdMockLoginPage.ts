@@ -27,4 +27,17 @@ export class MyGovIdMockLoginPage {
   async submitLogin(userName: string) {
     await this.page.getByRole("button", { name: `Login ${userName}` }).click();
   }
+
+  async expectiPublicServantExplorerPage() {
+    const uploadButton = await this.page.getByRole("button", {
+      name: "Upload",
+      exact: true,
+    });
+    await expect(uploadButton).toBeVisible();
+  }
+
+  async expectCitizenPage() {
+    const heading = await this.page.getByText("welcome to file explorer");
+    await expect(heading).toBeVisible();
+  }
 }

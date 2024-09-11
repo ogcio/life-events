@@ -20,15 +20,13 @@ import {
   NotFoundError,
   ServerError,
 } from "shared-errors";
-import deleteFileMetadata from "../utils/deleteFileMetadata.js";
 import getFileMetadataById from "../utils/getFileMetadataById.js";
-import insertFileMetadata from "../utils/insertFileMetadata.js";
-import updateFileMetadata from "../utils/updateFileMetadata.js";
-import getDbVersion from "../utils/getDbVersion.js";
+import insertFileMetadata from "./utils/insertFileMetadata.js";
+import updateFileMetadata from "./utils/updateFileMetadata.js";
+import getDbVersion from "./utils/getDbVersion.js";
 import { Permissions } from "../../types/permissions.js";
 
 const FILE_UPLOAD = "FILE_UPLOAD";
-const FILE_DELETE = "FILE_DELETE";
 const FILE_DOWNLOAD = "FILE_DOWNLOAD";
 
 const API_DOCS_TAG = "Files";
@@ -211,54 +209,54 @@ export default async function routes(app: FastifyInstance) {
     },
   );
 
-  app.delete<{ Params: { id: string } }>(
-    "/:id",
-    {
-      preValidation: (req, res) =>
-        app.checkPermissions(req, res, [Permissions.Upload.Write]),
-      schema: {
-        tags: [API_DOCS_TAG],
-        params: Type.Object({ id: Type.String() }),
-        response: {
-          200: getGenericResponseSchema(
-            Type.Object({ message: Type.String() }),
-          ),
-          "4xx": HttpError,
-          "5xx": HttpError,
-        },
-      },
-    },
-    async (request, reply) => {
-      const fileId = request.params.id;
+  // app.delete<{ Params: { id: string } }>(
+  //   "/:id",
+  //   {
+  //     preValidation: (req, res) =>
+  //       app.checkPermissions(req, res, [Permissions.Upload.Write]),
+  //     schema: {
+  //       tags: [API_DOCS_TAG],
+  //       params: Type.Object({ id: Type.String() }),
+  //       response: {
+  //         200: getGenericResponseSchema(
+  //           Type.Object({ message: Type.String() }),
+  //         ),
+  //         "4xx": HttpError,
+  //         "5xx": HttpError,
+  //       },
+  //     },
+  //   },
+  //   async (request, reply) => {
+  //     const fileId = request.params.id;
 
-      if (!fileId) {
-        throw new BadRequestError(FILE_DELETE, "File key not provided");
-      }
+  //     if (!fileId) {
+  //       throw new BadRequestError(FILE_DELETE, "File key not provided");
+  //     }
 
-      const fileData = await getFileMetadataById(app.pg, fileId);
+  //     const fileData = await getFileMetadataById(app.pg, fileId);
 
-      const file = fileData.rows?.[0];
+  //     const file = fileData.rows?.[0];
 
-      if (!file) {
-        throw new NotFoundError(FILE_DELETE);
-      }
+  //     if (!file) {
+  //       throw new NotFoundError(FILE_DELETE);
+  //     }
 
-      try {
-        await app.s3Client.client.send(
-          new DeleteObjectCommand({
-            Bucket: app.s3Client.bucketName,
-            Key: file.key,
-          }),
-        );
+  //     try {
+  //       await app.s3Client.client.send(
+  //         new DeleteObjectCommand({
+  //           Bucket: app.s3Client.bucketName,
+  //           Key: file.key,
+  //         }),
+  //       );
 
-        await deleteFileMetadata(app.pg, fileId);
-      } catch (err) {
-        throw new ServerError(FILE_DELETE, "Internal server error", err);
-      }
+  //       await deleteFileMetadata(app.pg, fileId);
+  //     } catch (err) {
+  //       throw new ServerError(FILE_DELETE, "Internal server error", err);
+  //     }
 
-      reply.send({ data: { message: "File deleted succesfully" } });
-    },
-  );
+  //     reply.send({ data: { message: "File deleted succesfully" } });
+  //   },
+  // );
 
   app.get<{ Params: { id: string } }>(
     "/:id",

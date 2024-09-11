@@ -5,17 +5,17 @@ meta {
 }
 
 delete {
-  url: {{baseUrl}}/api/v1/files/:fileId
-  body: none
+  url: {{baseUrl}}/api/v1/metadata/
+  body: formUrlEncoded
   auth: none
-}
-
-params:path {
-  fileId: {{fileId}}
 }
 
 headers {
   Authorization: Bearer {{accessToken}}
+}
+
+body:form-urlencoded {
+  fileId: {{fileId}}
 }
 
 assert {
