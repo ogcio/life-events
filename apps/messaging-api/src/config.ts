@@ -16,6 +16,7 @@ export const envSchema = {
     "LOGTO_M2M_SCHEDULER_APP_SECRET",
     "LOGTO_M2M_SCHEDULER_APP_ID",
     "SCHEDULER_BACKEND_URL",
+    "ORGANISATION_SETTINGS_URL",
   ],
   properties: {
     POSTGRES_USER: {
@@ -66,6 +67,9 @@ export const envSchema = {
       type: "string",
     },
     SCHEDULER_BACKEND_URL: {
+      type: "string",
+    },
+    ORGANISATION_SETTINGS_URL: {
       type: "string",
     },
   },

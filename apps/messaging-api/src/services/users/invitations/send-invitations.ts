@@ -366,8 +366,8 @@ const getJoinMessagingMessageForLanguage = (language: string): MessageInput => {
   return {
     subject: "Join Messaging Platform",
     excerpt: "Join the messaging platform!",
-    plainText: "Click here to join our platform",
-    richText: "Click here to join our platform",
+    plainText: `Go to the following url to join our platform: ${process.env.ORGANISATION_SETTINGS_URL}`,
+    richText: `Go to the following url to join our platform: ${process.env.ORGANISATION_SETTINGS_URL}`,
     threadName: "JoinMessaging",
     language: defaultLang(language),
   };
@@ -378,8 +378,8 @@ const getJoinOrgMessageForLanguage = (language: string): MessageInput => {
   return {
     subject: "An organisation wants to send you messages!",
     excerpt: "An organisation wants to send you messages!",
-    plainText: "Click here to join our platform",
-    richText: "Click here to join our platform",
+    plainText: `Go to the following url to join our platform: ${process.env.ORGANISATION_SETTINGS_URL}`,
+    richText: `Go to the following url to join our platform: ${process.env.ORGANISATION_SETTINGS_URL}`,
     threadName: "JoinOrganisation",
     language: defaultLang(language),
   };
@@ -390,8 +390,8 @@ const getWelcomeMessageForLanguage = (language: string): MessageInput => {
   return {
     subject: "Welcome!",
     excerpt: "An organisation wants to send you messages!",
-    plainText: "Click here to join our platform",
-    richText: "Click here to join our platform",
+    plainText: `Go to the following url to join our platform: ${process.env.ORGANISATION_SETTINGS_URL}`,
+    richText: `Go to the following url to join our platform: ${process.env.ORGANISATION_SETTINGS_URL}`,
     threadName: "JoinOrganisation",
     language: defaultLang(language),
   };
