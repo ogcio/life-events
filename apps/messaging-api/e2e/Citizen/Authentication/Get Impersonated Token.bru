@@ -33,3 +33,20 @@ assert {
   res.body.access_token: isDefined
   ~res.body.scope: eq messaging:provider:* messaging:citizen:* messaging:event:read profile:user:read messaging:template:*
 }
+
+docs {
+  # Get impersonation access token #
+  
+  Request used to get an access token as the user for whom we asked a subject token for with the **Get Subject Token**.
+  
+  The authorization is made through the *Authorization* header containing a **BASIC** token. 
+  The value of the token is obtained by encoding the `application_id:application_secret` of a Web application in base64.
+  
+  The `client_id` used in the body must be the same as the value used in the `application_id` described before.
+  
+  ## Please Note ##
+  
+  In this case the **BASIC** token used differs from the one used in **Get Management API Token** because in the lattest we used an *M2M* application as client, but in this request we need to use a *Traditional Web* application as client. 
+  
+  The M2M application can't ask for this type of `grant_type`.
+}

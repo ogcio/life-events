@@ -1,0 +1,20 @@
+meta {
+  name: Get single message
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/v1/messages/{{messageId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{citizenAccessToken}}
+}
+
+assert {
+  res.status: eq 200
+  res.body.data: isDefined
+}
