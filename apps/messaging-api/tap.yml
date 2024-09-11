@@ -7,7 +7,7 @@ include:
   - "**/@(test?(s)|__test?(s)__)/**/*.test.@(js|cjs|mjs|tap|cts|jsx|mts|ts|tsx)"
   - "**/*.@(test?(s)|spec).@(js|cjs|mjs|tap|cts|jsx|mts|ts|tsx)"
   - "**/test?(s).@(js|cjs|mjs|tap|cts|jsx|mts|ts|tsx)"
-jobs: 2
+jobs: 1
 reporter: base
 snapshot-clean-cwd: true
 timeout: 30
