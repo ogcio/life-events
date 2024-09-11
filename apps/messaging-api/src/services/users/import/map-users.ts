@@ -161,6 +161,12 @@ const processUser = async (params: {
   const { userProfile, organisationId, client, toImportUser, usersImportId } =
     params;
 
+  const correlationQuality: CorrelationQuality = userProfile
+    ? userProfile.matchQuality === "exact"
+      ? "full"
+      : "partial"
+    : "not_related";
+
   if (userProfile) {
     const userFromDb = await getUserIfMapped({
       userProfileId: userProfile.id,
@@ -179,15 +185,12 @@ const processUser = async (params: {
       client: params.client,
     });
 
+    // TODO If found check if it was not related to profile but now is
+
     if (userFromDb) {
       return userFromDb;
     }
   }
-  const correlationQuality: CorrelationQuality = userProfile
-    ? userProfile.matchQuality === "exact"
-      ? "full"
-      : "partial"
-    : "not_related";
 
   const user = fillUser({
     userProfileId: userProfile?.id ?? null,
