@@ -1,5 +1,5 @@
 import fastifyPostgres from "@fastify/postgres";
-import { Sharing } from "../../types/schemaDefinitions.js";
+import { Sharing } from "../../../types/schemaDefinitions.js";
 
 export default (pg: fastifyPostgres.PostgresDb, fileId: string) => {
   return pg.query<Sharing>(

@@ -110,7 +110,6 @@ start-migrate-logto:
 	"$(MAKE) init-logto" \
 	"sleep 5 && $(MAKE) migrate"
 start: init start-docker start-migrate
-start-full: init start-docker start-migrate-logto
 start-logto: init start-docker start-migrate-logto
 
 security-privacy-report: 

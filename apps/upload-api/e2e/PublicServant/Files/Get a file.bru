@@ -5,7 +5,15 @@ meta {
 }
 
 get {
-  url: {{baseUrl}}/api/v1/files
+  url: {{baseUrl}}/api/v1/files/:fileId
   body: none
   auth: none
+}
+
+params:path {
+  fileId: {{fileId}}
+}
+
+headers {
+  Authorization: Bearer {{accessToken}}
 }

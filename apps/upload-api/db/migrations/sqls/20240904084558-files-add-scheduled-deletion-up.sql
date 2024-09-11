@@ -1,0 +1,2 @@
+ALTER TABLE files
+ADD COLUMN scheduled_deletion_at TIMESTAMPTZ DEFAULT NULL;
