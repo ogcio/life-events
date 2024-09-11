@@ -87,8 +87,8 @@ run-services:
 	"npm run dev --workspace=forms" \
 	"npm run dev --workspace=upload" \
 	"npm run dev --workspace=upload-api" \
-	"npm run dev --workspace=integrator" \
-	"npm run dev --workspace=scheduler-api"
+	"npm run dev --workspace=scheduler-api" \
+	"npm run dev --workspace=integrator"
 
 start-services: install-concurrently run-services
 	
