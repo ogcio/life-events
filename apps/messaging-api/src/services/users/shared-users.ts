@@ -256,7 +256,7 @@ export type MessagingUserProfile = {
   lastName: string;
   ppsn: string;
   id: string;
-  lang: string;
+  preferredLanguage: string;
   phone: string;
   email: string;
 };
@@ -273,7 +273,7 @@ export const getUserProfiles = async (
       (details ->> 'lastName') as "lastName",
       (details ->> 'publicIdentityId') as "ppsn",
       COALESCE(user_profile_id, id::text) as "id",
-      'en' as "lang",
+      'en' as "preferredLanguage",
       phone,
       email
     from users
