@@ -52,7 +52,7 @@ export const PageWrapper = async ({
       }}
     >
       <div>
-        <section className="sidebar">
+        <section className="sidebar" style={{ width: "220px" }}>
           <div>{userName}</div>
 
           <Suspense fallback={<h3>{"loading"}</h3>}>

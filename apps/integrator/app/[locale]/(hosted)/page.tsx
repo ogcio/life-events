@@ -16,16 +16,12 @@ export default async (props: Props) => {
     await AuthenticationFactory.getInstance().getContext();
 
   if (isInactivePublicServant) {
-    return redirect("/inactivePublicServant", RedirectType.replace);
+    return redirect("/admin/inactivePublicServant", RedirectType.replace);
   }
 
   if (!isPublicServant) {
     // Redirect to front page for citizen
   }
 
-  return (
-    <PageWrapper locale={props.params.locale}>
-      <h1>{t("title")}</h1>
-    </PageWrapper>
-  );
+  return redirect("/admin/journeys", RedirectType.replace);
 };

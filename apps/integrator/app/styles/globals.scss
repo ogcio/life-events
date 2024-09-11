@@ -78,3 +78,49 @@ $breakpoint-xxl: 1400px;
     @content;
   }
 }
+
+.three-columns-layout {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 25px;
+}
+
+.three-columns-layout .column {
+  flex: 1 1 calc(33.333% - 25px);
+  min-width: 0;
+}
+
+@include tablet {
+  .three-columns-layout .column {
+    flex: 1 1 calc(50% - 25px);
+  }
+}
+
+@include phone {
+  .three-columns-layout .column {
+    flex: 1 1 100%;
+  }
+}
+
+.two-columns-layout {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 42px;
+}
+
+.two-columns-layout .column {
+  flex: 1 1 calc(50% - 42px);
+  min-width: 0;
+}
+
+@include phone {
+  .two-columns-layout .column {
+    flex: 1 1 100%;
+  }
+}
+
+.flex-center-items {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
