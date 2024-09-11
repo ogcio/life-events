@@ -1,3 +1,5 @@
+import "@govie-ds/theme-govie/theme.css";
+import "@govie-react/ds/styles.css";
 import "design-system/dist/style.css";
 import "design-system/dist/esm/index.css";
 import { Metadata } from "next";
@@ -24,6 +26,7 @@ export default function RootLayout({
           position: "relative",
           display: "flex",
           flexDirection: "column",
+          justifyContent: "space-between",
         }}
       >
         {children}
