@@ -1,0 +1,24 @@
+meta {
+  name: Get all messages with recipient id
+  type: http
+  seq: 10
+}
+
+get {
+  url: {{baseUrl}}/api/v1/messages?recipientUserId={{process.env.CITIZEN_USER_PROFILE_ID}}
+  body: none
+  auth: bearer
+}
+
+query {
+  recipientUserId: {{process.env.CITIZEN_USER_PROFILE_ID}}
+}
+
+auth:bearer {
+  token: {{citizenAccessToken}}
+}
+
+assert {
+  res.status: eq 403
+  res.body.requestId: isDefined
+}
