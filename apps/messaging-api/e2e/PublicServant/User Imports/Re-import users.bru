@@ -20,7 +20,7 @@ body:json {
       "importIndex": 1,
       "emailAddress": "{{userWithConsentEmail}}",
       "collectedConsent": true,
-      "lastName": "Consentsson",
+      "lastName": "{{updatedLastName}}",
       "firstName": "TestB"
     },
     {
@@ -31,6 +31,10 @@ body:json {
       "firstName": "TestB"
     }
   ]
+}
+
+vars:pre-request {
+  updatedLastName: NewLastName
 }
 
 vars:post-response {

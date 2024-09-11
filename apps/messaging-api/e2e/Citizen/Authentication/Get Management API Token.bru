@@ -12,7 +12,7 @@ post {
 
 headers {
   Content-Type: application/x-www-form-urlencoded
-  Authorization: Basic {{process.env.BRUNO_BASIC_M2M_TOKEN}}
+  Authorization: Basic {{process.env.BRUNO_CITIZEN_BASIC_M2M_TOKEN}}
 }
 
 body:form-urlencoded {
@@ -29,4 +29,25 @@ assert {
   res.status: eq 200
   res.body.access_token: isDefined
   ~res.body.scope: eq messaging:provider:* messaging:citizen:* messaging:event:read profile:user:read messaging:template:*
+}
+
+docs {
+  # Environment variables #
+  
+  We are using `process.env.{{NAME}}` to access environment variables. 
+  
+  To set your variables, please copy the `.env.sample` file you can find at the root of the Bruno folder into a `.env` one and play with it!
+  
+  # Impersonation flow #
+  
+  This authentication flow is made to perform *impersonation*. You can find [here](https://docs.logto.io/docs/recipes/impersonation/).
+  
+  This implementation slightly differs from the one documented because the lattest is made starting being a *human user*, but we need the *M2M* implementation.
+  
+  # Get token with management scopes #
+  
+  Request used to get an access token with the scopes needed to access the Logto management APIs.
+  
+  The authorization is made through the *Authorization* header containing a **BASIC** token. 
+  The value of the token is obtained by encoding the `application_id:application_secret` of a M2M application in base64.
 }

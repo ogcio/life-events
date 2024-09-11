@@ -56,9 +56,9 @@ const getSettingPerProfileId = async (params: {
   });
 
   if (invitations.data.length === 0) {
-    throw new BadRequestError(
+    throw new NotFoundError(
       ACCEPT_INVITATIONS_ERROR,
-      "This user has no related invitations",
+      "Organisation setting not found",
     );
   }
 

@@ -31,5 +31,17 @@ vars:post-response {
 }
 
 assert {
-  res.status: eq 200
+  res.status: eq 201
+}
+
+docs {
+  # Get subject token #
+  
+  Request used to get a *subject* token.
+  
+  To authenticate we are using the access token got thanks to the **Get Management API Token** request made before.
+  
+  In the body we set the `user_id` field with the id of the user we want to impersonate.
+  
+  It should be an existent Logto user id, please check on the [OGCIO Logto Repository](https://github.com/ogcio/logto/blob/dev/packages/cli/src/commands/database/ogcio/ogcio-seeder-local.json) the seeded ids.
 }

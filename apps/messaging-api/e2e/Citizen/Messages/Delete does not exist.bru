@@ -1,20 +1,21 @@
 meta {
-  name: Get not existing message
+  name: Delete does not exist
   type: http
-  seq: 6
+  seq: 9
 }
 
-get {
+delete {
   url: {{baseUrl}}/api/v1/messages/09569127-7cb2-4716-9783-0865a778a1b2
   body: none
   auth: bearer
 }
 
 auth:bearer {
-  token: {{citizenAccessToken}}
+  token: {{accessToken}}
 }
 
 assert {
   res.status: eq 404
-  res.body.name: eq NOT_FOUND_ERROR
+  res.body.requestId: isDefined
+  res.body.detail: eq Route not found
 }
