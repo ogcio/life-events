@@ -1,3 +1,10 @@
 {
-  "title": "Integrator"
+  "title": "Integrator",
+  "InactivePublicServant": {
+    "title": "Your account is under review",
+    "description": "Thanks for creating an account in the Building Blocks Ecosystem. Your account as a public servant has now been created."
+  },
+  "Footer": {
+    "license": "All content is available under the <link>Open Government Licence v3.0</link>, except where otherwise stated"
+  }
 }

@@ -19,7 +19,17 @@ export default function RootLayout({
 }) {
   return (
     <html>
-      <body>{children}</body>
+      <body
+        style={{
+          margin: "unset",
+          minHeight: "100vh",
+          position: "relative",
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        {children}
+      </body>
     </html>
   );
 }

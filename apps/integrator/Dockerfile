@@ -6,12 +6,14 @@ ENV LOG_LEVEL=trace
 COPY ./package*.json /app/
 COPY ./apps/integrator/package*.json /app/apps/integrator/
 COPY ./packages/auth/package*.json /app/packages/auth/
+COPY ./packages/shared-components/package*.json /app/packages/shared-components/
 
 RUN npm ci
 
 COPY ./apps/integrator/ /app/apps/integrator/
 COPY --from=design-system-container /app/packages/design-system/ /app/packages/design-system/
 COPY ./packages/auth/ /app/packages/auth/
+COPY ./packages/shared-components/ /app/packages/shared-components/
 
 FROM deps AS builder
 
