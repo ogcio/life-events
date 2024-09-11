@@ -14,6 +14,7 @@ import { ALL_TRANSPORTS } from "../shared-users.js";
 import { ServerError } from "shared-errors";
 import { CreateMessageParams } from "../../messages/messaging.js";
 import { processMessages } from "../../messages/messages.js";
+import { getProfileSdk } from "../../../utils/authentication-factory.js";
 
 const SEND_INVITATIONS_ERROR = "SEND_INVITATIONS_ERROR";
 
@@ -54,10 +55,11 @@ export const sendInvitationsForUsersImport = async (params: {
 
   const languagePerUser = {
     ...langForUserId,
-    ...getLanguagePerUser({
+    ...(await getLanguagePerUser({
       userIdsToSearchFor: importedUserIds,
       requestUserId: params.requestUserId,
-    }),
+      organisationId: params.requestOrganizationId,
+    })),
   };
   const client = await pg.pool.connect();
   try {
@@ -335,22 +337,36 @@ const sendInvitations = async (params: {
   };
 };
 
-const getLanguagePerUser = (params: {
+const getLanguagePerUser = async (params: {
   userIdsToSearchFor: { userProfileId: string; userId: string }[];
   requestUserId: string;
-}): { [x: string]: string } => {
+  organisationId: string;
+}): Promise<{ [x: string]: string }> => {
   if (params.userIdsToSearchFor.length === 0) {
     return {};
   }
+  const mappedIds: { [userProfileId: string]: string } = {};
+  for (const inputId of params.userIdsToSearchFor) {
+    mappedIds[inputId.userProfileId] = inputId.userId;
+  }
 
-  // Here I will invoke the user profile SDKS to get the preferred languages
-  //const profileClient = new Profile(params.requestUserId);
-
-  // Temporarily mocked
+  const profileSdk = await getProfileSdk(params.organisationId);
+  const profiles = await profileSdk.selectUsers(Object.keys(mappedIds));
   const output: { [x: string]: string } = {};
+
   for (const id of params.userIdsToSearchFor) {
     output[id.userId] = DEFAULT_LANGUAGE;
   }
+
+  if (profiles.error || !profiles.data) {
+    return output;
+  }
+
+  for (const userProfile of profiles.data) {
+    const userId = mappedIds[userProfile.id];
+    output[userId] = userProfile.preferredLanguage;
+  }
+
   return output;
 };
 
@@ -364,7 +380,7 @@ const defaultLang = (language: string): "en" | "ga" =>
 const getJoinMessagingMessageForLanguage = (language: string): MessageInput => {
   // TODO This one will be updated and translated in a next PR
   return {
-    subject: "Join Messaging Platform",
+    subject: `${language} - Join Messaging Platform`,
     excerpt: "Join the messaging platform!",
     plainText: `Go to the following url to join our platform: ${process.env.ORGANISATION_SETTINGS_URL}`,
     richText: `Go to the following url to join our platform: ${process.env.ORGANISATION_SETTINGS_URL}`,
@@ -376,7 +392,7 @@ const getJoinMessagingMessageForLanguage = (language: string): MessageInput => {
 const getJoinOrgMessageForLanguage = (language: string): MessageInput => {
   // TODO This one will be updated and translated in a next PR
   return {
-    subject: "An organisation wants to send you messages!",
+    subject: `${language} - An organisation wants to send you messages!`,
     excerpt: "An organisation wants to send you messages!",
     plainText: `Go to the following url to join our platform: ${process.env.ORGANISATION_SETTINGS_URL}`,
     richText: `Go to the following url to join our platform: ${process.env.ORGANISATION_SETTINGS_URL}`,
@@ -388,8 +404,8 @@ const getJoinOrgMessageForLanguage = (language: string): MessageInput => {
 const getWelcomeMessageForLanguage = (language: string): MessageInput => {
   // TODO This one will be updated and translated in a next PR
   return {
-    subject: "Welcome!",
-    excerpt: "An organisation wants to send you messages!",
+    subject: `${language} - Welcome!`,
+    excerpt: `${language} - An organisation wants to send you messages!`,
     plainText: `Go to the following url to join our platform: ${process.env.ORGANISATION_SETTINGS_URL}`,
     richText: `Go to the following url to join our platform: ${process.env.ORGANISATION_SETTINGS_URL}`,
     threadName: "JoinOrganisation",
