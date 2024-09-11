@@ -15,7 +15,7 @@ export default async (props: Props) => {
   const { isPublicServant, isInactivePublicServant } =
     await AuthenticationFactory.getInstance().getContext();
 
-  if (isPublicServant && isInactivePublicServant) {
+  if (isInactivePublicServant) {
     return redirect("/admin/inactivePublicServant", RedirectType.replace);
   }
 
