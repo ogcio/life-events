@@ -1,10 +1,4 @@
-import { cookies } from "next/headers";
-
-export type JourneyStep = {
-  type: string;
-  title: string;
-  required: boolean;
-};
+import { JourneyStep, JourneyWidgetInfo } from "./types";
 
 export const journeySteps: JourneyStep[] = [
   {
@@ -18,13 +12,6 @@ export const journeySteps: JourneyStep[] = [
   //     required: true
   // }
 ];
-
-export type JourneyWidgetInfo = {
-  id: string;
-  title: string;
-  require: boolean;
-};
-
 export class JourneyWidget {
   getInfo(): JourneyWidgetInfo {
     throw new Error("Method 'getInfo()' must be implemented.");
