@@ -19,6 +19,8 @@
     "exec": "next dev -p 3002"
   },
   "dependencies": {
+    "@govie-ds/theme-govie": "^0.3.4",
+    "@govie-react/ds": "^0.9.0-alpha.4",
     "auth": "*",
     "building-blocks-sdk": "*",
     "dayjs": "^1.11.12",
