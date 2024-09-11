@@ -1,7 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
-import { AuthenticationFactory } from "../../../../libraries/authentication-factory";
-import { PageWrapper } from "../PageWrapper";
+import { AuthenticationFactory } from "../../../../../libraries/authentication-factory";
+import { PageWrapper } from "../../PageWrapper";
 import Link from "next/link";
 
 type Props = {
@@ -34,7 +34,7 @@ export default async ({ params: { locale } }: Props) => {
             >
               <Link
                 className="govie-link"
-                href={`/${locale}/journeys/create`}
+                href={`/${locale}/admin/journeys/create`}
                 style={{
                   fontSize: "24px",
                 }}
@@ -52,7 +52,7 @@ export default async ({ params: { locale } }: Props) => {
             >
               <Link
                 className="govie-link"
-                href={`/${locale}/journeys/list`}
+                href={`/${locale}/admin/journeys/list`}
                 style={{
                   fontSize: "24px",
                 }}
