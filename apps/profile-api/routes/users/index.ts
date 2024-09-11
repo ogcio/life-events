@@ -340,6 +340,7 @@ export default async function users(app: FastifyInstance) {
                 ppsn: Type.String(),
                 email: Type.Optional(Type.String({ format: "email" })),
                 phone: Type.Optional(Type.String()),
+                preferredLanguage: Type.String(),
               }),
             ),
           }),
@@ -368,7 +369,8 @@ export default async function users(app: FastifyInstance) {
           lastname as "lastName", 
           ppsn,
           phone,
-          email
+          email,
+          preferred_language as "preferredLanguage"
         from user_details
         where user_id::text = any ($1)
       `,

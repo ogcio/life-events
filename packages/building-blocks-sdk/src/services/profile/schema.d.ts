@@ -627,6 +627,7 @@ export interface paths {
                 /** Format: email */
                 email?: string;
                 phone?: string;
+                preferredLanguage: string;
               }[];
             };
           };

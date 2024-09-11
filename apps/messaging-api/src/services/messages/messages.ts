@@ -520,14 +520,16 @@ export const processMessages = async (params: {
       .map((message) => message.receiverUserId);
 
     if (receiverUserIdsForMessagesWithoutConsentBypass.length) {
-      const isAnyUserNotActiveAndAccepted = await poolClient.query(
+      const isAnyUserNotActiveAndAccepted = await poolClient.query<{
+        exists: boolean;
+      }>(
         `
           select exists(
             select * from users u 
             join organisation_user_configurations o on o.user_id = u.id
             where 
-            o.invitation_status = 'accepted' 
-            and u.user_status = 'active'
+            o.invitation_status != 'accepted' 
+            and u.user_status != 'active'
             and u.id = any($1)
             limit 1
           )
@@ -535,7 +537,7 @@ export const processMessages = async (params: {
         [receiverUserIdsForMessagesWithoutConsentBypass],
       );
 
-      if (isAnyUserNotActiveAndAccepted) {
+      if (isAnyUserNotActiveAndAccepted.rows.at(0)?.exists) {
         throw new AuthorizationError(
           params.errorProcess,
           "user exist that isn't accepted and active for any of the input messages, no message sent",
