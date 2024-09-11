@@ -1,11 +1,13 @@
 import { BaseAuthenticationContext } from "auth/base-authentication-context";
-import { getAuthenticationContextConfig } from "./logto-config";
-import { Messaging } from "building-blocks-sdk";
+import { getProfileAuthenticationContextConfig } from "./logto-config";
+import { Profile } from "building-blocks-sdk";
 import { headers } from "next/headers";
 
-export class AuthenticationFactory {
+export class ProfileAuthenticationFactory {
   static getInstance(): BaseAuthenticationContext {
-    return new BaseAuthenticationContext(getAuthenticationContextConfig());
+    return new BaseAuthenticationContext(
+      getProfileAuthenticationContextConfig(),
+    );
   }
 
   static async getToken(): Promise<string> {
@@ -15,7 +17,7 @@ export class AuthenticationFactory {
 
     const res = await fetch(
       new URL(
-        "/api/token",
+        "/api/profile-token",
         process.env.NEXT_PUBLIC_MESSAGING_SERVICE_ENTRY_POINT as string,
       ),
       { headers: { cookie: cookieHeader } },
@@ -24,8 +26,8 @@ export class AuthenticationFactory {
     return token;
   }
 
-  static async getMessagingClient(): Promise<Messaging> {
+  static async getProfileClient(): Promise<Profile> {
     const token = await this.getToken();
-    return new Messaging(token);
+    return new Profile(token);
   }
 }
