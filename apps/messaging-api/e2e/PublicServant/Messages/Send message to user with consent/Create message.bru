@@ -1,0 +1,45 @@
+meta {
+  name: Create message
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/api/v1/messages
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+vars:post-response {
+  messageId: res.body.data.id
+}
+
+assert {
+  res.body.data.id: isDefined
+  res.status: eq 201
+}
+
+script:pre-request {
+  const uuid = require("uuid")
+  const messageSubject = uuid.v4()
+  bru.setVar("messageSubject",messageSubject)
+  req.setBody({
+    "preferredTransports": [],
+    "recipientUserId": bru.getVar("consentUserId"),
+    "security": "public",
+    "bypassConsent": true,
+    "scheduleAt": "2024-08-26T10:05:04.865Z",
+    "message": {
+      "threadName": "threadName",
+      "subject": messageSubject,
+      "excerpt": "excerpt",
+      "plainText": "plainText",
+      "richText": "richText",
+      "language": "en"
+    }
+  })
+}

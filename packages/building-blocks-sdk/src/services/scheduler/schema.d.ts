@@ -16,10 +16,33 @@ export interface paths {
   };
   "/api/v1/tasks/": {
     post: {
+      requestBody?: {
+        content: {
+          "application/json": {
+            /** Format: uri */
+            webhookUrl: string;
+            webhookAuth: string;
+            /** Format: date-time */
+            executeAt: string;
+          }[];
+        };
+      };
       responses: {
         /** @description Default Response */
-        200: {
+        202: {
           content: never;
+        };
+        /** @description Default Response */
+        500: {
+          content: {
+            "application/json": {
+              statusCode: number;
+              code: string;
+              error: string;
+              message: string;
+              time: string;
+            };
+          };
         };
       };
     };
