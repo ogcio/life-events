@@ -52,15 +52,20 @@ export const sendInvitationsForUsersImport = async (params: {
   if (importedUserIds.length === 0 && Object.keys(langForUserId).length === 0) {
     return;
   }
-
-  const languagePerUser = {
-    ...langForUserId,
-    ...(await getLanguagePerUser({
+  let languagePerExistentUser = {};
+  if (importedUserIds.length > 0) {
+    languagePerExistentUser = await getLanguagePerUser({
       userIdsToSearchFor: importedUserIds,
       requestUserId: params.requestUserId,
       organisationId: params.requestOrganizationId,
-    })),
+    });
+  }
+
+  const languagePerUser = {
+    ...langForUserId,
+    ...languagePerExistentUser,
   };
+
   const client = await pg.pool.connect();
   try {
     await client.query("BEGIN");
@@ -343,8 +348,12 @@ const getLanguagePerUser = async (params: {
   organisationId: string;
 }): Promise<{ [x: string]: string }> => {
   if (params.userIdsToSearchFor.length === 0) {
-    return {};
+    throw new ServerError(
+      "GET_LANGUAGE_PER_USER",
+      "At least one user is needed",
+    );
   }
+
   const mappedIds: { [userProfileId: string]: string } = {};
   for (const inputId of params.userIdsToSearchFor) {
     mappedIds[inputId.userProfileId] = inputId.userId;
