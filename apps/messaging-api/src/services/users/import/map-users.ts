@@ -167,6 +167,15 @@ const processUser = async (params: {
       : "partial"
     : "not_related";
 
+  const userToStore = fillUser({
+    userProfileId: userProfile?.id ?? null,
+    organisationId: organisationId,
+    status: params.toImportUser.collectedConsent ? "active" : "to_be_invited",
+    correlationQuality,
+    toImportUser,
+    usersImportId,
+  });
+
   if (userProfile) {
     const userFromDb = await getUserIfMapped({
       userProfileId: userProfile.id,
@@ -174,7 +183,11 @@ const processUser = async (params: {
     });
 
     if (userFromDb) {
-      return userFromDb;
+      return updateUser({
+        toUpdate: userToStore,
+        id: userFromDb.id,
+        client: params.client,
+      });
     }
   }
 
@@ -185,23 +198,16 @@ const processUser = async (params: {
       client: params.client,
     });
 
-    // TODO If found check if it was not related to profile but now is
-
     if (userFromDb) {
-      return userFromDb;
+      return updateUser({
+        toUpdate: userToStore,
+        id: userFromDb.id,
+        client: params.client,
+      });
     }
   }
 
-  const user = fillUser({
-    userProfileId: userProfile?.id ?? null,
-    organisationId: organisationId,
-    status: params.toImportUser.collectedConsent ? "active" : "to_be_invited",
-    correlationQuality,
-    toImportUser,
-    usersImportId,
-  });
-
-  return insertNewUser({ toInsert: user, client });
+  return insertNewUser({ toInsert: userToStore, client });
 };
 
 const processOrganizationUserRelation = async (params: {
@@ -358,6 +364,51 @@ const insertNewUser = async (params: {
     throw new ServerError(
       IMPORT_USERS_ERROR,
       `Error inserting new user: ${message}`,
+      error,
+    );
+  }
+};
+
+const updateUser = async (params: {
+  toUpdate: Omit<User, "id">;
+  id: string;
+  client: PoolClient;
+}): Promise<User> => {
+  try {
+    const { toUpdate, client, id } = params;
+    await client.query<{ id: string }>(
+      `
+            UPDATE users
+            SET
+                user_profile_id = $1,
+                importer_organisation_id = $2,
+                user_status = $3,
+                correlation_quality = $4,
+                email = $5,
+                phone = $6,
+                users_import_id = $7,
+                details = $8
+            WHERE id = $9;
+        `,
+      [
+        toUpdate.userProfileId,
+        toUpdate.importerOrganisationId,
+        toUpdate.userStatus,
+        toUpdate.correlationQuality,
+        toUpdate.email,
+        toUpdate.phone,
+        toUpdate.usersImportId,
+        toUpdate.details ? JSON.stringify(toUpdate.details) : "{}",
+        id,
+      ],
+    );
+    return { ...toUpdate, id };
+  } catch (error) {
+    const message = isNativeError(error) ? error.message : "unknown error";
+    throw new ServerError(
+      IMPORT_USERS_ERROR,
+      `Error updating user: ${message}`,
+      error,
     );
   }
 };
