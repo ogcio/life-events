@@ -2,6 +2,7 @@ import t from "tap";
 import { build } from "../../app.js";
 
 t.test("healthCheck", async (t) => {
+  await new Promise((resolve) => setTimeout(resolve, 500));
   const app = await build();
   t.after(async () => {
     await app.close();
