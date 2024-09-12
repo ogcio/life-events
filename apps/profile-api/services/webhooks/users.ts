@@ -107,8 +107,8 @@ const webhookBodyDataToUser = (bodyData: any): UserDetails & { id: string } => {
 
   return {
     id: bodyData.id as string,
-    firstName: identity.rawData.firstName,
-    lastName: identity.rawData.lastName,
+    firstName: identity.rawData.firstName ?? identity.rawData.givenName,
+    lastName: identity.rawData.lastName ?? identity.rawData.surname,
     email: identity.email,
     phone: parseValue(identity.phone),
     dateOfBirth: dateToDbDatetime(identity.rawData.BirthDate),
