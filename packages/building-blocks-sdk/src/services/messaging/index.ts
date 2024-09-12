@@ -418,10 +418,10 @@ export class Messaging {
       return { data: data?.data, error };
     }
 
-    const { error } = await this.client.POST("/api/v1/user-imports/", {
+    const { data, error } = await this.client.POST("/api/v1/user-imports/", {
       body: toImport.records,
     });
-    return { error };
+    return { data: data?.data, error };
   }
 
   async downloadUsersCsvTemplate() {
