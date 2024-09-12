@@ -1,9 +1,9 @@
 [
   {
     "importIndex": 1,
-    "publicIdentityId": "0111019PP",
-    "firstName": "Peter",
-    "lastName": "Parker",
+    "publicIdentityId": "0111018QW",
+    "firstName": "New",
+    "lastName": "User",
     "phoneNumber": "+9876543210",
     "birthDate": "15/07/1988",
     "emailAddress": "samuele.salvatico+spider@nearform.com",
@@ -12,7 +12,7 @@
     "addressStreet": "20 Ingram Street",
     "addressCountry": "State",
     "addressRegion": "Queens",
-    "tags": "origin.form",
+    "tags": "source.form",
     "collectedConsent": false
   }
 ]
