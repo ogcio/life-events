@@ -11,6 +11,7 @@ export const getTokenForMessaging = (organizationId: string): Promise<string> =>
       "messaging:template:*",
       "messaging:citizen:*",
       "messaging:event:read",
+      "profile:user:read",
     ],
     organizationId,
   });
