@@ -693,7 +693,7 @@ t.test("metadata", async (t) => {
 
         t.match(
           (paramsUsed[2] as unknown as Date).toISOString(),
-          "2024-01-30T23:00:00.000Z",
+          "2024-01-31T00:00:00.000Z",
         );
 
         t.match(response.json(), {
