@@ -1,6 +1,11 @@
 import { Messaging } from "building-blocks-sdk";
 import { getTokenForMessaging } from "./authenticate.js";
-import { checkResponse, configKeys } from "./config.js";
+import {
+  checkResponse,
+  configKeys,
+  getMessageContent,
+  scheduleNow,
+} from "./config.js";
 import toImportUser from "./to-import-user.json" with { type: "json" };
 
 // Authenticate
@@ -15,6 +20,7 @@ const importResult = await messagingClient.importUsers({
 });
 
 const importResultData = checkResponse(importResult);
+console.log("Users imported!");
 
 // Get imported users
 const usersForImport = await messagingClient.getUsersForImport(
@@ -23,6 +29,7 @@ const usersForImport = await messagingClient.getUsersForImport(
 );
 
 const importedUsers = checkResponse(usersForImport);
+console.log("Users retrieved!");
 
 // Send a message to the user
 const messageResponse = await messagingClient.send({
@@ -30,17 +37,9 @@ const messageResponse = await messagingClient.send({
   recipientUserId: importedUsers[0].id,
   security: "public",
   bypassConsent: true,
-  scheduleAt: new Date().toISOString(),
-  message: {
-    threadName: "Submission feedback",
-    subject: "Thank you for your submission!",
-    excerpt: "Submission feedbacks for you!",
-    plainText:
-      "We would like to thank you for your submission. We will reply as soon as possible.",
-    richText:
-      "We would like to thank you for your submission. We will reply as soon as possible.",
-    language: "en",
-  },
+  scheduleAt: scheduleNow(),
+  message: getMessageContent(),
 });
 
 checkResponse(messageResponse);
+console.log("Message sent!");

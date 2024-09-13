@@ -27,3 +27,16 @@ export const checkResponse = <T>(response: {
 
   return response.data;
 };
+
+export const scheduleNow = () => new Date().toISOString();
+
+export const getMessageContent = () => ({
+  threadName: "Submission feedback",
+  subject: "Thank you for your submission!",
+  excerpt: "Submission feedbacks for you!",
+  plainText:
+    "We would like to thank you for your submission. We will reply as soon as possible.",
+  richText:
+    "We would like to thank you for your submission. We will reply as soon as possible.",
+  language: "en",
+});
