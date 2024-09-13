@@ -99,6 +99,13 @@ export const UserDetailsSchema = Type.Object({
     description:
       "If false, an invitation to the user asking to accept to receive messages from the organisation will be sent. If true, it means that the organisation already asked the permissions to the user",
   }),
+  welcomed: Type.Optional(
+    Type.Boolean({
+      default: false,
+      description:
+        "If true, it means that a message to welcome the user has already been sent",
+    }),
+  ),
 });
 export type UserDetails = Static<typeof UserDetailsSchema>;
 

@@ -220,7 +220,8 @@ const prepareInvitations = (params: {
       continue;
     }
 
-    if (toInvite.organisationInvitationStatus === "accepted") {
+    const alreadyWelcomed = toInvite.details?.welcomed ?? false;
+    if (toInvite.userStatus === "active" && !alreadyWelcomed) {
       // send invitation to say the have been onboarded
       if (!toSend.welcome[language]) {
         toSend.welcome[language] = {
@@ -473,19 +474,30 @@ const setImportedAsInvited = async (params: {
       );
     }
     if (welcomed.length) {
-      let userIndex = 3;
+      let userIndex = 1;
       const idsIndexes = welcomed.map(() => `$${userIndex++}`);
+      const sentAtIndex = `$${userIndex++}`;
+      const organisationIdIndex = `$${userIndex}`;
       await params.client.query(
         `
           UPDATE organisation_user_configurations
-          SET invitation_sent_at = $1
-          WHERE organisation_id = $2 and user_id in (${idsIndexes.join(", ")});
+          SET invitation_sent_at = ${sentAtIndex}
+          WHERE organisation_id = ${organisationIdIndex} and user_id in (${idsIndexes.join(", ")});
         `,
         [
+          ...welcomed,
           new Date(new Date().toUTCString()).toISOString(),
           params.toImportUsers.organisationId,
-          ...welcomed,
         ],
+      );
+
+      await params.client.query(
+        `
+          UPDATE users
+          SET details['welcomed'] = 'true' 
+          WHERE id in (${idsIndexes.join(", ")});
+        `,
+        welcomed,
       );
     }
 

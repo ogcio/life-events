@@ -15,9 +15,11 @@ const getUser = async (params: {
   whereValues: string[];
   errorCode: string;
   logicalWhereOperator?: string;
+  withDetails?: boolean;
 }): Promise<User> => {
   let result: QueryResult<User>;
   try {
+    const detailsQuery = params.withDetails ? 'details as "details",' : "";
     const operator = params.logicalWhereOperator
       ? ` ${params.logicalWhereOperator} `
       : " AND ";
@@ -28,6 +30,7 @@ const getUser = async (params: {
         user_profile_id as "userProfileId",
         importer_organisation_id as "importerOrganisationId",
         user_status as "userStatus",
+        ${detailsQuery}
         correlation_quality as "correlationQuality"    
         FROM users where ${params.whereClauses.join(operator)} LIMIT 1
       `,
@@ -64,12 +67,14 @@ export const getUserByUserProfileId = async (params: {
   userProfileId: string;
   client: PoolClient;
   errorCode: string;
+  withDetails?: boolean;
 }): Promise<User> =>
   getUser({
     client: params.client,
     whereClauses: ["user_profile_id = $1"],
     whereValues: [params.userProfileId],
     errorCode: params.errorCode,
+    withDetails: params.withDetails,
   });
 
 export const getUserByContacts = async (params: {
@@ -98,6 +103,7 @@ export const getUserByContacts = async (params: {
     whereValues: values,
     errorCode: params.errorCode,
     logicalWhereOperator: "OR",
+    withDetails: true,
   });
 };
 

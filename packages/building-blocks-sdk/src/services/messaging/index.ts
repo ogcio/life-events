@@ -241,8 +241,6 @@ export class Messaging {
       },
     );
 
-    console.log(data?.data);
-
     if (data?.data.type === "email") {
       return { data: data.data };
     }
@@ -524,7 +522,6 @@ export class Messaging {
       { params: { path: { eventId } } },
     );
 
-    console.log(data?.data);
     return { data: data?.data, error };
   }
 
