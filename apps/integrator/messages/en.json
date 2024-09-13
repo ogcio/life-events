@@ -39,7 +39,7 @@
         "urlLabel": "Payment URL"
       },
       "messagingWidget": {
-        "title": "Choose your Message",
+        "title": "Choose your message",
         "titleLabel": "Title",
         "urlLabel": "Message template URL"
       }

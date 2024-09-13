@@ -69,7 +69,7 @@ export default async ({ params: { locale, journeyId, stepId } }: Props) => {
 
   const saveStepAction = async (formData: FormData) => {
     "use server";
-    const journey = await loadJourney(parseInt(journeyId));
+    const journey = JSON.parse(formData.get("journey") as string);
 
     const editor = new JourneyEditor(journey, journeyFlow);
     const step = editor.getStep(stepId);
@@ -99,6 +99,8 @@ export default async ({ params: { locale, journeyId, stepId } }: Props) => {
             {tGeneral("back")}
           </Link>
         </div>
+
+        <input type="hidden" name="journey" value={JSON.stringify(journey)} />
       </form>
     </PageWrapper>
   );
