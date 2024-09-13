@@ -2580,6 +2580,11 @@ paths:
                                 true, it means that the organisation already
                                 asked the permissions to the user
                               type: boolean
+                            welcomed:
+                              default: false
+                              description: If true, it means that a message to welcome the user has already
+                                been sent
+                              type: boolean
                           required:
                             - publicIdentityId
                             - firstName
@@ -2944,6 +2949,11 @@ paths:
                               messages from the organisation will be sent. If
                               true, it means that the organisation already asked
                               the permissions to the user
+                            type: boolean
+                          welcomed:
+                            default: false
+                            description: If true, it means that a message to welcome the user has already
+                              been sent
                             type: boolean
                         required:
                           - publicIdentityId
@@ -3337,6 +3347,11 @@ paths:
                               messages from the organisation will be sent. If
                               true, it means that the organisation already asked
                               the permissions to the user
+                            type: boolean
+                          welcomed:
+                            default: false
+                            description: If true, it means that a message to welcome the user has already
+                              been sent
                             type: boolean
                         required:
                           - publicIdentityId
@@ -4031,6 +4046,11 @@ paths:
                                 true, it means that the organisation already
                                 asked the permissions to the user
                               type: boolean
+                            welcomed:
+                              default: false
+                              description: If true, it means that a message to welcome the user has already
+                                been sent
+                              type: boolean
                           required:
                             - importIndex
                             - phoneNumber
@@ -4465,6 +4485,11 @@ paths:
                                 true, it means that the organisation already
                                 asked the permissions to the user
                               type: boolean
+                            welcomed:
+                              default: false
+                              description: If true, it means that a message to welcome the user has already
+                                been sent
+                              type: boolean
                           required:
                             - publicIdentityId
                             - firstName
@@ -4831,6 +4856,11 @@ paths:
                               messages from the organisation will be sent. If
                               true, it means that the organisation already asked
                               the permissions to the user
+                            type: boolean
+                          welcomed:
+                            default: false
+                            description: If true, it means that a message to welcome the user has already
+                              been sent
                             type: boolean
                         required:
                           - publicIdentityId
