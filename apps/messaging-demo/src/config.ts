@@ -11,3 +11,19 @@ const getMandatoryKey = (keyName: string): string => {
 export const configKeys = {
   organizationId: getMandatoryKey("ORGANIZATION_ID"),
 };
+
+export const checkResponse = <T>(response: {
+  error?: { code: string; detail: string; requestId: string; name: string };
+  data: T | undefined;
+}) => {
+  if (
+    response.error ||
+    !response.data ||
+    (Array.isArray(response.data) && response.data.length === 0)
+  ) {
+    console.log({ RESPONSE_ERROR: response.error });
+    throw new Error("Error sending message");
+  }
+
+  return response.data;
+};

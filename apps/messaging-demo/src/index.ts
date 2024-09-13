@@ -1,6 +1,6 @@
 import { Messaging } from "building-blocks-sdk";
 import { getTokenForMessaging } from "./authenticate.js";
-import { configKeys } from "./config.js";
+import { checkResponse, configKeys } from "./config.js";
 import toImportUser from "./to-import-user.json" with { type: "json" };
 
 // Authenticate
@@ -14,30 +14,20 @@ const importResult = await messagingClient.importUsers({
   records: toImportUser,
 });
 
-if (importResult.error || !importResult.data) {
-  console.log({ IMPORTING_ERROR: importResult.error });
-  throw new Error("Something went wrong importing");
-}
+const importResultData = checkResponse(importResult);
 
 // Get imported users
 const usersForImport = await messagingClient.getUsersForImport(
-  importResult.data.id,
+  importResultData.id,
   false,
 );
 
-if (
-  usersForImport.error ||
-  !usersForImport.data ||
-  usersForImport.data.length === 0
-) {
-  console.log({ GET_USERS_ERROR: usersForImport.error });
-  throw new Error("No user found");
-}
+const importedUsers = checkResponse(usersForImport);
 
 // Send a message to the user
 const messageResponse = await messagingClient.send({
   preferredTransports: ["sms", "email", "lifeEvent"],
-  recipientUserId: usersForImport.data[0].id,
+  recipientUserId: importedUsers[0].id,
   security: "public",
   bypassConsent: true,
   scheduleAt: new Date().toISOString(),
@@ -53,7 +43,4 @@ const messageResponse = await messagingClient.send({
   },
 });
 
-if (messageResponse.error || !messageResponse.data) {
-  console.log({ ERROR_SENDING_MESSAGE: messageResponse.error });
-  throw new Error("Error sending message");
-}
+checkResponse(messageResponse);
