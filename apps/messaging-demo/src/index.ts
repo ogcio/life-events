@@ -9,6 +9,7 @@ import {
 import toImportUser from "./to-import-user.json" with { type: "json" };
 
 console.log("Process started...");
+const start = new Date().getMilliseconds();
 // Authenticate
 const messagingToken = await getTokenForMessaging(configKeys.organizationId);
 console.log("Authenticated!");
@@ -45,3 +46,6 @@ const messageResponse = await messagingClient.send({
 
 checkResponse(messageResponse);
 console.log("Message sent!");
+
+const timeSpent = new Date().getMilliseconds() - start;
+console.log("Time elapsed in ms", timeSpent);
