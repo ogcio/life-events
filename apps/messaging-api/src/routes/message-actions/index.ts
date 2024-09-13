@@ -106,7 +106,7 @@ export default async function messagesActions(app: FastifyInstance) {
             )
             update messages set is_seen = $3
             where id = any(select id from message_selection)
-            returning is_seen as "seenAt", id
+            returning is_seen as "isSeen", id
               `,
           [userId, req.body.messageId, req.body.isSeen],
         );
