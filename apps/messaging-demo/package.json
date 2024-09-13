@@ -5,7 +5,8 @@
   "main": "dist/index.js",
   "scripts": {
     "start": "node dist/index.js",
-    "build": "rm -rf dist && tsc -p tsconfig.prod.json"
+    "build": "rm -rf dist && tsc -p tsconfig.prod.json",
+    "demo": "npm run build && npm run start"
   },
   "type": "module",
   "author": "",

@@ -8,8 +8,10 @@ import {
 } from "./config.js";
 import toImportUser from "./to-import-user.json" with { type: "json" };
 
+console.log("Process started...");
 // Authenticate
 const messagingToken = await getTokenForMessaging(configKeys.organizationId);
+console.log("Authenticated!");
 
 // Initialize SDK
 const messagingClient = new Messaging(messagingToken);
