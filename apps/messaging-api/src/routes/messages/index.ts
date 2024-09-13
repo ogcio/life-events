@@ -10,6 +10,7 @@ import {
   MessageListSchema,
   MessageListItemSchema,
   IdParamsSchema,
+  TypeboxBooleanEnum,
 } from "../../types/schemaDefinitions.js";
 import {
   getMessage,
@@ -30,7 +31,10 @@ const MESSAGES_TAGS = ["Messages"];
 
 interface GetAllMessages {
   Querystring: PaginationParams &
-    Static<typeof IdParamsSchema> & { status?: "scheduled" | "delivered" };
+    Static<typeof IdParamsSchema> & {
+      status?: "scheduled" | "delivered";
+      isSeen?: boolean;
+    };
 }
 
 interface GetMessage {
@@ -56,6 +60,7 @@ export default async function messages(app: FastifyInstance) {
           Type.Composite([
             Type.Object({
               status: Type.Optional(Type.Literal("delivered")),
+              isSeen: Type.Optional(TypeboxBooleanEnum()),
             }),
             IdParamsSchema,
             PaginationParamsSchema,
@@ -204,6 +209,7 @@ export default async function messages(app: FastifyInstance) {
             where 
             case when $1::text is not null then organisation_id = $1 else true end
             and case when $5 > 0 then user_id = any ($2) else true end
+            and case when $6::boolean is not null then is_seen = $6::boolean else true end
             order by created_at desc
             limit $3
             offset $4
@@ -214,6 +220,7 @@ export default async function messages(app: FastifyInstance) {
             limit,
             offset,
             userIdsRepresentingUser.length,
+            request.query.isSeen === undefined ? null : request.query.isSeen,
           ],
         );
       } catch (error) {
