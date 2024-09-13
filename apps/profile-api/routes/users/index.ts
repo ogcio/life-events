@@ -3,7 +3,6 @@ import { HttpError } from "../../types/httpErrors";
 import {
   CreateUser,
   CreateUserSchema,
-  DEFAULT_LANGUAGE,
   FindUserParams,
   FindUserParamsSchema,
   FoundUser,
