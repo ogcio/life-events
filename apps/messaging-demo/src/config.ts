@@ -1,3 +1,4 @@
+import { Messaging } from "building-blocks-sdk";
 import "dotenv/config";
 
 const getMandatoryKey = (keyName: string): string => {
@@ -29,3 +30,25 @@ export const checkResponse = <T>(response: {
 };
 
 export const scheduleNow = () => new Date().toISOString();
+
+export async function importUser(
+  messagingClient: Messaging,
+  toImportUser: any,
+) {
+  const importResult = await messagingClient.importUsers({
+    records: toImportUser,
+  });
+
+  const importResultData = checkResponse(importResult);
+  console.log("Users imported!");
+
+  // Get imported users
+  const usersForImport = await messagingClient.getUsersForImport(
+    importResultData.id,
+    false,
+  );
+
+  const importedUsers = checkResponse(usersForImport);
+  console.log("Users retrieved!");
+  return importedUsers;
+}

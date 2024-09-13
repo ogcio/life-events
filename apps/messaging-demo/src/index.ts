@@ -1,6 +1,11 @@
 import { Messaging } from "building-blocks-sdk";
 import { getTokenForMessaging } from "./authenticate.js";
-import { checkResponse, configKeys, scheduleNow } from "./config.js";
+import {
+  checkResponse,
+  configKeys,
+  importUser,
+  scheduleNow,
+} from "./config.js";
 import toImportUser from "./to-import-user.json" with { type: "json" };
 
 console.log("Process started...");
@@ -36,22 +41,3 @@ const messageResponse = await messagingClient.send({
 
 checkResponse(messageResponse);
 console.log("Message sent!");
-
-async function importUser(messagingClient: Messaging, toImportUser: any) {
-  const importResult = await messagingClient.importUsers({
-    records: toImportUser,
-  });
-
-  const importResultData = checkResponse(importResult);
-  console.log("Users imported!");
-
-  // Get imported users
-  const usersForImport = await messagingClient.getUsersForImport(
-    importResultData.id,
-    false,
-  );
-
-  const importedUsers = checkResponse(usersForImport);
-  console.log("Users retrieved!");
-  return importedUsers;
-}
