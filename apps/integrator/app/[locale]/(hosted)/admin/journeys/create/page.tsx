@@ -1,11 +1,11 @@
 import { getTranslations } from "next-intl/server";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { AuthenticationFactory } from "../../../../../../libraries/authentication-factory";
 import { PageWrapper } from "../../../PageWrapper";
-import {
-  JourneyEditor,
-  journeySteps,
-} from "../../../../../../libraries/journeyEditor";
+import { pgpool } from "../../../../../dbConnection";
+import Link from "next/link";
+import InputField from "../../../../../components/InputField";
+import { createJourney } from "../../../../../../libraries/journeyEditor/queries";
 
 type Props = {
   params: {
@@ -14,9 +14,10 @@ type Props = {
 };
 
 export default async ({ params: { locale } }: Props) => {
-  const t = await getTranslations("Journeys");
+  const tGeneral = await getTranslations("General");
+  const t = await getTranslations("Journeys.create");
 
-  const { isPublicServant } =
+  const { isPublicServant, organization } =
     await AuthenticationFactory.getInstance().getContext();
 
   if (!isPublicServant) {
@@ -24,17 +25,52 @@ export default async ({ params: { locale } }: Props) => {
     return notFound();
   }
 
-  const editor = new JourneyEditor(journeySteps);
-  const steps = editor.getSteps();
-
-  const serverAction = async () => {
+  const createJourneyAction = async (formData: FormData) => {
     "use server";
+
+    const { organization } =
+      await AuthenticationFactory.getInstance().getContext();
+
+    if (!organization) {
+      throw new Error("Unauthorized!");
+    }
+
+    const title = formData.get("title") as string;
+
+    const result = await createJourney(pgpool, {
+      title,
+      organizationId: organization.id,
+    });
+
+    if (!result.rows?.[0]?.id) {
+      throw new Error("Something went wrong!");
+    }
+
+    const journeyId = result.rows[0].id;
+    redirect(`/${locale}/admin/journeys/configure/${journeyId}`);
   };
 
   return (
     <PageWrapper locale={locale}>
-      <form action={serverAction}>
-        <input type="submit" value={"SAVE"} className="govie-button" />
+      <form action={createJourneyAction}>
+        <h1 className="govie-heading-l">{t("title")}</h1>
+        <p className="govie-body">{t("description")}</p>
+
+        <div className="govie-form-group ">
+          <InputField name="title" label="" type="text" />
+        </div>
+
+        <input
+          type="submit"
+          value={tGeneral("continue")}
+          className="govie-button"
+        />
+
+        <div className="govie-width-container">
+          <Link className="govie-link" href={`/${locale}/admin/journeys`}>
+            {tGeneral("back")}
+          </Link>
+        </div>
       </form>
     </PageWrapper>
   );
