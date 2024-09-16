@@ -12,6 +12,7 @@ t.test("messaging - /api/v1/messages schema", async (t) => {
               userId: "userId",
               accessToken: "accessToken",
               organizationId: "organisationId",
+              isM2MApplication: false,
             };
           });
         }),
@@ -44,7 +45,7 @@ t.test("messaging - /api/v1/messages schema", async (t) => {
             excerpt: "excerpt",
             plainText: "text",
             richText: "text",
-            lang: "en",
+            language: "en",
           },
         },
       });
@@ -73,7 +74,7 @@ t.test("messaging - /api/v1/messages schema", async (t) => {
             excerpt: "excerpt",
             plainText: "text",
             richText: "text",
-            lang: "en",
+            language: "en",
           },
         },
       });
@@ -103,7 +104,7 @@ t.test("messaging - /api/v1/messages schema", async (t) => {
             excerpt: "excerpt",
             plainText: "text",
             richText: "text",
-            lang: "en",
+            language: "en",
           },
         },
       });
@@ -133,7 +134,7 @@ t.test("messaging - /api/v1/messages schema", async (t) => {
             excerpt: "excerpt",
             plainText: "text",
             richText: "text",
-            lang: "en",
+            language: "en",
           },
         },
       });
@@ -162,7 +163,7 @@ t.test("messaging - /api/v1/messages schema", async (t) => {
             excerpt: "excerpt",
             plainText: "text",
             richText: "text",
-            lang: "en",
+            language: "en",
           },
         },
       });
@@ -193,7 +194,7 @@ t.test("messaging - /api/v1/messages schema", async (t) => {
             excerpt: "excerpt",
             plainText: "text",
             richText: "text",
-            lang: "en",
+            language: "en",
           },
         },
       });
@@ -223,7 +224,7 @@ t.test("messaging - /api/v1/messages schema", async (t) => {
             excerpt: "excerpt",
             plainText: "text",
             richText: "text",
-            lang: "en",
+            language: "en",
           },
         },
       });
@@ -252,7 +253,7 @@ t.test("messaging - /api/v1/messages schema", async (t) => {
             excerpt: "excerpt",
             plainText: "text",
             richText: "text",
-            lang: "en",
+            language: "en",
           },
         },
       });
@@ -282,7 +283,7 @@ t.test("messaging - /api/v1/messages schema", async (t) => {
             excerpt: "excerpt",
             plainText: "text",
             richText: "text",
-            lang: "en",
+            language: "en",
           },
         },
       });
@@ -312,7 +313,7 @@ t.test("messaging - /api/v1/messages schema", async (t) => {
             excerpt: "excerpt",
             plainText: "text",
             richText: "text",
-            lang: "en",
+            language: "en",
           },
         },
       });
@@ -341,7 +342,7 @@ t.test("messaging - /api/v1/messages schema", async (t) => {
             excerpt: "excerpt",
             plainText: "text",
             richText: "text",
-            lang: "en",
+            language: "en",
           },
         },
       });
@@ -371,7 +372,7 @@ t.test("messaging - /api/v1/messages schema", async (t) => {
             excerpt: "excerpt",
             plainText: "text",
             richText: "text",
-            lang: "en",
+            language: "en",
           },
         },
       });
@@ -401,7 +402,7 @@ t.test("messaging - /api/v1/messages schema", async (t) => {
             excerpt: "excerpt",
             plainText: "text",
             richText: "text",
-            lang: "en",
+            language: "en",
           },
         },
       });
@@ -431,7 +432,7 @@ t.test("messaging - /api/v1/messages schema", async (t) => {
             excerpt: "excerpt",
             plainText: "text",
             richText: "text",
-            lang: "en",
+            language: "en",
           },
         },
       });
@@ -461,7 +462,7 @@ t.test("messaging - /api/v1/messages schema", async (t) => {
             excerpt: "excerpt",
             plainText: "text",
             richText: "text",
-            lang: "en",
+            language: "en",
           },
         },
       });
@@ -490,7 +491,7 @@ t.test("messaging - /api/v1/messages schema", async (t) => {
             excerpt: "excerpt",
             plainText: "text",
             richText: "text",
-            lang: "en",
+            language: "en",
           },
         },
       });
@@ -520,7 +521,7 @@ t.test("messaging - /api/v1/messages schema", async (t) => {
             excerpt: null,
             plainText: "text",
             richText: "text",
-            lang: "en",
+            language: "en",
           },
         },
       });
@@ -549,7 +550,7 @@ t.test("messaging - /api/v1/messages schema", async (t) => {
             subject: "subject",
             plainText: "text",
             richText: "text",
-            lang: "en",
+            language: "en",
           },
         },
       });
@@ -579,7 +580,7 @@ t.test("messaging - /api/v1/messages schema", async (t) => {
             excerpt: "",
             plainText: "text",
             richText: "text",
-            lang: "en",
+            language: "en",
           },
         },
       });
@@ -609,7 +610,7 @@ t.test("messaging - /api/v1/messages schema", async (t) => {
             excerpt: "exc",
             plainText: null,
             richText: "text",
-            lang: "en",
+            language: "en",
           },
         },
       });
@@ -638,7 +639,7 @@ t.test("messaging - /api/v1/messages schema", async (t) => {
             subject: "subject",
             excerpt: "exc",
             richText: "text",
-            lang: "en",
+            language: "en",
           },
         },
       });
@@ -668,7 +669,7 @@ t.test("messaging - /api/v1/messages schema", async (t) => {
             excerpt: "exc",
             plainText: "",
             richText: "text",
-            lang: "en",
+            language: "en",
           },
         },
       });
@@ -698,7 +699,7 @@ t.test("messaging - /api/v1/messages schema", async (t) => {
             excerpt: "exc",
             plainText: "text",
             richText: null,
-            lang: "en",
+            language: "en",
           },
         },
       });
@@ -727,7 +728,7 @@ t.test("messaging - /api/v1/messages schema", async (t) => {
             subject: "subject",
             excerpt: "exc",
             plainText: "text",
-            lang: "en",
+            language: "en",
           },
         },
       });
@@ -757,7 +758,7 @@ t.test("messaging - /api/v1/messages schema", async (t) => {
             excerpt: "exc",
             plainText: "text",
             richText: "",
-            lang: "en",
+            language: "en",
           },
         },
       });
@@ -772,7 +773,7 @@ t.test("messaging - /api/v1/messages schema", async (t) => {
       );
     });
 
-    t.test("with null message.lang should fail", async (t) => {
+    t.test("with null message.language should fail", async (t) => {
       const res = await app.inject({
         method: "POST",
         url: "/api/v1/messages",
@@ -787,7 +788,7 @@ t.test("messaging - /api/v1/messages schema", async (t) => {
             excerpt: "exc",
             plainText: "text",
             richText: "text",
-            lang: null,
+            language: null,
           },
         },
       });
@@ -797,12 +798,12 @@ t.test("messaging - /api/v1/messages schema", async (t) => {
       t.equal(body.code, "VALIDATION_ERROR", bodyCodeValidationInfo);
       t.equal(
         body.detail,
-        "body/message/lang must be string",
+        "body/message/language must be string",
         detailValidationInfo,
       );
     });
 
-    t.test("with no message.lang should fail", async (t) => {
+    t.test("with no message.language should fail", async (t) => {
       const res = await app.inject({
         method: "POST",
         url: "/api/v1/messages",
@@ -826,12 +827,12 @@ t.test("messaging - /api/v1/messages schema", async (t) => {
       t.equal(body.code, "VALIDATION_ERROR", bodyCodeValidationInfo);
       t.equal(
         body.detail,
-        "body/message must have required property 'lang'",
+        "body/message must have required property 'language'",
         detailValidationInfo,
       );
     });
 
-    t.test("with illegal message.lang should fail", async (t) => {
+    t.test("with illegal message.language should fail", async (t) => {
       const res = await app.inject({
         method: "POST",
         url: "/api/v1/messages",
@@ -846,7 +847,7 @@ t.test("messaging - /api/v1/messages schema", async (t) => {
             excerpt: "exc",
             plainText: "text",
             richText: "text",
-            lang: "sv",
+            language: "sv",
           },
         },
       });
@@ -856,7 +857,7 @@ t.test("messaging - /api/v1/messages schema", async (t) => {
       t.equal(body.code, "VALIDATION_ERROR", bodyCodeValidationInfo);
       t.equal(
         body.detail,
-        "body/message/lang must be equal to one of the allowed values",
+        "body/message/language must be equal to one of the allowed values",
         detailValidationInfo,
       );
     });
