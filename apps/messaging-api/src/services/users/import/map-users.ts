@@ -183,6 +183,7 @@ const processUser = async (params: {
     });
 
     if (userFromDb) {
+      userToStore.details = getDetailsToUpdate(userToStore, userFromDb);
       return updateUser({
         toUpdate: userToStore,
         id: userFromDb.id,
@@ -199,6 +200,7 @@ const processUser = async (params: {
     });
 
     if (userFromDb) {
+      userToStore.details = getDetailsToUpdate(userToStore, userFromDb);
       return updateUser({
         toUpdate: userToStore,
         id: userFromDb.id,
@@ -208,6 +210,29 @@ const processUser = async (params: {
   }
 
   return insertNewUser({ toInsert: userToStore, client });
+};
+
+const getDetailsToUpdate = (
+  toStore: Omit<User, "id">,
+  fromDb: User,
+): UserDetails | undefined => {
+  if (!fromDb.details?.welcomed) {
+    return toStore.details;
+  }
+
+  if (!toStore.details) {
+    return {
+      welcomed: true,
+      publicIdentityId: null,
+      firstName: null,
+      lastName: null,
+      birthDate: null,
+      address: null,
+      collectedConsent: false,
+    };
+  }
+
+  return { ...toStore.details, welcomed: true };
 };
 
 const processOrganizationUserRelation = async (params: {
@@ -501,6 +526,7 @@ const getUserIfMapped = async (params: {
       userProfileId,
       client,
       errorCode: IMPORT_USERS_ERROR,
+      withDetails: true,
     });
   } catch (error) {
     if (isLifeEventsError(error) && error.errorCode === 404) {

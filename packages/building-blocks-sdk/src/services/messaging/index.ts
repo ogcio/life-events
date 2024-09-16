@@ -241,8 +241,6 @@ export class Messaging {
       },
     );
 
-    console.log(data?.data);
-
     if (data?.data.type === "email") {
       return { data: data.data };
     }
@@ -418,10 +416,10 @@ export class Messaging {
       return { data: data?.data, error };
     }
 
-    const { error } = await this.client.POST("/api/v1/user-imports/", {
+    const { data, error } = await this.client.POST("/api/v1/user-imports/", {
       body: toImport.records,
     });
-    return { error };
+    return { data: data?.data, error };
   }
 
   async downloadUsersCsvTemplate() {
@@ -524,7 +522,6 @@ export class Messaging {
       { params: { path: { eventId } } },
     );
 
-    console.log(data?.data);
     return { data: data?.data, error };
   }
 

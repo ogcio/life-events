@@ -46,8 +46,4 @@ We are starting to add testing to our pipelines, as not all apps have e2e or uni
 Current commands used and mapped to the shared building block pipelines:
 "test:smoke:e2e" - used for smoke tests on deployment to dev (staging coming soon) 
 "test:regression:e2e" - runs all tests overnight against dev (coming soon)
-"test" - runs unit tests (not yet implemented in all projects or in the pipeline)
-
-Next steps:
-- UI tests for other projects using the 'playwright.config.ts' based on the payments app version and updating the above commands to match the version in payments
-- unit tests running
+"test" - runs unit tests - these are in the pipeline for all services and dependencies
