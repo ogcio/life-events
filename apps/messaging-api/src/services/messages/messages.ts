@@ -374,6 +374,7 @@ const scheduleMessage = async (
           if (sent?.error) {
             // expand if we need more details.
             throw new Error();
+            // TODO qui da aggiornare
           }
         } catch (err) {
           await eventLogger.log(MessagingEventType.emailError, [
