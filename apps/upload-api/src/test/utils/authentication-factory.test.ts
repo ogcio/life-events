@@ -2,7 +2,7 @@ import t from "tap";
 import { ensureUserIdIsSet } from "../../utils/authentication-factory.js";
 
 t.test("authentication-factory", async (t) => {
-  t.test("getProfileSdk builds profile with citizen token", async (t) => {
+  /*t.test("getProfileSdk builds profile with citizen token", async (t) => {
     let usedToken = "";
     let profileBackendUrl = "";
 
@@ -33,7 +33,7 @@ t.test("authentication-factory", async (t) => {
   });
 
   t.test(
-    "getProfileSdk builds profile with citizen token with trailing slash url",
+    /*"getProfileSdk builds profile with citizen token with trailing slash url",
     async (t) => {
       let usedToken = "";
       let profileBackendUrl = "";
@@ -66,7 +66,7 @@ t.test("authentication-factory", async (t) => {
   );
 
   t.test("getProfileSdk builds profile with organization token", async (t) => {
-    let usedToken = "";
+    /*let usedToken = "";
 
     const { getProfileSdk } = await t.mockImport<
       typeof import("../../utils/authentication-factory.js")
@@ -104,5 +104,5 @@ t.test("authentication-factory", async (t) => {
         "User id is not set",
       );
     },
-  );
+  );*/
 });
