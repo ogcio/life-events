@@ -72,8 +72,6 @@ export default async function messagesActions(app: FastifyInstance) {
       let poolClient: PoolClient | undefined;
       try {
         poolClient = await app.pg.pool.connect();
-        console.log("broder tuck");
-        console.log(userId, req.body.messageId);
         const existanceCheckQueryResult = await poolClient.query<{
           exists: boolean;
         }>(
