@@ -40,7 +40,7 @@ resources:
     - repository: pipeline-templates
       type: github
       name: ogcio/building-blocks-pipelines
-      ref: main
+      ref: file-paths
       endpoint: ogcio
 
 stages:
