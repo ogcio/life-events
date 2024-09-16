@@ -51,6 +51,8 @@
     "edit": "Edit",
     "choose": "Choose",
     "required": "Required",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "shareLink": "Share link",
+    "copyLink": "Copy link"
   }
 }

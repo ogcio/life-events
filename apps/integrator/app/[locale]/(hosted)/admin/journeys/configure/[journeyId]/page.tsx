@@ -1,17 +1,23 @@
 import { getTranslations } from "next-intl/server";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { AuthenticationFactory } from "../../../../../../../libraries/authentication-factory";
 import { PageWrapper } from "../../../../PageWrapper";
-import {
-  JourneyEditor,
-  journeyFlow,
-} from "../../../../../../../libraries/journeyEditor";
+import { JourneyEditor } from "../../../../../../../libraries/journeyEditor";
 import { pgpool } from "../../../../../../dbConnection";
-import { Journey } from "../../../../../../../libraries/journeyEditor/types";
+import {
+  Journey,
+  JourneyStatus,
+} from "../../../../../../../libraries/journeyEditor/types";
 import ds from "design-system";
 import Link from "next/link";
 import styles from "./style.module.scss";
-import { loadJourneyById } from "../../../../../../../libraries/journeyEditor/queries";
+import {
+  completeJourney,
+  loadJourneyById,
+} from "../../../../../../../libraries/journeyEditor/queries";
+import InputField from "../../../../../../components/InputField";
+import CopyLink from "./CopyBtn";
+import journeyDefaultFlow from "../../../../../../../libraries/journeyEditor/journeyStepFlow";
 
 const Icon = ds.Icon;
 
@@ -22,7 +28,7 @@ type Props = {
   };
 };
 
-const loadJourney = async (journeyId: number): Promise<Journey> => {
+const loadJourney = async (journeyId: string): Promise<Journey> => {
   "use server";
 
   const { organization } =
@@ -44,6 +50,11 @@ const loadJourney = async (journeyId: number): Promise<Journey> => {
   return result.rows[0];
 };
 
+const generateJourneyLink = (journeyId: string) => {
+  const url = new URL(`/journey/${journeyId}`, process.env.HOST_URL);
+  return url.href;
+};
+
 export default async ({ params: { locale, journeyId } }: Props) => {
   const tGeneral = await getTranslations("General");
   const t = await getTranslations("Journeys.addSteps");
@@ -56,13 +67,28 @@ export default async ({ params: { locale, journeyId } }: Props) => {
     return notFound();
   }
 
-  const journey = await loadJourney(parseInt(journeyId));
+  const journey = await loadJourney(journeyId);
 
-  const editor = new JourneyEditor(journey, journeyFlow);
+  const editor = new JourneyEditor(journey, journeyDefaultFlow);
   const steps = editor.getStepsInfo();
+  const journeyCompleted = editor.isCompleted();
 
   const saveJourneyAction = async () => {
     "use server";
+
+    const { organization } =
+      await AuthenticationFactory.getInstance().getContext();
+
+    if (!organization) {
+      throw new Error("Unauthorized!");
+    }
+
+    await completeJourney(pgpool, {
+      journeyId,
+      organizationId: organization.id,
+    });
+
+    redirect(`/${locale}/admin/journeys/configure/${journeyId}`);
   };
 
   return (
@@ -117,8 +143,42 @@ export default async ({ params: { locale, journeyId } }: Props) => {
         </div>
 
         <div className="govie-width-container">
-          <input type="submit" value={t("submit")} className="govie-button" />
+          <input
+            type="submit"
+            value={t("submit")}
+            className="govie-button"
+            disabled={!journeyCompleted}
+          />
         </div>
+
+        {journey.status === JourneyStatus.COMPLETED && (
+          <div
+            style={{
+              display: "flex",
+              alignItems: "end",
+              justifyContent: "space-between",
+              gap: "18px",
+            }}
+          >
+            <div
+              style={{
+                width: "100%",
+              }}
+            >
+              <InputField
+                name="journeyLink"
+                label={`${tGeneral("shareLink")}:`}
+                type="text"
+                defaultValue={generateJourneyLink(journey.id)}
+              />
+            </div>
+
+            <CopyLink
+              link={generateJourneyLink(journey.id)}
+              buttonText={tGeneral("copyLink")}
+            />
+          </div>
+        )}
 
         <div className="govie-width-container">
           <Link className="govie-link" href={`/${locale}/admin/journeys`}>

@@ -2,18 +2,12 @@ import { getTranslations } from "next-intl/server";
 import { notFound, redirect } from "next/navigation";
 import { AuthenticationFactory } from "../../../../../../../../../libraries/authentication-factory";
 import { PageWrapper } from "../../../../../../PageWrapper";
-import {
-  JourneyEditor,
-  journeyFlow,
-} from "../../../../../../../../../libraries/journeyEditor";
+import { JourneyEditor } from "../../../../../../../../../libraries/journeyEditor";
 import { pgpool } from "../../../../../../../../dbConnection";
 import { Journey } from "../../../../../../../../../libraries/journeyEditor/types";
-import ds from "design-system";
 import Link from "next/link";
-import styles from "./style.module.scss";
 import { loadJourneyById } from "../../../../../../../../../libraries/journeyEditor/queries";
-
-const Icon = ds.Icon;
+import journeyDefaultFlow from "../../../../../../../../../libraries/journeyEditor/journeyStepFlow";
 
 type Props = {
   params: {
@@ -23,7 +17,13 @@ type Props = {
   };
 };
 
-const loadJourney = async (journeyId: number): Promise<Journey> => {
+const loadJourney = async (
+  journeyId: string,
+  step: {
+    stepType: string;
+    stepNumber: string;
+  },
+): Promise<Journey> => {
   "use server";
 
   const { organization } =
@@ -36,6 +36,7 @@ const loadJourney = async (journeyId: number): Promise<Journey> => {
   const result = await loadJourneyById(pgpool, {
     journeyId,
     organizationId: organization.id,
+    step,
   });
 
   if (result.rowCount !== 1) {
@@ -58,9 +59,14 @@ export default async ({ params: { locale, journeyId, stepId } }: Props) => {
     return notFound();
   }
 
-  const journey = await loadJourney(parseInt(journeyId));
+  const [stepType, stepNumber] = stepId.split("-");
 
-  const editor = new JourneyEditor(journey, journeyFlow);
+  const journey = await loadJourney(journeyId, {
+    stepType,
+    stepNumber,
+  });
+
+  const editor = new JourneyEditor(journey, journeyDefaultFlow);
   const step = editor.getStep(stepId);
 
   if (!step) {
@@ -71,7 +77,7 @@ export default async ({ params: { locale, journeyId, stepId } }: Props) => {
     "use server";
     const journey = JSON.parse(formData.get("journey") as string);
 
-    const editor = new JourneyEditor(journey, journeyFlow);
+    const editor = new JourneyEditor(journey, journeyDefaultFlow);
     const step = editor.getStep(stepId);
 
     if (!step) {

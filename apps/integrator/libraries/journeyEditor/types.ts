@@ -4,7 +4,7 @@ export type JourneyWidgetInfo = {
   title?: string;
   required: boolean;
   stepNumber: number;
-  stepId?: number;
+  stepId?: string;
   completed: boolean;
   actionTitle: string;
 };
@@ -21,14 +21,14 @@ export type FlowStep = {
 };
 
 export type JourneyStep = {
-  id: number;
+  id: string;
   type: string;
   stepNumber: number;
   data: any;
 };
 
 export type Journey = {
-  id: number;
+  id: string;
   title: string;
   steps: JourneyStep[];
   status: JourneyStatus;
@@ -36,8 +36,8 @@ export type Journey = {
 
 export type JourneyWidgetProps = {
   id: string;
-  stepId?: number;
-  journeyId: number;
+  stepId?: string;
+  journeyId: string;
   data: any;
   stepNumber: number;
   required: boolean;
