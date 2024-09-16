@@ -1,109 +1,56 @@
-import { JourneyStep, JourneyWidgetInfo } from "./types";
-
-export const journeySteps: JourneyStep[] = [
-  {
-    type: "title",
-    title: "Title",
-    required: true,
-  },
-  // {
-  //     type: 'form',
-  //      title: 'Form',
-  //     required: true
-  // }
-];
-export class JourneyWidget {
-  getInfo(): JourneyWidgetInfo {
-    throw new Error("Method 'getInfo()' must be implemented.");
-  }
-
-  getConfig() {
-    throw new Error("Method 'getConfig()' must be implemented.");
-  }
-
-  getData() {
-    throw new Error("Method 'getData()' must be implemented.");
-  }
-
-  setData(data) {
-    throw new Error("Method 'setData()' must be implemented.");
-  }
-
-  renderConfig(): JSX.Element {
-    throw new Error("Method 'renderConfig()' must be implemented.");
-  }
-}
-
-export class TitleWidget extends JourneyWidget {
-  private readonly config = {
-    title: {
-      type: "string",
-      label: "Title",
-      required: true,
-    },
-  };
-  private data = {
-    title: undefined,
-  };
-  private id;
-  private title;
-  private required;
-
-  constructor(props: { id: number; title: string; required: boolean }) {
-    super();
-
-    this.id = props.id;
-    this.title = props.title;
-    this.required = props.required;
-  }
-
-  getInfo(): JourneyWidgetInfo {
-    return {
-      id: this.id,
-      title: this.title,
-      require: this.required,
-    };
-  }
-
-  getConfig() {
-    return this.config;
-  }
-
-  setData(data) {
-    this.data.title = data.title;
-  }
-
-  getData() {
-    return { ...this.data };
-  }
-
-  renderConfig(): JSX.Element {
-    return <h2 className="govie-heading-m"> TEST </h2>;
-  }
-}
-
+import { FlowStep, Journey, JourneyWidgetProps } from "./types";
+import { WidgetManager } from "./widgets";
+import { JourneyWidget } from "./widgets/baseWidget";
 export class JourneyEditor {
-  private readonly journeyWidgetsMap = {
-    title: TitleWidget,
-  };
-
-  private readonly journey: JourneyStep[];
+  private widgetManager: WidgetManager;
+  private readonly journey: Journey;
   private steps: JourneyWidget[];
+  private flow: FlowStep[];
 
-  constructor(journey: JourneyStep[]) {
+  constructor(journey: Journey, flow: FlowStep[]) {
+    this.widgetManager = new WidgetManager();
+    this.flow = flow;
+
     this.journey = journey;
-    this.steps = this.journey.map(
-      (step, index) =>
-        new this.journeyWidgetsMap[step.type]({
-          id: index,
-          title: step.title,
-          required: step.required,
-        }),
-    );
+    this.initSteps();
   }
 
-  getSteps() {
-    return this.steps.map((step) => step.getInfo());
+  private initSteps() {
+    this.steps = this.flow.map((flowStep) => {
+      const computedStepId = `${flowStep.type}-${flowStep.stepNumber}`;
+      const existingStep =
+        flowStep.type === "title"
+          ? {
+              id: this.journey.id,
+              journeyId: this.journey.id,
+              data: {
+                name: this.journey.title,
+              },
+            }
+          : this.journey.steps.find(
+              (step) =>
+                flowStep.type === step.type &&
+                flowStep.stepNumber === step.stepNumber,
+            );
+
+      const journeyStep: JourneyWidgetProps = {
+        id: computedStepId,
+        stepId: existingStep?.id,
+        journeyId: this.journey.id,
+        data: existingStep?.data ?? {},
+        required: flowStep.required,
+        stepNumber: flowStep.stepNumber,
+      };
+
+      const widget = this.widgetManager.getWidget(flowStep.type);
+      return new widget(journeyStep);
+    });
+  }
+
+  getStepsInfo() {
+    return this.steps
+      .map((step) => step.getInfo())
+      .sort((a, b) => (a.stepNumber < b.stepNumber ? -1 : 1));
   }
 
   getStep(id: string) {
@@ -112,5 +59,11 @@ export class JourneyEditor {
 
   setStepData(id: string, data: any) {
     this.steps.find((step) => step.getInfo().id === id)?.setData(data);
+  }
+
+  isCompleted() {
+    return this.steps
+      .filter((step) => step.getInfo().required)
+      .every((step) => step.isCompleted());
   }
 }

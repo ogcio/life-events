@@ -13,6 +13,46 @@
     "createJourneyDescription": "Combine building blocks to form a journey",
     "listJourneys": "List of existing journeys",
     "listJourneysDescription": "View and choose existing journey",
-    "tutorialVideo": "Tutorial video"
+    "tutorialVideo": "Tutorial video",
+    "create": {
+      "title": "What would you like to call this journey?",
+      "description": "Example: 'Request a replacement Driving Licence'"
+    },
+    "addSteps": {
+      "title": "Add steps",
+      "add": "Add to journey",
+      "submit": "Generate link and Save"
+    },
+    "widgets": {
+      "titleWidget": {
+        "title": "Edit the name of your journey",
+        "nameLabel": "Journey name"
+      },
+      "formWidget": {
+        "title": "Choose your form",
+        "titleLabel": "Title",
+        "urlLabel": "Form URL"
+      },
+      "paymentWidget": {
+        "title": "Choose your payment",
+        "titleLabel": "Title",
+        "urlLabel": "Payment URL"
+      },
+      "messagingWidget": {
+        "title": "Choose your message",
+        "titleLabel": "Title",
+        "urlLabel": "Message template URL"
+      }
+    }
+  },
+  "General": {
+    "back": "Back",
+    "continue": "Continue",
+    "edit": "Edit",
+    "choose": "Choose",
+    "required": "Required",
+    "cancel": "Cancel",
+    "shareLink": "Share link",
+    "copyLink": "Copy link"
   }
 }
