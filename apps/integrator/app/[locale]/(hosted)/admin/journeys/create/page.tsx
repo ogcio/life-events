@@ -2,6 +2,10 @@ import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { AuthenticationFactory } from "../../../../../../libraries/authentication-factory";
 import { PageWrapper } from "../../../PageWrapper";
+import {
+  JourneyEditor,
+  journeySteps,
+} from "../../../../../../libraries/journeyEditor";
 
 type Props = {
   params: {
@@ -20,5 +24,18 @@ export default async ({ params: { locale } }: Props) => {
     return notFound();
   }
 
-  return <PageWrapper locale={locale}>Create a new journey</PageWrapper>;
+  const editor = new JourneyEditor(journeySteps);
+  const steps = editor.getSteps();
+
+  const serverAction = async () => {
+    "use server";
+  };
+
+  return (
+    <PageWrapper locale={locale}>
+      <form action={serverAction}>
+        <input type="submit" value={"SAVE"} className="govie-button" />
+      </form>
+    </PageWrapper>
+  );
 };

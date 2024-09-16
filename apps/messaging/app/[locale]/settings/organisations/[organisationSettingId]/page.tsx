@@ -119,10 +119,7 @@ export default async (props: { params: { organisationSettingId: string } }) => {
       <h1>
         <span className="govie-heading-l">{t("title")}</span>
       </h1>
-      <p className="govie-body">
-        {/* {organisationId} At the moment we want "Life Events" as fixed value */}
-        Life Events
-      </p>
+      <p className="govie-body">{configurations.data?.organisationId}</p>
       <form action={submitAction}>
         <input
           name="organisationSettingId"

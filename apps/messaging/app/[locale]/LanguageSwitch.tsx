@@ -3,6 +3,7 @@ import { cookies, headers } from "next/headers";
 import styles from "./Header.module.scss";
 import { redirect, RedirectType } from "next/navigation";
 import { AuthenticationFactory } from "../utils/authentication-factory";
+import { ProfileAuthenticationFactory } from "../utils/profile-authentication-factory";
 
 type Theme = "dark" | "light";
 
@@ -32,7 +33,7 @@ export default async ({ theme }: { theme: Theme }) => {
     }
     const authenticationContext = AuthenticationFactory.getInstance();
     const authUser = await authenticationContext.getUser();
-    const userProfile = await AuthenticationFactory.getProfileClient();
+    const userProfile = await ProfileAuthenticationFactory.getProfileClient();
     await userProfile.patchUser(authUser.id, {
       preferredLanguage: handleLang,
     });
