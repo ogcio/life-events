@@ -8,7 +8,7 @@ dotenv.config({ path: ".env.test" });
 const baseURL = process.env.BASE_URL;
 
 export default defineConfig({
-  timeout: 500000,
+  timeout: 60000,
   grep: testPlanFilter(),
   reporter: [
     ["line"],

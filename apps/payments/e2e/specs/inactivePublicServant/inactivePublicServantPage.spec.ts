@@ -14,7 +14,7 @@ import { MyGovIdMockLoginPage } from "../../objects/MyGovIdMockLoginPage";
 import { inactivePublicServant, password } from "../../utils/constants";
 
 test.describe("Inactive public servant page", () => {
-  const baseURL = process.env.BASE_URL || "";
+  const baseURL = process.env.BASE_URL || "https://payments.dev.blocks.gov.ie/";
   let page;
 
   test.beforeAll(async ({ browser }) => {
