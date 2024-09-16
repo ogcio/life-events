@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-namespace */
 import { Pool } from "pg";
 import { FastifyBaseLogger } from "fastify";
 import { SecurityLevels } from "../../types/schemaDefinitions.js";
@@ -26,9 +27,11 @@ enum EventKey {
   MESSAGE_DELIVERY = "message_delivery",
   EMAIL_DELIVERY = "email_delivery",
   SMS_DELIVERY = "sms_delivery",
+  MESSAGE_OPTION_SEEN = "message_option_seen",
+  MESSAGE_OPTION_UNSEEN = "message_option_unseen",
 }
 
-type EventType = {
+export type EventType = {
   status: EventStatus;
   key: EventKey;
 };
@@ -76,6 +79,16 @@ export namespace MessagingEventType {
 
   export const deliverMessage: EventType = {
     key: EventKey.MESSAGE_DELIVERY,
+    status: EventStatus.SUCCESSFUL,
+  };
+
+  export const citizenSeenMessage: EventType = {
+    key: EventKey.MESSAGE_OPTION_SEEN,
+    status: EventStatus.SUCCESSFUL,
+  };
+
+  export const citizenUnseenMessage: EventType = {
+    key: EventKey.MESSAGE_OPTION_UNSEEN,
     status: EventStatus.SUCCESSFUL,
   };
 
