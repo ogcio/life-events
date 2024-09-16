@@ -363,24 +363,18 @@ const scheduleMessage = async (
             ]);
             continue;
           }
-
-          const sent = await mailservice.sendMail({
+          await mailservice.sendMail({
             provider,
             email: user.email,
             subject: transportationSubject,
             body: transportationBody ?? "",
           });
-
-          if (sent?.error) {
-            // expand if we need more details.
-            throw new Error();
-            // TODO qui da aggiornare
-          }
         } catch (err) {
           await eventLogger.log(MessagingEventType.emailError, [
             {
               messageId,
               messageKey: "failedToSend",
+              details: JSON.stringify(err),
             },
           ]);
           errors.push({
