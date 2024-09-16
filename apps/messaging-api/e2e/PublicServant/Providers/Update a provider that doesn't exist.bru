@@ -1,0 +1,36 @@
+meta {
+  name: Update a provider that doesn't exist
+  type: http
+  seq: 2
+}
+
+put {
+  url: {{baseUrl}}/api/v1/providers/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+    "type":"email",
+    "isPrimary":false,
+    "smtpHost": "update {{randomStringEmail}}",
+    "smtpPort":12345,
+    "username":"update user",
+    "password":"update password",
+    "providerName": "update {{randomStringEmail}}",
+    "fromAddress": "update {{randomStringEmail}}",
+    "ssl":false
+  }
+}
+
+assert {
+  res.status: eq 404
+  res.body.code: eq NOT_FOUND_ERROR
+  res.body.requestId: isDefined
+}

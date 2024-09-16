@@ -1,11 +1,12 @@
+import { AuthenticationContextConfig } from "auth/base-authentication-context";
 import { AuthUserScope } from "auth/index";
+import { routeDefinitions } from "../app/routeDefinitions";
+import { organizationScopes } from "auth/authentication-context";
+import { headers } from "next/headers";
 
 export const paymentsApiResource = process.env.PAYMENTS_BACKEND_URL + "/";
 
-export const orgScopes = [
-  AuthUserScope.Organizations,
-  AuthUserScope.OrganizationRoles,
-];
+export const publicServantExpectedRoles = ["Payments Public Servant"];
 
 export const baseConfig = {
   cookieSecure: process.env.NODE_ENV === "production",
@@ -33,13 +34,30 @@ export const paymentsPublicServantScopes = [
   "payments:payment_request.public:read",
 ];
 
+const buildLoginUrlWithPostLoginRedirect = () => {
+  const currentPath = headers().get("x-url");
+  return `${routeDefinitions.preLogin.path()}?loginUrl=${routeDefinitions.login.path()}&postLoginRedirectUrl=${encodeURIComponent(currentPath ?? "")}`;
+};
+
+export const getAuthenticationContextConfig =
+  (): AuthenticationContextConfig => ({
+    baseUrl: baseConfig.baseUrl,
+    appId: baseConfig.appId,
+    appSecret: baseConfig.appSecret,
+    citizenScopes,
+    publicServantExpectedRoles,
+    publicServantScopes: paymentsPublicServantScopes,
+    loginUrl: buildLoginUrlWithPostLoginRedirect(),
+    resourceUrl: paymentsApiResource,
+  });
+
 export default {
   ...baseConfig,
   // All the available resources to the app
   resources: [paymentsApiResource],
   scopes: [
     ...commonScopes,
-    ...orgScopes,
+    ...organizationScopes,
     ...citizenScopes,
     ...paymentsPublicServantScopes,
   ],
@@ -47,3 +65,6 @@ export default {
 
 export const postSignoutRedirect =
   process.env.NEXT_PUBLIC_PAYMENTS_SERVICE_ENTRY_POINT;
+export const postLoginRedirectUrlCookieName = "logtoPostLoginRedirectUrl";
+
+export const logtoUserIdCookieName = "logtoUserId";

@@ -14,8 +14,7 @@ import Footer from "../../../(hosted)/Footer";
 import { EmptyStatus } from "../../../../components/EmptyStatus";
 import Header from "../../../../components/Header/Header";
 import Banner from "../../../../components/Banner";
-import { getPaymentsCitizenContext } from "../../../../../libraries/auth";
-import { PaymentsApiFactory } from "../../../../../libraries/payments-api";
+import { AuthenticationFactory } from "../../../../../libraries/authentication-factory";
 
 type Props = {
   params: {
@@ -33,7 +32,7 @@ type Props = {
 };
 
 async function getPaymentRequestDetails(paymentId: string) {
-  const paymentsApi = await PaymentsApiFactory.getInstance();
+  const paymentsApi = await AuthenticationFactory.getPaymentsClient();
   const { data: details, error } =
     await paymentsApi.getPaymentRequestPublicInfo(paymentId);
 
@@ -64,7 +63,8 @@ export default async function Page(props: Props) {
   if (!props.searchParams?.paymentId || !props.searchParams?.id)
     return notFound();
 
-  const { isPublicServant } = await getPaymentsCitizenContext();
+  const isPublicServant =
+    await AuthenticationFactory.getInstance().isPublicServant();
 
   const embed = props.searchParams?.embed === "true";
 
@@ -187,19 +187,12 @@ export default async function Page(props: Props) {
 
   if (embed)
     return (
-      <body
-        style={{
-          margin: "unset",
-          position: "relative",
-          display: "flex",
-          flexDirection: "column",
-        }}
-      >
+      <>
         {isPublicServant && (
           <Banner text={tBanner("bannerText")} tag={tBanner("tag")} />
         )}
         {content}
-      </body>
+      </>
     );
 
   /**
@@ -207,7 +200,7 @@ export default async function Page(props: Props) {
    * and to make the content fit the windows' height.
    */
   return (
-    <body
+    <div
       style={{
         margin: "unset",
         minHeight: "100vh",
@@ -229,6 +222,6 @@ export default async function Page(props: Props) {
         </div>
       </div>
       <Footer />
-    </body>
+    </div>
   );
 }

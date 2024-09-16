@@ -2,7 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
 import WorldpayFields from "./WorldpayFields";
 import { errorHandler } from "../../../../../utils";
-import { PaymentsApiFactory } from "../../../../../../libraries/payments-api";
+import { AuthenticationFactory } from "../../../../../../libraries/authentication-factory";
 
 export default async () => {
   const t = await getTranslations("PaymentSetup.AddWorldpay");
@@ -10,7 +10,7 @@ export default async () => {
   async function handleSubmit(formData: FormData) {
     "use server";
 
-    const paymentsApi = await PaymentsApiFactory.getInstance();
+    const paymentsApi = await AuthenticationFactory.getPaymentsClient();
     const { error } = await paymentsApi.createProvider({
       name: formData.get("provider_name") as string,
       type: "worldpay",

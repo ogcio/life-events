@@ -5,7 +5,11 @@
     "dev": "nodemon",
     "build": "next build",
     "start": "next start -p 3000",
+    "test": "echo \"Error: no test specified\" && exit 0",
     "test:e2e": "playwright test",
+    "test:smoke:e2e": "echo \"Error: no test specified\" && exit 0",
+    "test:regression:e2e": "echo \"Error: no test specified\" && exit 0",
+    "test:lighthouse": "node performance-tests/lighthouse/main.mjs",
     "migrate": "db-migrate up"
   },
   "nodemonConfig": {
@@ -18,8 +22,8 @@
     "exec": "next dev -p 3000"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.525.0",
-    "@aws-sdk/s3-request-presigner": "^3.525.0",
+    "@aws-sdk/client-s3": "^3.627.0",
+    "@aws-sdk/s3-request-presigner": "^3.627.0",
     "analytics": "*",
     "auth": "*",
     "building-blocks-sdk": "*",
@@ -30,8 +34,8 @@
     "fast-csv": "^5.0.1",
     "feature-flags": "*",
     "messages": "*",
-    "next": "14.2.2",
-    "next-intl": "^3.7.0",
+    "next": "14.2.5",
+    "next-intl": "^3.17.2",
     "nodemailer": "^6.9.13",
     "pg": "^8.11.3",
     "react": "^18.2.0",
@@ -46,6 +50,11 @@
     "@types/node": "20.10.4",
     "@types/pg": "^8.11.0",
     "@types/react": "18.2.45",
+    "chrome-launcher": "^1.1.2",
+    "fs": "0.0.1-security",
+    "lighthouse": "^12.1.0",
+    "puppeteer": "^22.12.1",
+    "request": "^2.88.2",
     "typescript": "5.3.3"
   }
 }

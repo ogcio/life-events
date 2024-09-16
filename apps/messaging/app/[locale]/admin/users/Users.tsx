@@ -45,25 +45,25 @@ export default async (params: { users: UiUserInvitation[] | undefined }) => {
                 className="govie-table__cell govie-!-font-weight-regular"
                 scope="row"
               >
-                {record.email}
+                {record.emailAddress}
               </th>
               <th
                 className="govie-table__cell govie-!-font-weight-regular"
                 scope="row"
               >
-                {record.details?.publicIdentityId}
+                {record.ppsn}
               </th>
               <th
                 className="govie-table__cell govie-!-font-weight-regular"
                 scope="row"
               >
-                {record.details?.firstName}
+                {record.firstName}
               </th>
               <th
                 className="govie-table__cell govie-!-font-weight-regular"
                 scope="row"
               >
-                {record.details?.lastName}
+                {record.lastName}
               </th>
               <th
                 className="govie-table__cell govie-!-font-weight-regular"

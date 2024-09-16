@@ -1,1 +1,97 @@
-{}
+{
+    "Dashboard": {
+        "title": "Welcome",
+        "description": "This is where you can seamlessly access and configure building blocks to enhance your public sector department’s efficiency and functionality.",
+        "tilesLabel": "Click on one of the icons below to begin.",
+        "services": {
+            "forms": "Forms",
+            "payments": "Payments",
+            "messaging": "Messaging",
+            "lifeEvents": "Life Events",
+            "designSystem": "Design System"
+        }
+    },
+    "LandingPage": {
+        "AlphaBanner": {
+            "tag": "Alpha",
+            "bannerText": "This is a new service - your <url>feedback</url> will help us to improve it."
+        },
+        "sections": {
+            "main": {
+                "title": "Building Blocks",
+                "subtitle": "Build and run online services easily",
+                "description": "Building Blocks are reusable, compatible software parts. They include messaging, digital forms, online payments, case management, and a design system that unites them all with a familiar look and feel.",
+                "cta": "Sign up to learn more",
+                "secondaryP1": "Your users can complete a form, send you information, make secure payments and receive notifications with Building Blocks. It's low-cost, easy to set up and has accessibility built in from the start.",
+                "secondaryP2": "Government departments can use any number of these Building Blocks to create solutions that meet people's needs."
+            },
+            "payments": {
+                "title": "Payments",
+                "description": "Our payments block is built on a robust infrastructure that enables secure and efficient financial transactions, giving users peace of mind every time they use it.",
+                "cta": "Learn more about Payments"
+            },
+            "messaging": {
+                "title": "Messaging",
+                "description": "The Messaging Building Block is a communication solution tailored to streamline interactions with the public.",
+                "cta": "Learn more about Messaging"
+            },
+            "designSystem": {
+                "inDev": "in development",
+                "title": "Design System",
+                "description": "Streamline your design process and ensure consistency across your digital services with the gov.ie Design System.",
+                "cta": "Learn more about the Design System"
+            },
+            "forms": {
+                "title": "FormsIE",
+                "description": "Enhance your unit's operations with FormsIE, a digital solution for online forms that is user-friendly, efficient and accessible.",
+                "cta": "Learn more about FormsIE"
+            },
+            "advantages": {
+                "title": "Why use Building Blocks",
+                "description": "Building Blocks are created by the Digital Services Unit (DSU).",
+                "noProcurement": {
+                    "title": "No procurement",
+                    "description": "As a government-owned product, there is no need for a lengthy wait procuring external suppliers."
+                },
+                "noCode": {
+                    "title": "No code",
+                    "description": "All our tools can be implemented with no technical knowledge."
+                },
+                "lowCost": {
+                    "title": "Low cost",
+                    "description": "Our tools are competitively priced when compared with other software on the market."
+                },
+                "accessible": {
+                    "title": "Accessible",
+                    "description": "All our tools are fully accessible for both civil servants and end users and comply with the EU Web Accessibility Directive."
+                },
+                "trustedExperience": {
+                    "title": "Trusted experience",
+                    "description": "Put your users at ease with a government-branded look and feel and a familiar gov.ie design system."
+                },
+                "test": {
+                    "title": "Test before you launch",
+                    "description": "Quickly test early versions of your service before you build it, saving time and money and reducing risk."
+                }
+            },
+            "footer": {
+                "title": "The Building Blocks",
+                "listDescription": "Your users can:",
+                "listItem1": "complete a form online",
+                "listItem2": "send and receive notifications and information",
+                "listItem3": "pay for services",
+                "descriptionP1": "It's low cost, easy to set up and has accessibility baked in from the start.",
+                "descriptionP2": "You can use one, some or all of the Building Blocks to support the service that you offer.",
+                "cta": "Sign up to learn more"
+            }
+        }
+    },
+    "Menu": {
+        "login": "Login",
+        "logout": "Logout",
+        "loading": "Loading..."
+    },
+    "Footer": {
+        "license": "All content is available under the <link>Open Government Licence v3.0</link>, except where otherwise stated"
+    }
+}

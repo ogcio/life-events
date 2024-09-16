@@ -5,7 +5,6 @@ import postgres from "@fastify/postgres";
 import { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import dotenv from "dotenv";
 import { envSchema } from "./config";
-import authPlugin from "./plugins/auth";
 import fastifySwagger from "@fastify/swagger";
 import fastifySwaggerUi from "@fastify/swagger-ui";
 import fs from "fs";
@@ -17,6 +16,7 @@ import { initializeErrorHandler } from "error-handler";
 import { initializeLoggingHooks } from "logging-wrapper";
 import webhooks from "./routes/webhooks";
 import fastifyRawBody from "fastify-raw-body";
+import apiAuthPlugin from "api-auth";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -36,7 +36,6 @@ export async function build(opts?: FastifyServerOptions) {
     routes: [],
   });
 
-  app.register(authPlugin);
   app.register(fastifyEnv, {
     schema: envSchema,
     dotenv: true,
@@ -80,6 +79,13 @@ export async function build(opts?: FastifyServerOptions) {
     user: process.env.POSTGRES_USER,
     password: process.env.POSTGRES_PASSWORD,
     database: process.env.POSTGRES_DB_NAME,
+  });
+
+  app.register(apiAuthPlugin, {
+    jwkEndpoint: process.env.LOGTO_JWK_ENDPOINT as string,
+    oidcEndpoint: process.env.LOGTO_OIDC_ENDPOINT as string,
+    currentApiResourceIndicator: process.env
+      .LOGTO_API_RESOURCE_INDICATOR as string,
   });
 
   app.register(healthCheck);

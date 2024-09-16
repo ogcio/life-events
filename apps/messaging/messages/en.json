@@ -163,7 +163,8 @@
     "SuccessForm": {
       "title": "Your message has been sent",
       "body": "A copy of this message will appear in your sent messages.",
-      "submitText": "Send another message"
+      "submitText": "Send another message",
+      "partialSuccessError": "Sorry, some messages could not be delivered"
     }
   },
   "formErrors": {
@@ -382,6 +383,10 @@
       }
     }
   },
+  "InactivePublicServant": {
+    "title": "Your account is under review",
+    "description": "Thanks for creating an account in the Building Blocks Ecosystem. Your account as a public servant has now been created."
+  },
   "MessageEvents": {
     "mainHeader": "Message logs",
     "searchPlaceholder": "Search Messages",
@@ -397,6 +402,9 @@
     "backLink": "Back",
     "eventLogMainHeader": "Message Event Log",
     "recipientSubHeader": "Recipient",
+    "failedToFetchParagraph": "Failed to get event logs",
+    "nextPage": "Next",
+    "prevPage": "Previous",
     "status": {
       "delivered": "DELIVERED",
       "delivering": "DELIVERING",

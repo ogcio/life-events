@@ -11,20 +11,24 @@ export class ProvidersRepo {
 
   getProviderById(
     providerId: string,
-    organizationId: string,
+    organizationId?: string,
   ): Promise<QueryResult<ProviderDO>> {
+    const data = [providerId];
+
+    if (organizationId) data.push(organizationId);
+
     return this.pg.query(
       `
-            SELECT
-              provider_id as id,
-              provider_name as name,
-              provider_type as type,
-              provider_data as data,
-              status
-            FROM payment_providers
-            WHERE provider_id = $1
-            AND organization_id = $2`,
-      [providerId, organizationId],
+      SELECT
+        provider_id as id,
+        provider_name as name,
+        provider_type as type,
+        provider_data as data,
+        status
+      FROM payment_providers
+      WHERE provider_id = $1
+      ${organizationId ? "AND organization_id = $2" : ""}`,
+      data,
     );
   }
 

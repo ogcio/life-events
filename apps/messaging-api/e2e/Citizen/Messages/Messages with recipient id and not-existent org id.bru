@@ -1,0 +1,32 @@
+meta {
+  name: Messages with recipient id and not-existent org id
+  type: http
+  seq: 11
+}
+
+get {
+  url: {{baseUrl}}/api/v1/messages?recipientUserId={{process.env.CITIZEN_USER_PROFILE_ID}}&organisationId=09569127-7cb2-4716-9783-0865a778a1b2&status=delivered
+  body: none
+  auth: bearer
+}
+
+query {
+  recipientUserId: {{process.env.CITIZEN_USER_PROFILE_ID}}
+  organisationId: 09569127-7cb2-4716-9783-0865a778a1b2
+  status: delivered
+}
+
+auth:bearer {
+  token: {{citizenAccessToken}}
+}
+
+assert {
+  res.status: eq 200
+  res.body.data: isDefined
+  res.body.data: length 0
+}
+
+tests {
+  
+  
+}

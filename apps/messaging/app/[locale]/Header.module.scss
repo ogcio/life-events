@@ -1,0 +1,101 @@
+@import "app/styles/globals.scss";
+
+.govieHeader {
+  & > .innerWrapper {
+    padding-top: 15px;
+
+    &:after {
+      display: none;
+    }
+  }
+
+  & .title {
+    display: none;
+  }
+}
+
+.innerWrapper {
+  max-width: 1440px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-sizing: border-box;
+  padding: 15px;
+  margin: 0 auto;
+  justify-content: space-between;
+}
+
+.leftSideContainer {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.rightsideContainer {
+  display: none;
+}
+
+.buildingBlocksSelector {
+  display: flex;
+}
+
+@media (min-width: $breakpoint-sm) {
+  .rightsideContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    margin-top: 3px;
+  }
+
+  .govieHeader {
+    & .title {
+      font-size: 24px;
+    }
+  }
+
+  .buildingBlocksSelector {
+    display: none;
+  }
+}
+
+.languagesContainer {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 30px;
+
+  @media ((min-width: ($breakpoint-phone))) {
+    margin-top: 0;
+  }
+}
+
+.languageSwitch {
+  background: none;
+  border: none;
+  font-family: "Lato", arial, sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 20px;
+  padding: 0;
+  cursor: pointer;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-decoration: underline;
+  text-decoration-thickness: max(1px, 0.0625rem);
+  text-underline-offset: 0.1em;
+
+  &:not(:hover):not(:active) {
+    text-decoration: none;
+  }
+
+  &:hover {
+    text-decoration-thickness: max(3px, 0.1875rem, 0.12em);
+    -webkit-text-decoration-skip-ink: none;
+    text-decoration-skip-ink: none;
+    -webkit-text-decoration-skip: none;
+    text-decoration-skip: none;
+  }
+}

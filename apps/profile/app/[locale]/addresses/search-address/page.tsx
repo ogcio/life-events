@@ -1,24 +1,25 @@
 import { getTranslations } from "next-intl/server";
-import { PgSessions } from "auth/sessions";
 import Link from "next/link";
 import { form, routes } from "../../../utils";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { NextPageProps } from "../../../../types";
+import { AuthenticationFactory } from "../../../utils/authentication-factory";
 
 export default async (props: NextPageProps) => {
   const t = await getTranslations("AddressForm");
-  const { userId } = await PgSessions.get();
   const errorT = await getTranslations("FormErrors");
   const { locale } = props.params;
+  const mainUser = await AuthenticationFactory.getInstance().getUser();
   const errors = await form.getErrorsQuery(
-    userId,
+    mainUser.id,
     routes.addresses.searchAddress.slug,
   );
+  const addressError = errors.rows.at(0);
 
   async function searchAction(formData: FormData) {
     "use server";
-
+    const searchUser = await AuthenticationFactory.getInstance().getUser();
     const searchQuery = formData.get("newAddress");
 
     if (!searchQuery?.toString().length) {
@@ -30,7 +31,7 @@ export default async (props: NextPageProps) => {
             field: form.fieldTranslationKeys.address,
           },
         ],
-        userId,
+        searchUser.id,
         routes.addresses.searchAddress.slug,
       );
       return revalidatePath("/");
@@ -42,8 +43,6 @@ export default async (props: NextPageProps) => {
       );
     }
   }
-
-  const addressError = errors.rows.at(0);
 
   return (
     <div className="govie-grid-row">

@@ -9,8 +9,6 @@ import { deleteCookie, setCookie } from "./utils/cookies.js";
 import fs from "fs";
 import streamToString from "./utils/streamToString.js";
 import {
-  CLIENT_SECRET,
-  CODE,
   REDIRECT_HOST,
   REDIRECT_PATH,
   REDIRECT_TIMEOUT,
@@ -40,10 +38,10 @@ export default async (app: FastifyInstance) => {
       },
     },
     async (request, reply) => {
-      const tokenUrl = app.config.TOKEN_URL.replace(
-        CODE,
-        request.query.code,
-      ).replace(CLIENT_SECRET, app.config.CLIENT_SECRET);
+      const baseUrl = new URL(app.config.TOKEN_URL);
+      baseUrl.searchParams.set("code", request.query.code);
+      baseUrl.searchParams.set("client_secret", app.config.CLIENT_SECRET);
+      const tokenUrl = baseUrl.toString();
 
       let data: TokenType;
       try {

@@ -1,5 +1,9 @@
 import { FastifyError } from "fastify";
-import { LifeEventsError, isLifeEventsError } from "shared-errors";
+import {
+  LifeEventsError,
+  isLifeEventsError,
+  parseErrorForLogging,
+} from "shared-errors";
 
 export interface LoggingRequest {
   scheme: string;
@@ -26,6 +30,7 @@ export interface LoggingError {
   class: LogErrorClasses;
   message: string;
   trace?: string;
+  parent?: { name: string; message: string; stack?: string };
   [key: string]: unknown;
 }
 
@@ -77,7 +82,16 @@ export const toLoggingError = (
   };
 
   if (isLifeEventsError(error)) {
-    return { ...output, code: error.name, process: error.errorProcess };
+    const parent = error.parentError
+      ? { parent: parseErrorForLogging(error.parentError) }
+      : {};
+
+    return {
+      ...output,
+      code: error.name,
+      process: error.errorProcess,
+      ...parent,
+    };
   }
 
   return {

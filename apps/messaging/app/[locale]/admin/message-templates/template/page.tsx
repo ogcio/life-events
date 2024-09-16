@@ -184,7 +184,7 @@ const ContentForm = async (props: {
 
     for (const key of langContents.langs) {
       contents.push({
-        lang: key,
+        language: key,
         excerpt: langContents[key].excerpt,
         plainText: langContents[key].plainText,
         richText: langContents[key].plainText,
@@ -196,18 +196,15 @@ const ContentForm = async (props: {
     const templateId = props.templateId;
     if (templateId) {
       const { error } = await sdkClient.updateTemplate(templateId, {
-        contents: contents.map((content) => ({
-          ...content,
-          id: templateId,
-        })),
-        variables: [],
+        id: templateId,
+        contents,
       });
 
       if (error) {
         await temporaryMockUtils.createErrors(
           [
             {
-              errorValue: error.message || "update_error",
+              errorValue: error.detail || "update_error",
               field: "update_error",
               messageKey: "update_error",
             },
@@ -221,14 +218,13 @@ const ContentForm = async (props: {
     } else {
       const { error } = await sdkClient.createTemplate({
         contents,
-        variables: [],
       });
 
       if (error) {
         await temporaryMockUtils.createErrors(
           [
             {
-              errorValue: error.message || "create_error",
+              errorValue: error.detail || "create_error",
               field: "create_error",
               messageKey: "create_error",
             },
@@ -425,8 +421,7 @@ export default async (props: {
   searchParams: { id?: string };
 }) => {
   const t = await getTranslations("MessageTemplate");
-  const { user, accessToken } =
-    await AuthenticationFactory.getInstance().getContext();
+  const { user } = await AuthenticationFactory.getInstance().getContext();
 
   const state = await pgpool
     .query<{
@@ -442,9 +437,7 @@ export default async (props: {
     )
     .then((res) => res.rows.at(0)?.state);
 
-  const client = await AuthenticationFactory.getMessagingClient({
-    token: accessToken,
-  });
+  const client = await AuthenticationFactory.getMessagingClient();
   const contents: State = { langs: Array<string>() };
 
   let templateFetchError: Awaited<
@@ -453,10 +446,11 @@ export default async (props: {
 
   if (props.searchParams.id) {
     const { data, error } = await client.getTemplate(props.searchParams.id);
+
     if (data?.contents) {
       for (const item of data.contents) {
-        contents[item.lang] = item;
-        contents.langs.push(item.lang);
+        contents[item.language] = item;
+        contents.langs.push(item.language);
       }
     }
 

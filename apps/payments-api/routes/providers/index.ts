@@ -15,6 +15,7 @@ import {
   UpdateProviderDO,
 } from "../../plugins/entities/providers/types";
 import { authPermissions } from "../../types/authPermissions";
+import { AuditLogEventType } from "../../plugins/auditLog/auditLogEvents";
 
 const TAGS = ["Providers"];
 
@@ -48,6 +49,18 @@ export default async function providers(app: FastifyInstance) {
         userId,
         organizationId,
       );
+
+      app.auditLog.createEvent({
+        eventType: AuditLogEventType.PROVIDER_CREATE,
+        userId,
+        organizationId,
+        metadata: {
+          resource: {
+            type: "provider",
+            id: result.id,
+          },
+        },
+      });
 
       reply.send(result);
     },
@@ -131,6 +144,7 @@ export default async function providers(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
+      const userId = request.userData?.userId;
       const organizationId = request.userData?.organizationId;
       const { providerId } = request.params;
 
@@ -143,6 +157,18 @@ export default async function providers(app: FastifyInstance) {
         request.body,
         organizationId,
       );
+
+      app.auditLog.createEvent({
+        eventType: AuditLogEventType.PROVIDER_UPDATE,
+        userId,
+        organizationId,
+        metadata: {
+          resource: {
+            type: "provider",
+            id: providerId,
+          },
+        },
+      });
 
       reply.send({ ok: true });
     },

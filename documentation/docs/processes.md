@@ -81,6 +81,33 @@ Currently, this is not validated with precommit hooks, you can use the commit me
 
 1. Pull requests should be merged using the "Squash and merge" strategy to keep the history clean.
 
+## Build API documentation
+
+Currently we have two possible ways of documenting our APIs:
+1. OpenAPI definition files, that are technical documents which can be used to generate sdks and to be parsed and served as HTML content
+2. Markdown files, used to be shared, directly of after being printed as PDFs, with the consumers
+
+### 1. OpenAPI definition files
+Registering the `fastify-swagger` as in [docs](https://github.com/fastify/fastify-swagger) it generates an `openapi-definition.yaml` file into the root folder of the Fastify service.
+
+After that, using the [Fastify Swagger UI](https://github.com/fastify/fastify-swagger-ui) package, we can serve them using the Swagger UI.
+
+### 2. Markdown files
+The best way we've found to generate them is using [Claude AI](https://claude.ai/).
+
+To do that we can upload an already generated document in the format we would like to obtain, as the [messaging API one](../../apps/messaging-api/docs/messaging-docs.md) and your OpenAPI definition file, e.g. [messaging API definition](../../apps/messaging-api/openapi-definition.yml).
+
+Using the following prompt it should generate the expected document:
+```
+Please write documentation for the endpoints described in the open-api-definition.yaml file in markdown format. The style of the documentation must be the same as in the messaging-docs.md file. To write the comments next to the fields, you can use the description property.
+```
+
+We suggest to just upload an excerpt of the `messaging-docs.md` file and to split the `paths` part of the definition file in multiple parts before providing it to Claude because the context length, for the free version, is limited.
+
+After the generation, you can store it to the `apps/{your-service-name}/ folder` to be able to version it.
+
+*Please Note*: if you want to share it as PDF, during the PDF generation, please check if the pages are splitted as you expect. To add specific page breaks you can add `<div style="page-break-after: always;"></div>` in the markdown file.
+
 # How to propose a process change
 
 In order to propose a change to one of the above processes and guidelines, you can just create a new branch, write down your proposal and create a PR.

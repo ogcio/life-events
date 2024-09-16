@@ -352,3 +352,7 @@ export const category = {
   housing,
   "digital-wallet": digitalWallet,
 };
+
+export const logtoLogin = {
+  url: "/admin/login",
+};

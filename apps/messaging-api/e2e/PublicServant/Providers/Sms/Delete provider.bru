@@ -1,0 +1,19 @@
+meta {
+  name: Delete provider
+  type: http
+  seq: 8
+}
+
+delete {
+  url: {{baseUrl}}/api/v1/providers/{{smsProviderId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+assert {
+  res.status: eq 200
+}

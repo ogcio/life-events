@@ -7,7 +7,6 @@ export type TableMessage = {
   threadName?: string;
   lang: Lang;
   isSeen: boolean;
-  messageName: string;
   securityLevel: SecurityLevel;
   subject: string;
   excerpt: string;

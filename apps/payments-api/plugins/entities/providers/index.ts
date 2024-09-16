@@ -16,6 +16,7 @@ import {
   UpdateProviderDO,
 } from "./types";
 import { DbConstraintMap, handleDbError } from "../../../routes/utils";
+import buildRealex from "./services/realex";
 
 export type ProvidersPlugin = Awaited<ReturnType<typeof buildPlugin>>;
 
@@ -171,6 +172,9 @@ const buildPlugin = (
     getProviderById: buildGetProviderById(repo, log, httpErrors),
     getProvidersList: buildGetProvidersList(repo, log),
     updateProvider: buildUpdateProvider(repo, log, httpErrors),
+    services: {
+      realex: buildRealex(repo, httpErrors),
+    },
   };
 };
 

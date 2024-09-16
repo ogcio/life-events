@@ -24,7 +24,7 @@ import {
 export interface HttpError {
   code: HttpErrorClasses;
   detail: string;
-  request_id: string;
+  requestId: string;
   name: string;
   validation?: ValidationErrorData[];
   process?: string;
@@ -129,7 +129,7 @@ const getResponseFromFastifyError = (
   const output: HttpError = {
     code: parseHttpErrorClass(error.statusCode),
     detail: error.message,
-    request_id: request.id,
+    requestId: request.id,
     name: error.name,
   };
 
@@ -151,7 +151,7 @@ const manageLifeEventsError = (
   const errorResponse: HttpError = {
     code: parseHttpErrorClass(error.errorCode),
     detail: error.message,
-    request_id: request.id,
+    requestId: request.id,
     name: error.name,
     process: error.errorProcess,
   };

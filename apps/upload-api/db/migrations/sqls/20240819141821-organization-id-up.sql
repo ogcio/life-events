@@ -1,0 +1,2 @@
+ALTER TABLE files
+ADD COLUMN organization_id TEXT DEFAULT NULL;

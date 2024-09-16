@@ -1,5 +1,5 @@
 import { Pool } from "pg";
-import { UserDetails } from "../../types/schemaDefinitions";
+import { DEFAULT_LANGUAGE, UserDetails } from "../../types/schemaDefinitions";
 import {
   BadRequestError,
   NotImplementedError,
@@ -107,8 +107,8 @@ const webhookBodyDataToUser = (bodyData: any): UserDetails & { id: string } => {
 
   return {
     id: bodyData.id as string,
-    firstName: identity.rawData.firstName,
-    lastName: identity.rawData.lastName,
+    firstName: identity.rawData.firstName ?? identity.rawData.givenName,
+    lastName: identity.rawData.lastName ?? identity.rawData.surname,
     email: identity.email,
     phone: parseValue(identity.phone),
     dateOfBirth: dateToDbDatetime(identity.rawData.BirthDate),
@@ -117,6 +117,7 @@ const webhookBodyDataToUser = (bodyData: any): UserDetails & { id: string } => {
     consentToPrefillData: false,
     gender: null,
     title: null,
+    preferredLanguage: DEFAULT_LANGUAGE,
   };
 };
 

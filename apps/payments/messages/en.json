@@ -1,4 +1,33 @@
 {
+  "AuditLogs": {
+    "title": "Audit Logs",
+    "emptyListTitle": "Nothing to show...",
+    "emptyListDescription": "There are no events yet.",
+    "table": {
+      "eventType": "Event type",
+      "creationDate": "Creation date",
+      "user": "User",
+      "details": "Details"
+    },
+    "details": {
+      "title": "Audit log details",
+      "eventTitle": "Event name",
+      "eventType": "Event type",
+      "timestamp": "Timestamp",
+      "userId": "User id",
+      "organizationId": "Organization id",
+      "metadata": "Metadata"
+    },
+    "filters": {
+      "user": "User",
+      "resource": "Resource",
+      "action": "Action",
+      "submit": "Submit",
+      "allOption": "All",
+      "from": "From",
+      "to": "To"
+    }
+  },
   "Common": {
     "notFound": "Payment request not found",
     "edit": "Edit",
@@ -64,7 +93,9 @@
     "payments": "Payments",
     "paymentRequests": "Payment requests",
     "providers": "Providers",
-    "logout": "Logout"
+    "auditLogs": "Audit logs",
+    "logout": "Logout",
+    "loading": "Loading..."
   },
   "PaymentSetup": {
     "details": "Payment request details",
@@ -431,5 +462,9 @@
   "Pagination": {
     "previous": "Previous",
     "next": "Next"
+  },
+  "InactivePublicServant": {
+    "title": "Your account is under review",
+    "description": "Thanks for creating an account in the Building Blocks Ecosystem. Your account as a public servant has now been created."
   }
 }

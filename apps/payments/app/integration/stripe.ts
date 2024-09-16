@@ -1,15 +1,14 @@
 import s from "stripe";
-import { TransactionStatuses } from "../../types/TransactionStatuses";
 import { PaymentRequest } from "../../types/common";
 import { StripeData } from "../[locale]/(hosted)/paymentSetup/providers/types";
 import { errorHandler } from "../utils";
-import { PaymentsApiFactory } from "../../libraries/payments-api";
+import { AuthenticationFactory } from "../../libraries/authentication-factory";
 
 const getStripeProviderId = (paymentRequest: PaymentRequest) =>
   paymentRequest.providers.find((p) => p.type === "stripe")!.id;
 
 const getSecretKey = async (providerId: string): Promise<string> => {
-  const paymentsApi = await PaymentsApiFactory.getInstance();
+  const paymentsApi = await AuthenticationFactory.getPaymentsClient();
   const { data: provider, error } =
     await paymentsApi.getProviderById(providerId);
 
@@ -52,16 +51,5 @@ export async function createPaymentIntent(paymentRequest: PaymentRequest) {
       paymentRequest.amount,
     );
     return { paymentIntent, providerKeysValid: false };
-  }
-}
-
-export function getInternalStatus(status: string) {
-  switch (status) {
-    case "processing":
-      return TransactionStatuses.Pending;
-    case "succeeded":
-      return TransactionStatuses.Succeeded;
-    case "payment_failed":
-      return TransactionStatuses.Failed;
   }
 }

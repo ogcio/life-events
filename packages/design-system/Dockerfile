@@ -1,4 +1,4 @@
-FROM base-deps as design-system
+FROM base-deps AS design-system
 
 WORKDIR /app
 

@@ -8,7 +8,7 @@ import { errorHandler } from "../../../../../utils";
 import { AbstractIntlMessages, NextIntlClientProvider } from "next-intl";
 import { openBankingValidationMap } from "../../../../../validationMaps";
 import { OpenBankingFormState } from "../add-openbanking/page";
-import { PaymentsApiFactory } from "../../../../../../libraries/payments-api";
+import { AuthenticationFactory } from "../../../../../../libraries/authentication-factory";
 
 type Props = {
   provider: OpenBankingProvider;
@@ -27,7 +27,7 @@ export default async ({ provider, locale }: Props) => {
   ): Promise<OpenBankingFormState> {
     "use server";
 
-    const paymentsApi = await PaymentsApiFactory.getInstance();
+    const paymentsApi = await AuthenticationFactory.getPaymentsClient();
 
     const nameField = formData.get("provider_name") as string;
     const accountHolderNameField = formData.get(

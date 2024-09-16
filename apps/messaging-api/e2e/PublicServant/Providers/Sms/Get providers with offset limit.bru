@@ -1,0 +1,29 @@
+meta {
+  name: Get providers with offset limit
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{baseUrl}}/api/v1/providers?type=sms&offset=0&limit=1
+  body: none
+  auth: bearer
+}
+
+query {
+  type: sms
+  offset: 0
+  limit: 1
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+assert {
+  res.body.data[0].id: isDefined
+  res.body.data[0].providerName: isDefined
+  res.body.data[0].type: eq sms
+  res.body.data[0].isPrimary: isDefined
+  res.body.data: length 1
+}

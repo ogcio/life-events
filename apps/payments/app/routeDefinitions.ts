@@ -92,4 +92,34 @@ export const routeDefinitions = {
       return `/${routeDefinitions.error.slug}`;
     },
   },
+  inactivePublicServant: {
+    slug: "inactivePublicServant",
+    path() {
+      return `/${routeDefinitions.inactivePublicServant.slug}`;
+    },
+  },
+  login: {
+    slug: "login",
+    path() {
+      return `/${routeDefinitions.login.slug}`;
+    },
+  },
+  preLogin: {
+    slug: "preLogin",
+    path() {
+      return `/${routeDefinitions.preLogin.slug}`;
+    },
+  },
+  signOut: {
+    slug: "signout",
+    path() {
+      return `/${routeDefinitions.signOut.slug}`;
+    },
+  },
+  auditLogs: {
+    slug: "auditLogs",
+    path() {
+      return `/${routeDefinitions.auditLogs.slug}`;
+    },
+  },
 };

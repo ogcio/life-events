@@ -34,16 +34,16 @@ export default async (props: { locale: string }) => {
       </thead>
       <tbody className="govie-table__body">
         {templates?.map((template) => (
-          <tr className="govie-table__row" key={template.templateMetaId}>
+          <tr className="govie-table__row" key={template.id}>
             <th className="govie-table__header" scope="row">
               {template.contents.find(
-                (content) => content.lang === props.locale,
+                (content) => content.language === props.locale,
               )?.templateName || template.contents.at(0)?.templateName}
             </th>
 
             <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
               {template.contents
-                .map((content) => content.lang)
+                .map((content) => content.language)
                 .sort()
                 .join(", ")}
             </td>
@@ -53,7 +53,7 @@ export default async (props: { locale: string }) => {
                 href={
                   urlWithSearchParams(`${props.locale}/${templateRoutes.url}`, {
                     key: "id",
-                    value: template.templateMetaId,
+                    value: template.id,
                   }).href
                 }
               >
@@ -66,7 +66,7 @@ export default async (props: { locale: string }) => {
                     `${props.locale}/${messageTemplates.url}`,
                     {
                       key: "delete_id",
-                      value: template.templateMetaId,
+                      value: template.id,
                     },
                   ).href
                 }

@@ -34,7 +34,7 @@ export default async (props: {
     const client = await AuthenticationFactory.getMessagingClient();
     const tmpl = await client.getTemplate(props.searchParams?.delete_id);
     const content =
-      tmpl.data?.contents.find((content) => content.lang === LANG_EN) ||
+      tmpl.data?.contents.find((content) => content.language === LANG_EN) ||
       tmpl.data?.contents.at(0);
 
     messageNameToDelete = content?.templateName;

@@ -8,25 +8,30 @@ import {
 
 const getLinks = (environment: string, locale: string) => {
   locale = locale || "en";
-  /**
-   * this switch is useless
-   * but we may use it in the futur
-   * to use different links for different environments
-   */
   switch (environment) {
-    case envUAT:
-    case envStaging:
-    case envDevelopment:
     case envProduction:
-    default:
       return {
         feedbackLink: new URL(
-          `${locale}/6669869c2fe1ff00242a1547`,
-          " https://www.forms.gov.ie",
+          `${locale}/form/45084-government-digital-wallet-pilot-feedback-form`,
+          "https://www.forms.gov.ie",
         ),
         supportLink: new URL(
           `${locale}/6663287aff870300248b6232`,
-          " https://www.forms.gov.ie",
+          "https://www.forms.gov.ie",
+        ),
+      };
+    case envUAT:
+    case envStaging:
+    case envDevelopment:
+    default:
+      return {
+        feedbackLink: new URL(
+          `${locale}/669e76fa3d76fe0024828e40`,
+          "https://forms.preprod.gov.ie",
+        ),
+        supportLink: new URL(
+          `${locale}/6663287aff870300248b6232`,
+          "https://www.forms.gov.ie",
         ),
       };
   }

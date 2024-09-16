@@ -25,6 +25,15 @@ services:
     healthcheck:
       test: 'wget -O - http://127.0.0.1:1080/healthz || exit 1'
 
+  clamav:
+    build: ./clamav
+    image: clamav
+    entrypoint: ./init-unprivileged
+    volumes:
+      - clamav:/tmp/
+    ports:
+      - 3310:3310
+
   localstack:
     image: localstack/localstack:2.3.2
     ports:
@@ -33,42 +42,16 @@ services:
       SERVICES: "s3,secretsmanager"
       FILES_S3_BUCKET: "life-events-files"
       IMAGES_S3_BUCKET: "life-events-images"
+      FILE_UPLOAD_SERVICE_BUCKET: "file-upload-service"
     volumes:
       - './.localstack:/var/lib/localstack'
       - '/var/run/docker.sock:/var/run/docker.sock'
       - './init-localstack.sh:/etc/localstack/init/ready.d/init-localstack.sh' # ready hook
-  
-  scheduler_migrations:
-    image: scheduler-api-container:latest
-    build:
-      context: .
-      dockerfile: ./apps/scheduler-api/Dockerfile
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_HOST=postgresql
-      - POSTGRES_PORT=5432
-      - POSTGRES_DB_NAME=scheduler
-    command: [ "npm", "run", "migrate:scheduler-api" ]
-    depends_on:
-      postgresql:
-        condition: service_healthy
-
-  scheduler:
-    image: scheduler-api-container:latest
-    ports:
-      - 8005:8005
-    env_file:
-      - './apps/scheduler-api/.env'
-    environment:
-      - POSTGRES_HOST=postgresql
-    depends_on:
-      scheduler_migrations:
-        condition: service_completed_successfully
         
 volumes:
   db:
     driver: local
+  clamav:
 
 # custom network to be able to reach Logto running on same network with another Docker Compose file
 networks:

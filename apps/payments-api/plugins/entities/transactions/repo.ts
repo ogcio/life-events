@@ -1,6 +1,11 @@
 import { PostgresDb } from "@fastify/postgres";
 import { QueryResult } from "pg";
-import { CreateTransactionBodyDO, TransactionDetailsDO } from "./types";
+import {
+  CreateTransactionBodyDO,
+  FullTransactionDO,
+  TransactionDetailsDO,
+  TransactionEntry,
+} from "./types";
 import { TransactionStatusesEnum } from ".";
 import { PaginationParams } from "../../../types/pagination";
 
@@ -52,12 +57,12 @@ export class TransactionsRepo {
   updateTransactionStatus(
     transactionId: string,
     status: TransactionStatusesEnum,
-  ): Promise<QueryResult<{ transactionId: string }>> {
+  ): Promise<QueryResult<{ transactionId: string; extPaymentId: string }>> {
     return this.pg.query(
       `UPDATE payment_transactions
         SET status = $2, updated_at = now()
         WHERE transaction_id = $1
-        RETURNING transaction_id as "transactionId"`,
+        RETURNING transaction_id as "transactionId", ext_payment_id as "extPaymentId"`,
       [transactionId, status],
     );
   }
@@ -106,12 +111,12 @@ export class TransactionsRepo {
   createTransaction(
     userId: string,
     transaction: CreateTransactionBodyDO,
-  ): Promise<QueryResult<{ transactionId: string }>> {
+  ): Promise<QueryResult<{ transactionId: string; extPaymentId: string }>> {
     return this.pg.query(
       `INSERT INTO payment_transactions
         (payment_request_id, ext_payment_id, integration_reference, amount, status, created_at, updated_at, payment_provider_id, user_id, user_data)
         VALUES ($1, $2, $3, $4, $5, now(), now(), $6, $7, $8)
-        RETURNING transaction_id as "transactionId";
+        RETURNING transaction_id as "transactionId", ext_payment_id as "extPaymentId";
       `,
       [
         transaction.paymentRequestId,
@@ -126,6 +131,46 @@ export class TransactionsRepo {
     );
   }
 
+  getPaymentRequestTransactions(
+    paymentRequestId: string,
+    organizationId: string,
+    pagination: PaginationParams,
+  ) {
+    return this.pg.query(
+      `SELECT
+        t.transaction_id as "transactionId",
+        t.status,
+        pr.title,
+        pt.amount,
+        t.ext_payment_id as "extPaymentId",
+        t.updated_at as "updatedAt"
+      FROM payment_transactions t
+      INNER JOIN payment_requests pr ON pr.payment_request_id = t.payment_request_id
+      INNER JOIN payment_transactions pt ON pt.transaction_id = t.transaction_id
+      WHERE pr.payment_request_id = $1
+        AND pr.organization_id = $2
+      ORDER BY t.updated_at DESC
+      LIMIT $3 OFFSET $4`,
+      [paymentRequestId, organizationId, pagination.limit, pagination.offset],
+    );
+  }
+
+  getPaymentRequestTransactionsTotalCount(
+    paymentRequestId: string,
+    organizationId: string,
+  ) {
+    return this.pg.query(
+      `SELECT
+        count(*) as "totalCount"
+      FROM payment_transactions t
+      INNER JOIN payment_requests pr ON pr.payment_request_id = t.payment_request_id
+      INNER JOIN payment_transactions pt ON pt.transaction_id = t.transaction_id
+      WHERE pr.payment_request_id = $1
+        AND pr.organization_id = $2`,
+      [paymentRequestId, organizationId],
+    );
+  }
+
   generatePaymentIntentId(
     length: number,
   ): Promise<QueryResult<{ intentId: string }>> {
@@ -136,6 +181,40 @@ export class TransactionsRepo {
           FROM payment_transactions
         )`,
       [length],
+    );
+  }
+
+  getTransactionByExtPaymentId(
+    extPaymentId: string,
+  ): Promise<QueryResult<TransactionEntry>> {
+    return this.pg.query(
+      `SELECT
+        transaction_id as "transactionId",
+        payment_request_id as "paymentRequestId",
+        ext_payment_id as "extPaymentId",
+        status,
+        integration_reference as "integrationReference",
+        created_at as "createdAt",
+        updated_at as "updatedAt",
+        amount,
+        payment_provider_id as "paymentProviderId",
+        user_data as "userData",
+        user_id as "userId"
+      FROM payment_transactions 
+      WHERE ext_payment_id = $1`,
+      [extPaymentId],
+    );
+  }
+
+  getPaymentRequestIdFromTransaction(
+    transactionId: string,
+  ): Promise<QueryResult<{ paymentRequestId: string }>> {
+    return this.pg.query(
+      `SELECT
+        t.payment_request_id as "paymentRequestId"
+      FROM payment_transactions t
+      WHERE t.transaction_id = $1`,
+      [transactionId],
     );
   }
 }

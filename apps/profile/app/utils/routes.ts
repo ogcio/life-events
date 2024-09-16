@@ -14,6 +14,22 @@ export const entitlements = {
   },
 };
 
+export const logto = {
+  slug: "logto",
+  login: {
+    slug: "login",
+    path() {
+      return "/login";
+    },
+  },
+  signout: {
+    slug: "signout",
+    path() {
+      return "/signout";
+    },
+  },
+};
+
 export const addresses = {
   slug: "addresses",
   searchAddress: {

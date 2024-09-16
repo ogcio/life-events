@@ -1,0 +1,23 @@
+meta {
+  name: Delete a file
+  type: http
+  seq: 2
+}
+
+delete {
+  url: {{baseUrl}}/api/v1/metadata/
+  body: formUrlEncoded
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{accessToken}}
+}
+
+body:form-urlencoded {
+  fileId: {{fileId}}
+}
+
+assert {
+  res.status: eq 200
+}

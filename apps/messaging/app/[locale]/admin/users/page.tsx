@@ -30,8 +30,13 @@ export interface UiUserInvitation {
   organisationPreferredTransports?: string[];
   correlationQuality: string;
   userStatus: string;
-  phone: string | null;
-  email: string | null;
+  phoneNumber: string | null;
+  emailAddress: string | null;
+  firstName: string | null;
+  lastName: string | null;
+  birthDate: string | null;
+  lang: string | null;
+  ppsn: string | null;
   details?: {
     publicIdentityId: string | null;
     firstName: string | null;
@@ -58,15 +63,13 @@ export default async (props: {
   const isImportCsv = listType === searchValueImportCsv;
   let users: UiUserInvitation[] | undefined = [];
   if (isUsers) {
-    const { accessToken, organization } =
+    const { organization } =
       await AuthenticationFactory.getInstance().getPublicServant();
-    if (!accessToken || !organization) {
+    if (!organization) {
       throw notFound();
     }
-    const messagingClient = await AuthenticationFactory.getMessagingClient({
-      token: accessToken,
-    });
-    const { data } = await messagingClient.getUsers(organization.id);
+    const messagingClient = await AuthenticationFactory.getMessagingClient();
+    const { data } = await messagingClient.getUsers({ activeOnly: false });
     users = data;
   }
   return (

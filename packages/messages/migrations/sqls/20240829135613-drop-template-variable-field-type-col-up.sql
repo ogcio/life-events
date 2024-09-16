@@ -1,0 +1,1 @@
+alter table message_template_variables drop column if exists field_type;

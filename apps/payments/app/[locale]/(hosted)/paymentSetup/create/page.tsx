@@ -10,7 +10,8 @@ import { PaymentRequestDetails } from "../db";
 import { ProviderType } from "../providers/types";
 import { paymentRequestValidationMap } from "../../../../validationMaps";
 import { getTranslations } from "next-intl/server";
-import { PaymentsApiFactory } from "../../../../../libraries/payments-api";
+import { AuthenticationFactory } from "../../../../../libraries/authentication-factory";
+import { PageWrapper } from "../../PageWrapper";
 
 type Props = {
   params: {
@@ -38,7 +39,7 @@ export default async function Page({ params: { locale } }: Props) {
   ): Promise<PaymentRequestFormState> {
     "use server";
 
-    const paymentsApi = await PaymentsApiFactory.getInstance();
+    const paymentsApi = await AuthenticationFactory.getPaymentsClient();
 
     const providerAccountsField = formData.get("providerAccounts") as string;
 
@@ -123,5 +124,9 @@ export default async function Page({ params: { locale } }: Props) {
     return formResult;
   }
 
-  return <PaymentSetupFormPage locale={locale} action={handleSubmit} />;
+  return (
+    <PageWrapper locale={locale} disableOrgSelector={true}>
+      <PaymentSetupFormPage locale={locale} action={handleSubmit} />
+    </PageWrapper>
+  );
 }

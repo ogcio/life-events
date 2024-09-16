@@ -1,0 +1,34 @@
+meta {
+  name: Update provider
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{baseUrl}}/api/v1/providers/{{smsProviderId}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "id": "{{smsProviderId}}",
+    "type":"sms",
+    "isPrimary":false,
+    "providerName": "update {{randomStringSms}}",
+    "config":{
+      "type":"AWS",
+      "accessKey":"update key",
+      "secretAccessKey":"update secret",
+      "region":"update region"
+    }
+  }
+}
+
+assert {
+  res.status: eq 200
+}

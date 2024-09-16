@@ -121,7 +121,6 @@ export const PaymentRequest = Type.Object({
   providers: Type.Array(ProviderDetails),
   status: PaymentRequestStatus,
 });
-export type PaymentRequest = Static<typeof PaymentRequest>;
 
 export const PaymentRequestDetails = Type.Composite([
   PaymentRequest,
@@ -131,13 +130,12 @@ export const PaymentRequestDetails = Type.Composite([
     allowCustomAmount: Type.Boolean(),
   }),
 ]);
-export type PaymentRequestDetails = Static<typeof PaymentRequestDetails>;
 
 export const CreatePaymentRequest = Type.Object({
   title: Type.String({ validator: "RequiredValidator" }),
   description: Type.String(),
   reference: Type.String({ validator: "RequiredValidator" }),
-  amount: Type.Number({ minimum: 1, maximum: 10000 }),
+  amount: Type.Number({ minimum: 1, maximum: 1000000 }),
   redirectUrl: Type.String({ validator: "RequiredValidator" }),
   allowAmountOverride: Type.Boolean(),
   allowCustomAmount: Type.Boolean(),
@@ -146,7 +144,6 @@ export const CreatePaymentRequest = Type.Object({
     validator: "PaymentRequestStatusValidator",
   }),
 });
-export type CreatePaymentRequest = Static<typeof CreatePaymentRequest>;
 
 export const EditPaymentRequest = Type.Composite([
   CreatePaymentRequest,
@@ -158,14 +155,10 @@ export const EditPaymentRequest = Type.Composite([
     }),
   }),
 ]);
-export type EditPaymentRequest = Static<typeof EditPaymentRequest>;
 
 export const ParamsWithPaymentRequestId = Type.Object({
   requestId: Type.String(),
 });
-export type ParamsWithPaymentRequestId = Static<
-  typeof ParamsWithPaymentRequestId
->;
 
 /**
  * Transaction status
@@ -204,6 +197,7 @@ export const Transaction = Type.Composite([
     "transactionId",
     "status",
     "amount",
+    "extPaymentId",
     "updatedAt",
   ]),
   Type.Object({
@@ -258,7 +252,6 @@ export const RealexPaymentObject = Type.Object({
   URL: Type.String(),
   SHA256HASH: Type.String(),
 });
-export type RealexPaymentObject = Static<typeof RealexPaymentObject>;
 
 export const RealexPaymentObjectQueryParams = Type.Object({
   amount: Type.String(),
@@ -309,7 +302,6 @@ export const RealexHppResponse = Type.Object({
   HPP_ADDRESS_MATCH_INDICATOR: Type.String(),
   BATCHID: Type.String(),
 });
-export type RealexHppResponse = Static<typeof RealexHppResponse>;
 
 /**
  * Citizen
@@ -320,6 +312,7 @@ export const CitizenTransaction = Type.Pick(Transaction, [
   "status",
   "title",
   "updatedAt",
+  "extPaymentId",
   "amount",
 ]);
 export const CitizenTransactions = Type.Array(CitizenTransaction);
@@ -371,3 +364,58 @@ export const GenericResponse = <T extends TSchema>(T: T) =>
       }),
     ),
   });
+
+export const AuditLogEvent = Type.Object({
+  auditLogId: Type.String(),
+  createdAt: Type.String(),
+  eventType: Type.String(),
+  title: Type.String(),
+  userId: Type.Optional(Type.String()),
+  organizationId: Type.Optional(Type.String()),
+});
+
+export const AuditLogEvents = Type.Array(
+  Type.Composite([
+    AuditLogEvent,
+    Type.Object({
+      resourceId: Type.Optional(Type.String()),
+    }),
+  ]),
+);
+
+export const AuditLogEventDetails = Type.Composite([
+  AuditLogEvent,
+  Type.Object({
+    metadata: Type.Record(Type.String(), Type.Any()),
+  }),
+]);
+
+export const CreateAuditLog = Type.Pick(AuditLogEventDetails, [
+  "eventType",
+  "userId",
+  "organizationId",
+  "metadata",
+]);
+
+export const ParamsWithAuditLogId = Type.Object({
+  auditLogId: Type.String(),
+});
+export type ParamsWithAuditLogId = Static<typeof ParamsWithAuditLogId>;
+
+export const EventTypes = Type.Record(Type.String(), Type.String());
+
+export const AuditLogEventsFilters = Type.Object({
+  resource: Type.Optional(Type.String()),
+  action: Type.Optional(Type.String()),
+  user: Type.Optional(Type.String()),
+  from: Type.Optional(Type.String()),
+  to: Type.Optional(Type.String()),
+});
+
+export const AuditLogEventsFiltersQueryString = Type.Composite([
+  PaginationParams,
+  AuditLogEventsFilters,
+]);
+export type AuditLogEventsFiltersQueryString = Static<
+  typeof AuditLogEventsFiltersQueryString
+>;

@@ -155,18 +155,16 @@ export default async (props: MessageCreateProps) => {
 
   const urlParams = new URLSearchParams(props.searchParams);
   const queryParams = getQueryParams(urlParams);
-  const { accessToken, organization } =
+  const { organization } =
     await AuthenticationFactory.getInstance().getPublicServant();
-  if (!accessToken || !organization) {
+  if (!organization) {
     throw notFound();
   }
-  const messaging = await AuthenticationFactory.getMessagingClient({
-    token: accessToken,
-  });
-  const response = await messaging.getRecipients({
+  const messaging = await AuthenticationFactory.getMessagingClient();
+  const response = await messaging.getUsers({
     ...queryParams,
-    organisationId: organization.id,
     transports: props.state.transportations.join(","),
+    activeOnly: true,
   });
 
   if (response.error || !response.data) {
@@ -175,6 +173,7 @@ export default async (props: MessageCreateProps) => {
   const users = response.data;
 
   const addedUsers = await getRecipientContacts(props.state.userIds);
+
   return (
     <div className="govie-grid-column-two-thirds-from-desktop">
       <h1>

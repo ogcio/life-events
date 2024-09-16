@@ -28,6 +28,7 @@ yarn-error.log*
 # local env files
 .env*.local
 .env
+.env.test
 
 # vercel
 .vercel
@@ -43,3 +44,4 @@ e2e/.auth
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+/allure-results

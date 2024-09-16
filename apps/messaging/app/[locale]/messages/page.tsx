@@ -8,9 +8,13 @@ import { AuthenticationFactory } from "../../utils/authentication-factory";
 
 export default async (props: { searchParams: any }) => {
   const t = await getTranslations("Messages");
+
+  const afinstance = AuthenticationFactory.getInstance();
+  const user = await afinstance.getUser();
+
   const { data: messages } = await (
     await AuthenticationFactory.getMessagingClient()
-  ).getMessages();
+  ).getMessagesForUser(user.id);
 
   async function searchAction(formData: FormData) {
     "use server";
