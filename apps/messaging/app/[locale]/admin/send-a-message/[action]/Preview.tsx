@@ -40,7 +40,7 @@ export default async (props: MessageCreateProps) => {
           await AuthenticationFactory.getMessagingClient()
         ).getTemplate(props.state.templateMetaId)
       ).data?.contents.find(
-        (c) => c.lang === (headers().get("x-next-intl-locale") ?? "en"),
+        (c) => c.language === (headers().get("x-next-intl-locale") ?? "en"),
       )
     : null;
 

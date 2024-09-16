@@ -1,7 +1,6 @@
 import Link from "next/link";
 import ds from "design-system/";
 // import NotificationsLink from "../[locale]/(public)/notifications/NotificationsLink";
-import UserIcon from "./UserIcon";
 import { headers } from "next/headers";
 import styles from "./Header.module.scss";
 import HamburgerButton from "./HamburgerButton";
@@ -11,9 +10,14 @@ import { getTranslations } from "next-intl/server";
 type THeaderProps = {
   showHamburgerButton: boolean;
   locale: string;
+  signoutUrl: string;
 };
 
-export default async ({ showHamburgerButton, locale }: THeaderProps) => {
+export default async ({
+  showHamburgerButton,
+  locale,
+  signoutUrl,
+}: THeaderProps) => {
   const t = await getTranslations("Header");
   const pathSlice = headers().get("x-pathname")?.split("/") ?? [];
   const path = pathSlice.slice(2)?.join("/") || "";
@@ -140,7 +144,7 @@ export default async ({ showHamburgerButton, locale }: THeaderProps) => {
 
         */}
           <Link
-            href={`${process.env.AUTH_SERVICE_URL}/auth/logout?redirectUrl=${process.env.HOST_URL}`}
+            href={signoutUrl}
             prefetch={false}
             className={styles.logoutLink}
             aria-label="Logout"

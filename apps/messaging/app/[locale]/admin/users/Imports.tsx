@@ -8,17 +8,13 @@ import { notFound } from "next/navigation";
 
 export default async () => {
   const t = await getTranslations("UsersImports");
-  const { accessToken, organization } =
+  const { organization } =
     await AuthenticationFactory.getInstance().getPublicServant();
-  if (!accessToken || !organization) {
+  if (!organization) {
     throw notFound();
   }
-  const messagingClient = await AuthenticationFactory.getMessagingClient({
-    token: accessToken,
-  });
-  const { data: imports } = await messagingClient.getUsersImports(
-    organization.id,
-  );
+  const messagingClient = await AuthenticationFactory.getMessagingClient();
+  const { data: imports } = await messagingClient.getUsersImports();
 
   return (
     <>
@@ -38,7 +34,7 @@ export default async () => {
         </thead>
         <tbody className="govie-table__body">
           {imports?.map((record) => (
-            <tr key={record.importId} className="govie-table__row">
+            <tr key={record.id} className="govie-table__row">
               <th
                 className="govie-table__cell govie-!-font-weight-regular"
                 scope="row"
@@ -56,7 +52,7 @@ export default async () => {
                   className="govie-link govie-!-margin-right-3"
                   href={
                     new URL(
-                      `/admin/users/imports/${record.importId}`,
+                      `/admin/users/imports/${record.id}`,
                       process.env.HOST_URL,
                     ).href
                   }

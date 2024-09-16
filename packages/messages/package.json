@@ -6,7 +6,9 @@
   "scripts": {
     "migrate": "db-migrate up",
     "migrate:down": "db-migrate down",
-    "migrate:create": "db-migrate create $npm_config_file --sql-file"
+    "migrate:create": "db-migrate create $npm_config_file --sql-file",
+    "build": "echo \"Error: no build specified\" && exit 0",
+    "test": "echo \"Error: no test specified\" && exit 0"
   },
   "author": "",
   "license": "ISC",

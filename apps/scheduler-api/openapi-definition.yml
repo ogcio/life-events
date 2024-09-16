@@ -13,6 +13,68 @@ paths:
           description: Default Response
   /api/v1/tasks/:
     post:
+      tags:
+        - Tasks
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+                properties:
+                  webhookUrl:
+                    format: uri
+                    type: string
+                  webhookAuth:
+                    type: string
+                  executeAt:
+                    format: date-time
+                    type: string
+                required:
+                  - webhookUrl
+                  - webhookAuth
+                  - executeAt
       responses:
-        "200":
+        "202":
           description: Default Response
+        "500":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    description: Code used to categorize the error
+                    type: string
+                  detail:
+                    description: Description of the error
+                    type: string
+                  requestId:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
+                    type: string
+                  name:
+                    description: Name of the error type
+                    type: string
+                  validation:
+                    description: List of the validation errors
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        fieldName:
+                          type: string
+                        message:
+                          type: string
+                      required:
+                        - fieldName
+                        - message
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - requestId
+                  - name

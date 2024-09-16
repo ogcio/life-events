@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import { headers } from "next/headers";
 import UserIcon from "./UserIcon";
 import styles from "./Header.module.scss";
+import { logto } from "../utils/routes";
 
 export default ({ locale }: { locale: string }) => {
   const t = useTranslations("Header");
@@ -125,7 +126,7 @@ export default ({ locale }: { locale: string }) => {
           <UserIcon />
 
           <Link
-            href={`${process.env.AUTH_SERVICE_URL}/auth/logout?redirectUrl=${process.env.HOST_URL}`}
+            href={logto.signout.path()}
             prefetch={false}
             className={styles.logoutLink}
           >

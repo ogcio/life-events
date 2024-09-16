@@ -1,0 +1,34 @@
+meta {
+  name: Update provider
+  type: http
+  seq: 5
+}
+
+put {
+  url: {{baseUrl}}/api/v1/providers/{{emailProviderId}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "id": "{{emailProviderId}}",
+    "type":"email",
+    "isPrimary":false,
+    "smtpHost": "update {{randomStringEmail}}",
+    "smtpPort":12345,
+    "username":"update user",
+    "password":"update password",
+    "providerName": "update {{randomStringEmail}}",
+    "fromAddress": "update {{randomStringEmail}}",
+    "ssl":false
+  }
+}
+
+assert {
+  res.status: eq 200
+}

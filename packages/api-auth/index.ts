@@ -2,11 +2,17 @@ import { createRemoteJWKSet, jwtVerify } from "jose";
 import { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
 import fp from "fastify-plugin";
 import { getMapFromScope, validatePermission } from "./utils.js";
-import { AuthenticationError, AuthorizationError } from "shared-errors";
+import {
+  AuthenticationError,
+  AuthorizationError,
+  getErrorMessage,
+} from "shared-errors";
 
 type ExtractedUserData = {
   userId: string;
   organizationId?: string;
+  isM2MApplication: boolean;
+  accessToken: string;
 };
 
 type MatchConfig = { method: "AND" | "OR" };
@@ -46,6 +52,25 @@ const decodeLogtoToken = async (
   return payload;
 };
 
+export const ensureUserCanAccessUser = (
+  loggedUserData: ExtractedUserData | undefined,
+  requestedUserId: string,
+  errorProcess: string,
+): ExtractedUserData => {
+  if (loggedUserData && requestedUserId === loggedUserData.userId) {
+    return loggedUserData;
+  }
+
+  if (loggedUserData && loggedUserData.organizationId) {
+    return loggedUserData;
+  }
+
+  throw new AuthorizationError(
+    errorProcess,
+    "You can't access this user's data",
+  );
+};
+
 export const checkPermissions = async (
   authHeader: string,
   config: {
@@ -58,10 +83,16 @@ export const checkPermissions = async (
 ): Promise<ExtractedUserData> => {
   const token = extractBearerToken(authHeader);
   const payload = await decodeLogtoToken(token, config);
-  const { scope, sub, aud } = payload as {
+  const {
+    scope,
+    sub,
+    aud,
+    client_id: clientId,
+  } = payload as {
     scope: string;
     sub: string;
     aud: string;
+    client_id: string;
   };
   const scopesMap = getMapFromScope(scope);
 
@@ -77,9 +108,12 @@ export const checkPermissions = async (
   const organizationId = aud.includes("urn:logto:organization:")
     ? aud.split("urn:logto:organization:")[1]
     : undefined;
+
   return {
     userId: sub,
     organizationId: organizationId,
+    accessToken: token,
+    isM2MApplication: sub === clientId,
   };
 };
 
@@ -114,7 +148,7 @@ export const checkPermissionsPlugin = async (
         );
         req.userData = userData;
       } catch (e) {
-        throw new AuthorizationError(ERROR_PROCESS, (e as Error).message);
+        throw new AuthorizationError(ERROR_PROCESS, getErrorMessage(e), e);
       }
     },
   );
@@ -123,3 +157,5 @@ export const checkPermissionsPlugin = async (
 export default fp(checkPermissionsPlugin, {
   name: "apiAuthPlugin",
 });
+
+export * from "./logto-client/index.js";

@@ -5,6 +5,7 @@ set -x
 # Create S3 buckets
 awslocal s3 mb s3://$FILES_S3_BUCKET
 awslocal s3 mb s3://$IMAGES_S3_BUCKET
+awslocal s3 mb s3://$FILE_UPLOAD_SERVICE_BUCKET
 
 # Set CORS for S3 buckets
 echo '{

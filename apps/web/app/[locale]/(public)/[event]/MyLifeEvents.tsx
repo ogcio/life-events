@@ -187,13 +187,12 @@ export default async ({ locale }) => {
                 }}
               >
                 <div>
-                  <h3>Your application is currently in a queue</h3>
+                  <h3>{t("noActionsHeader")}</h3>
                   <p
                     className="govie-body"
                     style={{ margin: "unset", marginTop: "16px" }}
                   >
-                    Our team are dealing with requests to join the pilot and
-                    will be in touch soon. We appreciate your patience.
+                    {t("noActionsSubtitle")}
                   </p>
                 </div>
               </div>

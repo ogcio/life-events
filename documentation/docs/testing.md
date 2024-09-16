@@ -35,4 +35,15 @@ For API e2e testing we use [Bruno](https://www.usebruno.com/). It has a Postman 
 
 ### Performance Testing
 
-[K6](https://k6.io/)
+For front end performance tests we are using [Lighthouse](https://developer.chrome.com/docs/lighthouse/overview) which also covers basic accessibility testing. For navigation between pages we are using [Puppeteer](https://pptr.dev/) as both tools are from Google and designed to integrate easily.
+
+For back end performance testing we are looking at [K6](https://k6.io/)
+
+## Testing in CICD
+
+We are starting to add testing to our pipelines, as not all apps have e2e or unit tests we have added an echo comment to the package.json file so we can use a common pipeline for all projects without pipelines failing because the command does not exist for the app. Initially we have UI tests for payments and at least 1 test for most API projects (excluding upload and mock api).
+
+Current commands used and mapped to the shared building block pipelines:
+"test:smoke:e2e" - used for smoke tests on deployment to dev (staging coming soon) 
+"test:regression:e2e" - runs all tests overnight against dev (coming soon)
+"test" - runs unit tests - these are in the pipeline for all services and dependencies

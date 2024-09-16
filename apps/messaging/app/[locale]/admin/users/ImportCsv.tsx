@@ -18,7 +18,7 @@ const CSV_FILE_FIELD = "csv-file";
 export default async () => {
   async function upload(formData: FormData) {
     "use server";
-    const { accessToken: uploadToken, user: uploadUser } =
+    const { user: uploadUser } =
       await AuthenticationFactory.getInstance().getContext();
     const file = formData.get(CSV_FILE_FIELD);
     const organisationId = formData.get("organisationId");
@@ -26,10 +26,8 @@ export default async () => {
     const toStoreErrors: FormErrors = [];
     const castedFile = file ? (file as File) : null;
     if (file && (castedFile?.size ?? 0) > 0) {
-      const uploadClient = await AuthenticationFactory.getMessagingClient({
-        token: uploadToken,
-      });
-      await uploadClient.importUsersCsv(file as File);
+      const uploadClient = await AuthenticationFactory.getMessagingClient();
+      await uploadClient.importUsers({ file: file as File });
 
       const url = new URL(usersRoute.url, process.env.HOST_URL);
       url.searchParams.append(searchKeyListType, searchValueImports);

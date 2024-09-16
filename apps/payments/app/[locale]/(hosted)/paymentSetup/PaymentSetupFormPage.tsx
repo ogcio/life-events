@@ -5,7 +5,7 @@ import { AbstractIntlMessages, NextIntlClientProvider } from "next-intl";
 import getRequestConfig from "../../../../i18n";
 import { ProviderType } from "./providers/types";
 import { PaymentRequestFormState } from "./create/page";
-import { PaymentsApiFactory } from "../../../../libraries/payments-api";
+import { AuthenticationFactory } from "../../../../libraries/authentication-factory";
 
 export type ProvidersMap = Record<
   string,
@@ -17,7 +17,7 @@ export type ProvidersMap = Record<
 >;
 
 async function getRegisteredAccounts(): Promise<ProvidersMap> {
-  const paymentsApi = await PaymentsApiFactory.getInstance();
+  const paymentsApi = await AuthenticationFactory.getPaymentsClient();
   const { data: providers, error } = await paymentsApi.getProviders();
 
   if (error) {

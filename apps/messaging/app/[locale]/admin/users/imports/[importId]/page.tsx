@@ -20,37 +20,23 @@ export default async (props: {
     getTranslations("UsersImport"),
     getTranslations("Commons"),
   ]);
-  const { accessToken, organization } =
+  const { organization } =
     await AuthenticationFactory.getInstance().getPublicServant();
-  if (!accessToken || !organization) {
+  if (!organization) {
     throw notFound();
   }
-  const messagingClient = await AuthenticationFactory.getMessagingClient({
-    token: accessToken,
-  });
+  const messagingClient = await AuthenticationFactory.getMessagingClient();
   const { data: userImport, error } = await messagingClient.getUsersImport(
     props.params.importId,
-    organization.id,
     true,
   );
 
   const { data: users, error: usersError } =
-    await messagingClient.getUsersForImport(
-      props.params.importId,
-      organization.id,
-    );
+    await messagingClient.getUsersForImport(props.params.importId, false);
 
   if (error || !userImport || usersError || !users) {
     throw notFound();
   }
-
-  const foundUserProfile = t("table.userProfileStatuses.found");
-  const notFoundUserProfile = t("table.userProfileStatuses.notFound");
-  const statuses = {
-    pending: t("table.invitationStatuses.pending"),
-    accepted: t("table.invitationStatuses.accepted"),
-    declined: t("table.invitationStatuses.declined"),
-  };
 
   return (
     <FlexMenuWrapper>

@@ -8,13 +8,14 @@
     "./*": "./dist/*.js"
   },
   "dependencies": {
+    "@logto/node": "^2.5.5",
     "fastify": "^4.26.2",
     "fastify-plugin": "^4.5.1",
     "jose": "^5.2.4",
     "shared-errors": "*"
   },
   "scripts": {
-    "test": "TAP_RCFILE=tap.yml tap",
+    "test": "TAP_RCFILE=tap.yml tap --reporter junit --reporter-file results.xml",
     "build": "rm -rf dist && tsc -p tsconfig.prod.json"
   },
   "devDependencies": {

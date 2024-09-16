@@ -13,7 +13,8 @@ import { routeDefinitions } from "../../../../routeDefinitions";
 import Pagination from "../../../../components/pagination";
 import styles from "./PaymentRequests.module.scss";
 import { redirect, RedirectType } from "next/navigation";
-import { PaymentsApiFactory } from "../../../../../libraries/payments-api";
+import { AuthenticationFactory } from "../../../../../libraries/authentication-factory";
+import { PageWrapper } from "../../PageWrapper";
 
 export default async function ({
   params: { locale },
@@ -32,7 +33,7 @@ export default async function ({
     limit: pageLimit,
   };
 
-  const paymentsApi = await PaymentsApiFactory.getInstance();
+  const paymentsApi = await AuthenticationFactory.getPaymentsClient();
   const { data: paymentRequestsData, error } =
     await paymentsApi.getPaymentRequests(pagination);
 
@@ -48,14 +49,8 @@ export default async function ({
   const paymentRequests = paymentRequestsData?.data ?? [];
 
   return (
-    <div className="table-container">
-      <section
-        style={{
-          flex: 1,
-          display: "flex",
-          flexDirection: "column",
-        }}
-      >
+    <PageWrapper locale={locale} disableOrgSelector={true}>
+      <div className="table-container">
         <div className={styles.headingButtonWrapper}>
           <h1 className="govie-heading-m">{t("paymentRequests")}</h1>
           <Link href={`/${locale}/paymentSetup/create`}>
@@ -132,7 +127,7 @@ export default async function ({
             <Pagination links={links} currentPage={currentPage}></Pagination>
           </div>
         )}
-      </section>
-    </div>
+      </div>
+    </PageWrapper>
   );
 }

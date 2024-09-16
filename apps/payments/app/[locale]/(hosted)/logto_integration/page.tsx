@@ -1,40 +1,43 @@
 import Link from "next/link";
-import { Payments } from "building-blocks-sdk";
-import {
-  getAuthenticationContext,
-  getPaymentsCitizenContext,
-  getPaymentsPublicServantContext,
-} from "../../../../libraries/auth";
+import { AuthenticationFactory } from "../../../../libraries/authentication-factory";
+import { headers } from "next/headers";
+
+const getToken = async () => {
+  const cookieHeader = headers().get("cookie") as unknown as string;
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_PAYMENTS_SERVICE_ENTRY_POINT}/api/token`,
+    {
+      headers: { cookie: cookieHeader },
+    },
+  );
+  return await res.json();
+};
 
 const actionCitizen = async () => {
   "use server";
 
-  const context = await getPaymentsCitizenContext();
-
-  const token = context.accessToken;
-  if (!token) return console.log("missing token...");
-
-  new Payments(token).testCitizenAuth();
+  const paymentClient = await AuthenticationFactory.getPaymentsClient();
+  paymentClient.testCitizenAuth();
 };
 
 const actionPublicServant = async () => {
   "use server";
 
-  const context = await getPaymentsPublicServantContext();
-
-  const token = context.accessToken;
-  if (!token) return console.log("missing token...");
-
-  new Payments(token).testPublicServantAuth();
+  const paymentClient = await AuthenticationFactory.getPaymentsClient();
+  paymentClient.testPublicServantAuth();
 };
 
 export default async function () {
-  const context = await getAuthenticationContext();
+  const context = await AuthenticationFactory.getInstance().getContext();
+
+  const { token } = await getToken();
 
   return (
     <>
       <h1>CONTEXT PAYLOAD</h1>
       <pre>{JSON.stringify(context, null, 2)}</pre>
+      <h3>TOKEN</h3>
+      <pre>{token}</pre>
       <form action={actionCitizen}>
         <button>API CALL - Citizen</button>
       </form>

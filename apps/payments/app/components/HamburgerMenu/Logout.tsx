@@ -10,7 +10,8 @@ export default async () => {
   return (
     <div className={styles.logoutContainer}>
       <Link
-        href={`${process.env.AUTH_SERVICE_URL}/auth/logout?redirectUrl=${process.env.HOST_URL}`}
+        aria-label="signout"
+        href={"/signout"}
         prefetch={false}
         className={`govie-button govie-button--icon govie-button--flat govie-button--icon govie-!-font-size-16 ${styles.menuLink}`}
       >

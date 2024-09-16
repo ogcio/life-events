@@ -5,7 +5,8 @@ import BankTransferForm from "./BankTransferForm";
 import getRequestConfig from "../../../../../../i18n";
 import { errorHandler } from "../../../../../utils";
 import { bankTransferValidationMap } from "../../../../../validationMaps";
-import { PaymentsApiFactory } from "../../../../../../libraries/payments-api";
+import { AuthenticationFactory } from "../../../../../../libraries/authentication-factory";
+import { PageWrapper } from "../../../PageWrapper";
 
 type Props = {
   params: {
@@ -35,7 +36,7 @@ export default async (props: Props) => {
   ): Promise<BankTransferFormState> {
     "use server";
 
-    const paymentsApi = await PaymentsApiFactory.getInstance();
+    const paymentsApi = await AuthenticationFactory.getPaymentsClient();
 
     const nameField = formData.get("provider_name") as string;
     const accountHolderNameField = formData.get(
@@ -71,10 +72,12 @@ export default async (props: Props) => {
   }
 
   return (
-    <NextIntlClientProvider
-      messages={messages?.["PaymentSetup"] as AbstractIntlMessages}
-    >
-      <BankTransferForm action={handleSubmit} />
-    </NextIntlClientProvider>
+    <PageWrapper locale={props.params.locale} disableOrgSelector={true}>
+      <NextIntlClientProvider
+        messages={messages?.["PaymentSetup"] as AbstractIntlMessages}
+      >
+        <BankTransferForm action={handleSubmit} />
+      </NextIntlClientProvider>
+    </PageWrapper>
   );
 };

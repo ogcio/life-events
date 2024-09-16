@@ -1,47 +1,36 @@
 import { getTranslations } from "next-intl/server";
-import { PgSessions } from "auth/sessions";
-import { Profile } from "building-blocks-sdk";
+import { notFound } from "next/navigation";
+import { AuthenticationFactory } from "../utils/authentication-factory";
 
 async function submitAction(formData: FormData) {
   "use server";
 
-  const { firstName, lastName, email, userId } = await PgSessions.get();
+  const submitAuthContext =
+    await AuthenticationFactory.getInstance().getContext();
+  const submitProfile = await AuthenticationFactory.getProfileClient();
+  const submitUser = await submitProfile.getUser(submitAuthContext.user.id);
+  if (!submitUser.data) {
+    return notFound();
+  }
 
   const consentToPrefillData = formData.get("consentToPrefillData");
   const isUserConsenting = consentToPrefillData === "on";
 
-  const { data: userExistsQuery, error } = await new Profile(userId).getUser();
+  const result = await submitProfile.patchUser(submitAuthContext.user.id, {
+    consentToPrefillData: isUserConsenting,
+  });
 
-  if (error) {
+  if (result?.error) {
     //handle error
-  }
-
-  if (userExistsQuery) {
-    const result = await new Profile(userId).patchUser({
-      consentToPrefillData: isUserConsenting,
-    });
-
-    if (result?.error) {
-      //handle error
-    }
-  } else {
-    const { error } = await new Profile(userId).createUser({
-      consentToPrefillData: isUserConsenting,
-      firstname: firstName,
-      lastname: lastName,
-      email,
-    });
-
-    if (error) {
-      //handle error
-    }
   }
 }
 
 async function getConsentData() {
-  const { userId } = await PgSessions.get();
+  const getConsentDataUser =
+    await AuthenticationFactory.getInstance().getUser();
+  const consentProfile = await AuthenticationFactory.getProfileClient();
 
-  const { data, error } = await new Profile(userId).getUser();
+  const { data, error } = await consentProfile.getUser(getConsentDataUser.id);
 
   if (error) {
     //handle error

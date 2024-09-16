@@ -1,0 +1,48 @@
+meta {
+  name: Create provider
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/v1/providers
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+vars:pre-request {
+  randomStringEmail: null
+}
+
+vars:post-response {
+  emailProviderId: res.body.data.id
+}
+
+script:pre-request {
+  const uuid = require("uuid")
+  const next = uuid.v4()
+  bru.setVar("randomStringEmail", next)
+  // if using body:json with interpolation variables, it will always take previous value instead of acting on pre-request
+  req.setBody({
+    "type":"email",
+    "isPrimary":true,
+    "smtpHost": next,
+    "smtpPort":1234,
+    "username":"user",
+    "password":"password",
+    "providerName": next,
+    "fromAddress": next,
+    "ssl":true
+  })
+}
+
+tests {
+  test("should return uuid id", function(){
+    const body = res.getBody()
+    expect(body.data.id).to.match(/^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i)
+  })
+}

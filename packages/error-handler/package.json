@@ -13,7 +13,7 @@
   },
   "scripts": {
     "dev": "rm -rf dist && tsc -w -p tsconfig.prod.json",
-    "test": "TAP_RCFILE=tap.yml tap",
+    "test": "TAP_RCFILE=tap.yml tap --reporter junit --reporter-file results.xml",
     "build": "rm -rf dist && tsc -p tsconfig.prod.json",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",

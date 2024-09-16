@@ -1,4 +1,4 @@
-FROM base-deps as deps
+FROM base-deps AS deps
 
 WORKDIR /app
 ENV LOG_LEVEL=trace
@@ -10,6 +10,7 @@ COPY ./packages/auth/package*.json /app/packages/auth/
 COPY ./packages/messages/package*.json /app/packages/messages/
 COPY ./packages/building-blocks-sdk/package*.json /app/packages/building-blocks-sdk/
 COPY ./packages/analytics/package*.json /app/packages/analytics/
+COPY ./packages/nextjs-logging-wrapper/package*.json /app/packages/nextjs-logging-wrapper/
 
 RUN npm ci
 
@@ -20,6 +21,9 @@ COPY ./packages/auth/ /app/packages/auth/
 COPY ./packages/messages/ /app/packages/messages/
 COPY ./packages/building-blocks-sdk/ /app/packages/building-blocks-sdk/
 COPY ./packages/analytics/ /app/packages/analytics/
+COPY ./packages/shared-errors/ /app/packages/shared-errors/
+COPY ./packages/nextjs-logging-wrapper/ /app/packages/nextjs-logging-wrapper/
+
 
 FROM deps AS builder
 
@@ -33,9 +37,15 @@ ENV NEXT_PUBLIC_API_ENDPOINT=$NEXT_PUBLIC_API_ENDPOINT
 ENV NEXT_PUBLIC_MATOMO_URL=$NEXT_PUBLIC_MATOMO_URL
 ENV NEXT_PUBLIC_MATOMO_SITE_ID=$NEXT_PUBLIC_LIFE_EVENTS_MATOMO_SITE_ID
 ENV NEXT_PUBLIC_MATOMO_PROTOCOL=$NEXT_PUBLIC_MATOMO_PROTOCOL
-RUN npm run build --workspace=apps/web
+RUN npm run build --workspace=packages/shared-errors && \
+    npm run build --workspace=packages/nextjs-logging-wrapper && \
+    npm run build --workspace=packages/building-blocks-sdk && \
+    npm run build --workspace=apps/web
 
-FROM base-deps as runner
+ENV NODE_ENV=production
+RUN npm prune --omit=dev
+
+FROM base-deps AS runner
 
 WORKDIR /app
 
@@ -45,12 +55,12 @@ ENV NODE_ENV=production
 COPY --from=builder /app/apps/web/.next/standalone ./
 COPY --from=builder /app/apps/web/.next/static ./apps/web/.next/static
 # TODO: Filter and remove whatever is not necessary for db-migrate and db-migrate-pg
-COPY --from=deps /app/node_modules/ /app/node_modules/
+COPY --from=builder /app/node_modules/ /app/node_modules/
 COPY --from=deps /app/apps/web/database.json /app/apps/web/
 COPY --from=deps /app/apps/web/migrations /app/apps/web/migrations
 
 EXPOSE 3000
 
-ENV PORT 3000
+ENV PORT=3000
 
 CMD [ "node", "apps/web/server.js" ]

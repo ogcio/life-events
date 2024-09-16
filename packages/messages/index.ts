@@ -29,6 +29,7 @@ type MessageState = {
   confirmedScheduleAt: string;
   templateMetaId: string;
   templateInterpolations: Record<string, string>;
+  successfulMessagesCreated: number;
 };
 
 type EmailProvider = {
@@ -246,6 +247,7 @@ export const api = {
                 userIds: [],
                 templateMetaId: "",
                 templateInterpolations: {},
+                successfulMessagesCreated: 0,
               },
             };
       });

@@ -1,0 +1,29 @@
+meta {
+  name: Find created message event
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{baseUrl}}/api/v1/message-events?search={{messageSubject}}
+  body: none
+  auth: bearer
+}
+
+query {
+  search: {{messageSubject}}
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+vars:post-response {
+  eventId: res.body.data.at(0).id
+}
+
+assert {
+  res.body.data.at(0).id: isDefined
+  res.body.data.at(0).subject: eq {{messageSubject}}
+  res.status: eq 200
+}

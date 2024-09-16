@@ -89,7 +89,7 @@ const pullLocalLogto = (fullPath) => {
 const runLocalLogto = (fullPath) => {
   console.log(`Building local Logto`);
 
-  execSync(`make build run`, {
+  execSync(`make run-native`, {
     stdio: [0, 1, 2], // we need this so node will print the command output
     cwd: fullPath
   });

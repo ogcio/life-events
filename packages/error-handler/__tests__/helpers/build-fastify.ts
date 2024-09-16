@@ -67,7 +67,7 @@ export const buildFastify = (
 
   server.get("/life-events/validation", async (_request, _reply) => {
     throw new sharedErrors.ValidationError("VALIDATION_PROCESS", "message", [
-      { fieldName: "field", message: "error" },
+      { fieldName: "field", message: "error", validationRule: "equal" },
     ]);
   });
 

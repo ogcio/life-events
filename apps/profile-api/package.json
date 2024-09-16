@@ -4,13 +4,15 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "TAP_RCFILE=tap.yml tap",
+    "test": "TAP_RCFILE=tap.yml tap --reporter junit --reporter-file results.xml",
     "test:e2e": "cd ./e2e && bru run --env local",
-    "test:dev": "cd ./e2e && bru run --env dev",
+    "test:smoke:e2e": "cd ./e2e && mkdir -p test-results && bru run --env dev --output ./test-results/results.xml --format junit",
+    "test:regression:e2e": "cd ./e2e && mkdir -p test-results && bru run --env dev --output ./test-results/results.xml --format junit",
     "start": "node --import tsx index.ts",
     "dev": "nodemon | pino-pretty",
     "lint": "eslint . --ext .ts",
-    "generate-ts-client": "npx openapi-typescript ./openapi-definition.yml -o ../../packages/building-blocks-sdk/services/profile/schema.d.ts"
+    "generate-ts-client": "npx openapi-typescript ./openapi-definition.yml -o ../../packages/building-blocks-sdk/src/services/profile/schema.d.ts",
+    "build": "echo \"Error: no test specified\" && exit 0"
   },
   "nodemonConfig": {
     "watch": [
@@ -19,6 +21,7 @@
       "../../packages/messages/src/**/*",
       "../../packages/logging-wrapper/src/**/*",
       "../../packages/error-handler/src/**/*",
+      "../../packages/api-auth/src/**/*",
       "./**/*"
     ],
     "ext": "ts,json",
@@ -38,9 +41,11 @@
     "@fastify/type-provider-typebox": "^4.0.0",
     "@fastify/under-pressure": "^8.3.0",
     "@sinclair/typebox": "^0.32.16",
+    "api-auth": "*",
     "auth": "*",
     "dotenv": "^16.4.5",
     "error-handler": "*",
+    "shared-errors": "*",
     "fastify": "^4.26.2",
     "fastify-plugin": "^4.5.1",
     "fastify-raw-body": "^4.3.0",
@@ -52,6 +57,7 @@
     "@types/node": "^20.11.28",
     "@typescript-eslint/eslint-plugin": "^7.5.0",
     "@typescript-eslint/parser": "^7.5.0",
+    "@usebruno/cli": "^1.20.4",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.1.3",

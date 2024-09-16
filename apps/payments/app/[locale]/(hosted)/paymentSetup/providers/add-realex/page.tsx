@@ -5,7 +5,8 @@ import { errorHandler } from "../../../../../utils";
 import RealexForm from "./RealexForm";
 import { AbstractIntlMessages, NextIntlClientProvider } from "next-intl";
 import { realexValidationMap } from "../../../../../validationMaps";
-import { PaymentsApiFactory } from "../../../../../../libraries/payments-api";
+import { AuthenticationFactory } from "../../../../../../libraries/authentication-factory";
+import { PageWrapper } from "../../../PageWrapper";
 
 type Props = {
   params: {
@@ -35,7 +36,7 @@ export default async (props: Props) => {
     formData: FormData,
   ): Promise<RealexFormState> {
     "use server";
-    const paymentsApi = await PaymentsApiFactory.getInstance();
+    const paymentsApi = await AuthenticationFactory.getPaymentsClient();
     const nameField = formData.get("provider_name") as string;
     const merchantIdField = formData.get("merchant_id") as string;
     const sharedSecretField = formData.get("shared_secret") as string;
@@ -66,10 +67,12 @@ export default async (props: Props) => {
   }
 
   return (
-    <NextIntlClientProvider
-      messages={messages?.["PaymentSetup"] as AbstractIntlMessages}
-    >
-      <RealexForm action={handleSubmit} />
-    </NextIntlClientProvider>
+    <PageWrapper locale={props.params.locale} disableOrgSelector={true}>
+      <NextIntlClientProvider
+        messages={messages?.["PaymentSetup"] as AbstractIntlMessages}
+      >
+        <RealexForm action={handleSubmit} />
+      </NextIntlClientProvider>
+    </PageWrapper>
   );
 };

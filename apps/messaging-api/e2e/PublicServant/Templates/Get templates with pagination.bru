@@ -1,0 +1,27 @@
+meta {
+  name: Get templates with pagination
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{baseUrl}}/api/v1/templates?limit=1&offset=0
+  body: none
+  auth: bearer
+}
+
+query {
+  limit: 1
+  offset: 0
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+assert {
+  res.body.data[0].id: isDefined
+  res.body.data: length 1
+  res.body.metadata.totalCount: gte 1
+  res.body.metadata.links: isDefined
+}

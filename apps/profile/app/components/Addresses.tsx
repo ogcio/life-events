@@ -1,19 +1,15 @@
 import { getTranslations } from "next-intl/server";
 import { formatDate, routes } from "../utils";
-import { PgSessions } from "auth/sessions";
 import ds from "design-system";
-import { Profile } from "building-blocks-sdk";
 import { Address } from "../../types/addresses";
 import Link from "next/link";
 import dayjs from "dayjs";
+import { AuthenticationFactory } from "../utils/authentication-factory";
 
 export default async ({ locale }: { locale: string }) => {
   const t = await getTranslations("Addresses");
-  const { userId } = await PgSessions.get();
-
-  const { data: addresses = [], error } = await new Profile(
-    userId,
-  ).getAddresses();
+  const mainProfile = await AuthenticationFactory.getProfileClient();
+  const { data: addresses = [], error } = await mainProfile.getAddresses();
 
   if (error) {
     //handle error

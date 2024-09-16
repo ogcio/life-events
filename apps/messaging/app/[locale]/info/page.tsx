@@ -9,12 +9,7 @@ import hero from "../../../public/landingPage/hero.png";
 import multiChannel from "../../../public/landingPage/multi_channel.png";
 import template from "../../../public/landingPage/template.png";
 import postbox from "../../../public/landingPage/postbox.png";
-import type { Metadata } from "next";
 import { getLinks } from "../../utils/messaging";
-
-export const metadata: Metadata = {
-  title: "Messaging",
-};
 
 type Props = {
   params: {

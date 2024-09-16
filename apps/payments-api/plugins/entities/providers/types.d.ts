@@ -11,6 +11,7 @@ import {
   ProviderTypes,
   RealexData,
   RealexEncryptedData,
+  RealexHppResponse,
   StripeData,
   StripeEncryptedData,
   UpdateProvider,
@@ -33,3 +34,6 @@ export type ProviderTypes = Static<typeof ProviderTypes>;
 export type ProviderDO = Static<typeof ProviderReply>;
 export type UpdateProviderDO = Static<typeof UpdateProvider>;
 export type CreateProviderDO = Static<typeof CreateProvider>;
+
+export type RealexPaymentObjectDO = Static<typeof RealexPaymentObject>;
+export type RealexHppResponseDO = Static<typeof RealexHppResponse>;

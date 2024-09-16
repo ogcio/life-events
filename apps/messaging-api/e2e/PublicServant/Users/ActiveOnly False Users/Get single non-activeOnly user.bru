@@ -1,0 +1,37 @@
+meta {
+  name: Get single non-activeOnly user
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/v1/users/{{nonActiveUserId}}?activeOnly=false
+  body: none
+  auth: bearer
+}
+
+query {
+  activeOnly: false
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+vars:post-response {
+  ~userImportId: res.body.data[0].importId
+}
+
+assert {
+  res.status: eq 200
+  res.body.data: isDefined
+  res.body.data.id: isDefined
+}
+
+tests {
+  test("user must have accepted invitation", function () {
+    const response = res.getBody();
+    expect(response.data.organisationInvitationStatus).to.equal("accepted");
+  });
+  
+}
