@@ -15,20 +15,20 @@ import {
 } from "../../utils/pagination";
 import { formatAPIResponse } from "../../utils/responseFormatter";
 import { GenericResponse as GenericResponseType } from "../../types/genericResponse";
-import { PaginationParams as PaginationParamsType } from "../../types/pagination";
 import { authPermissions } from "../../types/authPermissions";
 import {
   AuditLogEventDetailsDO,
   AuditLogEvent as AuditLogEventDO,
   AuditLogEventsFilters,
 } from "../../plugins/auditLog/types";
+import { findUser } from "../../services/findUser";
 
 const TAGS_AUDIT_LOGS = ["AuditLogs"];
 
 export default async function auditLogs(app: FastifyInstance) {
   app.get<{
     Reply: GenericResponseType<AuditLogEventDO[]> | Error;
-    Querystring: PaginationParamsType & AuditLogEventsFilters;
+    Querystring: AuditLogEventsFiltersQueryString;
   }>(
     "/",
     {
@@ -49,29 +49,57 @@ export default async function auditLogs(app: FastifyInstance) {
       const {
         offset = PAGINATION_OFFSET_DEFAULT,
         limit = PAGINATION_LIMIT_DEFAULT,
-        eventType,
+        resource,
+        action,
+        user,
+        from,
+        to,
       } = request.query;
 
       if (!organizationId) {
         throw app.httpErrors.unauthorized("Unauthorized!");
       }
 
-      const events = await app.auditLog.getEvents(
-        organizationId,
-        {
-          eventType,
-        },
-        {
-          offset,
-          limit,
-        },
-      );
+      const url = request.url.split("?")[0];
+
+      const filters: AuditLogEventsFilters = {
+        eventType: undefined,
+        userId: undefined,
+        from,
+        to: to ? `${to} 23:59:59.9999+00` : undefined,
+      };
+
+      filters.eventType = `${resource ?? "%"}.${action ?? "%"}`;
+
+      if (user) {
+        const userDetails = await findUser(user, organizationId);
+
+        if (!userDetails) {
+          // User was not found, empty result will be returned
+          reply.send(
+            formatAPIResponse([], {
+              offset,
+              limit,
+              totalCount: 0,
+              url: url,
+            }),
+          );
+          return;
+        }
+
+        filters.userId = userDetails.id;
+      }
+
+      const events = await app.auditLog.getEvents(organizationId, filters, {
+        offset,
+        limit,
+      });
 
       const totalCount = await app.auditLog.getEventsTotalCount(
         organizationId,
-        { eventType },
+        filters,
       );
-      const url = request.url.split("?")[0];
+
       const paginationDetails: PaginationDetails = {
         offset,
         limit,

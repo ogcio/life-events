@@ -14,7 +14,7 @@ import { MessageEventData } from "../../services/messages/eventLogger.js";
 import { HttpError } from "../../types/httpErrors.js";
 import { Permissions } from "../../types/permissions.js";
 import {
-  getPaginationLinks,
+  formatAPIResponse,
   sanitizePagination,
 } from "../../utils/pagination.js";
 import { ensureOrganizationIdIsSet } from "../../utils/authentication-factory.js";
@@ -73,6 +73,7 @@ export default async function messages(app: FastifyInstance) {
         with message_count as(
           select count (*) from
           messages where organisation_id = $1
+          and subject ilike $2
         ), message_selections as (
           select 
             id,
@@ -124,24 +125,9 @@ export default async function messages(app: FastifyInstance) {
           new Date(b.scheduledAt).getTime() - new Date(a.scheduledAt).getTime(),
       );
 
-      const baseUrl = () => new URL(`/api/v1${prefix}`, process.env.HOST_URL);
       const totalCount = eventQueryResult.rows.at(0)?.count || 0;
 
-      const links = getPaginationLinks({
-        totalCount,
-        url: baseUrl(),
-        limit: Number(limit),
-        offset: Number(offset),
-      });
-
-      const response: GenericResponse<MessageEventListType> = {
-        data: events,
-        metadata: {
-          links,
-          totalCount,
-        },
-      };
-      return response;
+      return formatAPIResponse({ data: events, totalCount, request });
     },
   );
 

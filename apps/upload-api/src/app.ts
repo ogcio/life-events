@@ -37,9 +37,9 @@ export async function build(opts?: FastifyServerOptions) {
   });
 
   app.register(apiAuthPlugin, {
-    jwkEndpoint: process.env.LOGTO_JWK_ENDPOINT as string,
-    oidcEndpoint: process.env.LOGTO_OIDC_ENDPOINT as string,
-    currentApiResourceIndicator: process.env
+    jwkEndpoint: app.config.LOGTO_JWK_ENDPOINT as string,
+    oidcEndpoint: app.config.LOGTO_OIDC_ENDPOINT as string,
+    currentApiResourceIndicator: app.config
       .LOGTO_API_RESOURCE_INDICATOR as string,
   });
 

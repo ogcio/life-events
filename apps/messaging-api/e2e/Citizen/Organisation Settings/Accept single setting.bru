@@ -1,0 +1,30 @@
+meta {
+  name: Accept single setting
+  type: http
+  seq: 8
+}
+
+patch {
+  url: {{baseUrl}}/api/v1/organisation-settings/{{organisationSettingId}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{citizenAccessToken}}
+}
+
+body:json {
+  {
+    "invitationStatusFeedback": "accepted",
+    "preferredTransports": ["sms"]
+  }
+}
+
+assert {
+  res.status: eq 200
+  res.body.data: isDefined
+  res.body.data.id: eq {{organisationSettingId}}
+  res.body.data.organisationInvitationStatus: eq accepted
+  res.body.data.organisationPreferredTransports: matches ["sms"]
+}

@@ -6,18 +6,14 @@ import type { FileMetadata } from "../../../../types";
 import formatBytes from "../../utils/formatBytes";
 import DeleteFile from "../DeleteFile";
 import styles from "./FileTableRow.module.scss";
+import scheduleFileForDeletion from "../../actions/scheduleFileForDeletion";
 
 type TableRowProps = {
   file: FileMetadata;
-  deleteFile: (formData: FormData) => Promise<{ error: string }>;
   isPublicServant: boolean;
 };
 
-const TableRow = async ({
-  file,
-  deleteFile,
-  isPublicServant,
-}: TableRowProps) => {
+const TableRow = async ({ file, isPublicServant }: TableRowProps) => {
   const tTable = await getTranslations("Upload.table.data");
   const cellClasses = `govie-table__cell ${styles["align-middle"]}`;
 
@@ -46,7 +42,10 @@ const TableRow = async ({
       <td className={cellClasses}>{file?.owner?.email}</td>
       {isPublicServant && (
         <td className={cellClasses}>
-          <DeleteFile deleteFile={deleteFile} id={file.id as string} />
+          <DeleteFile
+            scheduleFileForDeletion={scheduleFileForDeletion}
+            id={file.id as string}
+          />
           <Link href={`/file/${file.id}`}>
             <span data-module="govie-tooltip">
               <button

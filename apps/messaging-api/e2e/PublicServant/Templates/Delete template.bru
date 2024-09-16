@@ -17,3 +17,10 @@ auth:bearer {
 assert {
   res.status: eq 200
 }
+
+script:pre-request {
+  const baseUrl = bru.getEnvVar("baseUrl")
+  const templateId = bru.getEnvVar("templateId")
+  console.log("deleting url id to ", templateId)
+  req.setUrl(`${baseUrl}/api/v1/templates/${templateId}`)
+}

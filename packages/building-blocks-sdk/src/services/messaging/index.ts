@@ -109,17 +109,17 @@ export class Messaging {
 
   async buildMessage(
     messages: paths["/api/v1/messages/"]["post"]["requestBody"]["content"]["application/json"]["message"][],
-    lang: string,
+    language: string,
     vars: Record<string, string | null | undefined>,
   ) {
-    if (!lang) {
+    if (!language) {
       throw new Error("no language provided");
     }
 
-    const message = messages.find((m) => m.lang === lang);
+    const message = messages.find((m) => m.language === language);
 
     if (!message) {
-      throw new Error(`template not found for language ${lang}`);
+      throw new Error(`template not found for language ${language}`);
     }
 
     const illegalValueKeys: string[] = [];
@@ -170,7 +170,7 @@ export class Messaging {
       excerpt: keys.reduce(interpolator, message.excerpt),
       richText: keys.reduce(interpolator, message.richText),
       plainText: keys.reduce(interpolator, message.plainText),
-      lang: message.lang,
+      language: message.language,
     };
   }
 
@@ -215,7 +215,8 @@ export class Messaging {
           type: "email",
           limit: toStringOrUndefined(limit),
           offset: toStringOrUndefined(offset),
-          primary,
+          primary:
+            primary !== undefined ? (primary ? "true" : "false") : undefined,
         },
       },
     });
@@ -239,8 +240,6 @@ export class Messaging {
         params: { path: { providerId }, query: { type: "email" } },
       },
     );
-
-    console.log(data?.data);
 
     if (data?.data.type === "email") {
       return { data: data.data };
@@ -315,7 +314,8 @@ export class Messaging {
           type: "sms",
           limit: toStringOrUndefined(limit),
           offset: toStringOrUndefined(offset),
-          primary,
+          primary:
+            primary !== undefined ? (primary ? "true" : "false") : undefined,
         },
       },
     });
@@ -403,7 +403,7 @@ export class Messaging {
 
   async importUsers(toImport: { file?: File; records?: object[] }) {
     if (toImport.file) {
-      const { error } = await this.client.POST("/api/v1/user-imports/", {
+      const { data, error } = await this.client.POST("/api/v1/user-imports/", {
         body: {
           file: toImport.file,
         } as any,
@@ -413,13 +413,13 @@ export class Messaging {
           return formData;
         },
       });
-      return { error };
+      return { data: data?.data, error };
     }
 
-    const { error } = await this.client.POST("/api/v1/user-imports/", {
+    const { data, error } = await this.client.POST("/api/v1/user-imports/", {
       body: toImport.records,
     });
-    return { error };
+    return { data: data?.data, error };
   }
 
   async downloadUsersCsvTemplate() {
@@ -522,7 +522,6 @@ export class Messaging {
       { params: { path: { eventId } } },
     );
 
-    console.log(data?.data);
     return { data: data?.data, error };
   }
 

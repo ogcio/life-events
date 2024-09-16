@@ -18,7 +18,7 @@ import { initializeLoggingHooks } from "logging-wrapper";
 import fastifyMultipart from "@fastify/multipart";
 import v8 from "v8";
 import { CustomError } from "shared-errors";
-import getVersion from "./utils/getVersion.js";
+import getVersion from "./utils/get-version.js";
 import _Ajv from "ajv";
 const Ajv = _Ajv as unknown as typeof _Ajv.default;
 

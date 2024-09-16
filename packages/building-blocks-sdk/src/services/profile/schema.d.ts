@@ -570,6 +570,7 @@ export interface paths {
           ppsn?: string;
           gender?: string;
           phone?: string;
+          strict?: boolean;
         };
       };
       responses: {
@@ -626,6 +627,7 @@ export interface paths {
                 /** Format: email */
                 email?: string;
                 phone?: string;
+                preferredLanguage: string;
               }[];
             };
           };

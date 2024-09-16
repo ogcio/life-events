@@ -1,4 +1,4 @@
-import { APIRequestContext } from "@playwright/test";
+import { APIRequestContext, Page } from "@playwright/test";
 
 const logtoEndpoint = process.env.LOGTO_ENDPOINT || "";
 const logtoResource = process.env.LOGTO_RESOURCE || "";
@@ -40,4 +40,9 @@ export const deleteLogtoUser = async (
       Authorization: `Bearer ${_accessToken}`,
     },
   });
+};
+
+export const getUserId = async (page: Page) => {
+  const cookies = await page.context().cookies();
+  return cookies.find((cookie) => cookie.name === "logtoUserId")?.value ?? "";
 };

@@ -34,7 +34,7 @@ test.describe("Transaction with manual bank transfer", () => {
     const paymentRequestsPage = new PaymentRequestsPage(publicServantPage);
     await paymentRequestsPage.goto();
     await paymentRequestsPage.gotoDetails(
-      paymentRequestWithManualBankTransferProvider,
+      paymentRequestWithManualBankTransferProvider.name,
     );
 
     const detailsPage = new PaymentRequestDetailsPage(publicServantPage);
@@ -55,7 +55,7 @@ test.describe("Transaction with manual bank transfer", () => {
       new ManualBankTransferTransactionPage(citizenPage);
     await manualBankTransferTransactionPage.checkHeader();
     await manualBankTransferTransactionPage.checkTitle(
-      paymentRequestWithManualBankTransferProvider,
+      paymentRequestWithManualBankTransferProvider.name,
     );
     await manualBankTransferTransactionPage.checkTotal(mockAmount);
     await manualBankTransferTransactionPage.checkAccountName(
@@ -74,7 +74,7 @@ test.describe("Transaction with manual bank transfer", () => {
 
     await paymentRequestsPage.goto();
     await paymentRequestsPage.gotoDetails(
-      paymentRequestWithManualBankTransferProvider,
+      paymentRequestWithManualBankTransferProvider.name,
     );
 
     await detailsPage.checkPaymentsList([

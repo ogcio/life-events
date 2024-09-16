@@ -18,6 +18,7 @@ import {
   NotFoundError,
   ServerError,
   ThirdPartyError,
+  AuthorizationError,
 } from "shared-errors";
 import { LoggingError, toLoggingError } from "logging-wrapper";
 import {
@@ -42,20 +43,20 @@ export const getMessage = async (params: {
   const data = await params.pg.query<ReadMessage>(
     `
         select 
-            subject as "subject", 
-            excerpt as "excerpt", 
-            plain_text as "plainText",
-            rich_text as "richText",
-            created_at as "createdAt",
-            thread_name as "threadName",
-            organisation_id as "organisationId",
-            user_id as "recipientUserId",
-            is_seen as "isSeen",
-            sender_user_profile_id as "senderUserProfileId",
-            security_level as "security"
+            messages.subject as "subject", 
+            messages.excerpt as "excerpt", 
+            messages.plain_text as "plainText",
+            messages.rich_text as "richText",
+            messages.created_at as "createdAt",
+            messages.thread_name as "threadName",
+            messages.organisation_id as "organisationId",
+            messages.user_id as "recipientUserId",
+            messages.is_seen as "isSeen",
+            messages.security_level as "security"
         from messages
-        where user_id = $1 and id=$2
-        order by created_at desc
+        left join users on users.id::text = messages.user_id
+        where (messages.user_id = $1 or users.user_profile_id::text = $1) and messages.id=$2
+        order by messages.created_at desc
     `,
     [params.userId, params.messageId],
   );
@@ -480,12 +481,13 @@ const scheduleMessage = async (
 };
 
 export const processMessages = async (params: {
-  inputMessages: CreateMessageParams[];
+  inputMessages: Omit<CreateMessageParams, "senderApplicationId">[];
   scheduleAt: string;
   errorProcess: string;
   pgPool: Pool;
   logger: FastifyBaseLogger;
   senderUser: { profileId: string; organizationId?: string };
+  isM2MApplicationSender: boolean;
   organizationId?: string;
   allOrNone: boolean;
 }): Promise<{
@@ -500,43 +502,49 @@ export const processMessages = async (params: {
     logger,
     senderUser,
     allOrNone,
+    isM2MApplicationSender,
   } = params;
-  let { organizationId } = params;
+  const { organizationId } = params;
   if (!organizationId && !senderUser.organizationId) {
     throw new BadRequestError(
       errorProcess,
       "You have to set organization id to send messages",
     );
   }
-  if (
-    senderUser.organizationId &&
-    organizationId &&
-    organizationId !== senderUser.organizationId
-  ) {
-    throw new BadRequestError(
-      errorProcess,
-      "You can't send messages to a different organization you are logged in to",
-    );
-  }
-  organizationId = organizationId ?? senderUser.organizationId;
-  const profileSdk = await getProfileSdk(organizationId);
-  const senderUserProfile = await profileSdk.getUser(senderUser.profileId);
-  if (!senderUserProfile.data) {
-    throw new NotFoundError(errorProcess, "Sender user cannot be found");
-  }
-  if (senderUserProfile.error) {
-    throw new ThirdPartyError(
-      errorProcess,
-      senderUserProfile.error.detail,
-      senderUserProfile.error,
-    );
-  }
-
-  const senderFullName =
-    `${senderUserProfile.data.firstName} ${senderUserProfile.data.lastName}`.trim();
 
   const poolClient = await pgPool.connect();
   try {
+    // If any message that doesn't override consent has any user that isnt active, we throw unauthorized
+    const receiverUserIdsForMessagesWithoutConsentBypass = inputMessages
+      .filter((message) => !message.bypassConsent)
+      .map((message) => message.receiverUserId);
+
+    if (receiverUserIdsForMessagesWithoutConsentBypass.length) {
+      const isAnyUserNotActiveAndAccepted = await poolClient.query<{
+        exists: boolean;
+      }>(
+        `
+          select exists(
+            select * from users u 
+            join organisation_user_configurations o on o.user_id = u.id
+            where 
+            o.invitation_status != 'accepted' 
+            and u.user_status != 'active'
+            and u.id = any($1)
+            limit 1
+          )
+        `,
+        [receiverUserIdsForMessagesWithoutConsentBypass],
+      );
+
+      if (isAnyUserNotActiveAndAccepted.rows.at(0)?.exists) {
+        throw new AuthorizationError(
+          params.errorProcess,
+          "user exist that isn't accepted and active for any of the input messages, no message sent",
+        );
+      }
+    }
+
     const messageService = newMessagingService(poolClient);
     const eventLogger = newMessagingEventLogger(pgPool, logger);
     const toScheduleMessages = [];
@@ -545,6 +553,26 @@ export const processMessages = async (params: {
       scheduledMessages: { jobId: string; userId: string; entityId: string }[];
       errors: LifeEventsError[];
     } = { scheduledMessages: [], errors: [] };
+    if (
+      senderUser.organizationId &&
+      organizationId &&
+      organizationId !== senderUser.organizationId
+    ) {
+      throw new BadRequestError(
+        errorProcess,
+        "You can't send messages to a different organization you are logged in to",
+      );
+    }
+    const toUseOrganizationId = organizationId ?? senderUser.organizationId;
+
+    const senderData = isM2MApplicationSender
+      ? getApplicationSenderData(senderUser.profileId)
+      : await getUserProfileSenderData({
+          senderUserId: senderUser.profileId,
+          organizationId: toUseOrganizationId,
+          errorProcess,
+        });
+
     try {
       await poolClient.query("BEGIN");
       const createPromises = [];
@@ -552,11 +580,7 @@ export const processMessages = async (params: {
         createPromises.push(
           createMessageWithLog({
             createMessageParams: toCreate,
-            sender: {
-              ...senderUserProfile.data,
-              fullName: senderFullName,
-              userProfileId: senderUser.profileId,
-            },
+            ...senderData,
             messageService,
             eventLogger,
             poolClient,
@@ -605,7 +629,7 @@ export const processMessages = async (params: {
       messageService,
       eventLogger,
       toScheduleMessages,
-      organizationId: organizationId!,
+      organizationId: toUseOrganizationId!,
       scheduleAt,
     });
 
@@ -613,6 +637,52 @@ export const processMessages = async (params: {
   } finally {
     poolClient.release();
   }
+};
+
+const getApplicationSenderData = (
+  senderUserId: string,
+): {
+  senderApplication: {
+    id: string;
+  };
+} => ({ senderApplication: { id: senderUserId } });
+
+const getUserProfileSenderData = async (params: {
+  senderUserId: string;
+  organizationId?: string;
+  errorProcess: string;
+}): Promise<{
+  senderUser: {
+    fullName: string;
+    ppsn?: string | null;
+    userProfileId: string;
+  };
+}> => {
+  const { senderUserId, organizationId, errorProcess } = params;
+
+  const profileSdk = await getProfileSdk(organizationId);
+  const senderUserProfile = await profileSdk.getUser(senderUserId);
+  if (!senderUserProfile.data) {
+    throw new NotFoundError(errorProcess, "Sender user cannot be found");
+  }
+  if (senderUserProfile.error) {
+    throw new ThirdPartyError(
+      errorProcess,
+      senderUserProfile.error.detail,
+      senderUserProfile.error,
+    );
+  }
+
+  const senderFullName =
+    `${senderUserProfile.data.firstName} ${senderUserProfile.data.lastName}`.trim();
+
+  return {
+    senderUser: {
+      ...senderUserProfile.data,
+      fullName: senderFullName,
+      userProfileId: senderUserId,
+    },
+  };
 };
 
 const scheduleMessagesWithLog = async (params: {
@@ -638,10 +708,15 @@ const scheduleMessagesWithLog = async (params: {
 };
 
 const createMessageWithLog = async (params: {
-  sender: { fullName: string; ppsn?: string | null; userProfileId: string };
+  senderUser?: {
+    fullName: string;
+    ppsn?: string | null;
+    userProfileId: string;
+  };
+  senderApplication?: { id: string };
   messageService: MessagingService;
   eventLogger: MessagingEventLogger;
-  createMessageParams: CreateMessageParams;
+  createMessageParams: Omit<CreateMessageParams, "senderApplicationId">;
   poolClient: PoolClient;
   errorProcess: string;
 }): Promise<{
@@ -671,7 +746,15 @@ const createMessageWithLog = async (params: {
     `${receiverUserProfiles[0].firstName} ${receiverUserProfiles[0].lastName}`.trim();
   let message = null;
   try {
-    message = await params.messageService.createMessage(createMessage);
+    const senderData = {
+      senderApplicationId: params.senderApplication?.id ?? null,
+      senderUserProfileId: params.senderUser?.userProfileId ?? null,
+    };
+
+    message = await params.messageService.createMessage({
+      ...createMessage,
+      ...senderData,
+    });
   } catch (error) {
     return {
       error: new ServerError(
@@ -689,18 +772,19 @@ const createMessageWithLog = async (params: {
       transports: createMessage.preferredTransports,
       scheduledAt: createMessage.scheduleAt,
       messageId: message.id,
-      threadName: createMessage.threadName,
+      threadName: createMessage.threadName || "",
       subject: createMessage.subject,
       excerpt: createMessage.excerpt,
       richText: createMessage.richText,
       plainText: createMessage.plainText,
-      lang: createMessage.lang,
-      senderFullName: params.sender.fullName,
-      senderPPSN: params.sender.ppsn || "",
-      senderUserId: params.sender.userProfileId,
-      receiverFullName: receiverFullName,
-      receiverPPSN: receiverUserProfiles[0].ppsn,
-      receiverUserId: receiverUserProfiles[0].id,
+      language: createMessage.language,
+      senderFullName: params.senderUser?.fullName || "",
+      senderPPSN: params.senderUser?.ppsn || "",
+      senderUserId: params.senderUser?.userProfileId || "",
+      receiverFullName: receiverFullName || "",
+      receiverPPSN: receiverUserProfiles[0].ppsn || "",
+      receiverUserId: receiverUserProfiles[0].id || "",
+      senderApplicationId: params.senderApplication?.id || "",
     },
   ]);
 

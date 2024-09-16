@@ -1,19 +1,13 @@
 import { getTranslations } from "next-intl/server";
 import type { FileMetadata } from "../../../types";
-import styles from "./FileTable.module.scss";
 import TableRow from "./FileTableRow/FileTableRow";
 
 type FileTableProps = {
   isPublicServant: boolean;
   files: FileMetadata[];
-  deleteFile: (formData: FormData) => Promise<{ error: string }>;
 };
 
-export default async ({
-  deleteFile,
-  files,
-  isPublicServant,
-}: FileTableProps) => {
+export default async ({ files, isPublicServant }: FileTableProps) => {
   const tTable = await getTranslations("Upload.table");
   return (
     <table className="govie-table">
@@ -43,7 +37,6 @@ export default async ({
           <TableRow
             key={file.id}
             file={file}
-            deleteFile={deleteFile}
             isPublicServant={isPublicServant}
           />
         ))}

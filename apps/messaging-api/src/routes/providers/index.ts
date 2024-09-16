@@ -14,11 +14,14 @@ import {
   ProviderCreateSchema,
   SmsCreateSchema,
   EditableProviderTypes,
+  TypeboxBooleanEnum,
+  AcceptedQueryBooleanValues,
+  parseBooleanEnum,
 } from "../../types/schemaDefinitions.js";
 import { Static, Type } from "@sinclair/typebox";
 import { HttpError } from "../../types/httpErrors.js";
 import {
-  getPaginationLinks,
+  formatAPIResponse,
   sanitizePagination,
 } from "../../utils/pagination.js";
 import { QueryResult } from "pg";
@@ -54,7 +57,7 @@ export default async function providers(app: FastifyInstance) {
   app.get<{
     Querystring: {
       type: EditableProviderTypes;
-      primary?: boolean;
+      primary?: AcceptedQueryBooleanValues;
     } & PaginationParams;
     Response: GenericResponse<Static<typeof ProviderListSchema>>;
   }>(
@@ -70,10 +73,10 @@ export default async function providers(app: FastifyInstance) {
             [
               Type.Object({
                 primary: Type.Optional(
-                  Type.Boolean({
-                    description:
-                      "If set, returns only the primary providers if true, otherwise the non-primary ones",
-                  }),
+                  TypeboxBooleanEnum(
+                    undefined,
+                    "If set, returns only the primary providers if true, otherwise the non-primary ones",
+                  ),
                 ),
                 type: EditableProviderTypesSchema,
               }),
@@ -102,24 +105,24 @@ export default async function providers(app: FastifyInstance) {
         count: number;
       };
       let query: QueryResult<QueryProvider> | undefined;
-      let primaryFilter = "true";
-      if (request.query.primary === true) {
-        primaryFilter = "where is_primary = true";
-      } else if (request.query.primary === false) {
-        primaryFilter = "where is_primary != true";
+      let primaryFilter = "";
+      const primaryQuery = request.query.primary
+        ? parseBooleanEnum(request.query.primary)
+        : undefined;
+      if (primaryQuery === true) {
+        primaryFilter = "AND is_primary = true";
+      } else if (primaryQuery === false) {
+        primaryFilter = "AND is_primary != true";
       }
-
-      const url = new URL(`/api/v1${prefix}`, process.env.HOST_URL);
       if (type == "email") {
         try {
-          url.searchParams.append("type", "email");
           query = await app.pg.pool.query<QueryProvider>(
             `
             with count_selection as(
                 select count(*) from email_providers
                 where organisation_id = $1
                 and deleted_at is null
-                and ${primaryFilter}
+                ${primaryFilter}
             )
             select
                 id,
@@ -130,7 +133,7 @@ export default async function providers(app: FastifyInstance) {
             from email_providers
             where organisation_id = $1
             AND deleted_at is null
-            and ${primaryFilter}
+            ${primaryFilter}
             order by provider_name
             limit $2
             offset $3
@@ -146,14 +149,13 @@ export default async function providers(app: FastifyInstance) {
         }
       } else if (type === "sms") {
         try {
-          url.searchParams.append("type", "sms");
           query = await app.pg.pool.query<QueryProvider>(
             `
               with count_selection as(
                   select count(*) from sms_providers
                   where organisation_id = $1
                   and deleted_at is null
-                  and ${primaryFilter}
+                  ${primaryFilter}
               )
               select
                   id,
@@ -164,7 +166,7 @@ export default async function providers(app: FastifyInstance) {
               from sms_providers
               where organisation_id = $1
               AND deleted_at is null
-              and ${primaryFilter}
+              ${primaryFilter}
               order by provider_name
               limit $2
               offset $3
@@ -187,22 +189,7 @@ export default async function providers(app: FastifyInstance) {
 
       const totalCount = query.rows.at(0)?.count || 0;
 
-      const links = getPaginationLinks({
-        totalCount,
-        url,
-        limit: Number(limit),
-        offset: Number(offset),
-      });
-
-      const response: GenericResponse<Static<typeof ProviderListSchema>> = {
-        data: query.rows,
-        metadata: {
-          totalCount,
-          links,
-        },
-      };
-
-      return response;
+      return formatAPIResponse({ data: query.rows, request, totalCount });
     },
   );
 

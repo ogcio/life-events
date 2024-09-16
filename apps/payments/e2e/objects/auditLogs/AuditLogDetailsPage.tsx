@@ -42,8 +42,9 @@ export class AuditLogDetailsPage {
     ).toBeVisible();
   }
 
-  async checkUserIdLabel() {
+  async checkUserId(userId: string) {
     await expect(this.userIdLabel).toBeVisible();
+    await expect(this.page.getByText(userId)).toBeVisible();
   }
 
   async checkOrganizationId(orgId: string) {

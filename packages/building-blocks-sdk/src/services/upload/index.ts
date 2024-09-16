@@ -73,6 +73,13 @@ export class Upload {
     return { error, data: data?.data };
   }
 
+  async scheduleFileDeletion(id: string) {
+    const { data, error } = await this.client.DELETE("/api/v1/metadata/", {
+      body: { fileId: id },
+    });
+    return { error, data: data?.data };
+  }
+
   async uploadFile(file?: File) {
     const { error, response, data } = await this.client.POST("/api/v1/files/", {
       body: {

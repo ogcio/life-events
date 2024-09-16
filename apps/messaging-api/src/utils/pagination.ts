@@ -1,3 +1,4 @@
+import { FastifyRequest } from "fastify";
 import {
   GenericResponse,
   PaginationParams,
@@ -6,7 +7,6 @@ import {
 export type PaginationDetails = {
   offset?: number;
   limit?: number;
-  totalCount: number;
   url: URL;
 };
 
@@ -16,25 +16,41 @@ export const PAGINATION_MAX_LIMIT = 100;
 export const PAGINATION_MIN_LIMIT = 1;
 export const PAGINATION_MIN_OFFSET = 0;
 
-export const formatAPIResponse = <T>(
-  data: T[],
-  pagination?: PaginationDetails,
-): GenericResponse<T[]> => {
+export const formatAPIResponse = <T>(params: {
+  data: T[];
+  pagination?: PaginationDetails;
+  request?: FastifyRequest;
+  totalCount: number;
+}): GenericResponse<T[]> => {
   const response: GenericResponse<T[]> = {
-    data,
+    data: params.data,
   };
 
-  if (pagination) {
+  if (params.pagination) {
     response.metadata = {
-      links: getPaginationLinks(pagination),
-      totalCount: pagination.totalCount,
+      links: getPaginationLinks(params.pagination, params.totalCount),
+      totalCount: params.totalCount,
     };
+
+    return response;
+  }
+  if (params.request) {
+    const paginationDetails = getUrlDataForPagination(params.request);
+    response.metadata = {
+      links: getPaginationLinks(paginationDetails, params.totalCount),
+      totalCount: params.totalCount,
+    };
+
+    return response;
   }
 
   return response;
 };
 
-export const getPaginationLinks = (inputDetails: PaginationDetails) => {
+export const getPaginationLinks = (
+  inputDetails: PaginationDetails,
+  totalCount: number,
+) => {
   const details: Required<PaginationDetails> = {
     ...inputDetails,
     limit: inputDetails.limit ?? PAGINATION_LIMIT_DEFAULT,
@@ -52,7 +68,7 @@ export const getPaginationLinks = (inputDetails: PaginationDetails) => {
     },
     next: {
       href:
-        details.offset + details.limit < details.totalCount
+        details.offset + details.limit < totalCount
           ? (() => {
               const link = new URL(details.url);
               link.searchParams.append("limit", details.limit.toString());
@@ -88,15 +104,14 @@ export const getPaginationLinks = (inputDetails: PaginationDetails) => {
     },
     last: {
       href:
-        details.totalCount > 0
+        totalCount > 0
           ? (() => {
               const link = new URL(details.url);
               link.searchParams.append("limit", details.limit.toString());
               link.searchParams.append(
                 "offset",
                 (
-                  Math.ceil(details.totalCount / details.limit) *
-                    details.limit -
+                  Math.ceil(totalCount / details.limit) * details.limit -
                   details.limit
                 ).toString(),
               );
@@ -109,13 +124,16 @@ export const getPaginationLinks = (inputDetails: PaginationDetails) => {
               return link.href;
             })(),
     },
-    pages: generatePageLinks(details),
+    pages: generatePageLinks(details, totalCount),
   };
 };
 
-const generatePageLinks = (details: Required<PaginationDetails>) => {
+const generatePageLinks = (
+  details: Required<PaginationDetails>,
+  totalCount: number,
+) => {
   const pageLinks: Record<string, { href: string }> = {};
-  const nrOfBatches = Math.ceil(details.totalCount / details.limit);
+  const nrOfBatches = Math.ceil(totalCount / details.limit);
 
   if (nrOfBatches <= 1) {
     return pageLinks;
@@ -252,5 +270,29 @@ export const sanitizePagination = (
       Number(pagination.offset) ?? PAGINATION_OFFSET_DEFAULT,
       PAGINATION_MIN_OFFSET,
     ).toString(),
+  };
+};
+
+const getUrlDataForPagination = (
+  request: FastifyRequest,
+): PaginationDetails => {
+  const originalUrl = new URL(request.originalUrl, process.env.HOST_URL);
+  let limit,
+    offset = undefined;
+  if (originalUrl.searchParams.has("limit")) {
+    const tempLimit = originalUrl.searchParams.get("limit");
+    limit = tempLimit ?? undefined;
+    originalUrl.searchParams.delete("limit");
+  }
+  if (originalUrl.searchParams.has("offset")) {
+    const tempOffset = originalUrl.searchParams.get("offset");
+    offset = tempOffset ?? undefined;
+    originalUrl.searchParams.delete("offset");
+  }
+
+  return {
+    url: originalUrl,
+    limit: limit ? Number(limit) : undefined,
+    offset: offset ? Number(offset) : undefined,
   };
 };

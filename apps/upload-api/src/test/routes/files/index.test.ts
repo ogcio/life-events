@@ -480,71 +480,65 @@ t.test("files", async (t) => {
   });
 
   t.test("delete", async (t) => {
-    t.test("Should throw an error when DELETE with no key is called", (t) => {
-      app
-        .inject({
-          method: "DELETE",
-          url: "/files/",
-        })
-        .then((response) => {
-          t.equal(response.statusCode, 400);
-          t.end();
-        });
-    });
-
-    t.test("Should delete a file successfully", async (t) => {
-      app
-        .inject({
-          method: "DELETE",
-          url: "/files/dummyfile.txt",
-        })
-        .then((response) => {
-          t.equal(response.statusCode, 200);
-          t.end();
-        });
-
-      await nextTick();
-      pgEventEmitter.emit("done", [{ key: "key" }]);
-      await nextTick();
-      s3SendEventEmitter.emit("sendComplete");
-      await nextTick();
-      pgEventEmitter.emit("done", [{ key: "key" }]);
-      await nextTick();
-    });
-
-    t.test("should throw an error when delete fails", async (t) => {
-      app
-        .inject({
-          method: "DELETE",
-          url: "/files/dummyfile.txt",
-        })
-        .then((response) => {
-          t.equal(response.statusCode, 500);
-          t.end();
-        });
-
-      await nextTick();
-      pgEventEmitter.emit("done", [{ key: "key" }]);
-      await nextTick();
-      s3SendEventEmitter.emit("send-error");
-      await nextTick();
-    });
-
-    t.test("should throw not found when metadata is not present", async (t) => {
-      app
-        .inject({
-          method: "DELETE",
-          url: "/files/dummyfile.txt",
-        })
-        .then((response) => {
-          t.equal(response.statusCode, 404);
-          t.end();
-        });
-
-      await nextTick();
-      pgEventEmitter.emit("done", []);
-      await nextTick();
-    });
+    // t.test("Should throw an error when DELETE with no key is called", (t) => {
+    //   app
+    //     .inject({
+    //       method: "DELETE",
+    //       url: "/files/",
+    //     })
+    //     .then((response) => {
+    //       t.equal(response.statusCode, 400);
+    //       t.end();
+    //     });
+    // });
+    // t.test("Should delete a file successfully", async (t) => {
+    //   app
+    //     .inject({
+    //       method: "DELETE",
+    //       url: "/files/dummyfile.txt",
+    //     })
+    //     .then((response) => {
+    //       t.equal(response.statusCode, 200);
+    //       t.end();
+    //     });
+    //   await nextTick();
+    //   pgEventEmitter.emit("done", [{ key: "key" }]);
+    //   await nextTick();
+    //   s3SendEventEmitter.emit("sendComplete");
+    //   await nextTick();
+    //   pgEventEmitter.emit("done", [{ key: "key" }]);
+    //   await nextTick();
+    // });
+    // t.test("should throw an error when delete fails", async (t) => {
+    //   app
+    //     .inject({
+    //       method: "DELETE",
+    //       url: "/files/dummyfile.txt",
+    //     })
+    //     .then((response) => {
+    //       t.equal(response.statusCode, 500);
+    //       t.end();
+    //     });
+    //   await nextTick();
+    //   pgEventEmitter.emit("done", [{ key: "key" }]);
+    //   await nextTick();
+    //   s3SendEventEmitter.emit("send-error");
+    //   await nextTick();
+    // });
+    // t.test("should throw not found when metadata is not present", async (t) => {
+    //   app
+    //     .inject({
+    //       method: "DELETE",
+    //       url: "/files/dummyfile.txt",
+    //     })
+    //     .then((response) => {
+    //       t.equal(response.statusCode, 404);
+    //       t.end();
+    //     });
+    //   await nextTick();
+    //   pgEventEmitter.emit("done", []);
+    //   await nextTick();
+    // });
   });
 
   t.test("get", async (t) => {

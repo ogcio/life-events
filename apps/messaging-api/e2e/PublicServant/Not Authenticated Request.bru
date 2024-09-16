@@ -14,10 +14,6 @@ query {
   type: email
 }
 
-headers {
-  : 
-}
-
 assert {
   res.status: eq 401
   res.body.requestId: isDefined

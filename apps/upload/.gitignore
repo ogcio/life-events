@@ -7,8 +7,16 @@
 .yarn/install-state.gz
 
 # testing
-/coverage
 /performance-tests/lighthouse/reports/*
+/coverage
+playwright-report
+e2e/test-results
+e2e/.auth
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/allure-results
 
 # next.js
 /.next/
@@ -29,6 +37,7 @@ yarn-error.log*
 # local env files
 .env*.local
 .env
+.env.test
 
 # vercel
 .vercel
@@ -36,3 +45,4 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+

@@ -18,6 +18,9 @@ export const envSchema = {
     "LOGTO_M2M_PROFILE_APP_SECRET",
     "LOGTO_M2M_PROFILE_APP_ID",
     "PROFILE_BACKEND_URL",
+    "LOGTO_M2M_SCHEDULER_APP_SECRET",
+    "LOGTO_M2M_SCHEDULER_APP_ID",
+    "SCHEDULER_BACKEND_URL",
   ],
   properties: {
     CLAMAV_HOST: { type: "string" },
@@ -53,6 +56,15 @@ export const envSchema = {
       type: "string",
     },
     PROFILE_BACKEND_URL: {
+      type: "string",
+    },
+    LOGTO_M2M_SCHEDULER_APP_SECRET: {
+      type: "string",
+    },
+    LOGTO_M2M_SCHEDULER_APP_ID: {
+      type: "string",
+    },
+    SCHEDULER_BACKEND_URL: {
       type: "string",
     },
   },

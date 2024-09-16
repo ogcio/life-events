@@ -22,6 +22,7 @@ interface RequestUser {
   userId: string;
   organizationId?: string;
   accessToken: string;
+  isM2MApplication: boolean;
 }
 
 export const importCsvFileFromRequest = async (params: {
@@ -29,7 +30,7 @@ export const importCsvFileFromRequest = async (params: {
   filepath: string;
   pg: PostgresDb;
   logger: FastifyBaseLogger;
-}): Promise<void> => {
+}): Promise<string> => {
   const usersToImport = await getUsersFromCsv(params.filepath);
 
   if (usersToImport.length === 0) {
@@ -39,13 +40,15 @@ export const importCsvFileFromRequest = async (params: {
     );
   }
 
-  await importUsers({
+  const imported = await importUsers({
     pg: params.pg,
     logger: params.logger,
     toImportUsers: usersToImport,
     requestUser: params.user,
     channel: "csv",
   });
+
+  return imported.id;
 };
 
 export const importCsvRecords = async (params: {
@@ -53,7 +56,7 @@ export const importCsvRecords = async (params: {
   logger: FastifyBaseLogger;
   csvRecords: CsvRecord[];
   requestUser: RequestUser;
-}): Promise<void> => {
+}): Promise<string> => {
   const toImportUsers: ToImportUser[] = params.csvRecords.map((record) =>
     csvRecordToToImportUser(record),
   );
@@ -62,13 +65,15 @@ export const importCsvRecords = async (params: {
     throw new BadRequestError(IMPORT_USERS_ERROR, "At least one user needed");
   }
 
-  await importUsers({
+  const imported = await importUsers({
     pg: params.pg,
     logger: params.logger,
     toImportUsers,
     requestUser: params.requestUser,
     channel: "api",
   });
+
+  return imported.id;
 };
 
 export const getCsvExample = (): Promise<Buffer> =>
@@ -104,8 +109,12 @@ const normalizeCsvValue = (value: string | undefined | null): string | null => {
 };
 
 const normalizeBooleanCsvValue = (
-  value: string | undefined | null,
+  value: string | undefined | null | boolean,
 ): boolean => {
+  if (typeof value === "boolean") {
+    return value;
+  }
+
   const normalizedString = normalizeCsvValue(value);
 
   if (!normalizedString) {
@@ -145,6 +154,7 @@ const importUsers = async (params: {
     logger: params.logger,
     requestUserId: params.requestUser.userId,
     requestOrganizationId: params.requestUser.organizationId!,
+    isM2MApplicationSender: params.requestUser.isM2MApplication,
   });
 
   return importedUsers;

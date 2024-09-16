@@ -4,7 +4,7 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "test": "TAP_RCFILE=tap.yml tap",
+    "test": "TAP_RCFILE=tap.yml tap --reporter junit --reporter-file results.xml",
     "test:e2e": "cd ./e2e && bru run --env local",
     "test:smoke:e2e": "cd ./e2e && mkdir -p test-results && bru run --env dev --output ./test-results/results.xml --format junit",
     "test:regression:e2e": "cd ./e2e && mkdir -p test-results && bru run --env dev --output ./test-results/results.xml --format junit",
@@ -41,6 +41,7 @@
     "@fastify/under-pressure": "^8.3.0",
     "@sinclair/typebox": "^0.32.31",
     "api-auth": "*",
+    "building-blocks-sdk": "*",
     "dotenv": "^16.4.5",
     "error-handler": "*",
     "fastify": "^4.27.0",

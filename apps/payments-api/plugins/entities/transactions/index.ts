@@ -91,7 +91,7 @@ const buildUpdateTransactionStatus =
   async (
     transactionId: string,
     status: TransactionStatusesEnum,
-  ): Promise<{ transactionId: string }> => {
+  ): Promise<{ transactionId: string; extPaymentId: string }> => {
     let result;
 
     try {
@@ -112,7 +112,7 @@ const buildCreateTransaction =
   async (
     userId: string,
     transaction: CreateTransactionBodyDO,
-  ): Promise<{ transactionId: string }> => {
+  ): Promise<{ transactionId: string; extPaymentId: string }> => {
     let result;
 
     try {

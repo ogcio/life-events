@@ -6,13 +6,13 @@
 
 import { PoolClient } from "pg";
 import { utils } from "../../utils.js";
-import { isNativeError } from "util/types";
 import { BadRequestError, ServerError, ThirdPartyError } from "shared-errors";
 import { randomUUID } from "crypto";
 import {
   AllProviderTypes,
   SecurityLevels,
 } from "../../types/schemaDefinitions.js";
+import { getSchedulerSdk } from "../../utils/authentication-factory.js";
 
 type TemplateContent = {
   subject: string;
@@ -49,7 +49,7 @@ type CreatedTemplateMessage = {
 export type CreateMessageParams = {
   receiverUserId: string;
   excerpt: string;
-  lang: string;
+  language: string;
   plainText: string;
   richText: string;
   subject: string;
@@ -59,7 +59,8 @@ export type CreateMessageParams = {
   security: SecurityLevels;
   preferredTransports: Array<AllProviderTypes>;
   organisationId: string;
-  senderUserProfileId: string;
+  senderUserProfileId: string | null;
+  senderApplicationId: string | null;
 };
 
 export interface MessagingService {
@@ -120,14 +121,13 @@ export function newMessagingService(
         params.plainText,
         params.richText,
         params.security,
-        params.lang,
+        params.language,
         params.preferredTransports.length
           ? utils.postgresArrayify(params.preferredTransports)
           : null,
         params.threadName,
         params.organisationId,
         params.scheduleAt,
-        params.senderUserProfileId,
       ];
 
       const values = valueArray.map((_, i) => `$${i + 1}`).join(", ");
@@ -149,8 +149,7 @@ export function newMessagingService(
             preferred_transports,
             thread_name,
             organisation_id,
-            scheduled_at,
-            sender_user_profile_id
+            scheduled_at
         ) values (${values})
         returning 
           id, user_id
@@ -360,25 +359,12 @@ export function newMessagingService(
         };
       });
 
-      const scheduleUrl = new URL(
-        "/api/v1/tasks",
-        process.env.SCHEDULER_API_URL,
-      );
-
-      try {
-        await fetch(scheduleUrl.toString(), {
-          method: "POST",
-          body: JSON.stringify(scheduleBody),
-          headers: { "x-user-id": "123", "Content-Type": "application/json" },
-        });
-      } catch (err) {
-        throw new ThirdPartyError(
-          "failed to post messages",
-          isNativeError(err)
-            ? (err.cause?.toString() ?? "")
-            : (err?.toString() ?? ""),
-        );
+      const schedulerSdk = await getSchedulerSdk(organisationId);
+      const { error } = await schedulerSdk.scheduleTasks(scheduleBody);
+      if (error) {
+        throw new ThirdPartyError("SCHEDULE_MESSAGES", error.detail, error);
       }
+
       return jobs;
     },
   });

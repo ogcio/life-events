@@ -8,7 +8,7 @@ t.test("Messaging.buildMessage", async (t) => {
     async () => {
       const expected = {
         excerpt: "text",
-        lang: "en",
+        language: "en",
         plainText: "text",
         richText: "text",
         subject: "text",
@@ -19,7 +19,7 @@ t.test("Messaging.buildMessage", async (t) => {
         [
           {
             excerpt: "text",
-            lang: "en",
+            language: "en",
             plainText: "text",
             richText: "text",
             subject: "text",
@@ -27,7 +27,7 @@ t.test("Messaging.buildMessage", async (t) => {
           },
           {
             excerpt: "text2",
-            lang: "ga",
+            language: "ga",
             plainText: "text2",
             richText: "text2",
             subject: "text2",
@@ -47,7 +47,7 @@ t.test("Messaging.buildMessage", async (t) => {
     async () => {
       const expected = {
         excerpt: "text 1",
-        lang: "en",
+        language: "en",
         plainText: "text 2",
         richText: "text 3",
         subject: "text 4",
@@ -58,7 +58,7 @@ t.test("Messaging.buildMessage", async (t) => {
         [
           {
             excerpt: "text {{a}}",
-            lang: "en",
+            language: "en",
             plainText: "text {{b}} {{e}}",
             richText: "text {{c}}",
             subject: "text {{d}}",
@@ -66,7 +66,7 @@ t.test("Messaging.buildMessage", async (t) => {
           },
           {
             excerpt: "text2",
-            lang: "ga",
+            language: "ga",
             plainText: "text2",
             richText: "text2",
             subject: "text2",
@@ -89,7 +89,7 @@ t.test("Messaging.buildMessage", async (t) => {
           [
             {
               excerpt: "text",
-              lang: "en",
+              language: "en",
               plainText: "text",
               richText: "text",
               subject: "text",
@@ -115,7 +115,7 @@ t.test("Messaging.buildMessage", async (t) => {
           [
             {
               excerpt: "text",
-              lang: "ga",
+              language: "ga",
               plainText: "text",
               richText: "text",
               subject: "text",
@@ -153,7 +153,7 @@ t.test("Messaging.buildMessage", async (t) => {
           [
             {
               excerpt: "text",
-              lang: "en",
+              language: "en",
               plainText: "text {{illegal1}}",
               richText: "text {{illegal2}}",
               subject: "text",
@@ -171,13 +171,13 @@ t.test("Messaging.buildMessage", async (t) => {
     },
   );
 
-  t.test("should throw error with empty lang parameter", async () => {
+  t.test("should throw error with empty language parameter", async () => {
     try {
       await service.buildMessage(
         [
           {
             excerpt: "text",
-            lang: "en",
+            language: "en",
             plainText: "text {{illegal1}}",
             richText: "text {{illegal2}}",
             subject: "text",

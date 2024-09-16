@@ -1,5 +1,6 @@
 import { type Page, type Locator, expect } from "@playwright/test";
 import {
+  paymentRequestUrl,
   PaymentRequestValidationError,
   paymentRequestValidationErrorTexts,
   paymentSetupUrl,
@@ -90,6 +91,11 @@ export class PaymentRequestFormPage {
       ? this.selectInactiveStatus()
       : this.selectActiveStatus();
     await this.saveChanges();
+    await expect(this.page).toHaveURL(
+      new RegExp(`^${process.env.BASE_URL}${paymentRequestUrl}`),
+    );
+    const urlPaths = this.page.url().split("/");
+    return urlPaths.at(-1) ?? "";
   }
 
   async checkHeading() {
