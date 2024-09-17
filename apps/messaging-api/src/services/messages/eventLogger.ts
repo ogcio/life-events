@@ -134,6 +134,7 @@ type MessageScheduleEvent = {
 
 type MessageErrorEvent = {
   messageKey?: string;
+  details?: string;
 };
 
 type Required = { messageId: string };
