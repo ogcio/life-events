@@ -4,9 +4,8 @@ import path from "path";
 import { MyGovIdMockLoginPage } from "../objects/MyGovIdMockLoginPage";
 import { password, publicServants, citizens } from "../utils/constants";
 
-const baseURL = process.env.BASE_URL || "https://payments.dev.blocks.gov.ie/";
-const loginUrl =
-  process.env.LOGTO_ENDPOINT || "https://authorization.dev.blocks.gov.ie/";
+const baseURL = process.env.BASE_URL || "";
+const loginUrl = process.env.LOGTO_ENDPOINT || "";
 
 export * from "@playwright/test";
 
