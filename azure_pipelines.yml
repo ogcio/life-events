@@ -14,7 +14,7 @@ pr:
 parameters:
   - name: buildBranches
     type: object
-    default: ["dev", "sta", "uat", "18848-trigger-smoke-tests-on-deployment-to-dev"]
+    default: ["dev", "sta", "uat",]
 
   - name: validEnvironments
     type: object
@@ -33,14 +33,14 @@ variables:
   - ${{ else }}:
     - template: pipeline-variables/dev.yml
   - name: runSmokeTest
-    value: ${{ eq('18848-trigger-smoke-tests-on-deployment-to-dev', variables['Build.SourceBranchName']) }}
+    value: ${{ eq('dev', variables['Build.SourceBranchName']) }}
 
 resources:
   repositories:
     - repository: pipeline-templates
       type: github
       name: ogcio/building-blocks-pipelines
-      ref: file_paths
+      ref: main
       endpoint: ogcio
 
 stages:
