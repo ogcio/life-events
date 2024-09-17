@@ -1,0 +1,2 @@
+importIndex,publicIdentityId,firstName,lastName,phoneNumber,birthDate,emailAddress,addressCity,addressZipCode,addressStreet,addressCountry,addressRegion,tags,collectedConsent
+1,PETER_PPSN,Test,Testsson,+353 5814655700,15/07/1975,test.testsson@mail.ie,Metropolis,67890,High Street 789,State,Zone,,true

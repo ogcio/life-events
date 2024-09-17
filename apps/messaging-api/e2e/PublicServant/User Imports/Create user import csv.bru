@@ -1,0 +1,19 @@
+meta {
+  name: Create user import csv
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/api/v1/user-imports
+  body: multipartForm
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:multipart-form {
+  : @file(userImport.csv)
+}
