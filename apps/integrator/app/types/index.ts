@@ -1,7 +1,7 @@
 import { PluginData } from "./plugins";
 
 export type Journey = {
-  id: number;
+  id: string;
   title: string;
   createdAt: Date;
   updatedAt: Date;
@@ -21,8 +21,8 @@ export enum STEP_STATUS {
 }
 
 export type JourneyStep = {
-  id: number;
-  journeyId: number;
+  id: string;
+  journeyId: string;
   stepType: STEP_TYPE;
   stepNumber: number;
   stepData: PluginData;
@@ -31,9 +31,9 @@ export type JourneyStep = {
 };
 
 export type SubmissionStep = {
-  id: number;
-  submissionId: number;
-  stepId: number;
+  id: string;
+  submissionId: string;
+  stepId: string;
   data: { [key: string]: string | number | boolean };
   status: STEP_STATUS;
   createdAt: Date;
@@ -41,7 +41,7 @@ export type SubmissionStep = {
 };
 
 export type Submission = {
-  id: number;
+  id: string;
   userId: string;
   journeyId: number;
   createdAt: Date;

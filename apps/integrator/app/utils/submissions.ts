@@ -30,8 +30,8 @@ const getUserSubmissionSteps = async (
 
 const insertNewSubmissionStep = async (
   pgpool: Pool,
-  submissionId: number,
-  stepId: number,
+  submissionId: string,
+  stepId: string,
 ) => {
   return pgpool.query(
     `
@@ -53,10 +53,10 @@ const insertNewSubmissionStep = async (
 
 const updateSubmissionStep = async (
   pgpool: Pool,
-  submissionId: number,
-  stepId: number,
+  submissionId: string,
+  stepId: string,
   userId: string,
-  journeyId: number,
+  journeyId: string,
   data: { [key: string]: string | number | boolean },
 ) => {
   return pgpool.query(

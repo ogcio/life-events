@@ -1,6 +1,9 @@
 import { redirect } from "next/navigation";
 import { JourneyStep, STEP_TYPE } from "../../../../../types";
-import { FormPluginData } from "../../../../../types/plugins";
+import {
+  FormPluginData,
+  PaymentPluginData,
+} from "../../../../../types/plugins";
 
 const pluginRunner = (plugin: JourneyStep) => {
   const pluginType = plugin.stepType;
@@ -12,7 +15,8 @@ const pluginRunner = (plugin: JourneyStep) => {
       return redirect(formsUrl);
     }
     case STEP_TYPE.PAYMENT: {
-      //execute payment
+      const { paymentsUrl } = plugin.stepData as PaymentPluginData;
+      return redirect(paymentsUrl);
     }
     case STEP_TYPE.MESSAGING: {
       //execute messaging

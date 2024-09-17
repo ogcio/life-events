@@ -81,15 +81,11 @@ export default async (props: Props, params) => {
   const userSubmissionStepsData = userSubmissionStepsQueryResult.rows;
   // get all journey step submissions
 
-  console.log({ journeySteps });
-
   for (const step of journeySteps) {
     // get step data
     const currentSubmissionStepData = userSubmissionStepsData.find(
       ({ stepId }) => stepId === step.id,
     );
-
-    console.log({ currentSubmissionStepData });
 
     let stepStatus: STEP_STATUS;
     //there is no submissionData for the current step

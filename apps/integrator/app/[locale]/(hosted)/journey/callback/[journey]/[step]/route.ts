@@ -1,9 +1,7 @@
-import { NextResponse } from "next/server";
-import { ServerError } from "shared-errors";
-import { pgpool } from "../../../../../../../libraries/postgres";
-import { AuthenticationFactory } from "../../../../../../../libraries/authentication-factory";
 import { redirect, RedirectType } from "next/navigation";
-import { getJourneySteps } from "../../../../../../utils/journeys";
+import { ServerError } from "shared-errors";
+import { AuthenticationFactory } from "../../../../../../../libraries/authentication-factory";
+import { pgpool } from "../../../../../../../libraries/postgres";
 import {
   getUserSubmissionSteps,
   updateSubmissionStep,
@@ -23,16 +21,8 @@ export async function GET(request: Request, { params }: CallbackRouteParams) {
   } = await AuthenticationFactory.getInstance().getContext();
 
   const url = new URL(request.url);
-
-  const formsSubmmissionID = url.searchParams.get("submissionId");
-
-  if (!formsSubmmissionID) {
-    throw new ServerError(
-      INTEGRATOR_CALLBACK,
-      "Internal server error",
-      new Error("Submission Id not provided"),
-    );
-  }
+  // TODO: validate what sent as queryParams
+  const objData = Object.fromEntries(url.searchParams.entries());
 
   // so far only one submission per user, so we can retrieve the submissionID using the user
 
@@ -44,10 +34,8 @@ export async function GET(request: Request, { params }: CallbackRouteParams) {
   );
 
   const userSubmissionStepData = userSubmissionStepsQueryResult.rows?.find(
-    ({ stepId }) => stepId === parseInt(step),
+    ({ stepId }) => stepId === step,
   );
-
-  console.log({ userSubmissionStepData });
 
   if (!userSubmissionStepData) {
     throw new ServerError(
@@ -57,14 +45,13 @@ export async function GET(request: Request, { params }: CallbackRouteParams) {
     );
   }
 
-  // const submissionId = journeyData.
   await updateSubmissionStep(
     pgpool,
     userSubmissionStepData.submissionId,
-    parseInt(step),
+    step,
     userId,
-    parseInt(journey),
-    { submissionId: formsSubmmissionID },
+    journey,
+    objData,
   );
 
   return redirect(`/journey/${journey}`, RedirectType.replace);
