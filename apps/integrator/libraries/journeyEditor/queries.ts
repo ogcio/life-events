@@ -6,17 +6,18 @@ export const createJourney = (
   data: {
     title: string;
     organizationId: string;
+    userId: string;
   },
 ) => {
   return pg.query<{
     id: string;
   }>(
     `
-        INSERT INTO journeys(title, organization_id, status)
-        VALUES ($1, $2, $3)
+        INSERT INTO journeys(title, organization_id, status, user_id)
+        VALUES ($1, $2, $3, $4)
         RETURNING id
       `,
-    [data.title, data.organizationId, JourneyStatus.CREATED],
+    [data.title, data.organizationId, JourneyStatus.CREATED, data.userId],
   );
 };
 

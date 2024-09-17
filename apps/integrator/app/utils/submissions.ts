@@ -4,7 +4,7 @@ import type { Submission, SubmissionStep } from "../types";
 const getUserSubmissions = async (pgpool: Pool, userId: string) => {
   return pgpool.query<Submission>(
     `
-    SELECT id, journey_id as "journeyId", started_at as "startedAt", updated_at as "updatedAt", user_id as "userId" FROM submissions WHERE user_id = $1
+    SELECT id, journey_id as "journeyId", created_at as "createdAt", updated_at as "updatedAt", user_id as "userId" FROM submissions WHERE user_id = $1
     `,
     [userId],
   );

@@ -28,8 +28,10 @@ export default async ({ params: { locale } }: Props) => {
   const createJourneyAction = async (formData: FormData) => {
     "use server";
 
-    const { organization } =
-      await AuthenticationFactory.getInstance().getContext();
+    const {
+      organization,
+      user: { id: userId },
+    } = await AuthenticationFactory.getInstance().getContext();
 
     if (!organization) {
       throw new Error("Unauthorized!");
@@ -40,6 +42,7 @@ export default async ({ params: { locale } }: Props) => {
     const result = await createJourney(pgpool, {
       title,
       organizationId: organization.id,
+      userId,
     });
 
     if (!result.rows?.[0]?.id) {

@@ -11,12 +11,12 @@ const pluginRunner = (plugin: JourneyStep) => {
   switch (pluginType) {
     case STEP_TYPE.FORM: {
       // redirect to form
-      const { formsUrl } = plugin.stepData as FormPluginData;
-      return redirect(formsUrl);
+      const { url } = plugin.stepData as FormPluginData;
+      return redirect(url);
     }
     case STEP_TYPE.PAYMENT: {
-      const { paymentsUrl } = plugin.stepData as PaymentPluginData;
-      return redirect(paymentsUrl);
+      const { url } = plugin.stepData as PaymentPluginData;
+      return redirect(url);
     }
     case STEP_TYPE.MESSAGING: {
       //execute messaging
