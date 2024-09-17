@@ -8,6 +8,9 @@ import userImports from "./user-imports/index.js";
 import users from "./users/index.js";
 import events, { prefix as eventsPrefix } from "./messages/events.js";
 import jobs, { prefix as jobsPrefix } from "./jobs/index.js";
+import messageAction, {
+  prefix as messageActionsPrefix,
+} from "./message-actions/index.js";
 
 export default async function routes(app: FastifyInstance) {
   app.register(messages, { prefix: messagePrefix });
@@ -18,6 +21,7 @@ export default async function routes(app: FastifyInstance) {
   app.register(users, { prefix: "/users" });
   app.register(events, { prefix: eventsPrefix });
   app.register(jobs, { prefix: jobsPrefix });
+  app.register(messageAction, { prefix: messageActionsPrefix });
 }
 
 export interface SMSService {

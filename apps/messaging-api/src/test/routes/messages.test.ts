@@ -12,6 +12,7 @@ t.test("messaging - /api/v1/messages schema", async (t) => {
               userId: "userId",
               accessToken: "accessToken",
               organizationId: "organisationId",
+              isM2MApplication: false,
             };
           });
         }),
