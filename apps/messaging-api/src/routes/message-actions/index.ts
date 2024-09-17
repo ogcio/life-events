@@ -32,7 +32,7 @@ export default async function messagesActions(app: FastifyInstance) {
     "/:messageId",
     {
       preValidation: (req, res) =>
-        app.checkPermissions(req, res, [Permissions.CitizenSelf.Write]),
+        app.checkPermissions(req, res, [Permissions.MessageSelf.Write]),
       schema: {
         tags: ["Message actions"],
         body: MessageActions,
