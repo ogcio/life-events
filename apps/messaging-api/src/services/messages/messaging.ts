@@ -61,6 +61,7 @@ export type CreateMessageParams = {
   organisationId: string;
   senderUserProfileId: string | null;
   senderApplicationId: string | null;
+  attachments: string[];
 };
 
 export interface MessagingService {
