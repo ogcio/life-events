@@ -20,7 +20,7 @@ export default async (props: Props) => {
   }
 
   if (!isPublicServant) {
-    // Redirect to front page for citizen
+    return redirect("/journey", RedirectType.replace);
   }
 
   return redirect("/admin/journeys", RedirectType.replace);

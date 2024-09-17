@@ -1,5 +1,3 @@
-/* Replace with your SQL commands */
-
 DO $$
 BEGIN
     -- Table to store journeys, which represent an overarching flow made of multiple steps
@@ -41,7 +39,6 @@ BEGIN
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),   -- Unique identifier for the submission step
         submission_id UUID REFERENCES submissions(id) ON DELETE CASCADE, -- Foreign key to the submission
         step_id UUID REFERENCES journey_steps(id) ON DELETE CASCADE, -- Foreign key to the specific step in the journey
-        key VARCHAR(255) NOT NULL,                       -- Identifier or label for the submission step data
         data JSONB,                                      -- The data collected or processed for this step, stored in JSONB format
         status step_status NOT NULL DEFAULT 'pending',   -- Status of the step (pending, in_progress, completed, failed)
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  -- Timestamp when the step was created

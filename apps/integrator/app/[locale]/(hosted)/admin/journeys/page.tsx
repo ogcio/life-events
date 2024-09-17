@@ -13,7 +13,7 @@ type Props = {
 export default async ({ params: { locale } }: Props) => {
   const t = await getTranslations("Journeys");
 
-  const { isPublicServant } =
+  const { isPublicServant, isInactivePublicServant } =
     await AuthenticationFactory.getInstance().getContext();
 
   if (!isPublicServant) {
