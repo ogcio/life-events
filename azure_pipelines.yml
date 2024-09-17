@@ -14,7 +14,7 @@ pr:
 parameters:
   - name: buildBranches
     type: object
-    default: ["dev", "sta", "uat",]
+    default: ["dev", "sta", "uat"]
 
   - name: validEnvironments
     type: object
