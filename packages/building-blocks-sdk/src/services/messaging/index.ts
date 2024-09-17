@@ -29,7 +29,7 @@ export class Messaging {
 
   async getMessagesForUser(
     userId: string,
-    filter?: { offset?: number; limit?: number },
+    filter?: { offset?: number; limit?: number; isSeen?: boolean },
   ) {
     const { error, data } = await this.client.GET("/api/v1/messages/", {
       params: {
@@ -38,6 +38,7 @@ export class Messaging {
           offset: toStringOrUndefined(filter?.offset),
           recipientUserId: userId,
           status: "delivered",
+          isSeen: filter?.isSeen,
         },
       },
     });
@@ -552,5 +553,43 @@ export class Messaging {
     });
 
     return { error, data: data?.data, metadata: data?.metadata };
+  }
+
+  async seeMessage(messageId: string) {
+    const { error } = await this.client.PUT(
+      "/api/v1/message-actions/{messageId}",
+      {
+        params: {
+          path: {
+            messageId,
+          },
+        },
+        body: {
+          messageId,
+          isSeen: true,
+        },
+      },
+    );
+
+    return { error };
+  }
+
+  async unseeMessage(messageId: string) {
+    const { error } = await this.client.PUT(
+      "/api/v1/message-actions/{messageId}",
+      {
+        params: {
+          path: {
+            messageId,
+          },
+        },
+        body: {
+          messageId,
+          isSeen: false,
+        },
+      },
+    );
+
+    return { error };
   }
 }
