@@ -93,7 +93,7 @@ run-services:
 start-services: install-concurrently run-services
 	
 kill-services:
-	sleep 2 && lsof -ti:8000,8001,8002,8003,8004,8005,3000,3001,3002,3003,3004,3005,3006,3009 | xargs sudo kill -9
+	sleep 2 && lsof -ti:8000,8001,8002,8003,8004,8005,8006,3000,3001,3002,3003,3004,3005,3006,3008,3009 | xargs sudo kill -9
 
 kill-logto:
 	sleep 2 && lsof -ti:3301,3302 | xargs sudo kill -9

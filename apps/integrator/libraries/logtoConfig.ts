@@ -1,5 +1,6 @@
 import { AuthenticationContextConfig } from "auth/base-authentication-context";
 import { organizationScopes } from "auth/authentication-context";
+import { headers } from "next/headers";
 
 export const baseConfig = {
   cookieSecure: process.env.NODE_ENV === "production",
@@ -13,6 +14,11 @@ export const baseConfig = {
 
 const publicServantExpectedRoles = ["Life Events Public Servant"];
 
+const buildLoginUrlWithPostLoginRedirect = () => {
+  const currentPath = headers().get("x-url");
+  return `/preLogin?loginUrl=/login&postLoginRedirectUrl=${encodeURIComponent(currentPath ?? "")}`;
+};
+
 export const getAuthenticationContextConfig =
   (): AuthenticationContextConfig => ({
     baseUrl: baseConfig.baseUrl,
@@ -21,7 +27,7 @@ export const getAuthenticationContextConfig =
     citizenScopes: [],
     publicServantExpectedRoles,
     publicServantScopes: [],
-    loginUrl: "/login",
+    loginUrl: buildLoginUrlWithPostLoginRedirect(),
     resourceUrl: "",
   });
 
@@ -32,3 +38,7 @@ export const getSignInConfiguration = () => ({
   resources: [],
   scopes: [...organizationScopes],
 });
+
+export const postLoginRedirectUrlCookieName = "logtoPostLoginRedirectUrl";
+
+export const logtoUserIdCookieName = "logtoUserId";

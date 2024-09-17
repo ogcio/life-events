@@ -1,10 +1,10 @@
 export type FormPluginData = {
-  formsUrl: string;
+  url: string;
   title: string;
 };
 
 export type PaymentPluginData = {
-  paymentsUrl: string;
+  url: string;
   title: string;
 };
 

@@ -8,7 +8,7 @@ import {
   getUserSubmissionSteps,
   insertNewSubmissionStep,
 } from "../../../../utils/submissions";
-import { STEP_STATUS, STEP_TYPE } from "../../../../types";
+import { STEP_STATUS, Submission } from "../../../../types";
 import { getJourneySteps } from "../../../../utils/journeys";
 import pluginRunner from "./pluginRunner";
 
@@ -51,13 +51,18 @@ export default async (props: Props, params) => {
   // the journy_id is unique for a user
   const submissionDataQueryResult = await getUserSubmissions(pgpool, userId);
 
-  const submissionData = submissionDataQueryResult.rows?.[0];
+  let submissionData = submissionDataQueryResult.rows?.[0];
 
   if (!submissionData) {
-    await pgpool.query(
-      "INSERT INTO submissions (journey_id, user_id) VALUES($1, $2)",
+    submissionData;
+    const submissionDataQueryResult = await pgpool.query<Submission>(
+      `INSERT INTO submissions (journey_id, user_id) VALUES($1, $2) RETURNING id, journey_id as "journeyId", created_at as "createdAt", updated_at as "updatedAt", user_id as "userId"`,
       [journeyId, userId],
     );
+
+    if (submissionDataQueryResult.rows.length) {
+      submissionData = submissionDataQueryResult.rows[0];
+    }
   }
 
   // get all journey steps
@@ -123,7 +128,7 @@ export default async (props: Props, params) => {
       <div className="two-columns-layout">
         <div className="column">
           <h1 className="govie-heading-l">{t("title")}</h1>
-          <div>handle journesy here</div>
+          <div>This journey is now complete</div>
         </div>
       </div>
     </div>
