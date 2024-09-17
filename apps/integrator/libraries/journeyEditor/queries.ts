@@ -1,5 +1,5 @@
 import { Pool } from "pg";
-import { Journey, JourneyStatus } from "./types";
+import { Journey, JourneyInfo, JourneyStatus } from "./types";
 
 export const createJourney = (
   pg: Pool,
@@ -31,7 +31,7 @@ export const completeJourney = (
   return pg.query(
     `
       UPDATE journeys
-      SET status = 'completed'
+      SET status = 'completed', updated_at = now()::DATE
       WHERE id = $1 and organization_id = $2
     `,
     [data.journeyId, data.organizationId],
@@ -77,4 +77,26 @@ export const loadJourneyById = (
   `;
 
   return pg.query<Journey>(query, queryData);
+};
+
+export const getJourneys = (
+  pg: Pool,
+  data: {
+    organizationId: string;
+  },
+) => {
+  return pg.query<JourneyInfo>(
+    `
+      SELECT
+        id,
+        title,
+        status,
+        created_at as "createdAt",
+        updated_at as "updatedAt"
+      FROM journeys
+      WHERE organization_id = $1
+      ORDER BY created_at DESC
+    `,
+    [data.organizationId],
+  );
 };

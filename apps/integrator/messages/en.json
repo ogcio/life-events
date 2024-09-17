@@ -43,6 +43,20 @@
         "titleLabel": "Title",
         "urlLabel": "Message template URL"
       }
+    },
+    "existingJourneys": {
+      "title": "Journeys",
+      "empty": {
+        "title": "There are no journes yet!",
+        "description": "You have no journeys created."
+      },
+      "tableHeaders": {
+        "name": "Name",
+        "createdBy": "Created by",
+        "created": "Date created",
+        "updated": "Last updated",
+        "actions": "Actions"
+      }
     }
   },
   "General": {
@@ -53,6 +67,7 @@
     "required": "Required",
     "cancel": "Cancel",
     "shareLink": "Share link",
-    "copyLink": "Copy link"
+    "copyLink": "Copy link",
+    "journeyStatus": "Journey status"
   }
 }

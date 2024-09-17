@@ -34,6 +34,14 @@ export type Journey = {
   status: JourneyStatus;
 };
 
+export type JourneyInfo = {
+  id: string;
+  title: string;
+  status: JourneyStatus;
+  createdAt: string;
+  updatedAt: string;
+};
+
 export type JourneyWidgetProps = {
   id: string;
   stepId?: string;

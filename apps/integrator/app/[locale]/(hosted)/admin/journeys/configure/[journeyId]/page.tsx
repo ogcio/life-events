@@ -16,8 +16,9 @@ import {
   loadJourneyById,
 } from "../../../../../../../libraries/journeyEditor/queries";
 import InputField from "../../../../../../components/InputField";
-import CopyLink from "./CopyBtn";
+import CopyLink from "../../../../../../components/CopyBtn";
 import journeyDefaultFlow from "../../../../../../../libraries/journeyEditor/journeyStepFlow";
+import { generateJourneyLink } from "../../../../../../utils/journey";
 
 const Icon = ds.Icon;
 
@@ -48,11 +49,6 @@ const loadJourney = async (journeyId: string): Promise<Journey> => {
   }
 
   return result.rows[0];
-};
-
-const generateJourneyLink = (journeyId: string) => {
-  const url = new URL(`/journey/${journeyId}`, process.env.HOST_URL);
-  return url.href;
 };
 
 export default async ({ params: { locale, journeyId } }: Props) => {

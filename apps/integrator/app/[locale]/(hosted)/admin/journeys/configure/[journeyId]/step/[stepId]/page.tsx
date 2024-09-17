@@ -93,6 +93,12 @@ export default async ({ params: { locale, journeyId, stepId } }: Props) => {
       <form action={saveStepAction}>
         <div className="govie-width-container">{step.renderForm(tWidgets)}</div>
 
+        {step.getInfo().stepId && (
+          <div className="govie-width-container" style={{ margin: "16px 0" }}>
+            Step UUID: <strong>{step.getInfo().stepId}</strong>
+          </div>
+        )}
+
         <div className="govie-width-container">
           <input type="submit" value={t("add")} className="govie-button" />
         </div>
