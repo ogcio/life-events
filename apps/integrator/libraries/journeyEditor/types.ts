@@ -10,8 +10,8 @@ export type JourneyWidgetInfo = {
 };
 
 export enum JourneyStatus {
-  CREATED = "created",
-  COMPLETED = "completed",
+  ACTIVE = "active",
+  DRAFT = "draft",
 }
 
 export type FlowStep = {
@@ -32,6 +32,8 @@ export type Journey = {
   title: string;
   steps: JourneyStep[];
   status: JourneyStatus;
+  createdAt: string;
+  updatedAt: string;
 };
 
 export type JourneyInfo = {

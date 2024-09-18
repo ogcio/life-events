@@ -25,7 +25,7 @@ export default function CopyLink(props: {
   return (
     <>
       {props.linkStyle ? (
-        <Link href="#" onClick={copyLink}>
+        <Link className="govie-link" href="#" onClick={copyLink}>
           {props.buttonText}
         </Link>
       ) : (

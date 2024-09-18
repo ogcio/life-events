@@ -45,7 +45,7 @@
       }
     },
     "existingJourneys": {
-      "title": "Journeys",
+      "title": "Existing journeys",
       "empty": {
         "title": "There are no journes yet!",
         "description": "You have no journeys created."
@@ -57,6 +57,15 @@
         "updated": "Last updated",
         "actions": "Actions"
       }
+    },
+    "details": {
+      "status": "Status",
+      "created": "Created",
+      "createdBy": "Created by",
+      "journeyLink": "Journey link",
+      "steps": "Journey steps",
+      "buildingBlock": "Building block",
+      "description": "Description"
     }
   },
   "General": {
@@ -68,6 +77,10 @@
     "cancel": "Cancel",
     "shareLink": "Share link",
     "copyLink": "Copy link",
-    "journeyStatus": "Journey status"
+    "journeyStatus": "Journey status",
+    "backToHome": "Back to Homepage",
+    "backToExistingJourneys": "Back to existing journeys",
+    "active": "Active",
+    "draft": "Draft"
   }
 }

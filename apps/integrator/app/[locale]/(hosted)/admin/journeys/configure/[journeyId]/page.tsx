@@ -12,7 +12,7 @@ import ds from "design-system";
 import Link from "next/link";
 import styles from "./style.module.scss";
 import {
-  completeJourney,
+  activateJourney,
   loadJourneyById,
 } from "../../../../../../../libraries/journeyEditor/queries";
 import InputField from "../../../../../../components/InputField";
@@ -79,7 +79,7 @@ export default async ({ params: { locale, journeyId } }: Props) => {
       throw new Error("Unauthorized!");
     }
 
-    await completeJourney(pgpool, {
+    await activateJourney(pgpool, {
       journeyId,
       organizationId: organization.id,
     });
@@ -147,7 +147,7 @@ export default async ({ params: { locale, journeyId } }: Props) => {
           />
         </div>
 
-        {journey.status === JourneyStatus.COMPLETED && (
+        {journey.status === JourneyStatus.ACTIVE && (
           <div
             style={{
               display: "flex",

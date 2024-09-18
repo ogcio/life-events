@@ -9,6 +9,7 @@ import { EmptyStatus } from "../../../../../components/EmptyStatus";
 import dayjs from "dayjs";
 import { generateJourneyLink } from "../../../../../utils/journey";
 import CopyLink from "../../../../../components/CopyBtn";
+import advancedFormat from "dayjs/plugin/advancedFormat";
 
 type Props = {
   params: {
@@ -34,6 +35,8 @@ const getJourneysList = async () => {
 };
 
 export default async ({ params: { locale } }: Props) => {
+  dayjs.extend(advancedFormat);
+
   const t = await getTranslations("Journeys.existingJourneys");
   const tGeneral = await getTranslations("General");
 
@@ -104,10 +107,10 @@ export default async ({ params: { locale } }: Props) => {
                         ...
                       </td>
                       <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-                        {dayjs(journey.createdAt).format("DD/MM/YYYY - HH:mm")}
+                        {dayjs(journey.createdAt).format("Do MMM YYYY")}
                       </td>
                       <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-                        {dayjs(journey.updatedAt).format("DD/MM/YYYY - HH:mm")}
+                        {dayjs(journey.updatedAt).format("Do MMM YYYY")}
                       </td>
                       <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
                         <div
@@ -116,6 +119,7 @@ export default async ({ params: { locale } }: Props) => {
                           }}
                         >
                           <Link
+                            className="govie-link"
                             href={`/${locale}/admin/journeys/details/${journey.id}`}
                             style={{
                               marginRight: "12px",
@@ -135,6 +139,10 @@ export default async ({ params: { locale } }: Props) => {
                   ))}
                 </tbody>
               </table>
+
+              <Link className="govie-link" href={`/${locale}/admin/journeys`}>
+                {tGeneral("backToHome")}
+              </Link>
             </div>
           )}
         </section>
