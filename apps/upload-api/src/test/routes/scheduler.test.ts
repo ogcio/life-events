@@ -29,7 +29,7 @@ t.test("scheduler", async (t) => {
   });
 
   t.test(
-    "Should execute scheduled actions when the api si called with the expected token",
+    "Should execute scheduled actions when the api is called with the expected token",
     async (t) => {
       app = await buildApp(() =>
         Promise.resolve({

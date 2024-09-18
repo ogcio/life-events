@@ -5,13 +5,13 @@ meta {
 }
 
 post {
-  url: {{baseUrl}}/api/v1/scheduler
+  url: {{baseUrl}}/api/v1/jobs
   body: formUrlEncoded
   auth: none
 }
 
 body:form-urlencoded {
-  callbackUuid: sdfs
+  schedulerToken: schedulerToken
 }
 
 assert {
