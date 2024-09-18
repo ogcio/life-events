@@ -10,8 +10,7 @@ import dayjs from "dayjs";
 import { generateJourneyLink } from "../../../../../utils/journey";
 import CopyLink from "../../../../../components/CopyBtn";
 import advancedFormat from "dayjs/plugin/advancedFormat";
-import { ProfileAuthenticationFactory } from "../../../../../../libraries/profile-authentication-factory";
-import { Profile } from "building-blocks-sdk";
+import { getUserNameById } from "../../../../../utils/profileHelpers";
 
 type Props = {
   params: {
@@ -36,11 +35,6 @@ const getJourneysList = async () => {
   return result.rows;
 };
 
-const getUserName = async (userId: string, profileApi: Profile) => {
-  const user = await profileApi.getUser(userId);
-  return `${user.data?.firstName} ${user.data?.lastName}`;
-};
-
 export default async ({ params: { locale } }: Props) => {
   dayjs.extend(advancedFormat);
 
@@ -55,9 +49,6 @@ export default async ({ params: { locale } }: Props) => {
   }
 
   const defaultOrgId = await context.getSelectedOrganization();
-  const profileApi =
-    await ProfileAuthenticationFactory.getProfileClient(defaultOrgId);
-
   const journeys = await getJourneysList();
 
   return (
@@ -115,7 +106,7 @@ export default async ({ params: { locale } }: Props) => {
                         {journey.title}
                       </td>
                       <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-                        {await getUserName(journey.userId, profileApi)}
+                        {await getUserNameById(journey.userId, defaultOrgId)}
                       </td>
                       <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
                         {dayjs(journey.createdAt).format("Do MMM YYYY")}

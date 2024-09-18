@@ -28,7 +28,6 @@ export class ProfileAuthenticationFactory {
 
   static async getProfileClient(organizationId: string): Promise<Profile> {
     const token = await this.getToken(organizationId);
-    console.log(">>>", token);
     return new Profile(token);
   }
 }

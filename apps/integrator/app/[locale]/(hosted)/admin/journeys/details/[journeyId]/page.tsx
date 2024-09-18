@@ -11,8 +11,8 @@ import dayjs from "dayjs";
 import { generateJourneyLink } from "../../../../../../utils/journey";
 import { JourneyEditor } from "../../../../../../../libraries/journeyEditor";
 import journeyDefaultFlow from "../../../../../../../libraries/journeyEditor/journeyStepFlow";
-import { ProfileAuthenticationFactory } from "../../../../../../../libraries/profile-authentication-factory";
 import { Profile } from "building-blocks-sdk";
+import { getUserNameById } from "../../../../../../utils/profileHelpers";
 
 type Props = {
   params: {
@@ -62,9 +62,6 @@ export default async ({ params: { locale, journeyId } }: Props) => {
   }
 
   const defaultOrgId = await context.getSelectedOrganization();
-  const profileApi =
-    await ProfileAuthenticationFactory.getProfileClient(defaultOrgId);
-
   const journey = await loadJourney(journeyId);
   const editor = new JourneyEditor(journey, journeyDefaultFlow);
   const steps = editor.getStepsInfo();
@@ -112,7 +109,7 @@ export default async ({ params: { locale, journeyId } }: Props) => {
             <div className="govie-summary-list__row">
               <dt className="govie-summary-list__key">{t("createdBy")}</dt>
               <dt className="govie-summary-list__value">
-                {await getUserName(journey.userId, profileApi)}
+                {await getUserNameById(journey.userId, defaultOrgId)}
               </dt>
             </div>
             <div className="govie-summary-list__row">
