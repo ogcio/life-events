@@ -1,8 +1,5 @@
 import t from "tap";
-import {
-  ensureUserIdIsSet,
-  getSchedulerSdk,
-} from "../../utils/authentication-factory.js";
+import { ensureUserIdIsSet } from "../../utils/authentication-factory.js";
 
 t.test("authentication-factory", async (t) => {
   t.test("getProfileSdk builds profile with citizen token", async (t) => {
