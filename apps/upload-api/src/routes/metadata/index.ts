@@ -12,7 +12,12 @@ import {
   ensureUserIdIsSet,
   getProfileSdk,
 } from "../../utils/authentication-factory.js";
-import { BadRequestError, NotFoundError, ServerError } from "shared-errors";
+import {
+  AuthorizationError,
+  BadRequestError,
+  NotFoundError,
+  ServerError,
+} from "shared-errors";
 import {
   getOwnedFiles,
   getOrganizationFiles,
@@ -30,7 +35,7 @@ const SCHEDULE_DELETION = "SCHEDULE_DELETION";
 const API_DOCS_TAG = "Metadata";
 
 export default async function routes(app: FastifyInstance) {
-  app.get(
+  app.get<{ Querystring: { userId?: string } }>(
     "/",
     {
       preValidation: (req, res) =>
@@ -55,6 +60,12 @@ export default async function routes(app: FastifyInstance) {
     async (request, reply) => {
       const userId = ensureUserIdIsSet(request, METADATA_INDEX);
       const organizationId = request.userData?.organizationId;
+      ensureUserCanAccessResource({
+        errorProcess: METADATA_INDEX,
+        loggedInUserId: userId,
+        queryUserId: request.query.userId,
+        organizationId,
+      });
       const files: FileMetadataType[] = [];
 
       const client = await app.pg.pool.connect();
@@ -274,5 +285,25 @@ export default async function routes(app: FastifyInstance) {
     } catch (err) {
       throw new ServerError(METADATA_INDEX, "Internal server error", err);
     }
+  };
+
+  const ensureUserCanAccessResource = (params: {
+    errorProcess: string;
+    loggedInUserId: string;
+    queryUserId?: string;
+    organizationId?: string;
+  }) => {
+    if (
+      !params.queryUserId ||
+      params.organizationId ||
+      params.queryUserId === params.loggedInUserId
+    ) {
+      return;
+    }
+
+    throw new AuthorizationError(
+      params.errorProcess,
+      "You are not allowed to access data for the requested user",
+    );
   };
 }
