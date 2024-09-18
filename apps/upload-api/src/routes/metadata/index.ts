@@ -22,11 +22,13 @@ import {
   getOwnedFiles,
   getOrganizationFiles,
   getSharedFiles,
+  getSharedFilesPerOrganization,
 } from "./utils/filesMetadata.js";
 import getFileMetadataById from "../utils/getFileMetadataById.js";
 import getFileSharings from "./utils/getFileSharings.js";
 import scheduleFileForDeletion from "./utils/scheduleFileForDeletion.js";
 import removeAllFileSharings from "./utils/removeAllFileSharings.js";
+import { PoolClient } from "pg";
 
 const METADATA_INDEX = "METADATA_INDEX";
 const GET_METADATA = "GET_METADATA";
@@ -66,63 +68,41 @@ export default async function routes(app: FastifyInstance) {
         queryUserId: request.query.userId,
         organizationId,
       });
-      const files: FileMetadataType[] = [];
-
       const client = await app.pg.pool.connect();
-      const userIds = new Set<string>();
+      let response: { files: FileMetadataType[]; userIds: Set<string> } = {
+        files: [],
+        userIds: new Set<string>(),
+      };
+
       try {
-        const ownedFilesData = await getOwnedFiles(client, userId);
-
-        const ownedFiles = ownedFilesData.rows;
-
-        files.push(...ownedFiles);
-        files.forEach(({ ownerId }) => userIds.add(ownerId as string));
-        const filesToExclude = ownedFiles.map(({ id }) => id as string);
-
-        if (organizationId) {
-          const organizationFilesData = await getOrganizationFiles(
-            client,
-            organizationId,
-            filesToExclude,
-          );
-
-          if (organizationFilesData.rows.length) {
-            files.push(...organizationFilesData.rows);
-            organizationFilesData.rows.forEach(({ ownerId }) =>
-              userIds.add(ownerId),
-            );
-            filesToExclude.push(
-              ...organizationFilesData.rows.map(({ id }) => id as string),
-            );
-          }
-        }
-
-        const sharedFilesData = await getSharedFiles(
-          client,
-          userId,
-          filesToExclude,
-        );
-
-        if (sharedFilesData.rows.length) {
-          sharedFilesData.rows.map(({ ownerId }) => userIds.add(ownerId));
-          files.push(...sharedFilesData.rows);
-        }
-      } catch (err) {
-        throw new ServerError(METADATA_INDEX, "Internal server error", err);
+        response =
+          request.query.userId && organizationId
+            ? await getFilesForQueryUser({
+                client,
+                queryUserId: request.query.userId,
+                organizationId,
+              })
+            : await getFilesForAuthenticatedUser({
+                client,
+                loggedInUserId: userId,
+                organizationId,
+              });
+      } catch (e) {
+        throw new ServerError(METADATA_INDEX, "Error getting files", e);
       } finally {
         client.release();
       }
 
-      if (files.length === 0) {
+      if (response.files.length === 0) {
         return reply.send({ data: [] });
       }
 
       const usersData = await getUsersData({
-        userIds: Array.from(userIds.keys()),
+        userIds: Array.from(response.userIds.keys()),
         organizationId,
       });
 
-      const filesData = files.map((f) => ({
+      const filesData = response.files.map((f) => ({
         ...f,
         owner: usersData?.[f.ownerId],
       }));
@@ -305,5 +285,73 @@ export default async function routes(app: FastifyInstance) {
       params.errorProcess,
       "You are not allowed to access data for the requested user",
     );
+  };
+
+  const getFilesForAuthenticatedUser = async (params: {
+    client: PoolClient;
+    loggedInUserId: string;
+    organizationId?: string;
+  }) => {
+    const { client, loggedInUserId, organizationId } = params;
+    const files: FileMetadataType[] = [];
+    const userIds = new Set<string>();
+
+    const ownedFilesData = await getOwnedFiles(client, loggedInUserId);
+
+    const ownedFiles = ownedFilesData.rows;
+
+    files.push(...ownedFiles);
+    files.forEach(({ ownerId }) => userIds.add(ownerId as string));
+    const filesToExclude = ownedFiles.map(({ id }) => id as string);
+
+    if (organizationId) {
+      const organizationFilesData = await getOrganizationFiles(
+        client,
+        organizationId,
+        filesToExclude,
+      );
+
+      if (organizationFilesData.rows.length) {
+        files.push(...organizationFilesData.rows);
+        organizationFilesData.rows.forEach(({ ownerId }) =>
+          userIds.add(ownerId),
+        );
+        filesToExclude.push(
+          ...organizationFilesData.rows.map(({ id }) => id as string),
+        );
+      }
+    }
+
+    const sharedFilesData = await getSharedFiles(
+      client,
+      loggedInUserId,
+      filesToExclude,
+    );
+
+    if (sharedFilesData.rows.length) {
+      sharedFilesData.rows.map(({ ownerId }) => userIds.add(ownerId));
+      files.push(...sharedFilesData.rows);
+    }
+
+    return { userIds, files };
+  };
+
+  const getFilesForQueryUser = async (params: {
+    client: PoolClient;
+    queryUserId: string;
+    organizationId: string;
+  }) => {
+    const { client, organizationId, queryUserId } = params;
+
+    const userIds = new Set<string>();
+
+    const sharedFiles = await getSharedFilesPerOrganization(
+      client,
+      organizationId,
+      queryUserId,
+    );
+    sharedFiles.rows.forEach(({ ownerId }) => userIds.add(ownerId as string));
+
+    return { userIds, files: sharedFiles.rows };
   };
 }
