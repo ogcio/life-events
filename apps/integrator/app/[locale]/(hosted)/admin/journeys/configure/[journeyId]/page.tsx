@@ -12,12 +12,13 @@ import ds from "design-system";
 import Link from "next/link";
 import styles from "./style.module.scss";
 import {
-  completeJourney,
+  activateJourney,
   loadJourneyById,
 } from "../../../../../../../libraries/journeyEditor/queries";
 import InputField from "../../../../../../components/InputField";
-import CopyLink from "./CopyBtn";
+import CopyLink from "../../../../../../components/CopyBtn";
 import journeyDefaultFlow from "../../../../../../../libraries/journeyEditor/journeyStepFlow";
+import { generateJourneyLink } from "../../../../../../utils/journey";
 
 const Icon = ds.Icon;
 
@@ -50,11 +51,6 @@ const loadJourney = async (journeyId: string): Promise<Journey> => {
   return result.rows[0];
 };
 
-const generateJourneyLink = (journeyId: string) => {
-  const url = new URL(`/journey/${journeyId}`, process.env.HOST_URL);
-  return url.href;
-};
-
 export default async ({ params: { locale, journeyId } }: Props) => {
   const tGeneral = await getTranslations("General");
   const t = await getTranslations("Journeys.addSteps");
@@ -83,7 +79,7 @@ export default async ({ params: { locale, journeyId } }: Props) => {
       throw new Error("Unauthorized!");
     }
 
-    await completeJourney(pgpool, {
+    await activateJourney(pgpool, {
       journeyId,
       organizationId: organization.id,
     });
@@ -151,7 +147,7 @@ export default async ({ params: { locale, journeyId } }: Props) => {
           />
         </div>
 
-        {journey.status === JourneyStatus.COMPLETED && (
+        {journey.status === JourneyStatus.ACTIVE && (
           <div
             style={{
               display: "flex",

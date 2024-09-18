@@ -1,5 +1,5 @@
 import { Pool } from "pg";
-import { Journey, JourneyStatus } from "./types";
+import { Journey, JourneyInfo, JourneyStatus } from "./types";
 
 export const createJourney = (
   pg: Pool,
@@ -17,11 +17,11 @@ export const createJourney = (
         VALUES ($1, $2, $3, $4)
         RETURNING id
       `,
-    [data.title, data.organizationId, JourneyStatus.CREATED, data.userId],
+    [data.title, data.organizationId, JourneyStatus.DRAFT, data.userId],
   );
 };
 
-export const completeJourney = (
+export const activateJourney = (
   pg: Pool,
   data: {
     journeyId: string;
@@ -31,10 +31,10 @@ export const completeJourney = (
   return pg.query(
     `
       UPDATE journeys
-      SET status = 'completed'
+      SET status = $3, updated_at = now()::DATE
       WHERE id = $1 and organization_id = $2
     `,
-    [data.journeyId, data.organizationId],
+    [data.journeyId, data.organizationId, JourneyStatus.ACTIVE],
   );
 };
 
@@ -69,7 +69,10 @@ export const loadJourneyById = (
                 'data', s.step_data
             )
         ) as steps,
-        j.status
+        j.status,
+        j.created_at as "createdAt",
+        j.updated_at as "updatedAt",
+        j.user_id as "userId"
     FROM journeys as j
     ${joinQuery}
     WHERE j.id = $1 AND j.organization_id = $2
@@ -77,4 +80,27 @@ export const loadJourneyById = (
   `;
 
   return pg.query<Journey>(query, queryData);
+};
+
+export const getJourneys = (
+  pg: Pool,
+  data: {
+    organizationId: string;
+  },
+) => {
+  return pg.query<JourneyInfo>(
+    `
+      SELECT
+        id,
+        title,
+        status,
+        created_at as "createdAt",
+        updated_at as "updatedAt",
+        user_id as "userId"
+      FROM journeys
+      WHERE organization_id = $1
+      ORDER BY created_at DESC
+    `,
+    [data.organizationId],
+  );
 };

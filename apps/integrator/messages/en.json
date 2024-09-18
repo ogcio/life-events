@@ -43,6 +43,29 @@
         "titleLabel": "Title",
         "urlLabel": "Message template URL"
       }
+    },
+    "existingJourneys": {
+      "title": "Existing journeys",
+      "empty": {
+        "title": "There are no journeys yet!",
+        "description": "You have no journeys created."
+      },
+      "tableHeaders": {
+        "name": "Name",
+        "createdBy": "Created by",
+        "created": "Date created",
+        "updated": "Last updated",
+        "actions": "Actions"
+      }
+    },
+    "details": {
+      "status": "Status",
+      "created": "Created",
+      "createdBy": "Created by",
+      "journeyLink": "Journey link",
+      "steps": "Journey steps",
+      "buildingBlock": "Building block",
+      "description": "Description"
     }
   },
   "General": {
@@ -53,6 +76,11 @@
     "required": "Required",
     "cancel": "Cancel",
     "shareLink": "Share link",
-    "copyLink": "Copy link"
+    "copyLink": "Copy link",
+    "journeyStatus": "Journey status",
+    "backToHome": "Back to Homepage",
+    "backToExistingJourneys": "Back to existing journeys",
+    "active": "Active",
+    "draft": "Draft"
   }
 }

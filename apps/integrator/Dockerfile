@@ -6,6 +6,7 @@ ENV LOG_LEVEL=trace
 COPY ./package*.json /app/
 COPY ./apps/integrator/package*.json /app/apps/integrator/
 COPY ./packages/auth/package*.json /app/packages/auth/
+COPY ./packages/building-blocks-sdk/package*.json /app/packages/building-blocks-sdk/
 COPY ./packages/shared-components/package*.json /app/packages/shared-components/
 
 RUN npm ci
@@ -13,13 +14,19 @@ RUN npm ci
 COPY ./apps/integrator/ /app/apps/integrator/
 COPY --from=design-system-container /app/packages/design-system/ /app/packages/design-system/
 COPY ./packages/auth/ /app/packages/auth/
+COPY ./packages/building-blocks-sdk/ /app/packages/building-blocks-sdk/
 COPY ./packages/shared-components/ /app/packages/shared-components/
 
 FROM deps AS builder
 
 WORKDIR /app
 
-RUN npm run build --workspace=apps/integrator
+ARG NEXT_PUBLIC_INTEGRATOR_SERVICE_ENTRY_POINT
+
+ENV NEXT_PUBLIC_INTEGRATOR_SERVICE_ENTRY_POINT=$NEXT_PUBLIC_INTEGRATOR_SERVICE_ENTRY_POINT
+
+RUN npm run build --workspace=packages/building-blocks-sdk && \
+    npm run build --workspace=apps/integrator
 
 FROM base-deps AS runner
 
