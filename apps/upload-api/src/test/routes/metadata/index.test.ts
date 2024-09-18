@@ -3,6 +3,7 @@ import { FastifyInstance, FastifyPluginCallback } from "fastify";
 import fp from "fastify-plugin";
 import t from "tap";
 import * as authenticationFactory from "../../../utils/authentication-factory.js";
+import { CONFIG_TYPE } from "../../../utils/storeConfig.js";
 
 const buildApp = async ({
   profileSdkResponse,
@@ -58,12 +59,18 @@ const buildApp = async ({
         default: fp(async (fastify) => {
           fastify.decorate("checkPermissions", async (request) => {
             request.userData = {
+              isM2MApplication: false,
               userId: "userId",
               accessToken: "accessToken",
               organizationId: "ogcio",
             };
           });
         }),
+      },
+
+      "../../../utils/storeConfig.js": {
+        storeConfig: () => Promise.resolve(),
+        CONFIG_TYPE,
       },
     },
   );

@@ -22,6 +22,8 @@ import { envSchema } from "./config.js";
 import healthCheck from "./routes/healthcheck.js";
 import fastifyUnderPressure from "@fastify/under-pressure";
 import { CustomError } from "shared-errors";
+import { CONFIG_TYPE, storeConfig } from "./utils/storeConfig.js";
+import { randomUUID } from "crypto";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -114,6 +116,14 @@ export async function build(opts?: FastifyServerOptions) {
   app.register(routes, { prefix: "/api/v1" });
 
   app.register(sensible);
+
+  await storeConfig(
+    app.pg.pool,
+    "schedulerCallback",
+    randomUUID(),
+    "Scheduler uuid callback",
+    CONFIG_TYPE.STRING,
+  );
 
   return app;
 }

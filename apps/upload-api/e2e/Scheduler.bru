@@ -1,0 +1,20 @@
+meta {
+  name: Scheduler
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/api/v1/scheduler
+  body: formUrlEncoded
+  auth: none
+}
+
+body:form-urlencoded {
+  callbackUuid: sdfs
+}
+
+assert {
+  res.status: eq 200
+  res.body.status: eq 'ok'
+}
