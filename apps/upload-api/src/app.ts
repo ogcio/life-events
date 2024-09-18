@@ -119,9 +119,9 @@ export async function build(opts?: FastifyServerOptions) {
 
   await storeConfig(
     app.pg.pool,
-    "schedulerCallback",
+    "scehdulerToken",
     randomUUID(),
-    "Scheduler uuid callback",
+    "token to allow scheduler jobs to access the API",
     CONFIG_TYPE.STRING,
   );
 

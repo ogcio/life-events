@@ -29,10 +29,12 @@ t.test("scheduler", async (t) => {
   });
 
   t.test(
-    "Should execute scheduled actions when the api si called with the expected uuid",
+    "Should execute scheduled actions when the api si called with the expected token",
     async (t) => {
       app = await buildApp(() =>
-        Promise.resolve({ rows: [{ value: "uuid", type: "string" }] }),
+        Promise.resolve({
+          rows: [{ value: "schedulerToken", type: "string" }],
+        }),
       );
       await app.ready();
 
@@ -40,7 +42,7 @@ t.test("scheduler", async (t) => {
         method: "POST",
         url: "/",
         body: {
-          callbackUuid: "uuid",
+          schedulerToken: "schedulerToken",
         },
       });
       t.equal(res.statusCode, 200);
@@ -50,10 +52,12 @@ t.test("scheduler", async (t) => {
   );
 
   t.test(
-    "Should return a positive response when the api is called with an invalid uuid",
+    "Should return a positive response when the api is called with an invalid token",
     async (t) => {
       app = await buildApp(() =>
-        Promise.resolve({ rows: [{ value: "uuid", type: "string" }] }),
+        Promise.resolve({
+          rows: [{ value: "schedulerToken", type: "string" }],
+        }),
       );
       await app.ready();
 
@@ -61,7 +65,7 @@ t.test("scheduler", async (t) => {
         method: "POST",
         url: "/",
         body: {
-          callbackUuid: "callbackUuid",
+          schedulerToken: "wrongToken",
         },
       });
       t.equal(res.statusCode, 200);

@@ -2,18 +2,18 @@ import { FastifyInstance } from "fastify";
 import { getConfigValue } from "../utils/storeConfig.js";
 
 export default async function schduler(app: FastifyInstance) {
-  app.post<{ Body: { callbackUuid: string } }>(
+  app.post<{ Body: { schedulerToken: string } }>(
     "/",
     { schema: { hide: true } },
     async (request) => {
-      const { callbackUuid } = request.body;
+      const { schedulerToken } = request.body;
 
-      const expectedUuid = await getConfigValue(
+      const expectedSchedulerToken = await getConfigValue(
         app.pg.pool,
-        "schedulerCallback",
+        "schedulerToken",
       );
 
-      if (callbackUuid !== expectedUuid) {
+      if (schedulerToken !== expectedSchedulerToken) {
         return { status: "ok" };
       }
 
