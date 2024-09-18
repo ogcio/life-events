@@ -32,6 +32,7 @@ import {
   MessagingService,
   newMessagingService,
 } from "./messaging.js";
+import { Profile, Upload } from "building-blocks-sdk";
 
 const EXECUTE_JOB_ERROR = "EXECUTE_JOB_ERROR";
 
@@ -789,4 +790,12 @@ const createMessageWithLog = async (params: {
       profile: { ...receiverUserProfiles[0], fullName: receiverFullName },
     },
   };
+};
+
+const checkAttachments = async (params: {
+  uploadClient: Upload;
+  userProfileId: string;
+  attachmentIds: string[];
+}): Promise<void> => {
+  //
 };
