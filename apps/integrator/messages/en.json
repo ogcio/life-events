@@ -47,7 +47,7 @@
     "existingJourneys": {
       "title": "Existing journeys",
       "empty": {
-        "title": "There are no journes yet!",
+        "title": "There are no journeys yet!",
         "description": "You have no journeys created."
       },
       "tableHeaders": {
