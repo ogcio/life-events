@@ -157,7 +157,7 @@ export default async function routes(app: FastifyInstance) {
           );
         }
       } catch (err) {
-        throw new ServerError(GET_METADATA, "Internal server error", err);
+        throw new ServerError(GET_METADATA, "Error retrieving files", err);
       }
 
       const profileSdk = await getProfileSdk(organizationId);
@@ -172,7 +172,7 @@ export default async function routes(app: FastifyInstance) {
         if (usersData.error) {
           return new ServerError(
             GET_METADATA,
-            "Internal server error",
+            "Error retrieving user data",
             usersData.error,
           );
         }
@@ -182,7 +182,7 @@ export default async function routes(app: FastifyInstance) {
           users = usersData.data.filter(({ id }) => file.ownerId !== id);
         }
       } catch (err) {
-        throw new ServerError(GET_METADATA, "Internal server error", err);
+        throw new ServerError(GET_METADATA, "Error retrieving users data", err);
       }
 
       const fileMetadata = { ...file, owner: fileOwner, sharedWith: users };
@@ -231,7 +231,7 @@ export default async function routes(app: FastifyInstance) {
 
         await removeAllFileSharings(app.pg, fileId);
       } catch (err) {
-        throw new ServerError(SCHEDULE_DELETION, "Internal server error", err);
+        throw new ServerError(SCHEDULE_DELETION, "Error deleting file", err);
       }
 
       reply.send({ data: { id: fileId } });
@@ -263,7 +263,7 @@ export default async function routes(app: FastifyInstance) {
 
       return {};
     } catch (err) {
-      throw new ServerError(METADATA_INDEX, "Internal server error", err);
+      throw new ServerError(METADATA_INDEX, "Error getting users data", err);
     }
   };
 
