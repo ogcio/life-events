@@ -40,6 +40,11 @@ export default async function routes(app: FastifyInstance) {
         ]),
       schema: {
         tags: [API_DOCS_TAG],
+        querystring: Type.Optional(
+          Type.Object({
+            userId: Type.Optional(Type.String()),
+          }),
+        ),
         response: {
           200: getGenericResponseSchema(Type.Array(ResponseMetadata)),
           "4xx": HttpError,
@@ -97,36 +102,15 @@ export default async function routes(app: FastifyInstance) {
         client.release();
       }
 
-      let usersData: { [key: string]: FileOwnerType };
-
       if (files.length === 0) {
         return reply.send({ data: [] });
       }
 
-      const profileSdk = await getProfileSdk(organizationId);
-      try {
-        const usersResponse = await profileSdk.selectUsers(
-          Array.from(userIds.keys()),
-        );
+      const usersData = await getUsersData({
+        userIds: Array.from(userIds.keys()),
+        organizationId,
+      });
 
-        if (usersResponse.error) {
-          app.log.error(usersResponse.error);
-          throw new ServerError(
-            METADATA_INDEX,
-            "Internal server error",
-            usersResponse.error,
-          );
-        }
-
-        if (usersResponse.data) {
-          usersData = usersResponse.data.reduce(
-            (acc, next) => ({ ...acc, [next.id]: next }),
-            {},
-          );
-        }
-      } catch (err) {
-        throw new ServerError(METADATA_INDEX, "Internal server error", err);
-      }
       const filesData = files.map((f) => ({
         ...f,
         owner: usersData?.[f.ownerId],
@@ -262,4 +246,33 @@ export default async function routes(app: FastifyInstance) {
       reply.send({ data: { id: fileId } });
     },
   );
+
+  const getUsersData = async (params: {
+    userIds: string[];
+    organizationId?: string;
+  }): Promise<{ [key: string]: FileOwnerType }> => {
+    const profileSdk = await getProfileSdk(params.organizationId);
+    try {
+      const usersResponse = await profileSdk.selectUsers(params.userIds);
+
+      if (usersResponse.error) {
+        throw new ServerError(
+          METADATA_INDEX,
+          "Error retrieving users data",
+          usersResponse.error,
+        );
+      }
+
+      if (usersResponse.data) {
+        return usersResponse.data.reduce(
+          (acc, next) => ({ ...acc, [next.id]: next }),
+          {},
+        );
+      }
+
+      return {};
+    } catch (err) {
+      throw new ServerError(METADATA_INDEX, "Internal server error", err);
+    }
+  };
 }
