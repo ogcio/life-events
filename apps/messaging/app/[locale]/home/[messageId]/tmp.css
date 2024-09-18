@@ -1,0 +1,4 @@
+/* This needs to come from design system either as default or as option */
+p {
+  white-space: pre-wrap;
+}

@@ -107,6 +107,20 @@ export async function messageStatus(type: string, status: string) {
           </strong>
         );
     }
+  } else if (type === "message_option_seen") {
+    switch (status) {
+      case "successful":
+        return (
+          <strong className="govie-tag govie-tag--green">{t("seen")}</strong>
+        );
+    }
+  } else if (type === "message_option_unseen") {
+    switch (status) {
+      case "successful":
+        return (
+          <strong className="govie-tag govie-tag--green">{t("unseen")}</strong>
+        );
+    }
   }
 
   return null;
