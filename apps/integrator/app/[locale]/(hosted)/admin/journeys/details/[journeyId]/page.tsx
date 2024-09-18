@@ -11,6 +11,8 @@ import dayjs from "dayjs";
 import { generateJourneyLink } from "../../../../../../utils/journey";
 import { JourneyEditor } from "../../../../../../../libraries/journeyEditor";
 import journeyDefaultFlow from "../../../../../../../libraries/journeyEditor/journeyStepFlow";
+import { ProfileAuthenticationFactory } from "../../../../../../../libraries/profile-authentication-factory";
+import { Profile } from "building-blocks-sdk";
 
 type Props = {
   params: {
@@ -41,18 +43,27 @@ const loadJourney = async (journeyId: string): Promise<Journey> => {
   return result.rows[0];
 };
 
+const getUserName = async (userId: string, profileApi: Profile) => {
+  const user = await profileApi.getUser(userId);
+  return `${user.data?.firstName} ${user.data?.lastName}`;
+};
+
 export default async ({ params: { locale, journeyId } }: Props) => {
   dayjs.extend(advancedFormat);
 
   const t = await getTranslations("Journeys.details");
   const tGeneral = await getTranslations("General");
 
-  const { isPublicServant } =
-    await AuthenticationFactory.getInstance().getContext();
+  const context = AuthenticationFactory.getInstance();
+  const isPublicServant = await context.isPublicServant();
 
   if (!isPublicServant) {
     return notFound();
   }
+
+  const defaultOrgId = await context.getSelectedOrganization();
+  const profileApi =
+    await ProfileAuthenticationFactory.getProfileClient(defaultOrgId);
 
   const journey = await loadJourney(journeyId);
   const editor = new JourneyEditor(journey, journeyDefaultFlow);
@@ -100,7 +111,9 @@ export default async ({ params: { locale, journeyId } }: Props) => {
             </div>
             <div className="govie-summary-list__row">
               <dt className="govie-summary-list__key">{t("createdBy")}</dt>
-              <dt className="govie-summary-list__value">...</dt>
+              <dt className="govie-summary-list__value">
+                {await getUserName(journey.userId, profileApi)}
+              </dt>
             </div>
             <div className="govie-summary-list__row">
               <dt className="govie-summary-list__key">{t("journeyLink")}</dt>

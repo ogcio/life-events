@@ -26,7 +26,7 @@ export const getAuthenticationContextConfig =
     appSecret: baseConfig.appSecret,
     citizenScopes: [],
     publicServantExpectedRoles,
-    publicServantScopes: [],
+    publicServantScopes: [...profileApiScopes],
     loginUrl: buildLoginUrlWithPostLoginRedirect(),
     resourceUrl: "",
   });
@@ -36,9 +36,30 @@ export const postSignoutRedirect = process.env.HOST_URL;
 export const getSignInConfiguration = () => ({
   ...baseConfig,
   resources: [],
-  scopes: [...organizationScopes],
+  scopes: [...organizationScopes, ...profileApiScopes],
 });
 
 export const postLoginRedirectUrlCookieName = "logtoPostLoginRedirectUrl";
 
 export const logtoUserIdCookieName = "logtoUserId";
+
+// Profile API
+export const profileApiResource = process.env.PROFILE_BACKEND_URL?.endsWith("/")
+  ? process.env.PROFILE_BACKEND_URL
+  : `${process.env.PROFILE_BACKEND_URL}/`;
+
+const profileApiScopes = ["profile:user:*"];
+
+export const getProfileAuthenticationContextConfig = (
+  organizationId,
+): AuthenticationContextConfig => ({
+  baseUrl: baseConfig.baseUrl,
+  appId: baseConfig.appId,
+  appSecret: baseConfig.appSecret,
+  citizenScopes: [],
+  organizationId,
+  publicServantExpectedRoles,
+  publicServantScopes: profileApiScopes,
+  loginUrl: buildLoginUrlWithPostLoginRedirect(),
+  resourceUrl: profileApiResource,
+});

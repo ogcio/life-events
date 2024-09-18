@@ -10,6 +10,8 @@ import dayjs from "dayjs";
 import { generateJourneyLink } from "../../../../../utils/journey";
 import CopyLink from "../../../../../components/CopyBtn";
 import advancedFormat from "dayjs/plugin/advancedFormat";
+import { ProfileAuthenticationFactory } from "../../../../../../libraries/profile-authentication-factory";
+import { Profile } from "building-blocks-sdk";
 
 type Props = {
   params: {
@@ -34,18 +36,27 @@ const getJourneysList = async () => {
   return result.rows;
 };
 
+const getUserName = async (userId: string, profileApi: Profile) => {
+  const user = await profileApi.getUser(userId);
+  return `${user.data?.firstName} ${user.data?.lastName}`;
+};
+
 export default async ({ params: { locale } }: Props) => {
   dayjs.extend(advancedFormat);
 
   const t = await getTranslations("Journeys.existingJourneys");
   const tGeneral = await getTranslations("General");
 
-  const { isPublicServant } =
-    await AuthenticationFactory.getInstance().getContext();
+  const context = AuthenticationFactory.getInstance();
+  const isPublicServant = await context.isPublicServant();
 
   if (!isPublicServant) {
     return notFound();
   }
+
+  const defaultOrgId = await context.getSelectedOrganization();
+  const profileApi =
+    await ProfileAuthenticationFactory.getProfileClient(defaultOrgId);
 
   const journeys = await getJourneysList();
 
@@ -94,7 +105,7 @@ export default async ({ params: { locale } }: Props) => {
                   </tr>
                 </thead>
                 <tbody className="govie-table__body">
-                  {journeys?.map((journey) => (
+                  {journeys?.map(async (journey) => (
                     <tr
                       className="govie-table__row"
                       key={journey.id}
@@ -104,7 +115,7 @@ export default async ({ params: { locale } }: Props) => {
                         {journey.title}
                       </td>
                       <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-                        ...
+                        {await getUserName(journey.userId, profileApi)}
                       </td>
                       <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
                         {dayjs(journey.createdAt).format("Do MMM YYYY")}

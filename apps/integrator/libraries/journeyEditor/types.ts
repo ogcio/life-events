@@ -34,6 +34,7 @@ export type Journey = {
   status: JourneyStatus;
   createdAt: string;
   updatedAt: string;
+  userId: string;
 };
 
 export type JourneyInfo = {
@@ -42,6 +43,7 @@ export type JourneyInfo = {
   status: JourneyStatus;
   createdAt: string;
   updatedAt: string;
+  userId: string;
 };
 
 export type JourneyWidgetProps = {

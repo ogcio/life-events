@@ -71,7 +71,8 @@ export const loadJourneyById = (
         ) as steps,
         j.status,
         j.created_at as "createdAt",
-        j.updated_at as "updatedAt"
+        j.updated_at as "updatedAt",
+        j.user_id as "userId"
     FROM journeys as j
     ${joinQuery}
     WHERE j.id = $1 AND j.organization_id = $2
@@ -94,7 +95,8 @@ export const getJourneys = (
         title,
         status,
         created_at as "createdAt",
-        updated_at as "updatedAt"
+        updated_at as "updatedAt",
+        user_id as "userId"
       FROM journeys
       WHERE organization_id = $1
       ORDER BY created_at DESC
