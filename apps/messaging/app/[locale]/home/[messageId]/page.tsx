@@ -5,7 +5,7 @@ import { AuthenticationFactory } from "../../../utils/authentication-factory";
 
 import "./tmp.css";
 import { getTranslations } from "next-intl/server";
-import { unreadUrl } from "../page";
+import { unreadUrl } from "../utils";
 
 type Props = {
   params: { messageId: string };

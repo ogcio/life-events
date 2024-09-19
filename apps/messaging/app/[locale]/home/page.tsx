@@ -5,14 +5,7 @@ import { Tab, Tabs } from "./Tabs";
 import { Table, Tbody, Td, Th, Thead, Tr } from "./Table";
 import { AuthenticationFactory } from "../../utils/authentication-factory";
 import dayjs from "dayjs";
-
-export const baseUrl = new URL("/home", process.env.HOST_URL);
-
-export const unreadUrl = new URL(baseUrl);
-unreadUrl.searchParams.append("tab", "unread");
-
-export const allUrl = new URL(baseUrl);
-allUrl.searchParams.append("tab", "all");
+import { allUrl, baseUrl, unreadUrl } from "./utils";
 
 export default async (props: { searchParams?: { tab?: string } }) => {
   const tHome = await getTranslations("Home");
