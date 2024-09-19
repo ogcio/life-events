@@ -1,7 +1,13 @@
 export const baseUrl = new URL("/home", process.env.HOST_URL);
 
-export const unreadUrl = new URL(baseUrl);
-unreadUrl.searchParams.append("tab", "unread");
+export const unreadUrl = (() => {
+  const url = new URL(baseUrl);
+  url.searchParams.append("tab", "unread");
+  return url;
+})();
 
-export const allUrl = new URL(baseUrl);
-allUrl.searchParams.append("tab", "all");
+export const allUrl = (() => {
+  const url = new URL(baseUrl);
+  url.searchParams.append("tab", "all");
+  return url;
+})();
