@@ -1,6 +1,4 @@
-import { PostgresDb } from "@fastify/postgres";
 import { FastifyInstance } from "fastify";
-import fp from "fastify-plugin";
 
 import t from "tap";
 

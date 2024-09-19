@@ -98,54 +98,14 @@ export interface paths {
         };
       };
     };
-    delete: {
-      parameters: {
-        path: {
-          id: string;
-        };
-      };
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: {
-            "application/json": {
-              data: {
-                message: string;
-              };
-            };
-          };
-        };
-        /** @description Default Response */
-        "4XX": {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              requestId: string;
-              name: string;
-              validation?: unknown;
-              validationContext?: string;
-            };
-          };
-        };
-        /** @description Default Response */
-        "5XX": {
-          content: {
-            "application/json": {
-              code: string;
-              detail: string;
-              requestId: string;
-              name: string;
-              validation?: unknown;
-              validationContext?: string;
-            };
-          };
-        };
-      };
-    };
   };
   "/api/v1/metadata/": {
     get: {
+      parameters: {
+        query?: {
+          userId?: string;
+        };
+      };
       responses: {
         /** @description Default Response */
         200: {
