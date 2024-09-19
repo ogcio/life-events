@@ -231,7 +231,7 @@ export default async function routes(app: FastifyInstance) {
 
         await removeAllFileSharings(app.pg, fileId);
       } catch (err) {
-        throw new ServerError(SCHEDULE_DELETION, "Internal server error", err);
+        throw new ServerError(SCHEDULE_DELETION, "Error deleting file", err);
       }
 
       reply.send({ data: { id: fileId } });
