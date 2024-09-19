@@ -10,6 +10,25 @@ const getUserSubmissions = async (pgpool: Pool, userId: string) => {
   );
 };
 
+export const createUserSubmissions = async (
+  pgpool: Pool,
+  journeyId: string,
+  userId: string,
+) => {
+  return pgpool.query<Submission>(
+    `
+      INSERT INTO submissions (journey_id, user_id)
+      VALUES($1, $2)
+      RETURNING
+        id,
+        journey_id as "journeyId",
+        created_at as "createdAt",
+        updated_at as "updatedAt",
+        user_id as "userId"`,
+    [journeyId, userId],
+  );
+};
+
 const getUserSubmissionSteps = async (
   pgpool: Pool,
   userId: string,
@@ -33,7 +52,7 @@ const insertNewSubmissionStep = async (
   submissionId: string,
   stepId: string,
 ) => {
-  return pgpool.query(
+  return pgpool.query<SubmissionStep>(
     `
     INSERT INTO 
       submission_steps (
@@ -46,6 +65,13 @@ const insertNewSubmissionStep = async (
       $2,
       'pending'
     )
+    RETURNING
+      id,
+      submission_id as "submissionId",
+      step_id as "stepId",
+      status,
+      created_at as "createdAt",
+      updated_at as "updatedAt"
     `,
     [submissionId, stepId],
   );

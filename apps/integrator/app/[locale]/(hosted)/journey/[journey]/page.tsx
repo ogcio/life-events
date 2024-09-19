@@ -1,16 +1,14 @@
 import { getTranslations } from "next-intl/server";
 import { AuthenticationFactory } from "../../../../../libraries/authentication-factory";
 import { notFound, redirect, RedirectType } from "next/navigation";
-import { PageWrapper } from "../../PageWrapper";
 import { pgpool } from "../../../../../libraries/postgres";
 import {
+  createUserSubmissions,
   getUserSubmissions,
   getUserSubmissionSteps,
-  insertNewSubmissionStep,
 } from "../../../../utils/submissions";
-import { STEP_STATUS, Submission } from "../../../../types";
 import { getJourneySteps } from "../../../../utils/journeys";
-import pluginRunner from "./pluginRunner";
+import { IntegratorEngine } from "../../../../../libraries/integratorEngine";
 
 // TODO: outsource types to file
 
@@ -55,9 +53,10 @@ export default async (props: Props, params) => {
 
   if (!submissionData) {
     submissionData;
-    const submissionDataQueryResult = await pgpool.query<Submission>(
-      `INSERT INTO submissions (journey_id, user_id) VALUES($1, $2) RETURNING id, journey_id as "journeyId", created_at as "createdAt", updated_at as "updatedAt", user_id as "userId"`,
-      [journeyId, userId],
+    const submissionDataQueryResult = await createUserSubmissions(
+      pgpool,
+      journeyId,
+      userId,
     );
 
     if (submissionDataQueryResult.rows.length) {
@@ -86,42 +85,13 @@ export default async (props: Props, params) => {
   const userSubmissionStepsData = userSubmissionStepsQueryResult.rows;
   // get all journey step submissions
 
-  for (const step of journeySteps) {
-    // get step data
-    const currentSubmissionStepData = userSubmissionStepsData.find(
-      ({ stepId }) => stepId === step.id,
-    );
-
-    let stepStatus: STEP_STATUS;
-    //there is no submissionData for the current step
-    if (!currentSubmissionStepData) {
-      //add the pending one
-      await insertNewSubmissionStep(pgpool, submissionData.id, step.id);
-      stepStatus = STEP_STATUS.PENDING;
-    } else {
-      stepStatus = currentSubmissionStepData.status;
-    }
-
-    switch (stepStatus) {
-      case STEP_STATUS.COMPLETED: {
-        // if this step is completed, move to next
-        // check if needed to retrieve data
-
-        continue;
-      }
-      case STEP_STATUS.FAILED: {
-        // todo
-      }
-      case STEP_STATUS.IN_PROGRESS: {
-        // todo - should do nothing ???
-      }
-      case STEP_STATUS.PENDING: {
-        // execute the step
-
-        return pluginRunner(step);
-      }
-    }
-  }
+  const engine = new IntegratorEngine(
+    pgpool,
+    submissionData,
+    journeySteps,
+    userSubmissionStepsData,
+  );
+  await engine.execute();
 
   return (
     <div className="govie-width-container" style={{ width: "100%" }}>

@@ -8,9 +8,7 @@ const getJourneySteps = async (pgpool: Pool, journeyId: string) => {
     FROM journey_steps js, journeys j 
     WHERE js.journey_id = j.id
         AND j.id = $1
-    ORDER BY js.step_number 
-
-
+    ORDER BY js.step_number
     `,
     [journeyId],
   );
