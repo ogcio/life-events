@@ -65,6 +65,13 @@ export class Upload {
     return { error, data: data?.data };
   }
 
+  async getSharedFilesForUser(userId: string) {
+    const { error, data } = await this.client.GET("/api/v1/metadata/", {
+      params: { query: { userId } },
+    });
+    return { error, data: data?.data };
+  }
+
   async getFileMetadata(id: string) {
     const { data, error } = await this.client.GET("/api/v1/metadata/{id}", {
       params: { path: { id } },
@@ -90,14 +97,6 @@ export class Upload {
         formData.set("file", body.file);
         return formData;
       },
-    });
-
-    return { error };
-  }
-
-  async deleteFile(id: string) {
-    const { error } = await this.client.DELETE("/api/v1/files/{id}", {
-      params: { path: { id } },
     });
 
     return { error };

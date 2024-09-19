@@ -94,6 +94,7 @@ t.test("files", async (t) => {
               userId: "userId",
               accessToken: "accessToken",
               organizationId: "ogcio",
+              isM2MApplication: false,
             };
           });
         }),
