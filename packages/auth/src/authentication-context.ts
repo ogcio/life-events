@@ -98,15 +98,25 @@ export const setSelectedOrganization = (organizationId) =>
 
 export const getCitizenToken = (
   params: CitizenParameters,
+  isRSC: boolean,
   resource?: string,
 ): Promise<string> =>
-  AuthSession.getCitizenToken(buildCitizenAuthConfig(params), resource);
+  AuthSession.getCitizenToken({
+    config: buildCitizenAuthConfig(params),
+    resource,
+    isRSC,
+  });
 
 export const getOrgToken = (
   params: PublicServantParameters,
   organizationId: string,
+  isRSC: boolean,
 ): Promise<string> =>
-  AuthSession.getOrgToken(buildPublicServantAuthConfig(params), organizationId);
+  AuthSession.getOrgToken({
+    config: buildPublicServantAuthConfig(params),
+    organizationId,
+    isRSC,
+  });
 
 const buildPublicServantAuthConfig = (params: PublicServantParameters) => ({
   ...getBaseLogtoConfig(),

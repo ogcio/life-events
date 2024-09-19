@@ -92,9 +92,14 @@ export type IAuthSession = {
   ): Promise<boolean>;
   getSelectedOrganization(): string | undefined;
   setSelectedOrganization(organizationId: string): string;
-  getCitizenToken(config: LogtoNextConfig, resource?: string): Promise<string>;
-  getOrgToken(
-    config: LogtoNextConfig,
-    organizationId?: string,
-  ): Promise<string>;
+  getCitizenToken(params: {
+    config: LogtoNextConfig;
+    isRSC: boolean;
+    resource?: string;
+  }): Promise<string>;
+  getOrgToken(params: {
+    config: LogtoNextConfig;
+    isRSC: boolean;
+    organizationId?: string;
+  }): Promise<string>;
 };

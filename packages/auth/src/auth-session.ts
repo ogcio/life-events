@@ -1,8 +1,10 @@
 import {
   LogtoContext,
   getAccessToken,
+  getAccessTokenRSC,
   getLogtoContext,
   getOrganizationToken,
+  getOrganizationTokenRSC,
   signIn,
   signOut,
 } from "@logto/next/server-actions";
@@ -78,17 +80,25 @@ export const AuthSession: IAuthSession = {
     cookies().set(SELECTED_ORG_COOKIE, organizationId);
     return organizationId;
   },
-  async getCitizenToken(
-    config: LogtoNextConfig,
-    resource?: string,
-  ): Promise<string> {
-    return await getAccessToken(config, resource);
+  async getCitizenToken(params: {
+    config: LogtoNextConfig;
+    isRSC: boolean;
+    resource?: string;
+  }): Promise<string> {
+    const { isRSC, config, resource } = params;
+    return (await isRSC)
+      ? getAccessTokenRSC(config, resource)
+      : getAccessToken(config, resource);
   },
-  async getOrgToken(
-    config: LogtoNextConfig,
-    organizationId?: string,
-  ): Promise<string> {
-    return await getOrganizationToken(config, organizationId);
+  async getOrgToken(params: {
+    config: LogtoNextConfig;
+    isRSC: boolean;
+    organizationId?: string;
+  }): Promise<string> {
+    const { isRSC, config, organizationId } = params;
+    return (await isRSC)
+      ? getOrganizationTokenRSC(config, organizationId)
+      : getOrganizationToken(config, organizationId);
   },
 };
 

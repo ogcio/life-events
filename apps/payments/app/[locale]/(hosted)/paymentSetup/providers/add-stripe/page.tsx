@@ -37,7 +37,9 @@ export default async (props: Props) => {
   ): Promise<StripeFormState> {
     "use server";
 
-    const paymentsApi = await AuthenticationFactory.getPaymentsClient();
+    const paymentsApi = await AuthenticationFactory.getPaymentsClient({
+      isServerAction: true,
+    });
 
     const nameField = formData.get("provider_name") as string;
     const livePublishableKeyField = formData.get(
