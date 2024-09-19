@@ -3,3 +3,4 @@ node_modules
 .tap
 
 e2e/test-results/*
+results.xml

@@ -9,6 +9,7 @@
     "./*": "./dist/*.js"
   },
   "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 0",
     "dev": "rm -rf dist && tsc -w -p tsconfig.prod.json",
     "build": "rm -rf dist && tsc -p tsconfig.prod.json"
   },

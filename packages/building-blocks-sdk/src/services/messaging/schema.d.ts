@@ -16,6 +16,7 @@ export interface paths {
       parameters: {
         query?: {
           status?: "delivered";
+          isSeen?: boolean;
           /** @description Either recipientUserId and organisationId are mandatory */
           recipientUserId?: string;
           /** @description Either recipientUserId and organisationId are mandatory */
@@ -1547,7 +1548,12 @@ export interface paths {
     /** @description Returns the organisation settings for the logged in user */
     get: {
       parameters: {
-        query?: never;
+        query?: {
+          /** @description Indicates where to start fetching data or how many records to skip, defining the initial position within the list */
+          offset?: string;
+          /** @description Indicates the maximum number (100) of items that will be returned in a single request */
+          limit?: string;
+        };
         header?: never;
         path?: never;
         cookie?: never;
@@ -1657,6 +1663,11 @@ export interface paths {
                    * @default false
                    */
                   collectedConsent: boolean;
+                  /**
+                   * @description If true, it means that a message to welcome the user has already been sent
+                   * @default false
+                   */
+                  welcomed: boolean;
                 };
               }[];
               metadata?: {
@@ -1899,6 +1910,11 @@ export interface paths {
                    * @default false
                    */
                   collectedConsent: boolean;
+                  /**
+                   * @description If true, it means that a message to welcome the user has already been sent
+                   * @default false
+                   */
+                  welcomed: boolean;
                 };
               };
               metadata?: {
@@ -2144,6 +2160,11 @@ export interface paths {
                    * @default false
                    */
                   collectedConsent: boolean;
+                  /**
+                   * @description If true, it means that a message to welcome the user has already been sent
+                   * @default false
+                   */
+                  welcomed: boolean;
                 };
               };
               metadata?: {
@@ -2499,11 +2520,18 @@ export interface paths {
       };
       responses: {
         /** @description Default Response */
-        202: {
+        200: {
           headers: {
             [name: string]: unknown;
           };
-          content?: never;
+          content: {
+            "application/json": {
+              data: {
+                /** Format: uuid */
+                id: string;
+              };
+            };
+          };
         };
         /** @description Default Response */
         "5XX": {
@@ -2675,6 +2703,11 @@ export interface paths {
                    * @default false
                    */
                   collectedConsent: boolean;
+                  /**
+                   * @description If true, it means that a message to welcome the user has already been sent
+                   * @default false
+                   */
+                  welcomed: boolean;
                 }[];
                 /**
                  * @description Channel through which the users have been imported
@@ -2976,6 +3009,11 @@ export interface paths {
                    * @default false
                    */
                   collectedConsent: boolean;
+                  /**
+                   * @description If true, it means that a message to welcome the user has already been sent
+                   * @default false
+                   */
+                  welcomed: boolean;
                 };
               }[];
               metadata?: {
@@ -3222,6 +3260,11 @@ export interface paths {
                    * @default false
                    */
                   collectedConsent: boolean;
+                  /**
+                   * @description If true, it means that a message to welcome the user has already been sent
+                   * @default false
+                   */
+                  welcomed: boolean;
                 };
               };
               metadata?: {
@@ -3504,10 +3547,12 @@ export interface paths {
                       receiverFullName: string;
                       /** @description PPSN of the recipient */
                       receiverPPSN: string;
+                      /** @description User id of recipient */
+                      receiverUserId: string;
                       /** @description Subject of the related message */
                       subject: string;
                       /** @description Language of the related message */
-                      lang: string;
+                      language: string;
                       /** @description Excerpt of the related message */
                       excerpt: string;
                       /** @description Rich text content of the related message */
@@ -3703,6 +3748,97 @@ export interface paths {
         };
       };
     };
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/message-actions/{messageId}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          messageId: string;
+        };
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          "application/json": {
+            /** Format: uuid */
+            messageId: string;
+            isSeen: boolean;
+          };
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Default Response */
+        "4XX": {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": {
+              /** @description Code used to categorize the error */
+              code: string;
+              /** @description Description of the error */
+              detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
+              requestId: string;
+              /** @description Name of the error type */
+              name: string;
+              /** @description List of the validation errors */
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        "5XX": {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": {
+              /** @description Code used to categorize the error */
+              code: string;
+              /** @description Description of the error */
+              detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
+              requestId: string;
+              /** @description Name of the error type */
+              name: string;
+              /** @description List of the validation errors */
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
+            };
+          };
+        };
+      };
+    };
+    post?: never;
     delete?: never;
     options?: never;
     head?: never;

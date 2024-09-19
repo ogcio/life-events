@@ -106,6 +106,8 @@ export default async function ({
       user: formData.get("user"),
       resource: formData.get("resource"),
       action: formData.get("action"),
+      from: formData.get("from"),
+      to: formData.get("to"),
     };
 
     const queryString = Object.entries(queryItems)
@@ -177,6 +179,31 @@ export default async function ({
                     </option>
                   ))}
                 </select>
+              </div>
+            </div>
+
+            <div
+              style={{
+                display: "flex",
+                alignItems: "end",
+                gap: "12px",
+              }}
+            >
+              <div className="govie-form-group" style={{ width: "50%" }}>
+                <InputField
+                  name="from"
+                  label={t("filters.from")}
+                  defaultValue={from}
+                  type="date"
+                />
+              </div>
+              <div className="govie-form-group" style={{ width: "50%" }}>
+                <InputField
+                  name="to"
+                  label={t("filters.to")}
+                  defaultValue={to}
+                  type="date"
+                />
               </div>
             </div>
 

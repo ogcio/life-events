@@ -10,6 +10,7 @@ import {
   MessageListSchema,
   MessageListItemSchema,
   IdParamsSchema,
+  TypeboxBooleanEnum,
 } from "../../types/schemaDefinitions.js";
 import {
   getMessage,
@@ -30,7 +31,10 @@ const MESSAGES_TAGS = ["Messages"];
 
 interface GetAllMessages {
   Querystring: PaginationParams &
-    Static<typeof IdParamsSchema> & { status?: "scheduled" | "delivered" };
+    Static<typeof IdParamsSchema> & {
+      status?: "scheduled" | "delivered";
+      isSeen?: boolean;
+    };
 }
 
 interface GetMessage {
@@ -56,6 +60,7 @@ export default async function messages(app: FastifyInstance) {
           Type.Composite([
             Type.Object({
               status: Type.Optional(Type.Literal("delivered")),
+              isSeen: Type.Optional(TypeboxBooleanEnum()),
             }),
             IdParamsSchema,
             PaginationParamsSchema,
@@ -69,7 +74,8 @@ export default async function messages(app: FastifyInstance) {
     },
     async function getMessagesHandler(request, _reply) {
       const errorProcess = "GET_MESSAGES";
-
+      const loggedInOrgId = request?.userData?.organizationId;
+      const loggedInProfileId = request?.userData?.userId;
       const queryRecipientUserId = request.query.recipientUserId;
       const queryOrganisationId = request.query.organisationId;
 
@@ -77,6 +83,13 @@ export default async function messages(app: FastifyInstance) {
         throw new AuthorizationError(
           errorProcess,
           "not allowed to access messages from all organisations",
+        );
+      }
+
+      if (queryOrganisationId && !queryRecipientUserId && !loggedInOrgId) {
+        throw new AuthorizationError(
+          errorProcess,
+          "As a citizen you have to set the query recipient user id",
         );
       }
 
@@ -94,16 +107,42 @@ export default async function messages(app: FastifyInstance) {
           [queryRecipientUserId],
         );
         const allUserIds = allUserIdsQueryResult.rows.at(0);
-        if (!allUserIds) {
-          throw new NotFoundError(errorProcess, "user not found");
+        // Requested messages for yourself
+        // There is the possibility that a messages.users entry is not set
+        // for the logged in user when it has not been imported by
+        // any organization yet
+        if (!allUserIds && loggedInProfileId === queryRecipientUserId) {
+          throw new NotFoundError(
+            errorProcess,
+            "You have not been registered yet in messaging building block",
+          );
         }
 
+        // As a public servant, requested messages
+        // for a user that is not been imported yet
+        if (!allUserIds && loggedInOrgId) {
+          throw new NotFoundError(errorProcess, "No user found");
+        }
+
+        // As a citizen, request other user's
+        // messages
+        if (!allUserIds) {
+          throw new AuthorizationError(
+            errorProcess,
+            "Can't access other users' messages",
+          );
+        }
         if (
           allUserIds.profileId
             ? allUserIds.profileId !== queryRecipientUserId
-            : true && allUserIds.messageUserId !== queryRecipientUserId
+            : true &&
+              allUserIds &&
+              allUserIds.messageUserId !== queryRecipientUserId
         ) {
-          throw new AuthorizationError(errorProcess, "illegal user id request");
+          throw new AuthorizationError(
+            errorProcess,
+            "Can't access other users' messages",
+          );
         }
 
         userIdsRepresentingUser.push(allUserIds.messageUserId);
@@ -126,7 +165,8 @@ export default async function messages(app: FastifyInstance) {
       // Only query organisation you're allowed to see
       if (
         queryOrganisationId &&
-        queryOrganisationId !== request.userData?.organizationId
+        loggedInOrgId &&
+        queryOrganisationId !== loggedInOrgId
       ) {
         throw new AuthorizationError(
           errorProcess,
@@ -169,6 +209,7 @@ export default async function messages(app: FastifyInstance) {
             where 
             case when $1::text is not null then organisation_id = $1 else true end
             and case when $5 > 0 then user_id = any ($2) else true end
+            and case when $6::boolean is not null then is_seen = $6::boolean else true end
             order by created_at desc
             limit $3
             offset $4
@@ -179,6 +220,7 @@ export default async function messages(app: FastifyInstance) {
             limit,
             offset,
             userIdsRepresentingUser.length,
+            request.query.isSeen === undefined ? null : request.query.isSeen,
           ],
         );
       } catch (error) {

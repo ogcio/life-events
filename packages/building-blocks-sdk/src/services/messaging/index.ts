@@ -29,7 +29,7 @@ export class Messaging {
 
   async getMessagesForUser(
     userId: string,
-    filter?: { offset?: number; limit?: number },
+    filter?: { offset?: number; limit?: number; isSeen?: boolean },
   ) {
     const { error, data } = await this.client.GET("/api/v1/messages/", {
       params: {
@@ -38,6 +38,7 @@ export class Messaging {
           offset: toStringOrUndefined(filter?.offset),
           recipientUserId: userId,
           status: "delivered",
+          isSeen: filter?.isSeen,
         },
       },
     });
@@ -241,8 +242,6 @@ export class Messaging {
       },
     );
 
-    console.log(data?.data);
-
     if (data?.data.type === "email") {
       return { data: data.data };
     }
@@ -405,7 +404,7 @@ export class Messaging {
 
   async importUsers(toImport: { file?: File; records?: object[] }) {
     if (toImport.file) {
-      const { error } = await this.client.POST("/api/v1/user-imports/", {
+      const { data, error } = await this.client.POST("/api/v1/user-imports/", {
         body: {
           file: toImport.file,
         } as any,
@@ -415,13 +414,13 @@ export class Messaging {
           return formData;
         },
       });
-      return { error };
+      return { data: data?.data, error };
     }
 
-    const { error } = await this.client.POST("/api/v1/user-imports/", {
+    const { data, error } = await this.client.POST("/api/v1/user-imports/", {
       body: toImport.records,
     });
-    return { error };
+    return { data: data?.data, error };
   }
 
   async downloadUsersCsvTemplate() {
@@ -524,7 +523,6 @@ export class Messaging {
       { params: { path: { eventId } } },
     );
 
-    console.log(data?.data);
     return { data: data?.data, error };
   }
 
@@ -555,5 +553,43 @@ export class Messaging {
     });
 
     return { error, data: data?.data, metadata: data?.metadata };
+  }
+
+  async seeMessage(messageId: string) {
+    const { error } = await this.client.PUT(
+      "/api/v1/message-actions/{messageId}",
+      {
+        params: {
+          path: {
+            messageId,
+          },
+        },
+        body: {
+          messageId,
+          isSeen: true,
+        },
+      },
+    );
+
+    return { error };
+  }
+
+  async unseeMessage(messageId: string) {
+    const { error } = await this.client.PUT(
+      "/api/v1/message-actions/{messageId}",
+      {
+        params: {
+          path: {
+            messageId,
+          },
+        },
+        body: {
+          messageId,
+          isSeen: false,
+        },
+      },
+    );
+
+    return { error };
   }
 }

@@ -7,6 +7,7 @@ import {
 } from "../../types/usersSchemaDefinitions.js";
 import { Profile } from "building-blocks-sdk";
 import { NotFoundError, ServerError } from "shared-errors";
+import { PaginationParams } from "../../types/schemaDefinitions.js";
 
 const getUser = async (params: {
   client: PoolClient;
@@ -14,9 +15,11 @@ const getUser = async (params: {
   whereValues: string[];
   errorCode: string;
   logicalWhereOperator?: string;
+  withDetails?: boolean;
 }): Promise<User> => {
   let result: QueryResult<User>;
   try {
+    const detailsQuery = params.withDetails ? 'details as "details",' : "";
     const operator = params.logicalWhereOperator
       ? ` ${params.logicalWhereOperator} `
       : " AND ";
@@ -27,6 +30,7 @@ const getUser = async (params: {
         user_profile_id as "userProfileId",
         importer_organisation_id as "importerOrganisationId",
         user_status as "userStatus",
+        ${detailsQuery}
         correlation_quality as "correlationQuality"    
         FROM users where ${params.whereClauses.join(operator)} LIMIT 1
       `,
@@ -63,12 +67,14 @@ export const getUserByUserProfileId = async (params: {
   userProfileId: string;
   client: PoolClient;
   errorCode: string;
+  withDetails?: boolean;
 }): Promise<User> =>
   getUser({
     client: params.client,
     whereClauses: ["user_profile_id = $1"],
     whereValues: [params.userProfileId],
     errorCode: params.errorCode,
+    withDetails: params.withDetails,
   });
 
 export const getUserByContacts = async (params: {
@@ -97,6 +103,7 @@ export const getUserByContacts = async (params: {
     whereValues: values,
     errorCode: params.errorCode,
     logicalWhereOperator: "OR",
+    withDetails: true,
   });
 };
 
@@ -107,6 +114,7 @@ export const getUserImports = async (params: {
   errorCode: string;
   logicalWhereOperator?: string;
   limit?: number;
+  offset?: number;
   includeUsersData: boolean;
 }): Promise<{ data: UsersImport[]; totalCount: number }> => {
   try {
@@ -114,6 +122,7 @@ export const getUserImports = async (params: {
       ? 'users_data as "usersData",'
       : "";
     const limitClause = params.limit ? `LIMIT ${params.limit}` : "";
+    const offsetClause = params.offset ? `OFFSET ${params.offset}` : "";
     const operator = params.logicalWhereOperator
       ? ` ${params.logicalWhereOperator} `
       : " AND ";
@@ -133,6 +142,7 @@ export const getUserImports = async (params: {
         ${toSelectFields}
         ${fromQuery}
         ${limitClause}
+        ${offsetClause}
       `,
       params.whereValues,
     );
@@ -162,7 +172,8 @@ export const getSettingsPerUser = async (params: {
   errorCode: string;
   limit?: number;
   includeUserDetails?: boolean;
-}): Promise<OrganisationSetting[]> => {
+  offset?: number;
+}): Promise<{ data: OrganisationSetting[]; totalCount: number }> => {
   try {
     const inputWhereValues = [params.userId];
     const inputWhereClauses = ["users.id = $1"];
@@ -171,36 +182,53 @@ export const getSettingsPerUser = async (params: {
       inputWhereValues.push(params.organisationSettingId);
     }
     const limitClause = params.limit ? `LIMIT ${params.limit}` : "";
+    const offsetClause = params.offset ? `OFFSET ${params.offset}` : "";
     const operator = " AND ";
 
     const whereClauses =
       inputWhereClauses.length > 0
         ? `WHERE ${inputWhereClauses.join(operator)} `
         : "";
-    const result = await params.client.query<OrganisationSetting>(
+    const dataFieldsToSelect = `
+        ouc.id as "id",
+        ouc.user_id as "userId",
+        users.user_profile_id as "userProfileId",
+        users.email as "emailAddress",
+        users.phone as "phoneNumber",
+        ${(params.includeUserDetails ?? true) ? 'users.details as "details"' : ""},
+        ouc.organisation_id as "organisationId",
+        ouc.invitation_status as "organisationInvitationStatus",
+        ouc.invitation_sent_at  as "organisationInvitationSentAt",
+        ouc.invitation_feedback_at as "organisationInvitationFeedbackAt",
+        ouc.preferred_transports as "organisationPreferredTransports",
+        users.correlation_quality as "correlationQuality",
+        users.user_status as "userStatus"
+      `;
+
+    const result = params.client.query<OrganisationSetting>(
       `
           SELECT
-              ouc.id as "id",
-              ouc.user_id as "userId",
-              users.user_profile_id as "userProfileId",
-              users.email as "emailAddress",
-              users.phone as "phoneNumber",
-              ${(params.includeUserDetails ?? true) ? 'users.details as "details"' : ""},
-              ouc.organisation_id as "organisationId",
-              ouc.invitation_status as "organisationInvitationStatus",
-              ouc.invitation_sent_at  as "organisationInvitationSentAt",
-              ouc.invitation_feedback_at as "organisationInvitationFeedbackAt",
-              ouc.preferred_transports as "organisationPreferredTransports",
-              users.correlation_quality as "correlationQuality",
-              users.user_status as "userStatus"
+            ${dataFieldsToSelect}
             from users
             left join organisation_user_configurations ouc on ouc.user_id = users.id
-            ${whereClauses} ${limitClause}
+            ${whereClauses} ${limitClause} ${offsetClause}
         `,
       inputWhereValues,
     );
-
-    return result.rows;
+    const countResult = params.client.query<{ total: number }>(
+      `
+        SELECT COUNT(*) as total
+        from users
+        left join organisation_user_configurations ouc on ouc.user_id = users.id
+        ${whereClauses}
+        ;
+      `,
+      inputWhereValues,
+    );
+    return {
+      data: (await result).rows,
+      totalCount: (await countResult).rows[0].total,
+    };
   } catch (error) {
     throw new ServerError(
       params.errorCode,
@@ -214,14 +242,15 @@ export const getSettingsPerUserProfile = async (params: {
   client: PoolClient;
   userProfileId: string;
   errorCode: string;
-}): Promise<OrganisationSetting[]> => {
+  pagination?: PaginationParams;
+}): Promise<{ data: OrganisationSetting[]; totalCount: number }> => {
   const { client, userProfileId, errorCode } = params;
   const userByProfile = await getUserByUserProfileId({
     client,
     userProfileId,
     errorCode: errorCode,
   });
-  return await getSettingsPerUser({
+  return getSettingsPerUser({
     client,
     userId: userByProfile.id,
     errorCode: errorCode,
@@ -233,7 +262,7 @@ export type MessagingUserProfile = {
   lastName: string;
   ppsn: string;
   id: string;
-  lang: string;
+  preferredLanguage: string;
   phone: string;
   email: string;
 };
@@ -250,7 +279,7 @@ export const getUserProfiles = async (
       (details ->> 'lastName') as "lastName",
       (details ->> 'publicIdentityId') as "ppsn",
       COALESCE(user_profile_id, id::text) as "id",
-      'en' as "lang",
+      'en' as "preferredLanguage",
       phone,
       email
     from users

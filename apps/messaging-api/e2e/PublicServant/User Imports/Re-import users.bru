@@ -1,0 +1,48 @@
+meta {
+  name: Re-import users
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{baseUrl}}/api/v1/user-imports
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  [
+    {
+      "importIndex": 1,
+      "emailAddress": "{{userWithConsentEmail}}",
+      "collectedConsent": true,
+      "lastName": "{{updatedLastName}}",
+      "firstName": "TestB"
+    },
+    {
+      "importIndex": 2,
+      "emailAddress": "{{userWithoutConsentEmail}}",
+      "collectedConsent": false,
+      "lastName": "NoConsentsson",
+      "firstName": "TestB"
+    }
+  ]
+}
+
+vars:pre-request {
+  updatedLastName: NewLastName
+}
+
+vars:post-response {
+  lastUserImportId: res.body.data ? res.body.data.id : undefined
+}
+
+assert {
+  res.status: eq 200
+  res.body.data: isDefined
+  res.body.data.id: isString
+}

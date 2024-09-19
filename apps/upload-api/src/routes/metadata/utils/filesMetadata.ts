@@ -72,4 +72,23 @@ const getSharedFiles = (
   return client.query<FileMetadataType>(query, [userId, ...toExclude]);
 };
 
-export { getOwnedFiles, getOrganizationFiles, getSharedFiles };
+const getSharedFilesPerOrganization = (
+  client: PoolClient,
+  organizationId: string,
+  userId: string,
+) => {
+  const query = `${baseQuery} 
+    INNER JOIN files_users ON files.id = files_users.file_id 
+    WHERE files_users.user_id = $1 and files.organization_id = $2
+    AND ${EXCLUDE_DELETED};
+  `;
+
+  return client.query<FileMetadataType>(query, [userId, organizationId]);
+};
+
+export {
+  getOwnedFiles,
+  getOrganizationFiles,
+  getSharedFiles,
+  getSharedFilesPerOrganization,
+};

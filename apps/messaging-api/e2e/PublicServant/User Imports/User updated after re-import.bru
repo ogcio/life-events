@@ -1,0 +1,33 @@
+meta {
+  name: User updated after re-import
+  type: http
+  seq: 8
+}
+
+get {
+  url: {{baseUrl}}/api/v1/users/{{consentRelatedUserId}}?activeOnly=false
+  body: none
+  auth: bearer
+}
+
+query {
+  activeOnly: false
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+vars:post-response {
+  ~userImportId: res.body.data[0].importId
+}
+
+assert {
+  res.status: eq 200
+  res.body.data: isDefined
+  res.body.data.lastName: eq {{updatedLastName}}
+}
+
+docs {
+  `updatedLastName` has been set in `Get re-import`
+}

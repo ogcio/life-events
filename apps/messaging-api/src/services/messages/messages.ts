@@ -18,6 +18,7 @@ import {
   NotFoundError,
   ServerError,
   ThirdPartyError,
+  AuthorizationError,
 } from "shared-errors";
 import { LoggingError, toLoggingError } from "logging-wrapper";
 import {
@@ -362,23 +363,18 @@ const scheduleMessage = async (
             ]);
             continue;
           }
-
-          const sent = await mailservice.sendMail({
+          await mailservice.sendMail({
             provider,
             email: user.email,
             subject: transportationSubject,
             body: transportationBody ?? "",
           });
-
-          if (sent?.error) {
-            // expand if we need more details.
-            throw new Error();
-          }
         } catch (err) {
           await eventLogger.log(MessagingEventType.emailError, [
             {
               messageId,
               messageKey: "failedToSend",
+              details: JSON.stringify(err),
             },
           ]);
           errors.push({
@@ -513,6 +509,37 @@ export const processMessages = async (params: {
 
   const poolClient = await pgPool.connect();
   try {
+    // If any message that doesn't override consent has any user that isnt active, we throw unauthorized
+    const receiverUserIdsForMessagesWithoutConsentBypass = inputMessages
+      .filter((message) => !message.bypassConsent)
+      .map((message) => message.receiverUserId);
+
+    if (receiverUserIdsForMessagesWithoutConsentBypass.length) {
+      const isAnyUserNotActiveAndAccepted = await poolClient.query<{
+        exists: boolean;
+      }>(
+        `
+          select exists(
+            select * from users u 
+            join organisation_user_configurations o on o.user_id = u.id
+            where 
+            o.invitation_status != 'accepted' 
+            and u.user_status != 'active'
+            and u.id = any($1)
+            limit 1
+          )
+        `,
+        [receiverUserIdsForMessagesWithoutConsentBypass],
+      );
+
+      if (isAnyUserNotActiveAndAccepted.rows.at(0)?.exists) {
+        throw new AuthorizationError(
+          params.errorProcess,
+          "user exist that isn't accepted and active for any of the input messages, no message sent",
+        );
+      }
+    }
+
     const messageService = newMessagingService(poolClient);
     const eventLogger = newMessagingEventLogger(pgPool, logger);
     const toScheduleMessages = [];
@@ -532,6 +559,7 @@ export const processMessages = async (params: {
       );
     }
     const toUseOrganizationId = organizationId ?? senderUser.organizationId;
+
     const senderData = isM2MApplicationSender
       ? getApplicationSenderData(senderUser.profileId)
       : await getUserProfileSenderData({
@@ -596,7 +624,7 @@ export const processMessages = async (params: {
       messageService,
       eventLogger,
       toScheduleMessages,
-      organizationId: organizationId!,
+      organizationId: toUseOrganizationId!,
       scheduleAt,
     });
 
@@ -739,19 +767,19 @@ const createMessageWithLog = async (params: {
       transports: createMessage.preferredTransports,
       scheduledAt: createMessage.scheduleAt,
       messageId: message.id,
-      threadName: createMessage.threadName,
+      threadName: createMessage.threadName || "",
       subject: createMessage.subject,
       excerpt: createMessage.excerpt,
       richText: createMessage.richText,
       plainText: createMessage.plainText,
       language: createMessage.language,
-      senderFullName: params.senderUser?.fullName,
-      senderPPSN: params.senderUser?.ppsn || undefined,
-      senderUserId: params.senderUser?.userProfileId,
-      senderApplicationId: params.senderApplication?.id,
-      receiverFullName: receiverFullName,
-      receiverPPSN: receiverUserProfiles[0].ppsn,
-      receiverUserId: receiverUserProfiles[0].id,
+      senderFullName: params.senderUser?.fullName || "",
+      senderPPSN: params.senderUser?.ppsn || "",
+      senderUserId: params.senderUser?.userProfileId || "",
+      receiverFullName: receiverFullName || "",
+      receiverPPSN: receiverUserProfiles[0].ppsn || "",
+      receiverUserId: receiverUserProfiles[0].id || "",
+      senderApplicationId: params.senderApplication?.id || "",
     },
   ]);
 

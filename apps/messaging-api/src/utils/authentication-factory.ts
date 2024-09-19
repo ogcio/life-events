@@ -1,5 +1,5 @@
 import { getAccessToken, getOrganizationToken } from "api-auth";
-import { Profile } from "building-blocks-sdk";
+import { Profile, Scheduler } from "building-blocks-sdk";
 import { AuthorizationError } from "shared-errors";
 
 const getBaseProfileConfig = (): {
@@ -36,6 +36,25 @@ export const getProfileSdk = async (
     : getCitizenProfileToken());
 
   return new Profile(token);
+};
+
+const getOrganizationSchedulerToken = (
+  organizationId: string,
+): Promise<string> =>
+  getOrganizationToken({
+    logtoOidcEndpoint: process.env.LOGTO_OIDC_ENDPOINT ?? "",
+    applicationId: process.env.LOGTO_M2M_SCHEDULER_APP_ID ?? "",
+    applicationSecret: process.env.LOGTO_M2M_SCHEDULER_APP_SECRET ?? "",
+    scopes: ["scheduler:jobs:write"],
+    organizationId,
+  });
+
+export const getSchedulerSdk = async (
+  organizationId: string,
+): Promise<Scheduler> => {
+  const token = await getOrganizationSchedulerToken(organizationId);
+
+  return new Scheduler(token);
 };
 
 export const ensureUserIdIsSet = (

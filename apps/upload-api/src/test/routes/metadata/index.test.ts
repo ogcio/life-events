@@ -11,6 +11,7 @@ const buildApp = async ({
   getSharedFiles,
   getFileMetadataById,
   getFileSharings,
+  getSharedFilesPerOrganization,
   scheduleFileForDeletion,
   removeAllFileSharings,
 }: {
@@ -20,6 +21,7 @@ const buildApp = async ({
   getSharedFiles?: () => Promise<unknown>;
   getFileMetadataById?: () => Promise<unknown>;
   getFileSharings?: () => Promise<unknown>;
+  getSharedFilesPerOrganization?: () => Promise<unknown>;
   scheduleFileForDeletion?: () => Promise<unknown>;
   removeAllFileSharings?: () => Promise<unknown>;
 }) => {
@@ -61,6 +63,7 @@ const buildApp = async ({
               userId: "userId",
               accessToken: "accessToken",
               organizationId: "ogcio",
+              isM2MApplication: false,
             };
           });
         }),
@@ -84,6 +87,7 @@ const buildApp = async ({
       getOwnedFiles,
       getOrganizationFiles,
       getSharedFiles,
+      getSharedFilesPerOrganization,
     },
     "../../../routes/utils/getFileMetadataById.js": {
       default: getFileMetadataById,
@@ -642,7 +646,7 @@ t.test("metadata", async (t) => {
     t.beforeEach(() => {
       Date = class extends Date {
         constructor() {
-          super("01-01-2024");
+          super(OriginalDate.UTC(2024, 0, 1, 0, 0, 0));
         }
       };
     });
@@ -693,7 +697,7 @@ t.test("metadata", async (t) => {
 
         t.match(
           (paramsUsed[2] as unknown as Date).toISOString(),
-          "2024-01-30T23:00:00.000Z",
+          "2024-01-31T00:00:00.000Z",
         );
 
         t.match(response.json(), {

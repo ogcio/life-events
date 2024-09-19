@@ -12,16 +12,23 @@ import {
   ensureUserIdIsSet,
   getProfileSdk,
 } from "../../utils/authentication-factory.js";
-import { BadRequestError, NotFoundError, ServerError } from "shared-errors";
+import {
+  AuthorizationError,
+  BadRequestError,
+  NotFoundError,
+  ServerError,
+} from "shared-errors";
 import {
   getOwnedFiles,
   getOrganizationFiles,
   getSharedFiles,
+  getSharedFilesPerOrganization,
 } from "./utils/filesMetadata.js";
 import getFileMetadataById from "../utils/getFileMetadataById.js";
 import getFileSharings from "./utils/getFileSharings.js";
 import scheduleFileForDeletion from "./utils/scheduleFileForDeletion.js";
 import removeAllFileSharings from "./utils/removeAllFileSharings.js";
+import { PoolClient } from "pg";
 
 const METADATA_INDEX = "METADATA_INDEX";
 const GET_METADATA = "GET_METADATA";
@@ -30,7 +37,7 @@ const SCHEDULE_DELETION = "SCHEDULE_DELETION";
 const API_DOCS_TAG = "Metadata";
 
 export default async function routes(app: FastifyInstance) {
-  app.get(
+  app.get<{ Querystring: { userId?: string } }>(
     "/",
     {
       preValidation: (req, res) =>
@@ -40,6 +47,11 @@ export default async function routes(app: FastifyInstance) {
         ]),
       schema: {
         tags: [API_DOCS_TAG],
+        querystring: Type.Optional(
+          Type.Object({
+            userId: Type.Optional(Type.String()),
+          }),
+        ),
         response: {
           200: getGenericResponseSchema(Type.Array(ResponseMetadata)),
           "4xx": HttpError,
@@ -50,84 +62,47 @@ export default async function routes(app: FastifyInstance) {
     async (request, reply) => {
       const userId = ensureUserIdIsSet(request, METADATA_INDEX);
       const organizationId = request.userData?.organizationId;
-      const files: FileMetadataType[] = [];
-
+      ensureUserCanAccessResource({
+        errorProcess: METADATA_INDEX,
+        loggedInUserId: userId,
+        queryUserId: request.query.userId,
+        organizationId,
+      });
       const client = await app.pg.pool.connect();
-      const userIds = new Set<string>();
+      let response: { files: FileMetadataType[]; userIds: Set<string> } = {
+        files: [],
+        userIds: new Set<string>(),
+      };
+
       try {
-        const ownedFilesData = await getOwnedFiles(client, userId);
-
-        const ownedFiles = ownedFilesData.rows;
-
-        files.push(...ownedFiles);
-        files.forEach(({ ownerId }) => userIds.add(ownerId as string));
-        const filesToExclude = ownedFiles.map(({ id }) => id as string);
-
-        if (organizationId) {
-          const organizationFilesData = await getOrganizationFiles(
-            client,
-            organizationId,
-            filesToExclude,
-          );
-
-          if (organizationFilesData.rows.length) {
-            files.push(...organizationFilesData.rows);
-            organizationFilesData.rows.forEach(({ ownerId }) =>
-              userIds.add(ownerId),
-            );
-            filesToExclude.push(
-              ...organizationFilesData.rows.map(({ id }) => id as string),
-            );
-          }
-        }
-
-        const sharedFilesData = await getSharedFiles(
-          client,
-          userId,
-          filesToExclude,
-        );
-
-        if (sharedFilesData.rows.length) {
-          sharedFilesData.rows.map(({ ownerId }) => userIds.add(ownerId));
-          files.push(...sharedFilesData.rows);
-        }
-      } catch (err) {
-        throw new ServerError(METADATA_INDEX, "Internal server error", err);
+        response =
+          request.query.userId && organizationId
+            ? await getFilesForQueryUser({
+                client,
+                queryUserId: request.query.userId,
+                organizationId,
+              })
+            : await getFilesForAuthenticatedUser({
+                client,
+                loggedInUserId: userId,
+                organizationId,
+              });
+      } catch (e) {
+        throw new ServerError(METADATA_INDEX, "Error getting files", e);
       } finally {
         client.release();
       }
 
-      let usersData: { [key: string]: FileOwnerType };
-
-      if (files.length === 0) {
+      if (response.files.length === 0) {
         return reply.send({ data: [] });
       }
 
-      const profileSdk = await getProfileSdk(organizationId);
-      try {
-        const usersResponse = await profileSdk.selectUsers(
-          Array.from(userIds.keys()),
-        );
+      const usersData = await getUsersData({
+        userIds: Array.from(response.userIds.keys()),
+        organizationId,
+      });
 
-        if (usersResponse.error) {
-          app.log.error(usersResponse.error);
-          throw new ServerError(
-            METADATA_INDEX,
-            "Internal server error",
-            usersResponse.error,
-          );
-        }
-
-        if (usersResponse.data) {
-          usersData = usersResponse.data.reduce(
-            (acc, next) => ({ ...acc, [next.id]: next }),
-            {},
-          );
-        }
-      } catch (err) {
-        throw new ServerError(METADATA_INDEX, "Internal server error", err);
-      }
-      const filesData = files.map((f) => ({
+      const filesData = response.files.map((f) => ({
         ...f,
         owner: usersData?.[f.ownerId],
       }));
@@ -182,7 +157,7 @@ export default async function routes(app: FastifyInstance) {
           );
         }
       } catch (err) {
-        throw new ServerError(GET_METADATA, "Internal server error", err);
+        throw new ServerError(GET_METADATA, "Error retrieving files", err);
       }
 
       const profileSdk = await getProfileSdk(organizationId);
@@ -197,7 +172,7 @@ export default async function routes(app: FastifyInstance) {
         if (usersData.error) {
           return new ServerError(
             GET_METADATA,
-            "Internal server error",
+            "Error retrieving user data",
             usersData.error,
           );
         }
@@ -207,7 +182,7 @@ export default async function routes(app: FastifyInstance) {
           users = usersData.data.filter(({ id }) => file.ownerId !== id);
         }
       } catch (err) {
-        throw new ServerError(GET_METADATA, "Internal server error", err);
+        throw new ServerError(GET_METADATA, "Error retrieving users data", err);
       }
 
       const fileMetadata = { ...file, owner: fileOwner, sharedWith: users };
@@ -262,4 +237,121 @@ export default async function routes(app: FastifyInstance) {
       reply.send({ data: { id: fileId } });
     },
   );
+
+  const getUsersData = async (params: {
+    userIds: string[];
+    organizationId?: string;
+  }): Promise<{ [key: string]: FileOwnerType }> => {
+    const profileSdk = await getProfileSdk(params.organizationId);
+    try {
+      const usersResponse = await profileSdk.selectUsers(params.userIds);
+
+      if (usersResponse.error) {
+        throw new ServerError(
+          METADATA_INDEX,
+          "Error retrieving users data",
+          usersResponse.error,
+        );
+      }
+
+      if (usersResponse.data) {
+        return usersResponse.data.reduce(
+          (acc, next) => ({ ...acc, [next.id]: next }),
+          {},
+        );
+      }
+
+      return {};
+    } catch (err) {
+      throw new ServerError(METADATA_INDEX, "Error getting users data", err);
+    }
+  };
+
+  const ensureUserCanAccessResource = (params: {
+    errorProcess: string;
+    loggedInUserId: string;
+    queryUserId?: string;
+    organizationId?: string;
+  }) => {
+    if (
+      !params.queryUserId ||
+      params.organizationId ||
+      params.queryUserId === params.loggedInUserId
+    ) {
+      return;
+    }
+
+    throw new AuthorizationError(
+      params.errorProcess,
+      "You are not allowed to access data for the requested user",
+    );
+  };
+
+  const getFilesForAuthenticatedUser = async (params: {
+    client: PoolClient;
+    loggedInUserId: string;
+    organizationId?: string;
+  }) => {
+    const { client, loggedInUserId, organizationId } = params;
+    const files: FileMetadataType[] = [];
+    const userIds = new Set<string>();
+
+    const ownedFilesData = await getOwnedFiles(client, loggedInUserId);
+
+    const ownedFiles = ownedFilesData.rows;
+
+    files.push(...ownedFiles);
+    files.forEach(({ ownerId }) => userIds.add(ownerId as string));
+    const filesToExclude = ownedFiles.map(({ id }) => id as string);
+
+    if (organizationId) {
+      const organizationFilesData = await getOrganizationFiles(
+        client,
+        organizationId,
+        filesToExclude,
+      );
+
+      if (organizationFilesData.rows.length) {
+        files.push(...organizationFilesData.rows);
+        organizationFilesData.rows.forEach(({ ownerId }) =>
+          userIds.add(ownerId),
+        );
+        filesToExclude.push(
+          ...organizationFilesData.rows.map(({ id }) => id as string),
+        );
+      }
+    }
+
+    const sharedFilesData = await getSharedFiles(
+      client,
+      loggedInUserId,
+      filesToExclude,
+    );
+
+    if (sharedFilesData.rows.length) {
+      sharedFilesData.rows.map(({ ownerId }) => userIds.add(ownerId));
+      files.push(...sharedFilesData.rows);
+    }
+
+    return { userIds, files };
+  };
+
+  const getFilesForQueryUser = async (params: {
+    client: PoolClient;
+    queryUserId: string;
+    organizationId: string;
+  }) => {
+    const { client, organizationId, queryUserId } = params;
+
+    const userIds = new Set<string>();
+
+    const sharedFiles = await getSharedFilesPerOrganization(
+      client,
+      organizationId,
+      queryUserId,
+    );
+    sharedFiles.rows.forEach(({ ownerId }) => userIds.add(ownerId as string));
+
+    return { userIds, files: sharedFiles.rows };
+  };
 }

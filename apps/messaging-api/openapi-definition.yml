@@ -27,6 +27,16 @@ paths:
           required: false
         - schema:
             type: string
+            enum:
+              - "true"
+              - "false"
+              - "0"
+              - "1"
+          in: query
+          name: isSeen
+          required: false
+        - schema:
+            type: string
           in: query
           name: recipientUserId
           required: false
@@ -2402,6 +2412,25 @@ paths:
       tags: &a4
         - Organisation Settings
       description: Returns the organisation settings for the logged in user
+      parameters:
+        - schema:
+            pattern: ^[0-9][0-9]*|undefined$
+            default: "0"
+            type: string
+          in: query
+          name: offset
+          required: false
+          description: Indicates where to start fetching data or how many records to skip,
+            defining the initial position within the list
+        - schema:
+            default: "20"
+            pattern: ^([1-9]|100)|undefined$
+            type: string
+          in: query
+          name: limit
+          required: false
+          description: Indicates the maximum number (100) of items that will be returned
+            in a single request
       responses:
         "200":
           description: Default Response
@@ -2560,6 +2589,11 @@ paths:
                                 messages from the organisation will be sent. If
                                 true, it means that the organisation already
                                 asked the permissions to the user
+                              type: boolean
+                            welcomed:
+                              default: false
+                              description: If true, it means that a message to welcome the user has already
+                                been sent
                               type: boolean
                           required:
                             - publicIdentityId
@@ -2925,6 +2959,11 @@ paths:
                               messages from the organisation will be sent. If
                               true, it means that the organisation already asked
                               the permissions to the user
+                            type: boolean
+                          welcomed:
+                            default: false
+                            description: If true, it means that a message to welcome the user has already
+                              been sent
                             type: boolean
                         required:
                           - publicIdentityId
@@ -3318,6 +3357,11 @@ paths:
                               messages from the organisation will be sent. If
                               true, it means that the organisation already asked
                               the permissions to the user
+                            type: boolean
+                          welcomed:
+                            default: false
+                            description: If true, it means that a message to welcome the user has already
+                              been sent
                             type: boolean
                         required:
                           - publicIdentityId
@@ -3754,8 +3798,23 @@ paths:
                 - {}
           application/json: *a6
       responses:
-        "202":
+        "200":
           description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        format: uuid
+                        type: string
+                    required:
+                      - id
+                required:
+                  - data
         5XX:
           description: Default Response
           content:
@@ -3996,6 +4055,11 @@ paths:
                                 messages from the organisation will be sent. If
                                 true, it means that the organisation already
                                 asked the permissions to the user
+                              type: boolean
+                            welcomed:
+                              default: false
+                              description: If true, it means that a message to welcome the user has already
+                                been sent
                               type: boolean
                           required:
                             - importIndex
@@ -4431,6 +4495,11 @@ paths:
                                 true, it means that the organisation already
                                 asked the permissions to the user
                               type: boolean
+                            welcomed:
+                              default: false
+                              description: If true, it means that a message to welcome the user has already
+                                been sent
+                              type: boolean
                           required:
                             - publicIdentityId
                             - firstName
@@ -4797,6 +4866,11 @@ paths:
                               messages from the organisation will be sent. If
                               true, it means that the organisation already asked
                               the permissions to the user
+                            type: boolean
+                          welcomed:
+                            default: false
+                            description: If true, it means that a message to welcome the user has already
+                              been sent
                             type: boolean
                         required:
                           - publicIdentityId
@@ -5218,10 +5292,13 @@ paths:
                                 receiverPPSN:
                                   description: PPSN of the recipient
                                   type: string
+                                receiverUserId:
+                                  description: User id of recipient
+                                  type: string
                                 subject:
                                   description: Subject of the related message
                                   type: string
-                                lang:
+                                language:
                                   description: Language of the related message
                                   type: string
                                 excerpt:
@@ -5274,8 +5351,9 @@ paths:
                                 - messageId
                                 - receiverFullName
                                 - receiverPPSN
+                                - receiverUserId
                                 - subject
-                                - lang
+                                - language
                                 - excerpt
                                 - richText
                                 - plainText
@@ -5462,6 +5540,114 @@ paths:
                   - requestId
                   - name
         4XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    description: Code used to categorize the error
+                    type: string
+                  detail:
+                    description: Description of the error
+                    type: string
+                  requestId:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
+                    type: string
+                  name:
+                    description: Name of the error type
+                    type: string
+                  validation:
+                    description: List of the validation errors
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        fieldName:
+                          type: string
+                        message:
+                          type: string
+                      required:
+                        - fieldName
+                        - message
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - requestId
+                  - name
+  /api/v1/message-actions/{messageId}:
+    put:
+      tags:
+        - Message actions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                messageId:
+                  format: uuid
+                  type: string
+                isSeen:
+                  type: boolean
+              required:
+                - messageId
+                - isSeen
+        required: true
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: messageId
+          required: true
+      responses:
+        "200":
+          description: Default Response
+        4XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    description: Code used to categorize the error
+                    type: string
+                  detail:
+                    description: Description of the error
+                    type: string
+                  requestId:
+                    description: Unique request id. This one will be used to troubleshoot the
+                      problems
+                    type: string
+                  name:
+                    description: Name of the error type
+                    type: string
+                  validation:
+                    description: List of the validation errors
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        fieldName:
+                          type: string
+                        message:
+                          type: string
+                      required:
+                        - fieldName
+                        - message
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - requestId
+                  - name
+        5XX:
           description: Default Response
           content:
             application/json:

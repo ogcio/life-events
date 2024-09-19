@@ -21,7 +21,6 @@ import {
   AuditLogEvent as AuditLogEventDO,
   AuditLogEventsFilters,
 } from "../../plugins/auditLog/types";
-import { getProfileSdk } from "../../utils/authenticationFactory";
 import { findUser } from "../../services/findUser";
 
 const TAGS_AUDIT_LOGS = ["AuditLogs"];
@@ -67,7 +66,7 @@ export default async function auditLogs(app: FastifyInstance) {
         eventType: undefined,
         userId: undefined,
         from,
-        to,
+        to: to ? `${to} 23:59:59.9999+00` : undefined,
       };
 
       filters.eventType = `${resource ?? "%"}.${action ?? "%"}`;

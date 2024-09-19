@@ -32,6 +32,8 @@ variables:
     - template: pipeline-variables/${{ coalesce(variables['Build.SourceBranchName'], 'fallback') }}.yml
   - ${{ else }}:
     - template: pipeline-variables/dev.yml
+  - name: runSmokeTest
+    value: ${{ eq('dev', variables['Build.SourceBranchName']) }}
 
 resources:
   repositories:
@@ -60,6 +62,12 @@ stages:
             - script: |
                 docker run --rm -v $(pwd):/tmp/scan bearer/bearer:latest-amd64 scan --no-color --hide-progress-bar --fail-on-severity critical,high /tmp/scan
               displayName: Code Scan
+  - stage: TestDeps
+    displayName: Test service dependencies
+    pool:
+      vmImage: ${{ parameters.vmImage }}
+    jobs:
+      - template: pipeline-templates/test_dependencies.yml
   - stage: BuildDeps
     displayName: Build service dependencies
     pool:
@@ -67,13 +75,24 @@ stages:
     jobs:
       - template: pipeline-templates/build_dependencies.yml
   - ${{ each serviceName in split(replace(variables.services, ' ', ''), ',') }}:
+    - stage: Unit_Tests_${{ replace(serviceName, '-', '_') }}
+      displayName: Run unit tests - ${{ serviceName }}
+      pool:
+         vmImage: ${{ parameters.vmImage }}
+      dependsOn: 
+        - securityScan
+        - BuildDeps
+      jobs:
+        - template: test/unit_test.yml@pipeline-templates
+          parameters:
+            serviceName: ${{ serviceName }}
+            testPath: './apps/'
+            dependenciesBuild: 'node scripts/init-env.mjs && npm run build --prefix ./packages/design-system && npm run build --prefix ./packages/shared-errors && npm run build --prefix ./packages/logging-wrapper && npm run build --prefix ./packages/nextjs-logging-wrapper && npm run build --prefix ./packages/api-auth && npm run build --prefix ./packages/error-handler && npm run build --prefix ./packages/building-blocks-sdk'
     - stage: Build_${{ replace(serviceName, '-', '_') }}
       displayName: Build ${{ serviceName }}
       pool:
         vmImage: ${{ parameters.vmImage }}
-      dependsOn: 
-        - securityScan
-        - BuildDeps
+      dependsOn: Unit_Tests_${{ replace(serviceName, '-', '_') }}
       jobs:
       - template: build/build_service.yml@pipeline-templates
         parameters:
@@ -128,3 +147,14 @@ stages:
           awsRegion: ${{ variables.awsRegion }}
           serviceName: ${{ serviceName }}-service
           clusterName: life-events-ecs
+    - stage: Smoke_Tests_${{ replace(serviceName, '-', '_') }}
+      displayName: Run smoke tests - ${{ serviceName }}
+      condition: ${{ variables.runSmokeTests }}
+      pool: 'Openshift'
+      dependsOn: Deploy_${{ replace(serviceName, '-', '_') }}
+      jobs:
+        - template: test/smoke_test.yml@pipeline-templates
+          parameters:
+            serviceName: ${{ serviceName }}
+            testPath: './apps/'
+

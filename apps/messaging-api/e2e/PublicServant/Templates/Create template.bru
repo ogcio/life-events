@@ -18,10 +18,6 @@ vars:pre-request {
   randomTemplateName: null
 }
 
-vars:post-response {
-  templateId: res.body.data.id
-}
-
 script:pre-request {
   const uuid = require("uuid")
   const randomTemplateName = uuid.v4()
@@ -58,6 +54,11 @@ script:pre-request {
     }
   ]
   })
+}
+
+script:post-response {
+  bru.setVar("templateId",res.getBody().data.id)
+  bru.setEnvVar("templateId",res.getBody().data.id)
 }
 
 tests {

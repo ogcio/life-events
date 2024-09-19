@@ -42,17 +42,27 @@ export class AuditLogRepo {
     filters: AuditLogEventsFilters,
     pagination: PaginationParams,
   ): Promise<QueryResult<AuditLogEvent>> {
-    const params = [organizationId, pagination.limit, pagination.offset];
-    const conditions = [`organization_id = $1`];
+    const params = [pagination.limit, pagination.offset, organizationId];
+    const conditions = [`organization_id = $3`];
 
     if (filters.eventType) {
       params.push(filters.eventType);
-      conditions.push(`event_type LIKE $4`);
+      conditions.push(`event_type LIKE $${params.length}`);
     }
 
     if (filters.userId) {
       params.push(filters.userId);
-      conditions.push(`user_id = $5`);
+      conditions.push(`user_id = $${params.length}`);
+    }
+
+    if (filters.from) {
+      params.push(filters.from);
+      conditions.push(`created_at > $${params.length}`);
+    }
+
+    if (filters.to) {
+      params.push(filters.to);
+      conditions.push(`created_at < $${params.length}`);
     }
 
     return this.pg.query(
@@ -67,7 +77,7 @@ export class AuditLogRepo {
         FROM audit_logs
         WHERE ${conditions.join(" AND ")}
         ORDER BY created_at DESC
-        LIMIT $2 OFFSET $3
+        LIMIT $1 OFFSET $2
       `,
       params,
     );
@@ -82,12 +92,22 @@ export class AuditLogRepo {
 
     if (filters.eventType) {
       params.push(filters.eventType);
-      conditions.push(`event_type LIKE $2`);
+      conditions.push(`event_type LIKE $${params.length}`);
     }
 
     if (filters.userId) {
       params.push(filters.userId);
-      conditions.push(`user_id = $3`);
+      conditions.push(`user_id = $${params.length}`);
+    }
+
+    if (filters.from) {
+      params.push(filters.from);
+      conditions.push(`created_at > $${params.length}`);
+    }
+
+    if (filters.to) {
+      params.push(filters.to);
+      conditions.push(`created_at < $${params.length}`);
     }
 
     return this.pg.query(
