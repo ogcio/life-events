@@ -11,6 +11,7 @@ const buildApp = async ({
   getSharedFiles,
   getFileMetadataById,
   getFileSharings,
+  getSharedFilesPerOrganization,
   scheduleFileForDeletion,
   removeAllFileSharings,
 }: {
@@ -20,6 +21,7 @@ const buildApp = async ({
   getSharedFiles?: () => Promise<unknown>;
   getFileMetadataById?: () => Promise<unknown>;
   getFileSharings?: () => Promise<unknown>;
+  getSharedFilesPerOrganization?: () => Promise<unknown>;
   scheduleFileForDeletion?: () => Promise<unknown>;
   removeAllFileSharings?: () => Promise<unknown>;
 }) => {
@@ -85,6 +87,7 @@ const buildApp = async ({
       getOwnedFiles,
       getOrganizationFiles,
       getSharedFiles,
+      getSharedFilesPerOrganization,
     },
     "../../../routes/utils/getFileMetadataById.js": {
       default: getFileMetadataById,
