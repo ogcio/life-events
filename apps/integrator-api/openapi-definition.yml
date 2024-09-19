@@ -1,0 +1,15 @@
+openapi: 3.0.3
+info:
+  title: OGCIO Integrator API
+  description: API for OGCIO Integrator Service
+  version: 0.1.0
+components:
+  schemas: {}
+paths:
+  /health:
+    get:
+      responses:
+        "200":
+          description: Default Response
+tags:
+  - name: Providers
