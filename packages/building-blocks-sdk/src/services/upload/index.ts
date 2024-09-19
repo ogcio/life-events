@@ -65,7 +65,7 @@ export class Upload {
     return { error, data: data?.data };
   }
 
-  async getSharedFilesMetadata(userId: string) {
+  async getSharedFilesForUser(userId: string) {
     const { error, data } = await this.client.GET("/api/v1/metadata/", {
       params: { query: { userId } },
     });
