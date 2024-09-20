@@ -1,5 +1,5 @@
 import t from "tap";
-import { build } from "../../app";
+import { build } from "../../../app";
 
 t.test("healthCheck", async (t) => {
   const app = await build();
