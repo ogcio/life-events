@@ -145,6 +145,12 @@ paths:
     get:
       tags:
         - Metadata
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: userId
+          required: false
       responses:
         "200":
           description: Default Response

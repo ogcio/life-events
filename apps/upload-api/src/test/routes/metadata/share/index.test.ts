@@ -48,6 +48,7 @@ const buildApp = async ({
               userId: "userId",
               accessToken: "accessToken",
               organizationId: "ogcio",
+              isM2MApplication: false,
             };
           });
         }),
