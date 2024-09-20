@@ -45,22 +45,40 @@ export const getMessage = async (params: {
   messageId: string;
 }): Promise<ReadMessage> => {
   const data = await params.pg.query<ReadMessage>(
-    `
-        select 
-            messages.subject as "subject", 
-            messages.excerpt as "excerpt", 
-            messages.plain_text as "plainText",
-            messages.rich_text as "richText",
-            messages.created_at as "createdAt",
-            messages.thread_name as "threadName",
-            messages.organisation_id as "organisationId",
-            messages.user_id as "recipientUserId",
-            messages.is_seen as "isSeen",
-            messages.security_level as "security"
-        from messages
-        left join users on users.id::text = messages.user_id
-        where (messages.user_id = $1 or users.user_profile_id::text = $1) and messages.id=$2
-        order by messages.created_at desc
+    `   
+    SELECT 
+        messages.subject as "subject", 
+        messages.excerpt as "excerpt", 
+        messages.plain_text as "plainText",
+        messages.rich_text as "richText",
+        messages.created_at as "createdAt",
+        messages.thread_name as "threadName",
+        messages.organisation_id as "organisationId",
+        messages.user_id as "recipientUserId",
+        messages.is_seen as "isSeen",
+        messages.security_level as "security",
+        COALESCE(ARRAY_AGG(attachments_messages.attachment_id) FILTER (WHERE attachments_messages.attachment_id IS NOT NULL), '{}') AS "attachments"
+    FROM messages
+    LEFT JOIN users 
+        ON users.id::text = messages.user_id
+    LEFT JOIN attachments_messages 
+        ON attachments_messages.message_id = messages.id
+    WHERE 
+        (messages.user_id = $1 OR users.user_profile_id::text = $1) 
+        AND messages.id = $2
+    GROUP BY 
+        messages.subject, 
+        messages.excerpt, 
+        messages.plain_text, 
+        messages.rich_text, 
+        messages.created_at, 
+        messages.thread_name, 
+        messages.organisation_id, 
+        messages.user_id, 
+        messages.is_seen, 
+        messages.security_level, 
+        users.id
+    ORDER BY messages.created_at DESC;
     `,
     [params.userId, params.messageId],
   );
@@ -71,7 +89,6 @@ export const getMessage = async (params: {
       `No message with id ${params.messageId} for the logged in user does exist`,
     );
   }
-
   return data.rows[0];
 };
 
