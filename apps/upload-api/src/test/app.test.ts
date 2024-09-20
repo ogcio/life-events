@@ -1,6 +1,7 @@
 import { FastifyInstance } from "fastify";
 
 import t from "tap";
+import { CONFIG_TYPE } from "../utils/storeConfig.js";
 
 t.test("under pressure handler should throw an error", async (t) => {
   let pressureHandler = (
@@ -22,6 +23,10 @@ t.test("under pressure handler should throw an error", async (t) => {
       },
       "@fastify/autoload": {
         default: async () => {},
+      },
+      "../utils/storeConfig.js": {
+        storeConfig: () => Promise.resolve(),
+        CONFIG_TYPE,
       },
     },
   );
