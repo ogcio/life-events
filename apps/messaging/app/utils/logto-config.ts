@@ -21,6 +21,7 @@ const appSecret = process.env.LOGTO_MESSAGING_APP_SECRET as string;
 const organizationId = "ogcio";
 const citizenScopes = [
   "messaging:message.self:read",
+  "messaging:message.self:write",
   "messaging:citizen.self:read",
   "messaging:citizen.self:write",
   "profile:user.self:write",
