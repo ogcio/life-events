@@ -1,5 +1,3 @@
-"use server";
-
 import { Heading, Paragraph } from "@govie-react/ds";
 import { AuthenticationFactory } from "../../../utils/authentication-factory";
 
