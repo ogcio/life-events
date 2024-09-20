@@ -26,7 +26,10 @@ import {
   MessagingEventType,
   newMessagingEventLogger,
 } from "./eventLogger.js";
-import { getProfileSdk } from "../../utils/authentication-factory.js";
+import {
+  getProfileSdk,
+  getUploadSdk,
+} from "../../utils/authentication-factory.js";
 import {
   CreateMessageParams,
   MessagingService,
@@ -560,7 +563,13 @@ export const processMessages = async (params: {
       );
     }
     const toUseOrganizationId = organizationId ?? senderUser.organizationId;
-
+    if (!toUseOrganizationId) {
+      throw new BadRequestError(
+        errorProcess,
+        "You have to choose an organization id to send a message",
+      );
+    }
+    const uploadClient = getUploadSdk(toUseOrganizationId);
     const senderData = isM2MApplicationSender
       ? getApplicationSenderData(senderUser.profileId)
       : await getUserProfileSenderData({
@@ -797,5 +806,33 @@ const checkAttachments = async (params: {
   userProfileId: string;
   attachmentIds: string[];
 }): Promise<void> => {
-  //
+  if (params.attachmentIds.length === 0) {
+    return;
+  }
+
+  const sharedFiles = await params.uploadClient.getSharedFilesForUser(
+    params.userProfileId,
+  );
+
+  if (sharedFiles.error || !sharedFiles.data) {
+    let message = "Error retrieving shared files";
+    message += sharedFiles.error ? `: ${sharedFiles.error.detail}` : "";
+    throw new ThirdPartyError(ERROR_PROCESS, message, sharedFiles.error);
+  }
+
+  const sharedFileIds: { [id: string]: string } = {};
+  for (const shared of sharedFiles.data) {
+    if (shared.id) {
+      sharedFileIds[shared.id] = shared.id;
+    }
+  }
+
+  for (const toSendAttachmentId of params.attachmentIds) {
+    if (!(toSendAttachmentId in sharedFileIds)) {
+      throw new BadRequestError(
+        ERROR_PROCESS,
+        `The attachment with id ${toSendAttachmentId} is not shared with the user with profile id ${params.userProfileId}`,
+      );
+    }
+  }
 };
