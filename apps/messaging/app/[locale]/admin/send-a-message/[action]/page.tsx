@@ -122,7 +122,10 @@ export default async (props: {
         page: props.searchParams.page ?? String(PAGINATION_PAGE_DEFAULT),
         baseUrl:
           props.searchParams.baseUrl ??
-          new URL(`${sendAMessage.url}/recipients`, process.env.HOST_URL).href,
+          new URL(
+            `${sendAMessage.url}/recipients`,
+            process.env.NEXT_PUBLIC_HOST_URL,
+          ).href,
         search: props.searchParams.search,
         recipientToAddIds: props.searchParams.recipientToAddIds,
         recipientToRemoveId: props.searchParams.recipientToRemoveId,

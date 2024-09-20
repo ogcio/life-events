@@ -278,6 +278,11 @@ paths:
                     - plainText
                     - richText
                     - language
+                attachments:
+                  type: array
+                  items:
+                    format: uuid
+                    type: string
               required:
                 - preferredTransports
                 - recipientUserId

@@ -163,6 +163,7 @@ export interface paths {
                */
               language: "en" | "ga";
             };
+            attachments?: string[];
           };
         };
       };
