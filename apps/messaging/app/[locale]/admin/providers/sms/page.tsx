@@ -130,7 +130,7 @@ export default async (props: {
         redirect(
           new URL(
             `${props.params.locale}/${providerRoutes.url}?provider=sms`,
-            process.env.HOST_URL,
+            process.env.NEXT_PUBLIC_HOST_URL,
           ).href,
         );
       }
@@ -343,7 +343,7 @@ export default async (props: {
         href={
           new URL(
             `${props.params.locale}/${providerRoutes.url}?provider=sms`,
-            process.env.HOST_URL,
+            process.env.NEXT_PUBLIC_HOST_URL,
           ).href
         }
         className="govie-back-link"

@@ -32,7 +32,7 @@ export default async (props: {
             href={(() => {
               const url = new URL(
                 usersSettingsRoutes.url,
-                process.env.HOST_URL,
+                process.env.NEXT_PUBLIC_HOST_URL,
               );
               url.searchParams.append(
                 searchKeySettingType,

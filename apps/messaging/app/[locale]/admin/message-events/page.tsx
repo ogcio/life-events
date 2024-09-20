@@ -234,7 +234,7 @@ export default async (props: {
                       href={
                         new URL(
                           `/en/admin/message-events/${id}`,
-                          process.env.HOST_URL,
+                          process.env.NEXT_PUBLIC_HOST_URL,
                         ).href
                       }
                     >
