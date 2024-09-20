@@ -19,10 +19,6 @@ export default async function RootLayout({
     <>
       {/* workaround to allow Logto to cache the access token */}
       <LogtoTokenRefresher />
-      <img
-        src={`${process.env.NEXT_PUBLIC_PAYMENTS_SERVICE_ENTRY_POINT}/api/token?${new Date().getTime()}`}
-        style={{ display: "none" }}
-      />
       <Header locale={locale} />
       <div className="width-container">
         <Banner
