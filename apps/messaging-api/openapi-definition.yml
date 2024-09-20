@@ -96,6 +96,9 @@ paths:
                         recipientUserId:
                           description: Unique id of the recipient
                           type: string
+                        attachmentsCount:
+                          description: Number of attachments
+                          type: integer
                       required:
                         - id
                         - subject
@@ -103,6 +106,7 @@ paths:
                         - threadName
                         - organisationId
                         - recipientUserId
+                        - attachmentsCount
                   metadata:
                     type: object
                     properties:
@@ -448,6 +452,7 @@ paths:
                           - public
                         description: Confidentiality level of the message
                       attachments:
+                        description: Ids of the related attachments
                         type: array
                         items:
                           format: uuid

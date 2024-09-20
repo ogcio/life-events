@@ -76,6 +76,7 @@ export const MessageListItemSchema = Type.Object({
   }),
   organisationId: Type.String({ description: "Organisation sender id" }),
   recipientUserId: Type.String({ description: "Unique id of the recipient" }),
+  attachmentsCount: Type.Integer({ description: "Number of attachments" }),
 });
 export const MessageListSchema = Type.Array(MessageListItemSchema);
 export type MessageList = Static<typeof MessageListSchema>;
@@ -98,7 +99,9 @@ export const ReadMessageSchema = Type.Object({
     description: "True if the message has already been seen by the recipient",
   }),
   security: SecurityLevelsSchema,
-  attachments: Type.Array(Type.String({ format: "uuid" })),
+  attachments: Type.Array(Type.String({ format: "uuid" }), {
+    description: "Ids of the related attachments",
+  }),
 });
 export type ReadMessage = Static<typeof ReadMessageSchema>;
 
