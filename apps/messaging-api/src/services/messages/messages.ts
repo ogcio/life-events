@@ -89,7 +89,6 @@ export const getMessage = async (params: {
       `No message with id ${params.messageId} for the logged in user does exist`,
     );
   }
-  console.log({ HEY: data.rows });
   return data.rows[0];
 };
 
