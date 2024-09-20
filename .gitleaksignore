@@ -9,4 +9,5 @@
 /src/apps/messaging-api/e2e/.env.sample:generic-api-key:1
 /src/apps/messaging-api/e2e/.env.sample:generic-api-key:2
 /src/apps/messaging-api/e2e/.env.sample:generic-api-key:3
+/src/apps/messaging-api/.env.sample:generic-api-key:21
 
