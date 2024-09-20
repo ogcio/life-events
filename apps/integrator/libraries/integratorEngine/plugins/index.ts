@@ -1,3 +1,4 @@
+import { Pool } from "pg";
 import { JourneyStep, SubmissionStep } from "../../../app/types";
 import { FormPlugin } from "./formPlugin";
 import { MessagePlugin } from "./messagePlugin";
@@ -10,12 +11,12 @@ export class IntegratorPluginManager {
     messaging: MessagePlugin,
   };
 
-  getPlugin(step: JourneyStep, submissionStep: SubmissionStep) {
+  getPlugin(pgpool: Pool, step: JourneyStep, submissionStep: SubmissionStep) {
     const pluginClass = this.pluginsMap[step.stepType];
     if (!pluginClass) {
       throw new Error("Plugin not found!");
     }
 
-    return new pluginClass(step, submissionStep);
+    return new pluginClass(step, submissionStep, pgpool);
   }
 }

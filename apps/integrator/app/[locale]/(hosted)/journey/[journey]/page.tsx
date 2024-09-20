@@ -91,7 +91,7 @@ export default async (props: Props, params) => {
     journeySteps,
     userSubmissionStepsData,
   );
-  await engine.execute();
+  await engine.execute(userId);
 
   return (
     <div className="govie-width-container" style={{ width: "100%" }}>

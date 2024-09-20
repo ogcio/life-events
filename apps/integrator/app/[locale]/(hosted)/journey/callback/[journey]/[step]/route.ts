@@ -40,6 +40,7 @@ export async function GET(request: Request, { params }: CallbackRouteParams) {
     pgpool,
     userId,
     journey,
+    step,
   );
   const userSubmissionStepsData = userSubmissionStepsQueryResult.rows;
 

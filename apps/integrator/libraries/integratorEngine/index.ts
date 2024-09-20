@@ -6,12 +6,8 @@ import {
   SubmissionStep,
 } from "../../app/types";
 import { IntegratorPluginManager } from "./plugins";
-import {
-  insertNewSubmissionStep,
-  updateSubmissionStep,
-} from "../../app/utils/submissions";
+import { insertNewSubmissionStep } from "../../app/utils/submissions";
 import { IntegratorPlugin } from "./plugins/basePlugin";
-import { ServerError } from "shared-errors";
 
 export class IntegratorEngine {
   private submission: Submission;
@@ -35,7 +31,7 @@ export class IntegratorEngine {
     this.submissionSteps = submissionSteps;
   }
 
-  public async execute() {
+  public async execute(userId: string) {
     for (const step of this.journeySteps) {
       let currentSubmissionStep = this.submissionSteps.find(
         ({ stepId }) => stepId === step.id,
@@ -45,9 +41,13 @@ export class IntegratorEngine {
         currentSubmissionStep = await this.createSubmissionStep(step.id);
       }
 
-      const plugin = this.pluginManager.getPlugin(step, currentSubmissionStep);
+      const plugin = this.pluginManager.getPlugin(
+        this.pgpool,
+        step,
+        currentSubmissionStep,
+      );
 
-      await this.executeStep(plugin);
+      await this.executeStep(plugin, userId);
     }
   }
 
@@ -70,18 +70,13 @@ export class IntegratorEngine {
       throw new Error("Journey not found");
     }
 
-    const plugin = this.pluginManager.getPlugin(step, userSubmissionStepData);
-
-    const processedData = plugin.processData(data);
-
-    await updateSubmissionStep(
+    const plugin = this.pluginManager.getPlugin(
       this.pgpool,
-      this.submission.id,
-      step.id,
-      userId,
-      this.submission.journeyId,
-      processedData,
+      step,
+      userSubmissionStepData,
     );
+
+    await plugin.completeStep(data, userId);
   }
 
   private async createSubmissionStep(stepId: string) {
@@ -98,7 +93,7 @@ export class IntegratorEngine {
     return result.rows[0];
   }
 
-  private executeStep(plugin: IntegratorPlugin) {
+  private executeStep(plugin: IntegratorPlugin, userId: string) {
     switch (plugin.getStatus()) {
       case STEP_STATUS.COMPLETED: {
         // if this step is completed, move to next
@@ -115,7 +110,7 @@ export class IntegratorEngine {
       case STEP_STATUS.PENDING: {
         // execute the step
 
-        return plugin.execute();
+        return plugin.execute(userId);
       }
     }
   }
