@@ -60,7 +60,7 @@ export default async (props: { params: { eventId: string } }) => {
                 <td className="govie-table__cell">
                   {day.format("YYYY-MM-DD")}
                 </td>
-                <td className="govie-table__cell">{day.format("HH:MM:ss")}</td>
+                <td className="govie-table__cell">{day.format("HH:mm:ss")}</td>
                 <td className="govie-table__cell"></td>
               </tr>
             );

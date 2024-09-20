@@ -8,7 +8,7 @@ export default ({ children }: React.PropsWithChildren) => {
       <div>{children}</div>
       <Link
         className="govie-back-link"
-        href={new URL("/messages", process.env.HOST_URL).href}
+        href={new URL("/messages", process.env.NEXT_PUBLIC_HOST_URL).href}
       >
         {t("back")}
       </Link>

@@ -2,6 +2,7 @@ import { PostgresDb } from "@fastify/postgres";
 import { FastifyInstance, FastifyPluginCallback } from "fastify";
 import fp from "fastify-plugin";
 import t from "tap";
+import { CONFIG_TYPE } from "../../../../utils/storeConfig.js";
 
 const buildApp = async ({
   removeFileSharing,
@@ -45,6 +46,7 @@ const buildApp = async ({
         default: fp(async (fastify) => {
           fastify.decorate("checkPermissions", async (request) => {
             request.userData = {
+              isM2MApplication: false,
               userId: "userId",
               accessToken: "accessToken",
               organizationId: "ogcio",
@@ -52,6 +54,10 @@ const buildApp = async ({
             };
           });
         }),
+      },
+      "../../../../utils/storeConfig.js": {
+        storeConfig: () => Promise.resolve(),
+        CONFIG_TYPE,
       },
     },
   );
