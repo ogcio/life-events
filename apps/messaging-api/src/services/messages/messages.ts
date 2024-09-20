@@ -35,7 +35,7 @@ import {
   MessagingService,
   newMessagingService,
 } from "./messaging.js";
-import { Profile, Upload } from "building-blocks-sdk";
+import { Upload } from "building-blocks-sdk";
 
 const EXECUTE_JOB_ERROR = "EXECUTE_JOB_ERROR";
 
@@ -569,7 +569,7 @@ export const processMessages = async (params: {
         "You have to choose an organization id to send a message",
       );
     }
-    const uploadClient = getUploadSdk(toUseOrganizationId);
+    const uploadClient = await getUploadSdk(toUseOrganizationId);
     const senderData = isM2MApplicationSender
       ? getApplicationSenderData(senderUser.profileId)
       : await getUserProfileSenderData({
@@ -590,6 +590,7 @@ export const processMessages = async (params: {
             eventLogger,
             poolClient,
             errorProcess,
+            uploadClient,
           }),
         );
       }
@@ -724,6 +725,7 @@ const createMessageWithLog = async (params: {
   createMessageParams: Omit<CreateMessageParams, "senderApplicationId">;
   poolClient: PoolClient;
   errorProcess: string;
+  uploadClient: Upload;
 }): Promise<{
   createdMessage?: {
     id: string;
@@ -746,6 +748,12 @@ const createMessageWithLog = async (params: {
       ),
     };
   }
+
+  await checkAttachments({
+    uploadClient: params.uploadClient,
+    userProfileId: receiverUserProfiles[0].id,
+    attachmentIds: createMessage.attachments,
+  });
 
   const receiverFullName =
     `${receiverUserProfiles[0].firstName} ${receiverUserProfiles[0].lastName}`.trim();
