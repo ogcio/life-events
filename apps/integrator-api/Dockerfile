@@ -58,7 +58,7 @@ RUN npm prune --omit=dev
 FROM deps AS runner
 
 COPY --from=assembler /app /app
-WORKDIR /app/apps/payments-api
+WORKDIR /app/apps/integrator-api
 
 ENV NODE_ENV=production
 ENV LOG_LEVEL=trace

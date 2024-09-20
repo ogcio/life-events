@@ -16,7 +16,6 @@
   },
   "nodemonConfig": {
     "watch": [
-      "../../packages/feature-flags/src/**/*",
       "../../packages/api-auth/**/*",
       "../../packages/logging-wrapper/src/**/*",
       "../../packages/error-handler/src/**/*",

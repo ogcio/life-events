@@ -1,5 +1,5 @@
 import fastify, { FastifyServerOptions } from "fastify";
-import routes from "./routes";
+import routes from "./src/routes";
 import fastifyEnv from "@fastify/env";
 import fastifyFormBody from "@fastify/formbody";
 import postgres from "@fastify/postgres";
@@ -11,12 +11,12 @@ import fastifySwaggerUi from "@fastify/swagger-ui";
 import fs from "fs";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
-import healthCheck from "./routes/healthcheck";
 import sensible from "@fastify/sensible";
-import schemaValidators from "./routes/schemas/validations";
+import schemaValidators from "./src/routes/schemas/validations";
 import apiAuthPlugin from "api-auth";
 import { initializeErrorHandler } from "error-handler";
 import { initializeLoggingHooks } from "logging-wrapper";
+import healthCheck from "./src/routes/healthcheck";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -55,7 +55,7 @@ export async function build(opts?: FastifyServerOptions) {
       },
       tags: [
         {
-          name: "Providers",
+          name: "Integrator",
         },
       ],
     },
