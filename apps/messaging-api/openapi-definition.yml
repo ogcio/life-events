@@ -447,6 +447,11 @@ paths:
                           - confidential
                           - public
                         description: Confidentiality level of the message
+                      attachments:
+                        type: array
+                        items:
+                          format: uuid
+                          type: string
                     required:
                       - subject
                       - createdAt
@@ -458,6 +463,7 @@ paths:
                       - richText
                       - isSeen
                       - security
+                      - attachments
                   metadata:
                     type: object
                     properties:

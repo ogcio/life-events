@@ -98,6 +98,7 @@ export const ReadMessageSchema = Type.Object({
     description: "True if the message has already been seen by the recipient",
   }),
   security: SecurityLevelsSchema,
+  attachments: Type.Array(Type.String({ format: "uuid" })),
 });
 export type ReadMessage = Static<typeof ReadMessageSchema>;
 
