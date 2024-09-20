@@ -763,7 +763,6 @@ const createMessageWithLog = async (params: {
       senderApplicationId: params.senderApplication?.id ?? null,
       senderUserProfileId: params.senderUser?.userProfileId ?? null,
     };
-
     message = await params.messageService.createMessage({
       ...createMessage,
       ...senderData,
@@ -840,7 +839,7 @@ const checkAttachments = async (params: {
     if (!(toSendAttachmentId in sharedFileIds)) {
       throw new BadRequestError(
         ERROR_PROCESS,
-        `The attachment with id ${toSendAttachmentId} is not shared with the user with profile id ${params.userProfileId}`,
+        `The attachment with id ${toSendAttachmentId} is not shared with the user with profile id ${params.userProfileId} for this organization`,
       );
     }
   }

@@ -132,12 +132,13 @@ export function newMessagingService(
       ];
 
       const values = valueArray.map((_, i) => `$${i + 1}`).join(", ");
-
-      const insertQueryResult = await pool.query<{
-        id: string;
-        user_id: string;
-      }>(
-        `
+      try {
+        await pool.query("BEGIN;");
+        const insertQueryResult = await pool.query<{
+          id: string;
+          user_id: string;
+        }>(
+          `
         insert into messages(
             is_delivered,
             user_id,
@@ -153,18 +154,41 @@ export function newMessagingService(
             scheduled_at
         ) values (${values})
         returning 
-          id, user_id
+          id, user_id;
       `,
-        valueArray,
-      );
+          valueArray,
+        );
 
-      const message = insertQueryResult.rows[0];
+        const message = insertQueryResult.rows[0];
 
-      if (!message) {
-        throw new Error("no message id generated");
+        if (!message) {
+          throw new Error("no message id generated");
+        }
+
+        if (params.attachments.length) {
+          let attachmentIndex = 2;
+          const attachmentValues = [];
+          const attachmentIndexes = [];
+          for (const attId of params.attachments) {
+            attachmentIndexes.push(`($1, $${attachmentIndex++})`);
+            attachmentValues.push(attId);
+          }
+
+          await pool.query(
+            `
+            insert into attachments_messages(
+              message_id,
+              attachment_id) values ${attachmentIndexes.join(", ")};
+            `,
+            [message.id, ...attachmentValues],
+          );
+        }
+
+        return message;
+      } catch (e) {
+        await pool.query("ROLLBACK;");
+        throw e;
       }
-
-      return message;
     },
     async createTemplateMessages(
       templateContents: TemplateContent[],
