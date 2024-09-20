@@ -29,7 +29,7 @@ script:pre-request {
   bru.setVar("messageSubject",messageSubject)
   req.setBody({
     "preferredTransports": [],
-    "recipientUserId": "cu4ni1h1a89u",
+    "recipientUserId": bru.getVar("consentUserId"),
     "security": "public",
     "bypassConsent": true,
     "scheduleAt": "2024-08-26T10:05:04.865Z",
@@ -40,7 +40,6 @@ script:pre-request {
       "plainText": "plainText",
       "richText": "richText",
       "language": "en"
-    },
-    "attachments": ["396ce134-bae3-4463-b1d8-e7a139214c04"]
+    }
   })
 }
