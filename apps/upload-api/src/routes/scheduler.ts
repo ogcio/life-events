@@ -46,7 +46,7 @@ export default async function schduler(app: FastifyInstance) {
         filesToDelete,
       );
 
-      if (!markFilesAsDeleted.length) {
+      if (!metadataToMarkAsdeleted.length) {
         return { status: "ok" };
       }
 
@@ -138,6 +138,8 @@ const deleteFilesFromStorage = async (
       }
     }
   } catch (err) {
+    console.log("err", err);
+
     app.log.error(err);
     return [] as string[];
   }
