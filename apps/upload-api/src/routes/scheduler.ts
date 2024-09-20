@@ -1,31 +1,34 @@
 import { FastifyInstance } from "fastify";
-import { getConfigValue } from "../utils/storeConfig.js";
+import { getConfigValue, SCHEDULER_TOKEN } from "../utils/storeConfig.js";
 import {
   getExpiredFiles,
   markFilesAsDeleted,
 } from "./metadata/utils/filesMetadata.js";
 import { DeleteObjectsCommand } from "@aws-sdk/client-s3";
 import { FileMetadataType } from "../types/schemaDefinitions.js";
+import scheduleCleanupTask from "../utils/scheduleCleanupTask.js";
 
 export default async function schduler(app: FastifyInstance) {
-  app.post<{ Body: { schedulerToken: string } }>(
+  app.post<{ Body: { token: string } }>(
     "/",
     { schema: { hide: true } },
     async (request) => {
-      const { schedulerToken } = request.body;
+      const { token } = request.body;
 
       const expectedSchedulerToken = await getConfigValue(
         app.pg.pool,
-        "schedulerToken",
+        SCHEDULER_TOKEN,
       );
 
-      if (schedulerToken !== expectedSchedulerToken) {
+      if (token !== expectedSchedulerToken) {
         return { status: "ok" };
       }
 
       const now = new Date();
 
       app.log.info(`Cleanup job running at ${now.toISOString()}`);
+
+      await scheduleCleanupTask(app);
 
       const filesToDeleteQueryResult = await getExpiredFiles(app.pg.pool, now);
 
@@ -52,8 +55,6 @@ export default async function schduler(app: FastifyInstance) {
       } catch (err) {
         app.log.error(err);
       }
-
-      //TODO: schedule the new job to run in some time
 
       return { status: "ok" };
     },

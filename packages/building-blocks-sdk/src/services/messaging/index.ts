@@ -38,7 +38,7 @@ export class Messaging {
           offset: toStringOrUndefined(filter?.offset),
           recipientUserId: userId,
           status: "delivered",
-          isSeen: filter?.isSeen,
+          // isSeen: filter?.isSeen,
         },
       },
     });
