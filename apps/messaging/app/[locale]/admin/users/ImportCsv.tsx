@@ -29,7 +29,7 @@ export default async () => {
       const uploadClient = await AuthenticationFactory.getMessagingClient();
       await uploadClient.importUsers({ file: file as File });
 
-      const url = new URL(usersRoute.url, process.env.HOST_URL);
+      const url = new URL(usersRoute.url, process.env.NEXT_PUBLIC_HOST_URL);
       url.searchParams.append(searchKeyListType, searchValueImports);
 
       return redirect(url.href, RedirectType.replace);

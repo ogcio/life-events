@@ -25,7 +25,7 @@ const TO_ADD_IDS_KEY = "recipientToAddIds";
 const TO_REMOVE_ID_KEY = "recipientToRemoveId";
 
 const getBaseUrl = (): URL =>
-  new URL(`${sendAMessage.url}/recipients`, process.env.HOST_URL);
+  new URL(`${sendAMessage.url}/recipients`, process.env.NEXT_PUBLIC_HOST_URL);
 
 // Why are not using SDKs?
 // To avoid to transport thousand of users through REST APIs every time
