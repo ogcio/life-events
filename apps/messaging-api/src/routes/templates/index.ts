@@ -541,7 +541,6 @@ export default async function templates(app: FastifyInstance) {
         }
         await client.query("COMMIT");
       } catch (error) {
-        console.log(error);
         client.query("ROLLBACK");
         throw isLifeEventsError(error)
           ? error

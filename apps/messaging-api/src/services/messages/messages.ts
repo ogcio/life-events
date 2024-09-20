@@ -26,12 +26,16 @@ import {
   MessagingEventType,
   newMessagingEventLogger,
 } from "./eventLogger.js";
-import { getProfileSdk } from "../../utils/authentication-factory.js";
+import {
+  getProfileSdk,
+  getUploadSdk,
+} from "../../utils/authentication-factory.js";
 import {
   CreateMessageParams,
   MessagingService,
   newMessagingService,
 } from "./messaging.js";
+import { Upload } from "building-blocks-sdk";
 
 const EXECUTE_JOB_ERROR = "EXECUTE_JOB_ERROR";
 
@@ -559,7 +563,13 @@ export const processMessages = async (params: {
       );
     }
     const toUseOrganizationId = organizationId ?? senderUser.organizationId;
-
+    if (!toUseOrganizationId) {
+      throw new BadRequestError(
+        errorProcess,
+        "You have to choose an organization id to send a message",
+      );
+    }
+    const uploadClient = await getUploadSdk(toUseOrganizationId);
     const senderData = isM2MApplicationSender
       ? getApplicationSenderData(senderUser.profileId)
       : await getUserProfileSenderData({
@@ -580,6 +590,7 @@ export const processMessages = async (params: {
             eventLogger,
             poolClient,
             errorProcess,
+            uploadClient,
           }),
         );
       }
@@ -714,6 +725,7 @@ const createMessageWithLog = async (params: {
   createMessageParams: Omit<CreateMessageParams, "senderApplicationId">;
   poolClient: PoolClient;
   errorProcess: string;
+  uploadClient: Upload;
 }): Promise<{
   createdMessage?: {
     id: string;
@@ -737,6 +749,12 @@ const createMessageWithLog = async (params: {
     };
   }
 
+  await checkAttachments({
+    uploadClient: params.uploadClient,
+    userProfileId: receiverUserProfiles[0].id,
+    attachmentIds: createMessage.attachments,
+  });
+
   const receiverFullName =
     `${receiverUserProfiles[0].firstName} ${receiverUserProfiles[0].lastName}`.trim();
   let message = null;
@@ -745,7 +763,6 @@ const createMessageWithLog = async (params: {
       senderApplicationId: params.senderApplication?.id ?? null,
       senderUserProfileId: params.senderUser?.userProfileId ?? null,
     };
-
     message = await params.messageService.createMessage({
       ...createMessage,
       ...senderData,
@@ -780,6 +797,7 @@ const createMessageWithLog = async (params: {
       receiverPPSN: receiverUserProfiles[0].ppsn || "",
       receiverUserId: receiverUserProfiles[0].id || "",
       senderApplicationId: params.senderApplication?.id || "",
+      attachments: createMessage.attachments,
     },
   ]);
 
@@ -789,4 +807,40 @@ const createMessageWithLog = async (params: {
       profile: { ...receiverUserProfiles[0], fullName: receiverFullName },
     },
   };
+};
+
+const checkAttachments = async (params: {
+  uploadClient: Upload;
+  userProfileId: string;
+  attachmentIds: string[];
+}): Promise<void> => {
+  if (params.attachmentIds.length === 0) {
+    return;
+  }
+
+  const sharedFiles = await params.uploadClient.getSharedFilesForUser(
+    params.userProfileId,
+  );
+
+  if (sharedFiles.error || !sharedFiles.data) {
+    let message = "Error retrieving shared files";
+    message += sharedFiles.error ? `: ${sharedFiles.error.detail}` : "";
+    throw new ThirdPartyError(ERROR_PROCESS, message, sharedFiles.error);
+  }
+
+  const sharedFileIds: { [id: string]: string } = {};
+  for (const shared of sharedFiles.data) {
+    if (shared.id) {
+      sharedFileIds[shared.id] = shared.id;
+    }
+  }
+
+  for (const toSendAttachmentId of params.attachmentIds) {
+    if (!(toSendAttachmentId in sharedFileIds)) {
+      throw new BadRequestError(
+        ERROR_PROCESS,
+        `The attachment with id ${toSendAttachmentId} is not shared with the user with profile id ${params.userProfileId} for this organization`,
+      );
+    }
+  }
 };

@@ -371,6 +371,7 @@ export const MessageCreateSchema = Type.Object({
     description: "Date and time of when schedule the message",
   }),
   message: MessageInputSchema,
+  attachments: Type.Optional(Type.Array(Type.String({ format: "uuid" }))),
 });
 
 export type MessageCreateType = Static<typeof MessageCreateSchema>;

@@ -338,6 +338,7 @@ export default async function messages(app: FastifyInstance) {
             ...request.body.message,
             organisationId: userData.organizationId!,
             senderUserProfileId: ensureUserIdIsSet(request, errorKey),
+            attachments: request.body.attachments ?? [],
           },
         ],
         scheduleAt: request.body.scheduleAt,

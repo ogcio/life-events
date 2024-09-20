@@ -273,6 +273,7 @@ const sendInvitations = async (params: {
         subject: messageInput.subject,
         threadName: messageInput.threadName || messageInput.subject,
         senderUserProfileId: params.senderUserProfileId,
+        attachments: [],
       });
     }
 
@@ -304,6 +305,7 @@ const sendInvitations = async (params: {
         subject: messageInput.subject,
         threadName: messageInput.threadName || messageInput.subject,
         senderUserProfileId: params.senderUserProfileId,
+        attachments: [],
       });
     }
 
@@ -330,6 +332,7 @@ const sendInvitations = async (params: {
         subject: messageInput.subject,
         threadName: messageInput.threadName || messageInput.subject,
         senderUserProfileId: params.senderUserProfileId,
+        attachments: [],
       });
     }
     output.welcomed.push(...params.toSend.welcome[language].userIds);
