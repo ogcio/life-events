@@ -798,6 +798,7 @@ const createMessageWithLog = async (params: {
       receiverPPSN: receiverUserProfiles[0].ppsn || "",
       receiverUserId: receiverUserProfiles[0].id || "",
       senderApplicationId: params.senderApplication?.id || "",
+      attachments: createMessage.attachments,
     },
   ]);
 
