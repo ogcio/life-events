@@ -2,7 +2,7 @@ import t from "tap";
 import { ensureUserIdIsSet } from "../../utils/authentication-factory.js";
 
 t.test("authentication-factory", async (t) => {
-  /*t.test("getProfileSdk builds profile with citizen token", async (t) => {
+  t.test("getProfileSdk builds profile with citizen token", async (t) => {
     let usedToken = "";
     let profileBackendUrl = "";
 
@@ -22,6 +22,11 @@ t.test("authentication-factory", async (t) => {
             usedToken = params;
           }
         },
+        Scheduler: class Scheduler {
+          constructor(params: string) {
+            usedToken = params;
+          }
+        },
       },
     });
     process.env.PROFILE_BACKEND_URL = "BACKEND_URL/";
@@ -33,7 +38,7 @@ t.test("authentication-factory", async (t) => {
   });
 
   t.test(
-    /*"getProfileSdk builds profile with citizen token with trailing slash url",
+    "getProfileSdk builds profile with citizen token with trailing slash url",
     async (t) => {
       let usedToken = "";
       let profileBackendUrl = "";
@@ -54,6 +59,11 @@ t.test("authentication-factory", async (t) => {
               usedToken = params;
             }
           },
+          Scheduler: class Scheduler {
+            constructor(params: string) {
+              usedToken = params;
+            }
+          },
         },
       });
       process.env.PROFILE_BACKEND_URL = "BACKEND_URL";
@@ -66,7 +76,7 @@ t.test("authentication-factory", async (t) => {
   );
 
   t.test("getProfileSdk builds profile with organization token", async (t) => {
-    /*let usedToken = "";
+    let usedToken = "";
 
     const { getProfileSdk } = await t.mockImport<
       typeof import("../../utils/authentication-factory.js")
@@ -81,6 +91,11 @@ t.test("authentication-factory", async (t) => {
             usedToken = params;
           }
         },
+        Scheduler: class Scheduler {
+          constructor(params: string) {
+            usedToken = params;
+          }
+        },
       },
     });
 
@@ -88,6 +103,38 @@ t.test("authentication-factory", async (t) => {
 
     t.match(usedToken, "organizationToken");
   });
+
+  t.test(
+    "getSchedulerSdk builds scheduler with organization token",
+    async (t) => {
+      let usedToken = "";
+
+      const { getSchedulerSdk } = await t.mockImport<
+        typeof import("../../utils/authentication-factory.js")
+      >("../../utils/authentication-factory.js", {
+        "api-auth": {
+          getAccessToken: () => "accessToken",
+          getOrganizationToken: () => "organizationToken",
+        },
+        "building-blocks-sdk": {
+          Profile: class Profile {
+            constructor(params: string) {
+              usedToken = params;
+            }
+          },
+          Scheduler: class Scheduler {
+            constructor(params: string) {
+              usedToken = params;
+            }
+          },
+        },
+      });
+
+      await getSchedulerSdk("organizationId");
+
+      t.match(usedToken, "organizationToken");
+    },
+  );
 
   t.test("ensureUserIdIsSet returns user id", async (t) => {
     t.match(
@@ -104,5 +151,5 @@ t.test("authentication-factory", async (t) => {
         "User id is not set",
       );
     },
-  );*/
+  );
 });
