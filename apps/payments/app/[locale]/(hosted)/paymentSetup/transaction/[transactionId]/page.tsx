@@ -45,6 +45,8 @@ export default async function ({
     getTransactionDetails(transactionId),
     getTranslations("PaymentSetup.Request"),
   ]);
+  const tStatus = await getTranslations("PaymentSetup.paymentStatus");
+  const tProviderType = await getTranslations("PaymentSetup.providerType");
 
   if (!details) {
     notFound();
@@ -80,7 +82,9 @@ export default async function ({
           </div>
           <div className="govie-summary-list__row">
             <dt className="govie-summary-list__key">{t("status")}</dt>
-            <dt className="govie-summary-list__value">{details.status}</dt>
+            <dt className="govie-summary-list__value">
+              {tStatus(details.status)}
+            </dt>
           </div>
           <div className="govie-summary-list__row">
             <dt className="govie-summary-list__key">{t("providerName")}</dt>
@@ -91,7 +95,7 @@ export default async function ({
           <div className="govie-summary-list__row">
             <dt className="govie-summary-list__key">{t("providerType")}</dt>
             <dt className="govie-summary-list__value">
-              {details.providerType}
+              {tProviderType(details.providerType)}
             </dt>
           </div>
           <div className="govie-summary-list__row">

@@ -1,6 +1,6 @@
 {
   "AuditLogs": {
-    "title": "Audit Logs",
+    "title": "Audit logs",
     "emptyListTitle": "Nothing to show...",
     "emptyListDescription": "There are no events yet.",
     "table": {
@@ -14,8 +14,8 @@
       "eventTitle": "Event name",
       "eventType": "Event type",
       "timestamp": "Timestamp",
-      "userId": "User id",
-      "organizationId": "Organization id",
+      "userId": "User ID",
+      "organizationId": "Organization ID",
       "metadata": "Metadata"
     },
     "filters": {
@@ -74,9 +74,9 @@
       "status": "Status",
       "providerType": "Provider type",
       "providers": {
-        "openbanking": "Open Banking",
-        "banktransfer": "Bank Transfer",
-        "stripe": "Credit/Debit Card",
+        "openbanking": "Open banking",
+        "banktransfer": "Bank transfer",
+        "stripe": "Credit/Debit card",
         "realex": "Realex",
         "worldpay": "WorldPay"
       },
@@ -109,7 +109,7 @@
         "account": "Account",
         "actions": "Actions",
         "emptyMessage": "No providers",
-        "edit": "edit"
+        "edit": "Edit"
       },
       "empty": {
         "title": "No payment providers",
@@ -127,17 +127,17 @@
       }
     },
     "AddProvider": {
-      "title": "Add Payment Provider",
+      "title": "Add payment provider",
       "description": "Easily integrate your preferred payment providers into your platform. Select from a range of providers to enable seamless transactions for your business.",
-      "openbankingDescription": "Use OpenBanking for secure and direct bank payments, offering your customers a convenient way to pay directly from their bank accounts without needing to enter payment details.",
+      "openbankingDescription": "Use Open banking for secure and direct bank payments, offering your customers a convenient way to pay directly from their bank accounts without needing to enter payment details.",
       "stripeDescription": "Incorporate Stripe to accept payments via credit card, Apple Pay, Google Pay, and more. Benefit from Stripe's comprehensive payment infrastructure and fraud prevention tools.",
       "worldpayDescription": "Connect with WorldPay for a reliable payment solution that supports a wide variety of payment methods globally, including credit cards, digital wallets, and bank transfers.",
       "realexDescription": "Connect with Realex for a reliable payment solution that supports a wide variety of payment methods globally, including credit cards, digital wallets, and bank transfers.",
       "selectHint": "Choose the type of payment provider",
-      "label": "Payment Provider",
-      "banktransfer": "Manual Bank Transfer",
-      "banktransferDescription": "Enable Manual Bank Transfer to offer your customers the option to pay through their bank. This method requires manual confirmation of payment receipts.",
-      "openbanking": "OpenBanking",
+      "label": "Payment provider",
+      "banktransfer": "Manual bank transfer",
+      "banktransferDescription": "Enable manual bank transfer to offer your customers the option to pay through their bank. This method requires manual confirmation of payment receipts.",
+      "openbanking": "Open banking",
       "stripe": "Stripe",
       "worldpay": "WorldPay",
       "realex": "Realex",
@@ -145,72 +145,72 @@
       "select": "Select"
     },
     "AddOpenbanking": {
-      "title": "Add OpenBanking Payment Provider",
-      "editTitle": "Edit OpenBanking Payment Provider",
+      "title": "Add Open banking payment provider",
+      "editTitle": "Edit Open banking payment provider",
       "name": "Name",
       "nameHint": "Give a name to this payment provider to help you recognize it",
       "nameRequired": "Name is required.",
-      "accountHolderName": "Bank Account Holder Name",
+      "accountHolderName": "Bank account holder name",
       "accountHolderNameHint": "Enter the name of the account holder as it appears on the bank account. This ensures payments are correctly attributed.",
-      "accountHolderNameRequired": "Bank Account Holder Name is required.",
+      "accountHolderNameRequired": "Bank account holder name is required.",
       "iban": "IBAN",
-      "ibanHint": "Enter your International Bank Account Number (IBAN) for secure transactions.",
+      "ibanHint": "Enter your international bank account number (IBAN) for secure transactions.",
       "ibanRequired": "IBAN is required.",
       "ibanInvalid": "IBAN is not valid.",
       "confirm": "Confirm"
     },
     "AddBankTransfer": {
-      "title": "Add Manual Bank Transfer Payment Provider",
-      "editTitle": "Edit Manual Bank Transfer Payment Provider",
+      "title": "Add mnual bank transfer payment provider",
+      "editTitle": "Edit manual bank transfer payment provider",
       "name": "Name",
       "nameHint": "Give a name to this payment provider to help you recognize it",
       "nameRequired": "Name is required.",
-      "accountHolderName": "Bank Account Holder Name",
+      "accountHolderName": "Bank account holder name",
       "accountHolderNameHint": "Enter the name of the bank account holder exactly as it appears on the account. This is required to match payments to their source accurately.",
-      "accountHolderNameRequired": "Bank Account Holder Name is required.",
+      "accountHolderNameRequired": "Bank account holder name is required.",
       "iban": "IBAN",
-      "ibanHint": "Enter your International Bank Account Number (IBAN) for secure transactions.",
+      "ibanHint": "Enter your international bank account number (IBAN) for secure transactions.",
       "ibanRequired": "IBAN is required.",
       "ibanInvalid": "IBAN is not valid.",
       "confirm": "Confirm"
     },
     "AddStripe": {
-      "title": "Add Stripe Payment Provider",
-      "editTitle": "Edit Stripe Payment Provider",
+      "title": "Add Stripe payment provider",
+      "editTitle": "Edit Stripe payment provider",
       "name": "Name",
       "nameHint": "Assign a name to this Stripe configuration to easily identify it later",
       "nameRequired": "Name is required.",
-      "livePublishableKey": "Live Publishable Key",
+      "livePublishableKey": "Live publishable key",
       "livePublishableKeyHint": "This is the public key from your Stripe account used in the live environment. It allows your site to communicate with Stripe for payment processing.",
-      "livePublishableKeyRequired": "Live Publishable Key is required.",
-      "liveSecretKey": "Live Secret Key",
+      "livePublishableKeyRequired": "Live publishable key is required.",
+      "liveSecretKey": "Live secret key",
       "liveSecretKeyHint": "Your secret key for the live environment from Stripe.",
-      "liveSecretKeyRequired": "Live Secret Key is required.",
+      "liveSecretKeyRequired": "Live secret key is required.",
       "confirm": "Confirm"
     },
     "AddWorldpay": {
-      "title": "Add Worldpay Payment Provider",
-      "editTitle": "Edit Worldpay Payment Provider",
+      "title": "Add Worldpay payment provider",
+      "editTitle": "Edit Worldpay payment provider",
       "name": "Name",
       "nameHint": "Create a name for this Worldpay configuration to easily identify it among your payment options, such as 'Main Site Payments' or 'Event Registrations'.",
-      "merchantCode": "Merchant Code",
+      "merchantCode": "Merchant code",
       "merchantCodeHint": "This is the unique identifier assigned to your Worldpay account. It's used to ensure that payments are sent to the correct merchant account.",
-      "installationId": "Installation Id",
+      "installationId": "Installation ID",
       "installationIdHint": "Your specific installation ID from Worldpay, required for integrating your payment gateway with the web application. This ties the payments to your account.",
       "confirm": "Confirm"
     },
     "AddRealex": {
-      "title": "Add Realex Payment Provider",
-      "editTitle": "Edit Realex Payment Provider",
+      "title": "Add Realex payment provider",
+      "editTitle": "Edit Realex payment provider",
       "name": "Name",
       "nameHint": "Create a name for this Realex configuration to easily identify it among your payment options, such as 'Main Site Payments' or 'Event Registrations'.",
       "nameRequired": "Name is required.",
-      "merchantId": "Merchant Id",
+      "merchantId": "Merchant ID",
       "merchantIdHint": "This is the unique identifier assigned to your Realex account. It's used to ensure that payments are sent to the correct merchant account.",
-      "merchantIdRequired": "Merchant Id is required.",
+      "merchantIdRequired": "Merchant ID is required.",
       "sharedSecret": "Shared secret",
-      "sharedSecretHint": "This is the Shared Secret from Realex, required for integrating your payment gateway with the web application. This ties the payments to your account.",
-      "sharedSecretRequired": "Shared Secret is required.",
+      "sharedSecretHint": "This is the shared secret from Realex, required for integrating your payment gateway with the web application. This ties the payments to your account.",
+      "sharedSecretRequired": "Shared secret is required.",
       "confirm": "Confirm"
     },
     "Payments": {
@@ -229,12 +229,12 @@
       "table": {
         "status": "Status",
         "reference": "Reference",
-        "payee": "Citizen Name",
+        "payee": "Citizen name",
         "amount": "Amount",
         "date": "Date",
-        "title": "Payment Request Title",
+        "title": "Payment request title",
         "paymentTitle": "Description",
-        "beneficiaryAccount": "Beneficiary Account",
+        "recipientAccount": "Recipient account",
         "actions": "Actions",
         "assign": "Assign to user",
         "details": "Details"
@@ -245,22 +245,22 @@
         "title": "There are no payments yet",
         "description": "You have not received any payments yet for this request"
       },
-      "payments": "Payments Received",
+      "payments": "Payments received",
       "table": {
         "status": "Status",
         "reference": "Reference",
-        "payee": "Citizen Name",
+        "payee": "Citizen name",
         "amount": "Amount",
         "date": "Date",
         "title": "Title",
         "paymentTitle": "Description",
-        "beneficiaryAccount": "Beneficiary Account",
+        "recipientAccount": "Recipient account",
         "actions": "Actions",
         "details": "Details"
       },
       "details": {
         "paymentDetails": "Payment details",
-        "requestTitle": "Payment Request Title",
+        "requestTitle": "Payment request title",
         "amount": "Amount",
         "lastUpdate": "Last update",
         "status": "Status",
@@ -271,10 +271,10 @@
         "referenceCode": "Payment reference code"
       },
       "transactionFound": "Transaction found with this reference code",
-      "assignTitle": "Assign to User",
+      "assignTitle": "Assign to user",
       "assignDescription": "Send this payment to a user",
-      "userPpsn": "User PPS Number",
-      "userPpsnHint": "The Personal Public Service Number of the user you would like to assign this payment to",
+      "userPpsn": "User PPS number",
+      "userPpsnHint": "The personal public service number of the user you would like to assign this payment to",
       "confirm": "Confirm",
       "actions": {
         "delete": {
@@ -283,28 +283,28 @@
       }
     },
     "CreatePayment": {
-      "title": "Payment Request Setup Form",
+      "title": "Payment request setup form",
       "form": {
         "status": {
           "title": "Status",
-          "header": "Payment Request Status",
+          "header": "Payment request status",
           "active": "Active",
           "inactive": "Inactive",
           "activeDescription": "This payment request is active and can be used to receive payments.",
           "inactiveDescription": "This payment request is inactive and cannot be used to receive payments.",
-          "invalid": "Payment Request Status cannot be active if no providers are selected."
+          "invalid": "Payment request status cannot be active if no providers are selected."
         },
         "title": "Title",
         "titleRequired": "Title is required.",
         "description": "Description",
-        "beneficiaryAccount": "Beneficiary Account",
+        "recipientAccount": "Recipient account",
         "paymentProvider": {
-          "openbanking": "OpenBanking Account",
-          "banktransfer": "Manual Bank Transfer Account",
-          "card": "Card Payment Account",
-          "worldpay": "WorldPay Account",
-          "realex": "Realex Account",
-          "stripe": "Stripe Account"
+          "openbanking": "Open banking account",
+          "banktransfer": "Manual bank transfer account",
+          "card": "Card payment account",
+          "worldpay": "WorldPay account",
+          "realex": "Realex account",
+          "stripe": "Stripe account"
         },
         "reference": "Reference",
         "referenceRequired": "Reference is required.",
@@ -312,8 +312,8 @@
         "amountRequired": "Amount is required.",
         "amountMaximumValidation": "Amount must be less than @limit@.",
         "currencySymbol": "€",
-        "redirectUrl": "Redirect URL",
-        "redirectUrlRequired": "Redirect URL is required.",
+        "redirectUrl": "Redirect url",
+        "redirectUrlRequired": "Redirect url is required.",
         "allowAmountOverride": "Allow amount override from url",
         "allowCustomAmount": "Allow the user to pay a custom amount",
         "submit": "Continue"
@@ -322,10 +322,28 @@
       "goBack": "Back to payments",
       "paymentLink": "Payment link",
       "deleteModal": {
-        "title": "Delete Payment Request",
+        "title": "Delete payment request",
         "description": "Are you sure you want to delete this payment request?",
         "confirmLabel": "Delete"
       }
+    },
+    "paymentStatus": {
+      "initiated": "Initiated",
+      "pending": "Pending",
+      "succeeded": "Successful",
+      "cancelled": "Cancelled",
+      "failed": "Failed"
+    },
+    "paymentRequestStatus": {
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "providerType": {
+      "banktransfer": "Bank transfer",
+      "openbanking": "Open banking",
+      "stripe": "Stripe",
+      "realex": "Realex",
+      "worldpay": "WorldPay"
     }
   },
   "PayPaymentRequest": {
@@ -344,12 +362,12 @@
         "description": "Pay securely with your credit or debit card"
       },
       "banktransfer": {
-        "title": "Manual Bank Transfer",
+        "title": "Manual bank transfer",
         "description": "Make a manual bank transfer"
       }
     },
     "payNow": "Pay now",
-    "manualBankTransfer": "Manual Bank Transfer",
+    "manualBankTransfer": "Manual bank transfer",
     "manualBankTransferDescription": "Make a manual bank transfer",
     "selectCustomAmount": "Pay a custom amount",
     "changeAmount": "Change amount",
@@ -362,7 +380,7 @@
     }
   },
   "PayManualBankTransfer": {
-    "title": "Pay with a Manual Bank Transfer",
+    "title": "Pay with a manual bank transfer",
     "description": "Lorem ipsum dolor sit amet consectetur. Id aenean magna habitasse ut erat.",
     "back": "Back",
     "summary": {
@@ -394,12 +412,12 @@
       "amount": "Total fee paid",
       "date": "Date of transaction"
     },
-    "back": "Back to My Portal"
+    "back": "Back to my portal"
   },
   "PaymentRequestError": {
-    "back": "Back to My Portal",
+    "back": "Back to my portal",
     "sorry": "Sorry, there was a problem",
-    "tryAgain": "Please return to My Portal and attempt the payment again"
+    "tryAgain": "Please return to my portal and attempt the payment again"
   },
   "PreviewBanner": {
     "tag": "Preview",
@@ -457,7 +475,7 @@
   "ErrorPage": {
     "title": "Ops, something went wrong",
     "description": "We're sorry, but something unexpected happened and we couldn't process your request. Please try refreshing the page or come back later. If the problem persists, contact our support team for assistance. Thank you for your patience!",
-    "action": "Return Home"
+    "action": "Return home"
   },
   "Pagination": {
     "previous": "Previous",
