@@ -22,7 +22,7 @@
   "devDependencies": {
     "@types/node": "20.12.13",
     "@types/pg": "^8.11.6",
-    "@types/react": "18.3.3",
+    "@types/react": "18.3.8",
     "typescript": "5.4.5"
   }
 }

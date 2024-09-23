@@ -19,7 +19,7 @@ function writeFile(filename, content) {
 }
 
 export const startNgrok = () => {
-  return new Promise((resolve, reject) => {
+  return new Promise<void>((resolve, reject) => {
     const domain = process.env.NGROK_DOMAIN;
 
     if (!domain) {
@@ -32,11 +32,11 @@ export const startNgrok = () => {
 
     const ngrokProcess = exec(command);
 
-    ngrokProcess.stdout.on("data", (data) => {
+    ngrokProcess.stdout?.on("data", (data) => {
       console.log(`ngrok stdout: ${data}`);
     });
 
-    ngrokProcess.stderr.on("data", (data) => {
+    ngrokProcess.stderr?.on("data", (data) => {
       console.error(`ngrok stderr: ${data}`);
     });
 
@@ -48,7 +48,7 @@ export const startNgrok = () => {
     ngrokProcess.on("spawn", () => {
       try {
         if (path.dirname(PID_FILE) === SAFE_DIRECTORY) {
-          writeFile(PID_FILE, ngrokProcess.pid.toString());
+          writeFile(PID_FILE, ngrokProcess.pid?.toString());
           console.log(`ngrok PID saved to ${PID_FILE}`);
           resolve();
         } else {

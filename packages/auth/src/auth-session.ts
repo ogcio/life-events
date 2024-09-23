@@ -176,7 +176,7 @@ type WithOrgDataContext = Omit<LogtoContext, "userInfo"> & {
 };
 
 const getOrganizationInfo = (
-  context: WithOrgDataContext,
+  context: LogtoContext,
   getContextParameters: GetSessionContextParameters | undefined,
   organizationRoles: string[] | null,
 ): AuthSessionOrganizationInfo | undefined => {
