@@ -6,6 +6,7 @@ import {
 } from "../../../app/types/plugins";
 import { IntegratorPlugin } from "./basePlugin";
 import { updateSubmissionStep } from "../../../app/utils/submissions";
+import { MessagingAuthenticationFactory } from "../../messaging-authentication-factory";
 
 export class MessagePlugin extends IntegratorPlugin {
   private step: JourneyStep;
@@ -26,32 +27,25 @@ export class MessagePlugin extends IntegratorPlugin {
 
   public async execute(userId: string): Promise<void> {
     const data = this.step.stepData as MessagingPluginData;
+    const client = await MessagingAuthenticationFactory.getMessagingClient();
 
-    const url = "http://localhost:8002/api/v1/messages";
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
+    await client.send({
+      bypassConsent: false,
+      message: {
+        threadName: "Submission completed",
+        subject: "Submission completed",
+        excerpt:
+          "Dear customer, we trust this message finds you well. We are pleased to inform you that your recent request has been successfully processed. Should you require any further assistance or have any additional inquiries, please don’t hesitate to reach out. Best, Department of Something",
+        richText:
+          "Dear customer, we trust this message finds you well. We are pleased to inform you that your recent request has been successfully processed. Should you require any further assistance or have any additional inquiries, please don’t hesitate to reach out. Best, Department of Something",
+        plainText:
+          "Dear customer, we trust this message finds you well. We are pleased to inform you that your recent request has been successfully processed. Should you require any further assistance or have any additional inquiries, please don’t hesitate to reach out. Best, Department of Something",
+        language: "en",
       },
-      body: JSON.stringify({
-        bypassConsent: false,
-        message: {
-          threadName: "Submission completed",
-          subject: "Submission completed",
-          excerpt:
-            "Dear customer, we trust this message finds you well. We are pleased to inform you that your recent request has been successfully processed. Should you require any further assistance or have any additional inquiries, please don’t hesitate to reach out. Best, Department of Something",
-          richText:
-            "Dear customer, we trust this message finds you well. We are pleased to inform you that your recent request has been successfully processed. Should you require any further assistance or have any additional inquiries, please don’t hesitate to reach out. Best, Department of Something",
-          plainText:
-            "Dear customer, we trust this message finds you well. We are pleased to inform you that your recent request has been successfully processed. Should you require any further assistance or have any additional inquiries, please don’t hesitate to reach out. Best, Department of Something",
-          language: "en",
-        },
-        preferredTransports: ["lifeEvent"],
-        scheduleAt: "2024-09-20T15:49:16+03:00",
-        security: "public",
-        recipientUserId: "e4b73033-4d53-4c7c-8e4d-8cce2416b028",
-      }),
+      preferredTransports: ["lifeEvent"],
+      scheduleAt: "2024-09-20T15:49:16+03:00",
+      security: "public",
+      recipientUserId: "e4b73033-4d53-4c7c-8e4d-8cce2416b028",
     });
 
     await this.completeStep({}, userId);
