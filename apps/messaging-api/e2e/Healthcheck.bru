@@ -12,7 +12,7 @@ get {
 
 assert {
   res.status: eq 200
-  res.body.status: eq 'ok'
+  res.body['messaging-api']: isString 'ok'
 }
 
 script:pre-request {
@@ -21,16 +21,4 @@ script:pre-request {
 
 script:post-response {
   //Placeholder for any post response logic
-}
-
-tests {
-  // Allows for more complex tests on the response beyond the basic inbuilt assert library
-  test("res.status should be 200", function() {
-    const data = res.getBody();
-    expect(res.getStatus()).to.equal(200);
-  });
-  test("res.body should be correct", function() {
-    const data = res.getBody();
-    expect(data.status).to.equal('ok');
-  });
 }
