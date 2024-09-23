@@ -35,7 +35,7 @@ export default async (props: { params: { organisationSettingId: string } }) => {
     const submitTrans = await getTranslations("userSettings.Organisation");
     const url = new URL(
       usersSettingsRoutes.url,
-      process.env.NEXT_PUBLIC_HOST_URL,
+      process.env.NEXT_PUBLIC_MESSAGING_SERVICE_ENTRY_POINT,
     );
     url.searchParams.append(searchKeySettingType, searchValueOrganisation);
     const orgId = formData.get("organisationSettingId")?.toString();

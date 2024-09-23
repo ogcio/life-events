@@ -133,7 +133,7 @@ export default async (props: {
 
     const url = new URL(
       `${props.params.locale}/${providerRoutes.url}`,
-      process.env.NEXT_PUBLIC_HOST_URL,
+      process.env.NEXT_PUBLIC_MESSAGING_SERVICE_ENTRY_POINT,
     );
     url.searchParams.append("provider", "email");
     redirect(url.href);
@@ -373,7 +373,7 @@ export default async (props: {
         href={
           new URL(
             `${props.params.locale}/${providerRoutes.url}?provider=email`,
-            process.env.NEXT_PUBLIC_HOST_URL,
+            process.env.NEXT_PUBLIC_MESSAGING_SERVICE_ENTRY_POINT,
           ).href
         }
       >
