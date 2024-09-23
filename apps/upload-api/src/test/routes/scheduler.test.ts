@@ -14,10 +14,12 @@ const buildApp = async (
     getConfigValue,
     getExpiredFiles,
     s3Send,
+    markFilesAsDeleted,
   }: {
     getConfigValue: () => Promise<unknown>;
     getExpiredFiles?: () => Promise<unknown>;
     s3Send?: () => Promise<unknown>;
+    markFilesAsDeleted?: () => Promise<unknown>;
   },
 ) => {
   const app = await fastify();
@@ -60,12 +62,13 @@ const buildApp = async (
         getExpiredFiles,
         markFilesAsDeleted: () => {
           markFilesAsDeletedCalled = true;
-          return Promise.resolve();
+
+          return markFilesAsDeleted ? markFilesAsDeleted() : Promise.resolve();
         },
       },
       "@aws-sdk/client-s3": {
         DeleteObjectsCommand: class {
-          constructor(...data) {
+          constructor(...data: string[]) {
             usedParams.push(...data);
           }
         },
@@ -90,7 +93,7 @@ t.test("scheduler", async (t) => {
     markFilesAsDeletedCalled = false;
     Date = class extends Date {
       constructor() {
-        super(OriginalDate.UTC(2024, 0, 2, 0, 0, 0));
+        super(OriginalDate.UTC(2024, 0, 5, 0, 0, 0));
       }
     };
   });
@@ -218,6 +221,114 @@ t.test("scheduler", async (t) => {
       );
 
       t.equal(markFilesAsDeletedCalled, false);
+
+      t.equal(res.statusCode, 200);
+      t.equal(res.headers["content-type"], "application/json; charset=utf-8");
+      t.same(res.json(), { status: "ok" });
+    },
+  );
+
+  t.test(
+    "Should not mark files as deleted when an s3 Send throws",
+    async (t) => {
+      app = await buildApp(t, {
+        getConfigValue: () => {
+          return Promise.resolve("schedulerToken");
+        },
+        getExpiredFiles: () =>
+          Promise.resolve({
+            rows: [
+              {
+                scheduledDeletionAt: new Date(
+                  OriginalDate.UTC(2024, 0, 1, 0, 0, 0),
+                ),
+                id: "1",
+                key: "fileKey",
+              },
+            ],
+          }),
+        s3Send: () => Promise.reject("S3 error"),
+      });
+      await app.ready();
+
+      const res = await app.inject({
+        method: "POST",
+        url: "/",
+        body: {
+          token: "schedulerToken",
+        },
+      });
+
+      t.match(
+        (
+          usedParams[0] as unknown as {
+            Delete: { Objects: [{ Key: string }[]] };
+          }
+        ).Delete.Objects,
+        [{ Key: "fileKey" }],
+      );
+
+      t.equal(markFilesAsDeletedCalled, false);
+
+      t.equal(res.statusCode, 200);
+      t.equal(res.headers["content-type"], "application/json; charset=utf-8");
+      t.same(res.json(), { status: "ok" });
+    },
+  );
+
+  t.test(
+    "Should return a status 200 when markFileAsDeleted throws",
+    async (t) => {
+      const itemsToDelete: {
+        scheduledDeletionAt: Date;
+        id: number;
+        key: string;
+      }[] = [];
+
+      for (let i = 0; i < 101; i++) {
+        itemsToDelete.push({
+          scheduledDeletionAt: new OriginalDate(
+            OriginalDate.UTC(2024, 0, 1, 0, 0, 0),
+          ),
+          id: i,
+          key: "fileKey",
+        });
+      }
+
+      app = await buildApp(t, {
+        getConfigValue: () => {
+          return Promise.resolve("schedulerToken");
+        },
+        getExpiredFiles: () =>
+          Promise.resolve({
+            rows: itemsToDelete,
+          }),
+        s3Send: () => Promise.resolve({}),
+        markFilesAsDeleted: () => Promise.reject("Dummy error"),
+      });
+      await app.ready();
+
+      const res = await app.inject({
+        method: "POST",
+        url: "/",
+        body: {
+          token: "schedulerToken",
+        },
+      });
+
+      const deletedObjects = (
+        usedParams[0] as unknown as {
+          Delete: { Objects: [{ Key: string }[]] };
+        }
+      ).Delete.Objects;
+
+      t.match(
+        deletedObjects,
+        itemsToDelete.map((i) => ({ Key: i.key })).slice(0, 100),
+      );
+
+      t.equal(deletedObjects.length, 100);
+      t.equal(markFilesAsDeletedCalled, true);
 
       t.equal(res.statusCode, 200);
       t.equal(res.headers["content-type"], "application/json; charset=utf-8");

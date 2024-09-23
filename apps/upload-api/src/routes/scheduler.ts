@@ -36,9 +36,8 @@ export default async function schduler(app: FastifyInstance) {
         return { status: "ok" };
       }
 
-      const filesToDelete = filesToDeleteQueryResult.rows;
-
-      checkLeftoverFiles(app, filesToDelete);
+      checkLeftoverFiles(app, filesToDeleteQueryResult.rows);
+      const filesToDelete = filesToDeleteQueryResult.rows.slice(0, 100);
       checkStaleUndeletedFiles(app, filesToDelete, now);
 
       const metadataToMarkAsdeleted = await deleteFilesFromStorage(
@@ -88,8 +87,12 @@ const checkStaleUndeletedFiles = (
 ) => {
   let count = 0;
   for (const fileToDelete of filesToDelete) {
-    const days = (fileToDelete.scheduledDeletionAt as Date).getDate();
-    if (now.getDate() - days >= 3) {
+    const deletionDate = fileToDelete.scheduledDeletionAt as Date;
+
+    const timeDiff = now.getTime() - deletionDate.getTime();
+    const diffInDays = timeDiff / (1000 * 60 * 60 * 24);
+
+    if (diffInDays >= 3) {
       count++;
     }
   }
@@ -138,8 +141,6 @@ const deleteFilesFromStorage = async (
       }
     }
   } catch (err) {
-    console.log("err", err);
-
     app.log.error(err);
     return [] as string[];
   }
