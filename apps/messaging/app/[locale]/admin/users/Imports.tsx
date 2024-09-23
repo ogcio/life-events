@@ -53,7 +53,7 @@ export default async () => {
                   href={
                     new URL(
                       `/admin/users/imports/${record.id}`,
-                      process.env.NEXT_PUBLIC_HOST_URL,
+                      process.env.NEXT_PUBLIC_MESSAGING_SERVICE_ENTRY_POINT,
                     ).href
                   }
                 >
