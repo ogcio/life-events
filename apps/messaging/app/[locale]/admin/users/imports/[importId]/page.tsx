@@ -47,7 +47,7 @@ export default async (props: {
         href={
           new URL(
             `${props.params.locale}/${usersRoute.url}?${searchKeyListType}=${searchValueImports}`,
-            process.env.NEXT_PUBLIC_HOST_URL,
+            process.env.NEXT_PUBLIC_MESSAGING_SERVICE_ENTRY_POINT,
           ).href
         }
       >
