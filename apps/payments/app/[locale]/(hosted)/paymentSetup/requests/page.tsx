@@ -24,6 +24,9 @@ export default async function ({
   searchParams: { page?: string; limit?: string };
 }) {
   const t = await getTranslations("PaymentSetup.Payments");
+  const tRequestStatus = await getTranslations(
+    "PaymentSetup.paymentRequestStatus",
+  );
 
   const currentPage = page ? parseInt(page) : PAGINATION_PAGE_DEFAULT;
   const pageLimit = limit ? parseInt(limit) : PAGINATION_LIMIT_DEFAULT;
@@ -78,7 +81,7 @@ export default async function ({
                     {t("table.title")}
                   </th>
                   <th scope="col" className="govie-table__header">
-                    {t("table.beneficiaryAccount")}
+                    {t("table.recipientAccount")}
                   </th>
                   <th scope="col" className="govie-table__header">
                     {t("table.status")}
@@ -104,7 +107,7 @@ export default async function ({
                       {req.providers.map(({ name }) => name).join(", ")}
                     </td>
                     <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-                      {req.status}
+                      {tRequestStatus(req.status)}
                     </td>
                     <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
                       {req.reference}

@@ -42,7 +42,7 @@ export class PaymentRequestsPage {
     await expect(this.header).toBeVisible();
   }
 
-  async checkBeneficiaryAccounts(name: string, accounts: string[]) {
+  async checkRecipientAccounts(name: string, accounts: string[]) {
     const accountsCell = await this.page
       .getByRole("row")
       .filter({ hasText: name })
