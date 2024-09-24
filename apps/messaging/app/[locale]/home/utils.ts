@@ -1,4 +1,7 @@
-export const baseUrl = new URL("/home", process.env.NEXT_PUBLIC_HOST_URL);
+export const baseUrl = new URL(
+  "/home",
+  process.env.NEXT_PUBLIC_MESSAGING_SERVICE_ENTRY_POINT,
+);
 
 export const unreadUrl = (() => {
   const url = new URL(baseUrl);

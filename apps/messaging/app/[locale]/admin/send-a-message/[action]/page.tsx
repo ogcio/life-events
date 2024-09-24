@@ -124,7 +124,7 @@ export default async (props: {
           props.searchParams.baseUrl ??
           new URL(
             `${sendAMessage.url}/recipients`,
-            process.env.NEXT_PUBLIC_HOST_URL,
+            process.env.NEXT_PUBLIC_MESSAGING_SERVICE_ENTRY_POINT,
           ).href,
         search: props.searchParams.search,
         recipientToAddIds: props.searchParams.recipientToAddIds,
