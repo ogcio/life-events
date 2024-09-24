@@ -297,7 +297,7 @@
           "invalid": "Payment request status cannot be active if no providers are selected."
         },
         "authenticated": {
-          "title": "Authenticated",
+          "title": "Require the user to be authenticated",
           "header": "Does it need authentication?",
           "true": "Yes",
           "false": "No"

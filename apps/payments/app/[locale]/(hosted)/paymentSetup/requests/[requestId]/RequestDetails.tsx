@@ -185,6 +185,14 @@ export const RequestDetails = async ({
           </dt>
         </div>
         <div className="govie-summary-list__row">
+          <dt className="govie-summary-list__key">
+            {t("form.authenticated.title")}
+          </dt>
+          <dt className="govie-summary-list__value">
+            {JSON.stringify(details.authenticated)}
+          </dt>
+        </div>
+        <div className="govie-summary-list__row">
           <dt className="govie-summary-list__key">{t("paymentLink")}</dt>
           <dt className="govie-summary-list__value">
             <div style={{ display: "flex", gap: "10px" }}>
