@@ -59,6 +59,7 @@ export default async function ({ params: { request_id, locale } }: Props) {
     const allowCustomAmountField = formData.get("allowCustomAmount") === "on";
     const redirectUrlField = formData.get("redirect-url") as string;
     const statusField = formData.get("status") as PaymentRequestStatus;
+    const authenticated = formData.get("authenticated") === "on";
 
     const providerDetails: {
       id: string;
@@ -79,6 +80,7 @@ export default async function ({ params: { request_id, locale } }: Props) {
           redirectUrl: redirectUrlField,
           status: statusField,
           providers: providerDetails,
+          authenticated,
         },
         providerAccounts: JSON.parse(providerAccountsField),
       },
