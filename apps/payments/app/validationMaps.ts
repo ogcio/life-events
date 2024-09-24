@@ -102,6 +102,12 @@ export const paymentRequestValidationMap = (t): ValidationFieldMap => {
         [ValidationErrorTypes.REQUIRED]: t("titleRequired"),
       },
     },
+    description: {
+      field: "description",
+      errorMessage: {
+        [ValidationErrorTypes.REQUIRED]: t("descriptionRequired"),
+      },
+    },
     reference: {
       field: "reference",
       errorMessage: {

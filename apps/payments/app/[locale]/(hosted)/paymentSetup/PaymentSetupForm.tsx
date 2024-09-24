@@ -36,10 +36,18 @@ export default function ({ action, defaultState }: PaymentSetupFormProps) {
         error={state.errors.title}
         defaultValue={state.defaultState?.details?.title}
       />
-      <div className="govie-form-group">
+      <div
+        className={`govie-form-group ${state.errors.description && "govie-form-group--error"}`}
+      >
         <label htmlFor="description" className="govie-label--s">
           {t("form.description")}
         </label>
+        {state.errors.description && (
+          <p id="input-field-error" className="govie-error-message">
+            <span className="govie-visually-hidden">Error:</span>
+            {state.errors.description}
+          </p>
+        )}
         <textarea
           id="description"
           name="description"

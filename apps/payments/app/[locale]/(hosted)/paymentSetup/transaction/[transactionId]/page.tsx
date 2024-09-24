@@ -75,6 +75,10 @@ export default async function ({
             </dt>
           </div>
           <div className="govie-summary-list__row">
+            <dt className="govie-summary-list__key">{t("description")}</dt>
+            <dt className="govie-summary-list__value">{details.description}</dt>
+          </div>
+          <div className="govie-summary-list__row">
             <dt className="govie-summary-list__key">{t("lastUpdate")}</dt>
             <dt className="govie-summary-list__value">
               {dayjs(details.updatedAt).format("DD/MM/YYYY - HH:mm:ss")}
