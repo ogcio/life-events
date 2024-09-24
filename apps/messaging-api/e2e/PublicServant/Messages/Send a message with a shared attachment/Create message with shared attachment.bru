@@ -1,7 +1,7 @@
 meta {
   name: Create message with shared attachment
   type: http
-  seq: 3
+  seq: 5
 }
 
 post {
@@ -17,7 +17,7 @@ auth:bearer {
 body:json {
   {
     "preferredTransports": [],
-    "recipientUserId": "{{consentUserId}}",
+    "recipientUserId": "{{attachmentUserId}}",
     "security": "public",
     "bypassConsent": true,
     "scheduleAt": "2024-08-26T10:05:04.865Z",

@@ -1,7 +1,7 @@
 meta {
   name: Share File With User
   type: http
-  seq: 2
+  seq: 4
 }
 
 post {
@@ -17,7 +17,7 @@ auth:bearer {
 body:json {
   {
     "fileId": "{{attachmentId}}",
-    "userId": "{{consentUserId}}"
+    "userId": "{{attachmentUserProfileId}}"
   }
 }
 
