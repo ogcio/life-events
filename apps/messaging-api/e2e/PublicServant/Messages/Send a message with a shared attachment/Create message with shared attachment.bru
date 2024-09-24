@@ -1,7 +1,7 @@
 meta {
-  name: Create message
+  name: Create message with shared attachment
   type: http
-  seq: 1
+  seq: 3
 }
 
 post {
@@ -14,32 +14,30 @@ auth:bearer {
   token: {{accessToken}}
 }
 
-vars:post-response {
-  sentMessageId: res.body.data.id
-}
-
-assert {
-  res.body.data.id: isDefined
-  res.status: eq 201
-}
-
-script:pre-request {
-  const uuid = require("uuid")
-  const messageSubject = uuid.v4()
-  bru.setVar("messageSubject",messageSubject)
-  req.setBody({
+body:json {
+  {
     "preferredTransports": [],
-    "recipientUserId": bru.getVar("consentUserId"),
+    "recipientUserId": "{{consentUserId}}",
     "security": "public",
     "bypassConsent": true,
     "scheduleAt": "2024-08-26T10:05:04.865Z",
     "message": {
       "threadName": "threadName",
-      "subject": messageSubject,
+      "subject": "MessageWithSharedAttachment",
       "excerpt": "excerpt",
       "plainText": "plainText",
       "richText": "richText",
       "language": "en"
-    }
-  })
+    },
+    "attachments": ["{{attachmentId}}"]
+  }
+}
+
+vars:post-response {
+  ~withAttachmentMessageId: res.data.id
+}
+
+assert {
+  res.status: eq 201
+  ~res.body.id: isDefined
 }
