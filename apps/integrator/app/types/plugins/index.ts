@@ -14,3 +14,20 @@ export type PluginData =
   | FormPluginData
   | PaymentPluginData
   | MessagingPluginData;
+
+export type FormSubmissionData = {
+  success: boolean;
+};
+
+export type PaymentSubmissionData = {
+  success: boolean;
+};
+
+export type MessagingSubmissionData = {
+  success: boolean;
+};
+
+export type SubmissionData =
+  | FormSubmissionData
+  | PaymentSubmissionData
+  | MessagingSubmissionData;

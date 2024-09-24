@@ -43,7 +43,7 @@ export type SubmissionStep = {
 export type Submission = {
   id: string;
   userId: string;
-  journeyId: number;
+  journeyId: string;
   createdAt: Date;
   updatedAt: Date;
 };

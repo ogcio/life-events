@@ -6,7 +6,7 @@ const journeyDefaultFlow = [
   },
   {
     type: "form",
-    required: true,
+    required: false,
     stepNumber: 2,
   },
   {
