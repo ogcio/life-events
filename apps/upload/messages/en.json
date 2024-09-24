@@ -25,7 +25,8 @@
       "retrievalError": "There was an error retrieving files"
     },
     "buttonLabel": "Upload a file",
-    "uploadButton": "Upload"
+    "uploadButton": "Upload",
+    "dateLabel": "Delete after"
   },
   "File": {
     "title": "File details",
