@@ -1,0 +1,37 @@
+meta {
+  name: Import existent user
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/v1/user-imports
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{uploadPublicServantAccessToken}}
+}
+
+body:json {
+  [
+    {
+      "importIndex": 1,
+      "emailAddress": "already@exists.email",
+      "collectedConsent": true,
+      "lastName": "ExistsByPPSN",
+      "firstName": "OnProfileAPI",
+      "publicIdentityId": "{{process.env.CITIZEN_USER_PROFILE_PPSN}}"
+    }
+  ]
+}
+
+vars:post-response {
+  attachmentUserImportId: res.body.data.id
+}
+
+assert {
+  res.status: eq 200
+  res.body.data.id: isString
+}
