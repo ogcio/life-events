@@ -673,6 +673,8 @@ paths:
                             - type: string
                               enum:
                                 - inactive
+                        authenticated:
+                          type: boolean
                       required:
                         - paymentRequestId
                         - title
@@ -681,6 +683,7 @@ paths:
                         - reference
                         - providers
                         - status
+                        - authenticated
                   metadata:
                     type: object
                     properties:
@@ -769,6 +772,8 @@ paths:
                       enum:
                         - inactive
                   validator: PaymentRequestStatusValidator
+                authenticated:
+                  type: boolean
               required:
                 - title
                 - description
@@ -779,6 +784,7 @@ paths:
                 - allowCustomAmount
                 - providers
                 - status
+                - authenticated
         required: true
       responses:
         "200":
@@ -833,6 +839,8 @@ paths:
                       enum:
                         - inactive
                   validator: PaymentRequestStatusValidator
+                authenticated:
+                  type: boolean
                 paymentRequestId:
                   type: string
                 providersUpdate:
@@ -859,6 +867,7 @@ paths:
                 - allowCustomAmount
                 - providers
                 - status
+                - authenticated
                 - paymentRequestId
                 - providersUpdate
         required: true
@@ -1002,6 +1011,8 @@ paths:
                       - type: string
                         enum:
                           - inactive
+                  authenticated:
+                    type: boolean
                   redirectUrl:
                     type: string
                   allowAmountOverride:
@@ -1016,6 +1027,7 @@ paths:
                   - reference
                   - providers
                   - status
+                  - authenticated
                   - redirectUrl
                   - allowAmountOverride
                   - allowCustomAmount
@@ -1232,6 +1244,8 @@ paths:
                       - type: string
                         enum:
                           - inactive
+                  authenticated:
+                    type: boolean
                   redirectUrl:
                     type: string
                   allowAmountOverride:
@@ -1246,6 +1260,7 @@ paths:
                   - reference
                   - providers
                   - status
+                  - authenticated
                   - redirectUrl
                   - allowAmountOverride
                   - allowCustomAmount

@@ -30,6 +30,7 @@ export class PaymentRequestRepo {
         pr.amount,
         pr.reference,
         pr.status,
+        pr.authenticated,
         CASE 
           WHEN COUNT(pp.provider_id) > 0 THEN json_agg(json_build_object(
             'userId', pp.user_id,
@@ -75,6 +76,7 @@ export class PaymentRequestRepo {
         pr.description,
         pr.amount,
         pr.status,
+        pr.authenticated,
         CASE 
           WHEN COUNT(pp.provider_id) > 0 THEN json_agg(json_build_object(
               'userId', pp.user_id,
@@ -110,6 +112,7 @@ export class PaymentRequestRepo {
         pr.description,
         pr.amount,
         pr.status,
+        pr.authenticated,
         CASE 
           WHEN COUNT(pp.provider_id) > 0 THEN json_agg(json_build_object(
               'userId', pp.user_id,
@@ -142,8 +145,8 @@ export class PaymentRequestRepo {
     client: PoolClient,
   ): Promise<QueryResult<{ payment_request_id: string }>> {
     return client.query(
-      `insert into payment_requests (user_id, title, description, reference, amount, redirect_url, status, allow_amount_override, allow_custom_amount, organization_id)
-        values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+      `insert into payment_requests (user_id, title, description, reference, amount, redirect_url, status, allow_amount_override, allow_custom_amount, organization_id, authenticated)
+        values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
         returning payment_request_id`,
       [
         userId,
@@ -156,6 +159,7 @@ export class PaymentRequestRepo {
         paymentRequest.allowAmountOverride,
         paymentRequest.allowCustomAmount,
         organizationId,
+        paymentRequest.authenticated,
       ],
     );
   }
@@ -167,8 +171,8 @@ export class PaymentRequestRepo {
   ) {
     return client.query(
       `update payment_requests 
-        set title = $1, description = $2, reference = $3, amount = $4, redirect_url = $5, allow_amount_override = $6, allow_custom_amount = $7 , status = $8
-        where payment_request_id = $9 and organization_id = $10`,
+        set title = $1, description = $2, reference = $3, amount = $4, redirect_url = $5, allow_amount_override = $6, allow_custom_amount = $7 , status = $8, authenticated = $9
+        where payment_request_id = $10 and organization_id = $11`,
       [
         paymentRequest.title,
         paymentRequest.description,
@@ -178,6 +182,7 @@ export class PaymentRequestRepo {
         paymentRequest.allowAmountOverride,
         paymentRequest.allowCustomAmount,
         paymentRequest.status,
+        paymentRequest.authenticated,
         paymentRequest.paymentRequestId,
         organizationId,
       ],

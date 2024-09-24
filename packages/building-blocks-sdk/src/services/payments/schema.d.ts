@@ -326,6 +326,7 @@ export interface paths {
                   createdAt: string;
                 }[];
                 status: "active" | "inactive";
+                authenticated: boolean;
               }[];
               metadata?: {
                 links?: {
@@ -370,6 +371,7 @@ export interface paths {
             allowCustomAmount: boolean;
             providers: string[];
             status: "active" | "inactive";
+            authenticated: boolean;
             paymentRequestId: string;
             providersUpdate: {
               toDisable: string[];
@@ -402,6 +404,7 @@ export interface paths {
             allowCustomAmount: boolean;
             providers: string[];
             status: "active" | "inactive";
+            authenticated: boolean;
           };
         };
       };
@@ -465,6 +468,7 @@ export interface paths {
                 createdAt: string;
               }[];
               status: "active" | "inactive";
+              authenticated: boolean;
               redirectUrl: string;
               allowAmountOverride: boolean;
               allowCustomAmount: boolean;
@@ -576,6 +580,7 @@ export interface paths {
                 createdAt: string;
               }[];
               status: "active" | "inactive";
+              authenticated: boolean;
               redirectUrl: string;
               allowAmountOverride: boolean;
               allowCustomAmount: boolean;
