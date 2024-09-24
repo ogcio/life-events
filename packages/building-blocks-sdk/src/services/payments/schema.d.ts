@@ -687,6 +687,7 @@ export interface paths {
                   name: string;
                   email: string;
                 };
+                description: string;
                 providerName: string;
                 providerType: string;
                 paymentRequestId: string;
@@ -805,6 +806,7 @@ export interface paths {
                   name: string;
                   email: string;
                 };
+                description: string;
                 providerName: string;
                 providerType: string;
                 paymentRequestId: string;
@@ -1138,6 +1140,7 @@ export interface paths {
                   name: string;
                   email: string;
                 };
+                description: string;
                 providerName: string;
                 providerType: string;
                 paymentRequestId: string;

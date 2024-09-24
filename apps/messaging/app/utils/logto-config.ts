@@ -15,7 +15,15 @@ export const profileApiResource = process.env.PROFILE_BACKEND_URL?.endsWith("/")
   ? process.env.PROFILE_BACKEND_URL
   : `${process.env.PROFILE_BACKEND_URL}/`;
 
-const baseUrl = process.env.NEXT_PUBLIC_MESSAGING_SERVICE_ENTRY_POINT as string;
+const messagingEntryPoint = (
+  process.env.NEXT_PUBLIC_MESSAGING_SERVICE_ENTRY_POINT?.endsWith("/")
+    ? process.env.NEXT_PUBLIC_MESSAGING_SERVICE_ENTRY_POINT.substring(
+        0,
+        process.env.NEXT_PUBLIC_MESSAGING_SERVICE_ENTRY_POINT.length - 1,
+      )
+    : process.env.NEXT_PUBLIC_MESSAGING_SERVICE_ENTRY_POINT
+) as string;
+const messagingEntryPointSlash = `${messagingEntryPoint}/` as string;
 const appId = process.env.LOGTO_MESSAGING_APP_ID as string;
 const appSecret = process.env.LOGTO_MESSAGING_APP_SECRET as string;
 const organizationId = "ogcio";
@@ -38,7 +46,7 @@ const publicServantExpectedRoles = ["Messaging Public Servant"];
 
 export const getAuthenticationContextConfig =
   (): AuthenticationContextConfig => ({
-    baseUrl,
+    baseUrl: messagingEntryPointSlash,
     appId,
     appSecret,
     organizationId,
@@ -51,7 +59,7 @@ export const getAuthenticationContextConfig =
 
 export const getProfileAuthenticationContextConfig =
   (): AuthenticationContextConfig => ({
-    baseUrl,
+    baseUrl: messagingEntryPointSlash,
     appId,
     appSecret,
     organizationId,
@@ -62,12 +70,11 @@ export const getProfileAuthenticationContextConfig =
     resourceUrl: profileApiResource,
   });
 
-export const postSignoutRedirect =
-  process.env.NEXT_PUBLIC_MESSAGING_SERVICE_ENTRY_POINT;
+export const postSignoutRedirect = messagingEntryPoint;
 
 export const getSignInConfiguration = () => ({
   ...getBaseLogtoConfig(),
-  baseUrl: process.env.NEXT_PUBLIC_MESSAGING_SERVICE_ENTRY_POINT as string,
+  baseUrl: messagingEntryPoint,
   appId: process.env.LOGTO_MESSAGING_APP_ID as string,
   appSecret: process.env.LOGTO_MESSAGING_APP_SECRET as string,
   // All the available resources to the app

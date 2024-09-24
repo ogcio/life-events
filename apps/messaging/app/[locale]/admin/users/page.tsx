@@ -85,7 +85,7 @@ export default async (props: {
             href={(() => {
               const url = new URL(
                 usersRoute.url,
-                process.env.NEXT_PUBLIC_HOST_URL,
+                process.env.NEXT_PUBLIC_MESSAGING_SERVICE_ENTRY_POINT,
               );
               url.searchParams.append(searchKeyListType, searchValueUsers);
               return url.href;
@@ -100,7 +100,7 @@ export default async (props: {
             href={(() => {
               const url = new URL(
                 usersRoute.url,
-                process.env.NEXT_PUBLIC_HOST_URL,
+                process.env.NEXT_PUBLIC_MESSAGING_SERVICE_ENTRY_POINT,
               );
               url.searchParams.append(searchKeyListType, searchValueImports);
               return url.href;
@@ -115,7 +115,7 @@ export default async (props: {
             href={(() => {
               const url = new URL(
                 usersRoute.url,
-                process.env.NEXT_PUBLIC_HOST_URL,
+                process.env.NEXT_PUBLIC_MESSAGING_SERVICE_ENTRY_POINT,
               );
               url.searchParams.append(searchKeyListType, searchValueImportCsv);
               return url.href;
