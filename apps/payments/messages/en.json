@@ -70,6 +70,7 @@
       "paymentDetails": "Payment details",
       "requestTitle": "Payment Request Title",
       "amount": "Amount",
+      "description": "External description",
       "lastUpdate": "Last update",
       "status": "Status",
       "providerType": "Provider type",
@@ -262,6 +263,7 @@
         "paymentDetails": "Payment details",
         "requestTitle": "Payment request title",
         "amount": "Amount",
+        "description": "External description",
         "lastUpdate": "Last update",
         "status": "Status",
         "providerName": "Provider name",
@@ -296,7 +298,8 @@
         },
         "title": "Title",
         "titleRequired": "Title is required.",
-        "description": "Description",
+        "description": "External description",
+        "descriptionRequired": "External description is required",
         "recipientAccount": "Recipient account",
         "paymentProvider": {
           "openbanking": "Open banking account",
@@ -381,7 +384,6 @@
   },
   "PayManualBankTransfer": {
     "title": "Pay with a manual bank transfer",
-    "description": "Lorem ipsum dolor sit amet consectetur. Id aenean magna habitasse ut erat.",
     "back": "Back",
     "summary": {
       "title": "Title",
