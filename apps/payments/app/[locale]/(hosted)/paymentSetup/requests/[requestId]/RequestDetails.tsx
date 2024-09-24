@@ -67,6 +67,9 @@ export const RequestDetails = async ({
   }
 
   const t = await getTranslations("PaymentSetup.CreatePayment");
+  const tRequestStatus = await getTranslations(
+    "PaymentSetup.paymentRequestStatus",
+  );
   const tSetup = await getTranslations("PaymentSetup");
   const tCommon = await getTranslations("Common");
 
@@ -141,7 +144,9 @@ export const RequestDetails = async ({
 
         <div className="govie-summary-list__row">
           <dt className="govie-summary-list__key">{t("form.status.title")}</dt>
-          <dt className="govie-summary-list__value">{details.status}</dt>
+          <dt className="govie-summary-list__value">
+            {tRequestStatus(details.status)}
+          </dt>
         </div>
 
         {details.providers.map(({ name, type, id }) => (

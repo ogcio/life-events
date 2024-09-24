@@ -77,7 +77,7 @@ test.describe("Payment Request with realex provider", () => {
     await paymentRequestsPage.goto();
     await paymentRequestsPage.checkHeader();
     await paymentRequestsPage.checkRequestIsVisible(name);
-    await paymentRequestsPage.checkBeneficiaryAccounts(name, [realexProvider]);
+    await paymentRequestsPage.checkRecipientAccounts(name, [realexProvider]);
     await paymentRequestsPage.checkAmount(name, mockAmount);
     await paymentRequestsPage.checkStatus(name, "inactive");
     await paymentRequestsPage.checkReference(name, mockPaymentRequestReference);
@@ -143,7 +143,7 @@ test.describe("Payment Request with realex provider", () => {
     await paymentRequestsPage.goto();
     await paymentRequestsPage.checkHeader();
     await paymentRequestsPage.checkRequestIsVisible(name);
-    await paymentRequestsPage.checkBeneficiaryAccounts(name, [realexProvider]);
+    await paymentRequestsPage.checkRecipientAccounts(name, [realexProvider]);
     await paymentRequestsPage.checkAmount(name, mockAmount);
     await paymentRequestsPage.checkStatus(name, "active");
     await paymentRequestsPage.checkReference(name, mockPaymentRequestReference);
