@@ -133,7 +133,7 @@ export const PaymentRequestDetails = Type.Composite([
 
 export const CreatePaymentRequest = Type.Object({
   title: Type.String({ validator: "RequiredValidator" }),
-  description: Type.String(),
+  description: Type.String({ validator: "RequiredValidator" }),
   reference: Type.String({ validator: "RequiredValidator" }),
   amount: Type.Number({ minimum: 1, maximum: 1000000 }),
   redirectUrl: Type.String({ validator: "RequiredValidator" }),
@@ -209,6 +209,7 @@ export const TransactionDetails = Type.Composite([
   Transaction,
   Type.Pick(FullTransaction, ["extPaymentId", "userId", "userData"]),
   Type.Object({
+    description: Type.String(),
     providerName: Type.String(),
     providerType: Type.String(),
     paymentRequestId: Type.String(),

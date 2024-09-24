@@ -740,6 +740,7 @@ paths:
                   validator: RequiredValidator
                   type: string
                 description:
+                  validator: RequiredValidator
                   type: string
                 reference:
                   validator: RequiredValidator
@@ -803,6 +804,7 @@ paths:
                   validator: RequiredValidator
                   type: string
                 description:
+                  validator: RequiredValidator
                   type: string
                 reference:
                   validator: RequiredValidator
@@ -1452,6 +1454,8 @@ paths:
                         required:
                           - name
                           - email
+                      description:
+                        type: string
                       providerName:
                         type: string
                       providerType:
@@ -1467,6 +1471,7 @@ paths:
                       - title
                       - userId
                       - userData
+                      - description
                       - providerName
                       - providerType
                       - paymentRequestId
@@ -1679,6 +1684,8 @@ paths:
                           required:
                             - name
                             - email
+                        description:
+                          type: string
                         providerName:
                           type: string
                         providerType:
@@ -1694,6 +1701,7 @@ paths:
                         - title
                         - userId
                         - userData
+                        - description
                         - providerName
                         - providerType
                         - paymentRequestId
@@ -2291,6 +2299,8 @@ paths:
                         required:
                           - name
                           - email
+                      description:
+                        type: string
                       providerName:
                         type: string
                       providerType:
@@ -2306,6 +2316,7 @@ paths:
                       - title
                       - userId
                       - userData
+                      - description
                       - providerName
                       - providerType
                       - paymentRequestId
