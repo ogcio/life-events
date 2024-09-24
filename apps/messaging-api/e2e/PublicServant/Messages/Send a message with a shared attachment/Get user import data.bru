@@ -1,0 +1,30 @@
+meta {
+  name: Get user import data
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/v1/users?importId={{attachmentUserImportId}}
+  body: none
+  auth: bearer
+}
+
+query {
+  importId: {{attachmentUserImportId}}
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+vars:post-response {
+  attachmentUserProfileId: res.body.data[0].userProfileId ?? undefined
+  attachmentUserId: res.body.data[0].id ?? undefined
+}
+
+assert {
+  res.status: eq 200
+  res.body.data[0]: isDefined
+  res.body.data[0].userProfileId: isDefined
+}
