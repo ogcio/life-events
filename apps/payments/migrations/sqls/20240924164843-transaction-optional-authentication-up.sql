@@ -1,0 +1,3 @@
+ALTER TABLE payment_requests 
+ADD COLUMN needsAuth BOOLEAN NOT NULL DEFAULT TRUE;
+
