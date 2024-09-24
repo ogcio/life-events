@@ -207,6 +207,67 @@ export default function ({ action, defaultState }: PaymentSetupFormProps) {
         </div>
       </div>
 
+      <div
+        className={`govie-form-group ${state.errors.authenticated && "govie-form-group--error"}`}
+      >
+        <legend className="govie-fieldset__legend govie-fieldset__legend--m">
+          <label className="govie-label--s" htmlFor="authenticated">
+            {t("form.authenticated.header")}
+          </label>
+        </legend>
+        {state.errors.authenticated && (
+          <p id="input-field-error" className="govie-error-message">
+            <span className="govie-visually-hidden">Error:</span>
+            {state.errors.authenticated}
+          </p>
+        )}
+        <div
+          data-module="govie-radios"
+          className="govie-radios govie-radios--large"
+        >
+          <div className="govie-radios__item">
+            <input
+              id="true"
+              name="authenticated"
+              type="radio"
+              value="true"
+              className="govie-radios__input"
+              defaultChecked={
+                typeof state.defaultState?.details === "undefined"
+                  ? true
+                  : state.defaultState?.details?.authenticated === "false"
+              }
+            />
+            <label
+              className="govie-label--s govie-radios__label"
+              htmlFor="true"
+            >
+              {t("form.authenticated.true")}
+            </label>
+          </div>
+
+          <div className="govie-radios__item">
+            <input
+              id="false"
+              name="authenticated"
+              type="radio"
+              value="false"
+              className="govie-radios__input"
+              defaultChecked={
+                state.defaultState?.details?.authenticated === "false"
+              }
+            />
+
+            <label
+              className="govie-label--s govie-radios__label"
+              htmlFor="false"
+            >
+              {t("form.authenticated.false")}
+            </label>
+          </div>
+        </div>
+      </div>
+
       <input type="submit" value={tCommon("save")} className="govie-button" />
 
       <input
