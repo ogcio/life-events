@@ -6,6 +6,7 @@ import {
   getSharedFiles,
   getExpiredFiles,
   markFilesAsDeleted,
+  scheduleExpiredFilesForDeletion,
 } from "../../../../routes/metadata/utils/filesMetadata.js";
 
 // Mock the PoolClient query method
@@ -166,6 +167,20 @@ t.test("filesMetadata", async (t) => {
       markFilesAsDeleted(pool as Pool, ids);
 
       t.match(params[1], [ids]);
+    },
+  );
+
+  t.test(
+    "scheduleExpiredFilesForDeletion should execute a query with the correct parameters",
+    async (t) => {
+      const params: string[] = [];
+      const pool = { query: (...args: string[]) => params.push(...args) };
+
+      const date = new Date("2024-01-01T10:00Z");
+
+      scheduleExpiredFilesForDeletion(pool as Pool, date);
+
+      t.match(params[1], [date]);
     },
   );
 });

@@ -4,6 +4,7 @@ import fastify, { FastifyInstance } from "fastify";
 import fp from "fastify-plugin";
 import t, { Test } from "tap";
 import { SCHEDULER_TOKEN } from "../../utils/storeConfig.js";
+import { scheduleExpiredFilesForDeletion } from "../../routes/metadata/utils/filesMetadata.js";
 
 let usedParams: string[] = [];
 let markFilesAsDeletedCalled = false;
@@ -60,6 +61,7 @@ const buildApp = async (
       "../../utils/scheduleCleanupTask.js": () => Promise.resolve(),
       "../../routes/metadata/utils/filesMetadata.js": {
         getExpiredFiles,
+        scheduleExpiredFilesForDeletion: () => Promise.resolve(),
         markFilesAsDeleted: () => {
           markFilesAsDeletedCalled = true;
 
