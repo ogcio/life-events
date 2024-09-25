@@ -3,7 +3,7 @@ import { getSchedulerSdk } from "./authentication-factory.js";
 import { getConfigValue, SCHEDULER_TOKEN } from "./storeConfig.js";
 
 const scheduleCleanupTask = async (app: FastifyInstance) => {
-  const shedulerSdk = await getSchedulerSdk("ogcio");
+  const schedulerSdk = await getSchedulerSdk("ogcio");
 
   const schedulerToken = (await getConfigValue(
     app.pg.pool,
