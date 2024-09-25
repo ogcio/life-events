@@ -50,31 +50,30 @@ const buildApp = async (
     ),
   );
 
-  const routes = await t.mockImport<typeof import("../../routes/scheduler.js")>(
-    "../../routes/scheduler.js",
-    {
-      "../../utils/storeConfig.js": {
-        getConfigValue: getConfigValue,
-        SCHEDULER_TOKEN,
-      },
-      "../../utils/scheduleCleanupTask.js": () => Promise.resolve(),
-      "../../routes/metadata/utils/filesMetadata.js": {
-        getExpiredFiles,
-        markFilesAsDeleted: () => {
-          markFilesAsDeletedCalled = true;
+  const routes = await t.mockImport<
+    typeof import("../../routes/schedulerCallback.js")
+  >("../../routes/schedulerCallback.js", {
+    "../../utils/storeConfig.js": {
+      getConfigValue: getConfigValue,
+      SCHEDULER_TOKEN,
+    },
+    "../../utils/scheduleCleanupTask.js": () => Promise.resolve(),
+    "../../routes/metadata/utils/filesMetadata.js": {
+      getExpiredFiles,
+      markFilesAsDeleted: () => {
+        markFilesAsDeletedCalled = true;
 
-          return markFilesAsDeleted ? markFilesAsDeleted() : Promise.resolve();
-        },
-      },
-      "@aws-sdk/client-s3": {
-        DeleteObjectsCommand: class {
-          constructor(...data: string[]) {
-            usedParams.push(...data);
-          }
-        },
+        return markFilesAsDeleted ? markFilesAsDeleted() : Promise.resolve();
       },
     },
-  );
+    "@aws-sdk/client-s3": {
+      DeleteObjectsCommand: class {
+        constructor(...data: string[]) {
+          usedParams.push(...data);
+        }
+      },
+    },
+  });
 
   await app.register(
     routes as unknown as (app: FastifyInstance) => Promise<void>,
