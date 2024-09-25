@@ -260,7 +260,7 @@ const processOrganizationUserRelation = async (params: {
   if (orgUserRelation) {
     // means that this user was already imported
     if (
-      orgUserRelation.invitationStatus === "to_be_invited" &&
+      orgUserRelation.invitationStatus !== "accepted" &&
       toSetStatus === "accepted"
     ) {
       await executeUpdateOrganisationFeedback({
