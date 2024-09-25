@@ -1,8 +1,8 @@
 import { Children, isValidElement } from "react";
 
 /**
- *  Replaced by real tabs component from DS. 
- * 
+ *  Replaced by real tabs component from DS.
+ *
  *  Awaiting an agreement on props/structure interface
  */
 
