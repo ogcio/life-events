@@ -103,7 +103,7 @@ const checkStaleUndeletedFiles = (
 
 /**
  *
- * Deletes files from storage and returns the list of Ids of metatada
+ * Deletes files from storage and returns the list of Ids of metadata
  * to mark as deleted
  *
  * @param app
