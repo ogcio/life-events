@@ -32,6 +32,7 @@ import {
   formatAPIResponse,
   sanitizePagination,
 } from "../../utils/pagination.js";
+import { Value } from "@sinclair/typebox/value";
 
 const tags = ["User Imports"];
 enum MimeTypes {
@@ -119,11 +120,11 @@ export default async function userImports(app: FastifyInstance) {
 
         return { data: { id: importedId } };
       }
-
+      const parsedBody = Value.Parse(Type.Array(CsvRecordSchema), request.body);
       const importedId = await importCsvRecords({
         pg: app.pg,
         logger: request.log,
-        csvRecords: request.body as CsvRecord[],
+        csvRecords: parsedBody,
         requestUser: request.userData!,
       });
 
