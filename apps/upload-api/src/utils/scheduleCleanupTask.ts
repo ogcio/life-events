@@ -3,7 +3,7 @@ import { getSchedulerSdk } from "./authentication-factory.js";
 import { getConfigValue, SCHEDULER_TOKEN } from "./storeConfig.js";
 
 const scheduleCleanupTask = async (app: FastifyInstance) => {
-  const shedulerSdk = await getSchedulerSdk("ogcio");
+  const schedulerSdk = await getSchedulerSdk("ogcio");
 
   const schedulerToken = (await getConfigValue(
     app.pg.pool,
@@ -11,19 +11,19 @@ const scheduleCleanupTask = async (app: FastifyInstance) => {
   )) as string;
 
   const hoursInterval = app.config.SCHEDULED_JOBS_HOURS_INTERVAL as number;
-  const schduleDate = new Date();
-  schduleDate.setMinutes(schduleDate.getMinutes() + 1);
+  const scheduleDate = new Date();
+  scheduleDate.setHours(scheduleDate.getHours() + hoursInterval);
 
   try {
-    await shedulerSdk.scheduleTasks([
+    await schedulerSdk.scheduleTasks([
       {
-        executeAt: schduleDate.toISOString(),
+        executeAt: scheduleDate.toISOString(),
         webhookUrl: `${app.config.HOST}/api/v1/jobs`,
         webhookAuth: schedulerToken,
       },
     ]);
 
-    app.log.info(`Scheduled next job at: ${schduleDate.toISOString()}`);
+    app.log.info(`Scheduled next job at: ${scheduleDate.toISOString()}`);
   } catch (err) {
     app.log.error(err);
   }

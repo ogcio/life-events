@@ -9,7 +9,7 @@ import { DeleteObjectsCommand } from "@aws-sdk/client-s3";
 import { FileMetadataType } from "../types/schemaDefinitions.js";
 import scheduleCleanupTask from "../utils/scheduleCleanupTask.js";
 
-export default async function schduler(app: FastifyInstance) {
+export default async function scheduler(app: FastifyInstance) {
   app.post<{ Body: { token: string } }>(
     "/",
     { schema: { hide: true } },
@@ -107,7 +107,7 @@ const checkStaleUndeletedFiles = (
 
 /**
  *
- * Deletes files from storage and returns the list of Ids of metatada
+ * Deletes files from storage and returns the list of Ids of metadata
  * to mark as deleted
  *
  * @param app
@@ -118,12 +118,13 @@ const deleteFilesFromStorage = async (
   app: FastifyInstance,
   filesToDelete: FileMetadataType[],
 ) => {
-  const storageKeysToDelete = filesToDelete.map(({ key }) => ({
-    Key: key,
-  }));
-  const metaDataToDelete = new Set<string>(
-    filesToDelete.map(({ id }) => id as string),
-  );
+  const storageKeysToDelete: { Key: string }[] = [];
+  const metaDataToDelete = new Set<string>();
+
+  for (const { id, key } of filesToDelete) {
+    storageKeysToDelete.push({ Key: key });
+    metaDataToDelete.add(id as string);
+  }
 
   try {
     const response = await app.s3Client.client.send(
