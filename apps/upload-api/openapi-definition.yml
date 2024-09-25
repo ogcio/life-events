@@ -15,6 +15,13 @@ paths:
     post:
       tags:
         - Files
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              anyOf:
+                - {}
+                - {}
       responses:
         "201":
           description: Default Response

@@ -35,8 +35,7 @@ const uploadFile = async (prevState, formData: FormData) => {
 
   const uploadClient = await AuthenticationFactory.getUploadClient();
   try {
-    //TODO Use UTC Date string here when api implemts TTL
-    const { error } = await uploadClient.uploadFile(file);
+    const { error } = await uploadClient.uploadFile(file, utcDateString);
     if (error) {
       getServerLogger().error(error);
 

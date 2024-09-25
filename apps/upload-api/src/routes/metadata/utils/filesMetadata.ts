@@ -14,7 +14,8 @@ const baseQuery = `
     infection_description as "infectionDescription", 
     deleted, 
     file_name as "fileName",
-    scheduled_deletion_at as "scheduledDeletionAt"
+    scheduled_deletion_at as "scheduledDeletionAt",
+    expires_at as "expiresAt"
   FROM
     files
 `;
@@ -93,6 +94,17 @@ const getExpiredFiles = (pool: Pool, expirationDate: Date) => {
   return pool.query<FileMetadataType>(query, [expirationDate]);
 };
 
+const scheduleExpiredFilesForDeletion = (pool: Pool, now: Date) => {
+  return pool.query<FileMetadataType>(
+    `
+    UPDATE files
+    SET scheduled_deletion_at = $1, expires_at = NULL
+    WHERE expires_at < $1;
+  `,
+    [now],
+  );
+};
+
 const markFilesAsDeleted = (pool: Pool, ids: string[]) => {
   return pool.query<FileMetadataType>(
     `
@@ -111,4 +123,5 @@ export {
   getSharedFilesPerOrganization,
   getExpiredFiles,
   markFilesAsDeleted,
+  scheduleExpiredFilesForDeletion,
 };

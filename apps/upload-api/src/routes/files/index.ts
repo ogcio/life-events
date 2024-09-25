@@ -12,6 +12,11 @@ import { HttpError } from "../../types/httpErrors.js";
 import { getGenericResponseSchema } from "../../types/schemaDefinitions.js";
 import PromiseTransform from "./PromiseTransform.js";
 
+enum MimeTypes {
+  Json = "application/json",
+  FormData = "multipart/form-data",
+}
+
 import {
   BadRequestError,
   CustomError,
@@ -46,6 +51,14 @@ const deleteObject = (
 
 const scanAndUpload = async (app: FastifyInstance, request: FastifyRequest) => {
   const data = await request.file();
+
+  let expirationDate: Date;
+  if (data?.fields.expirationDate) {
+    expirationDate = new Date(
+      (data.fields.expirationDate as { value: string }).value,
+    );
+  }
+
   const userId = request.userData?.userId as string;
 
   if (!data) {
@@ -141,6 +154,7 @@ const scanAndUpload = async (app: FastifyInstance, request: FastifyRequest) => {
         fileName: filename,
         organizationId,
         antivirusDbVersion: dbVersion,
+        ...(expirationDate ? { expiresAt: expirationDate } : {}),
       });
 
       eventEmitter.emit("fileUploaded", data.rows[0].id);
@@ -189,11 +203,13 @@ const scanAndUpload = async (app: FastifyInstance, request: FastifyRequest) => {
 export default async function routes(app: FastifyInstance) {
   app.post(
     "/",
+
     {
       preValidation: (req, res) =>
         app.checkPermissions(req, res, [Permissions.Upload.Write]),
       schema: {
-        consumes: ["multipart/form-data"],
+        consumes: [MimeTypes.FormData],
+        body: Type.Union([Type.Any(), Type.Unknown()]),
         tags: [API_DOCS_TAG],
         response: {
           201: getGenericResponseSchema(Type.Object({ id: Type.String() })),
@@ -205,6 +221,7 @@ export default async function routes(app: FastifyInstance) {
     async (request, reply) => {
       const fileId = await scanAndUpload(app, request);
       reply.status(201);
+
       reply.send({ data: { id: fileId } });
     },
   );

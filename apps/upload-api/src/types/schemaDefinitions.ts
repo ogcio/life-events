@@ -60,6 +60,7 @@ export const FileMetadata = Type.Object({
   antivirusDbVersion: Type.Optional(Type.String()),
   organizationId: Type.String(),
   scheduledDeletionAt: Type.Optional(Type.Date()),
+  expiresAt: Type.Optional(Type.Date()),
 });
 
 export type Sharing = {

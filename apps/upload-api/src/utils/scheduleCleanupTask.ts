@@ -12,7 +12,7 @@ const scheduleCleanupTask = async (app: FastifyInstance) => {
 
   const hoursInterval = app.config.SCHEDULED_JOBS_HOURS_INTERVAL as number;
   const schduleDate = new Date();
-  schduleDate.setHours(schduleDate.getHours() + hoursInterval);
+  schduleDate.setMinutes(schduleDate.getMinutes() + 1);
 
   try {
     await shedulerSdk.scheduleTasks([
