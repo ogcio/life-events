@@ -15,7 +15,7 @@ const scheduleCleanupTask = async (app: FastifyInstance) => {
   schduleDate.setHours(schduleDate.getHours() + hoursInterval);
 
   try {
-    await shedulerSdk.scheduleTasks([
+    await schedulerSdk.scheduleTasks([
       {
         executeAt: schduleDate.toISOString(),
         webhookUrl: `${app.config.HOST}/api/v1/jobs`,
