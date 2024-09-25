@@ -114,12 +114,13 @@ const deleteFilesFromStorage = async (
   app: FastifyInstance,
   filesToDelete: FileMetadataType[],
 ) => {
-  const storageKeysToDelete = filesToDelete.map(({ key }) => ({
-    Key: key,
-  }));
-  const metaDataToDelete = new Set<string>(
-    filesToDelete.map(({ id }) => id as string),
-  );
+  const storageKeysToDelete: { Key: string }[] = [];
+  const metaDataToDelete = new Set<string>();
+
+  for (const { id, key } of filesToDelete) {
+    storageKeysToDelete.push({ Key: key });
+    metaDataToDelete.add(id as string);
+  }
 
   try {
     const response = await app.s3Client.client.send(

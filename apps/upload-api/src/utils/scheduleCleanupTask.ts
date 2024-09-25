@@ -17,13 +17,13 @@ const scheduleCleanupTask = async (app: FastifyInstance) => {
   try {
     await schedulerSdk.scheduleTasks([
       {
-        executeAt: schduleDate.toISOString(),
+        executeAt: scheduleDate.toISOString(),
         webhookUrl: `${app.config.HOST}/api/v1/jobs`,
         webhookAuth: schedulerToken,
       },
     ]);
 
-    app.log.info(`Scheduled next job at: ${schduleDate.toISOString()}`);
+    app.log.info(`Scheduled next job at: ${scheduleDate.toISOString()}`);
   } catch (err) {
     app.log.error(err);
   }
