@@ -8,7 +8,7 @@ import { DeleteObjectsCommand } from "@aws-sdk/client-s3";
 import { FileMetadataType } from "../types/schemaDefinitions.js";
 import scheduleCleanupTask from "../utils/scheduleCleanupTask.js";
 
-export default async function schduler(app: FastifyInstance) {
+export default async function scheduler(app: FastifyInstance) {
   app.post<{ Body: { token: string } }>(
     "/",
     { schema: { hide: true } },
