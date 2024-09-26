@@ -9,7 +9,7 @@ import { FieldDef } from "pg";
 import { PassThrough } from "stream";
 import t from "tap";
 import * as authenticationFactory from "../../../utils/authentication-factory.js";
-import { CONFIG_TYPE } from "../../../utils/storeConfig.js";
+import { CONFIG_TYPE, SCHEDULER_TOKEN } from "../../../utils/storeConfig.js";
 
 const nextTick = () =>
   new Promise<void>((resolve) => setTimeout(() => resolve()));
@@ -94,7 +94,6 @@ t.test("files", async (t) => {
               userId: "userId",
               accessToken: "accessToken",
               organizationId: "ogcio",
-              isM2MApplication: false,
             };
           });
         }),
@@ -102,6 +101,10 @@ t.test("files", async (t) => {
       "../../../utils/storeConfig.js": {
         storeConfig: () => Promise.resolve(),
         CONFIG_TYPE,
+        SCHEDULER_TOKEN,
+      },
+      "../../../utils/scheduleCleanupTask.js": {
+        default: () => Promise.resolve(),
       },
     },
   );

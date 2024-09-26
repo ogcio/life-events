@@ -2,7 +2,7 @@ import { PostgresDb } from "@fastify/postgres";
 import { FastifyInstance, FastifyPluginCallback } from "fastify";
 import fp from "fastify-plugin";
 import t from "tap";
-import { CONFIG_TYPE } from "../../../../utils/storeConfig.js";
+import { CONFIG_TYPE, SCHEDULER_TOKEN } from "../../../../utils/storeConfig.js";
 
 const buildApp = async ({
   removeFileSharing,
@@ -50,7 +50,6 @@ const buildApp = async ({
               userId: "userId",
               accessToken: "accessToken",
               organizationId: "ogcio",
-              isM2MApplication: false,
             };
           });
         }),
@@ -58,6 +57,10 @@ const buildApp = async ({
       "../../../../utils/storeConfig.js": {
         storeConfig: () => Promise.resolve(),
         CONFIG_TYPE,
+        SCHEDULER_TOKEN,
+      },
+      "../../../../utils/scheduleCleanupTask.js": {
+        default: () => Promise.resolve(),
       },
     },
   );

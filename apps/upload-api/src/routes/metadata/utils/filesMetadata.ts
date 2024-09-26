@@ -1,5 +1,5 @@
 import { FileMetadataType } from "../../../types/schemaDefinitions.js";
-import { PoolClient } from "pg";
+import { Pool, PoolClient } from "pg";
 
 const baseQuery = `
   SELECT 
@@ -12,7 +12,9 @@ const baseQuery = `
     last_scan as "lastScan",
     infected,
     infection_description as "infectionDescription", 
-    deleted, file_name as "fileName"
+    deleted, 
+    file_name as "fileName",
+    scheduled_deletion_at as "scheduledDeletionAt"
   FROM
     files
 `;
@@ -86,9 +88,27 @@ const getSharedFilesPerOrganization = (
   return client.query<FileMetadataType>(query, [userId, organizationId]);
 };
 
+const getExpiredFiles = (pool: Pool, expirationDate: Date) => {
+  const query = `${baseQuery} WHERE scheduled_deletion_at < $1 and deleted = false`;
+  return pool.query<FileMetadataType>(query, [expirationDate]);
+};
+
+const markFilesAsDeleted = (pool: Pool, ids: string[]) => {
+  return pool.query<FileMetadataType>(
+    `
+    UPDATE files
+    SET deleted = true, deleted_at = NOW()
+    WHERE id = ANY($1::uuid[]);
+  `,
+    [ids],
+  );
+};
+
 export {
   getOwnedFiles,
   getOrganizationFiles,
   getSharedFiles,
   getSharedFilesPerOrganization,
+  getExpiredFiles,
+  markFilesAsDeleted,
 };

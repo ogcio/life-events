@@ -65,7 +65,6 @@ const buildApp = async ({
               userId: "userId",
               accessToken: "accessToken",
               organizationId: "ogcio",
-              isM2MApplication: false,
             };
           });
         }),
@@ -74,6 +73,10 @@ const buildApp = async ({
       "../../../utils/storeConfig.js": {
         storeConfig: () => Promise.resolve(),
         CONFIG_TYPE,
+        SCHEDULER_TOKEN: "SCHEDULER_TOKEN",
+      },
+      "../../../utils/scheduleCleanupTask.js": {
+        default: () => Promise.resolve(),
       },
     },
   );
