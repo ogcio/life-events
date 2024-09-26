@@ -9,29 +9,40 @@ const getFilename = async (
   let extension = "";
 
   if (filename_.lastIndexOf(".") > 0) {
-    [filename, extension] = filename_.split(".");
-    extension = `.${extension}`;
+    filename = filename_.slice(0, filename_.lastIndexOf("."));
+    extension = filename_.slice(filename_.lastIndexOf("."));
   } else {
     filename = filename_;
   }
+
+  console.log({ filename, extension });
 
   const matchingFilesQuery = await pg.query<{
     filename: string;
     createdAt: string;
   }>(
     `
-    SELECT split_part(file_name, '.', 1) as "filename"
+    SELECT file_name as filename
     FROM files
-    WHERE deleted = false AND owner = $2 AND split_part(file_name, '.', 1) LIKE $1 || '%'  ORDER BY created_at DESC LIMIT 1
+    WHERE deleted = false AND owner = $2 AND substring(file_name from '^(.*).[^.]+$') LIKE $1 || '%'
+    ORDER BY created_at DESC LIMIT 1
   `,
     [filename, userId],
   );
+
+  console.log({ match: matchingFilesQuery.rows });
 
   if (!matchingFilesQuery.rows.length) {
     return `${filename}${extension}`;
   }
 
-  const existingFileName = matchingFilesQuery.rows[0].filename;
+  let existingFileName = matchingFilesQuery.rows[0].filename;
+  if (existingFileName.lastIndexOf(".") > 0) {
+    existingFileName = existingFileName.slice(
+      0,
+      existingFileName.lastIndexOf("."),
+    );
+  }
 
   const fileIndex = existingFileName.match(/-(\d+)$/);
 

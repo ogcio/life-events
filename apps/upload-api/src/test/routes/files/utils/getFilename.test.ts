@@ -23,6 +23,14 @@ t.test("getFilename", async (t) => {
       );
 
       t.equal(value, "filename.txt");
+
+      value = await getFilename(
+        pg as unknown as fastifyPostgres.PostgresDb,
+        "filename.prd.txt",
+        "userId",
+      );
+
+      t.equal(value, "filename.prd.txt");
     },
   );
 
@@ -48,6 +56,14 @@ t.test("getFilename", async (t) => {
       );
 
       t.equal(value, "filename-1.txt");
+
+      value = await getFilename(
+        pg as unknown as fastifyPostgres.PostgresDb,
+        "filename.prd.txt",
+        "userId",
+      );
+
+      t.equal(value, "filename.prd-1.txt");
     },
   );
 
@@ -57,6 +73,8 @@ t.test("getFilename", async (t) => {
       const pg = {
         query: () => Promise.resolve({ rows: [{ filename: "filename-1" }] }),
       };
+      console.log("here");
+
       let value = await getFilename(
         pg as unknown as fastifyPostgres.PostgresDb,
         "filename",
@@ -72,6 +90,16 @@ t.test("getFilename", async (t) => {
       );
 
       t.equal(value, "filename-2.txt");
+
+      pg.query = () =>
+        Promise.resolve({ rows: [{ filename: "filename.prd-1.txt" }] });
+      value = await getFilename(
+        pg as unknown as fastifyPostgres.PostgresDb,
+        "filename.prd.txt",
+        "userId",
+      );
+
+      t.equal(value, "filename.prd-2.txt");
     },
   );
 });
