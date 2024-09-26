@@ -25,6 +25,8 @@ import insertFileMetadata from "./utils/insertFileMetadata.js";
 import updateFileMetadata from "./utils/updateFileMetadata.js";
 import getDbVersion from "./utils/getDbVersion.js";
 import { Permissions } from "../../types/permissions.js";
+import { join } from "node:path";
+import getFilename from "./utils/getFilename.js";
 
 const FILE_UPLOAD = "FILE_UPLOAD";
 const FILE_DOWNLOAD = "FILE_DOWNLOAD";
@@ -55,11 +57,11 @@ const scanAndUpload = async (app: FastifyInstance, request: FastifyRequest) => {
   const stream = data.file;
   const fileMimeType = data.mimetype;
 
-  const filename = data.filename;
-
-  if (!filename) {
+  if (!data.filename) {
     throw new BadRequestError(FILE_UPLOAD, "Filename is not provided");
   }
+
+  const filename = await getFilename(app.pg, data.filename, userId);
 
   const eventEmitter = new EventEmitter();
 

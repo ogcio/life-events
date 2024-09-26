@@ -128,6 +128,9 @@ t.test("files", async (t) => {
         }
       },
     },
+    "../../../routes/files/utils/getFilename.js": {
+      default: (pg: unknown, filename: string) => Promise.resolve(filename),
+    },
     "../../../utils/authentication-factory.js": t.createMock(
       authenticationFactory,
       {
