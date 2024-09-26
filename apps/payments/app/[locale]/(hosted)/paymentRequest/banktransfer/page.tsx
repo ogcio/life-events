@@ -5,9 +5,13 @@ import { errorHandler, formatCurrency } from "../../../../utils";
 import { TransactionStatuses } from "../../../../../types/TransactionStatuses";
 import { BankTransferData } from "../../paymentSetup/providers/types";
 import { AuthenticationFactory } from "../../../../../libraries/authentication-factory";
+import { Payments } from "building-blocks-sdk";
 
-async function getPaymentDetails(paymentId: string, amount?: number) {
-  const paymentsApi = await AuthenticationFactory.getPaymentsClient();
+async function getPaymentDetails(
+  paymentsApi: Payments,
+  paymentId: string,
+  amount?: number,
+) {
   const { data: details, error } =
     await paymentsApi.getPaymentRequestPublicInfo(paymentId);
 
@@ -32,10 +36,18 @@ async function getPaymentDetails(paymentId: string, amount?: number) {
   };
 }
 
-async function confirmPayment(transactionId: string, redirectUrl: string) {
+async function confirmPayment(
+  transactionId: string,
+  redirectUrl: string,
+  authenticated: boolean,
+) {
   "use server";
 
-  const paymentsApi = await AuthenticationFactory.getPaymentsClient();
+  const instance = AuthenticationFactory.getInstance();
+  const isLoggedIn = await instance.isAuthenticated();
+  let paymentsApi = await AuthenticationFactory.getPaymentsClient({
+    withAuthentication: isLoggedIn ?? authenticated,
+  });
   const { error } = await paymentsApi.updateTransaction(transactionId, {
     status: TransactionStatuses.Pending,
   });
@@ -47,10 +59,9 @@ async function confirmPayment(transactionId: string, redirectUrl: string) {
   redirect(redirectUrl, RedirectType.replace);
 }
 
-async function generatePaymentIntentId(): Promise<string> {
+async function generatePaymentIntentId(paymentsApi: Payments): Promise<string> {
   "use server";
 
-  const paymentsApi = await AuthenticationFactory.getPaymentsClient();
   const { data: result, error } = await paymentsApi.generatePaymentIntentId();
 
   if (error) {
@@ -75,24 +86,20 @@ export default async function Bank(params: {
       }
     | undefined;
 }) {
-  const authContext = AuthenticationFactory.getInstance();
-  const { user, isPublicServant } = await authContext.getContext();
-  const paymentsApi = await AuthenticationFactory.getPaymentsClient();
-
-  if (isPublicServant) {
-    return redirect("/not-found", RedirectType.replace);
-  }
-
   if (!params.searchParams?.paymentId) {
     redirect(routeDefinitions.paymentRequest.pay.path(), RedirectType.replace);
   }
 
-  const t = await getTranslations("PayManualBankTransfer");
-
   const amount = params.searchParams.amount
     ? parseFloat(params.searchParams.amount)
     : undefined;
+
+  let paymentsApi = await AuthenticationFactory.getPaymentsClient({
+    withAuthentication: false,
+  });
+
   const paymentDetails = await getPaymentDetails(
+    paymentsApi,
     params.searchParams.paymentId,
     amount,
   );
@@ -101,16 +108,31 @@ export default async function Bank(params: {
     notFound();
   }
 
-  const paymentIntentId = await generatePaymentIntentId();
+  const t = await getTranslations("PayManualBankTransfer");
 
-  const { data: transaction, error } = await paymentsApi.createTransaction({
+  const transactionDO = {
     paymentRequestId: params.searchParams.paymentId,
-    extPaymentId: paymentIntentId,
+    extPaymentId: "",
     integrationReference: params.searchParams.integrationRef,
     amount: paymentDetails.amount,
     paymentProviderId: paymentDetails.providerId,
-    userData: { email: user?.email ?? "", name: user?.name ?? "" },
-  });
+    userData: {},
+  };
+
+  if (paymentDetails.authenticated) {
+    const authContext = AuthenticationFactory.getInstance();
+    const context = await authContext.getContext();
+    transactionDO.userData = context.user;
+    paymentsApi = await AuthenticationFactory.getPaymentsClient();
+
+    if (context.isPublicServant)
+      return redirect("/not-found", RedirectType.replace);
+  }
+
+  transactionDO.extPaymentId = await generatePaymentIntentId(paymentsApi);
+
+  const { data: transaction, error } =
+    await paymentsApi.createTransaction(transactionDO);
 
   if (error) {
     errorHandler(error);
@@ -120,6 +142,7 @@ export default async function Bank(params: {
     this,
     transaction?.data?.id,
     paymentDetails.redirectUrl,
+    paymentDetails.authenticated,
   );
 
   return (
@@ -169,7 +192,7 @@ export default async function Bank(params: {
               {t("summary.referenceCode")}*
             </dt>
             <dt className="govie-summary-list__value">
-              <b>{paymentIntentId}</b>
+              <b>{transactionDO.extPaymentId}</b>
               <br />
             </dt>
           </div>

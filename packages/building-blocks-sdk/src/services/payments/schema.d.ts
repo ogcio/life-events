@@ -689,8 +689,8 @@ export interface paths {
                 title: string;
                 userId: string;
                 userData: {
-                  name: string;
-                  email: string;
+                  name?: string;
+                  email?: string;
                 };
                 description: string;
                 providerName: string;
@@ -808,8 +808,8 @@ export interface paths {
                 title: string;
                 userId: string;
                 userData: {
-                  name: string;
-                  email: string;
+                  name?: string;
+                  email?: string;
                 };
                 description: string;
                 providerName: string;
@@ -895,8 +895,8 @@ export interface paths {
             amount: number;
             paymentProviderId: string;
             userData: {
-              name: string;
-              email: string;
+              name?: string;
+              email?: string;
             };
           };
         };
@@ -1142,8 +1142,8 @@ export interface paths {
                 title: string;
                 userId: string;
                 userData: {
-                  name: string;
-                  email: string;
+                  name?: string;
+                  email?: string;
                 };
                 description: string;
                 providerName: string;

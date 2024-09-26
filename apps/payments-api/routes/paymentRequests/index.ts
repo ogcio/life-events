@@ -122,10 +122,14 @@ export default async function paymentRequests(app: FastifyInstance) {
   }>(
     "/:requestId/public-info",
     {
+      // this endpoint could become entirely public?
       preValidation: (req, res) =>
-        app.checkPermissions(req, res, [
-          authPermissions.PAYMENT_REQUEST_PUBLIC_READ,
-        ]),
+        app.checkPermissions(
+          req,
+          res,
+          [authPermissions.PAYMENT_REQUEST_PUBLIC_READ],
+          { optionalAuth: true },
+        ),
       schema: {
         tags: TAGS,
         params: ParamsWithPaymentRequestId,

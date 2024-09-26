@@ -1466,9 +1466,6 @@ paths:
                             type: string
                           email:
                             type: string
-                        required:
-                          - name
-                          - email
                       description:
                         type: string
                       providerName:
@@ -1696,9 +1693,6 @@ paths:
                               type: string
                             email:
                               type: string
-                          required:
-                            - name
-                            - email
                         description:
                           type: string
                         providerName:
@@ -1861,9 +1855,6 @@ paths:
                       type: string
                     email:
                       type: string
-                  required:
-                    - name
-                    - email
               required:
                 - paymentRequestId
                 - extPaymentId
@@ -2311,9 +2302,6 @@ paths:
                             type: string
                           email:
                             type: string
-                        required:
-                          - name
-                          - email
                       description:
                         type: string
                       providerName:

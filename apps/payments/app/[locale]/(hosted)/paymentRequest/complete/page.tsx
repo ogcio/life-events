@@ -42,7 +42,9 @@ async function updateTransaction(extPaymentId: string, status: string) {
 }
 
 async function getRequestDetails(requestId: string) {
-  const paymentsApi = await AuthenticationFactory.getPaymentsClient();
+  const paymentsApi = await AuthenticationFactory.getPaymentsClient({
+    withAuthentication: false,
+  });
   const { data: details, error } =
     await paymentsApi.getPaymentRequestPublicInfo(requestId);
 

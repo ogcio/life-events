@@ -189,8 +189,8 @@ export const FullTransaction = Type.Object({
   updatedAt: Type.String(),
   userId: Type.String(),
   userData: Type.Object({
-    name: Type.String(),
-    email: Type.String(),
+    name: Type.Optional(Type.String()),
+    email: Type.Optional(Type.String()),
   }),
 });
 

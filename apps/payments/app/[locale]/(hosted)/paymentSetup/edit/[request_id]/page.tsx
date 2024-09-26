@@ -154,6 +154,7 @@ export default async function ({ params: { request_id, locale } }: Props) {
       paymentRequestId: details!.paymentRequestId,
       providersUpdate,
       providers,
+      authenticated,
     };
 
     const { data: updateRes, error } =
