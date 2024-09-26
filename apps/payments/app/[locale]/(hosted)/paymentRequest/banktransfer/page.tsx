@@ -39,14 +39,11 @@ async function getPaymentDetails(
 async function confirmPayment(
   transactionId: string,
   redirectUrl: string,
-  authenticated: boolean,
+  withAuthentication: boolean,
 ) {
   "use server";
-
-  const instance = AuthenticationFactory.getInstance();
-  const isLoggedIn = await instance.isAuthenticated();
   let paymentsApi = await AuthenticationFactory.getPaymentsClient({
-    withAuthentication: isLoggedIn ?? authenticated,
+    withAuthentication,
   });
   const { error } = await paymentsApi.updateTransaction(transactionId, {
     status: TransactionStatuses.Pending,
@@ -119,7 +116,10 @@ export default async function Bank(params: {
     userData: {},
   };
 
-  if (paymentDetails.authenticated) {
+  const instance = AuthenticationFactory.getInstance();
+  const isLoggedIn = await instance.isAuthenticated();
+
+  if (isLoggedIn ?? paymentDetails.authenticated) {
     const authContext = AuthenticationFactory.getInstance();
     const context = await authContext.getContext();
     transactionDO.userData = context.user;
@@ -142,7 +142,7 @@ export default async function Bank(params: {
     this,
     transaction?.data?.id,
     paymentDetails.redirectUrl,
-    paymentDetails.authenticated,
+    isLoggedIn ?? paymentDetails.authenticated,
   );
 
   return (

@@ -210,8 +210,9 @@ export default async function transactions(app: FastifyInstance) {
         await app.paymentRequest.getPaymentRequestPublicInfo(paymentRequestId);
       const { userData } = request;
 
-      if (authenticated !== !!userData)
+      if (authenticated && !userData) {
         throw app.httpErrors.unauthorized("Unauthorized!");
+      }
 
       const userId = request.userData?.userId ?? "";
 
