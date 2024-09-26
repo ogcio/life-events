@@ -26,8 +26,8 @@ export type TransactionEntry = {
   amount: number;
   paymentProviderId: string;
   userData: {
-    name: string;
-    email: string;
+    name?: string;
+    email?: string;
   };
   userId: string;
 };

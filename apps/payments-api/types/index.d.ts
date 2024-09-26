@@ -39,7 +39,10 @@ declare module "fastify" {
       request: FastifyRequest,
       reply: FastifyReply,
       permissions: string[],
-      matchConfig?: { method: "AND" | "OR" },
+      options?: {
+        optionalAuth?: boolean;
+        matchConfig?: { method: "AND" | "OR" };
+      },
     ) => Promise<void>;
 
     providers: ProvidersPlugin;

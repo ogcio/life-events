@@ -122,10 +122,15 @@ export default async function transactions(app: FastifyInstance) {
     "/:transactionId",
     {
       preValidation: (req, res) =>
-        app.checkPermissions(req, res, [
-          authPermissions.TRANSACTION_SELF_WRITE,
-          authPermissions.TRANSACTION_ALL,
-        ]),
+        app.checkPermissions(
+          req,
+          res,
+          [
+            authPermissions.TRANSACTION_SELF_WRITE,
+            authPermissions.TRANSACTION_ALL,
+          ],
+          { optionalAuth: true },
+        ),
       schema: {
         tags: TAGS,
         body: UpdateTransactionBody,
@@ -137,21 +142,28 @@ export default async function transactions(app: FastifyInstance) {
     },
     async (request, reply) => {
       const { transactionId } = request.params;
+      const { paymentRequestId } =
+        await app.transactions.getPaymentRequestIdFromTransaction(
+          transactionId,
+        );
+      const { authenticated } =
+        await app.paymentRequest.getPaymentRequestPublicInfo(paymentRequestId);
+      const { userData } = request;
+
+      if (authenticated && !userData)
+        throw app.httpErrors.unauthorized("Unauthorized!");
+
       const { status } = request.body;
-      const userId = request.userData?.userId;
+      const userId = request.userData?.userId ?? "";
 
       const { extPaymentId } = await app.transactions.updateTransactionStatus(
         transactionId,
         status as TransactionStatusesEnum,
       );
 
-      const paymentRequestIdResult =
-        await app.transactions.getPaymentRequestIdFromTransaction(
-          transactionId,
-        );
       const orgIdResult =
         await app.paymentRequest.getOrganizationIdFromPaymentRequest(
-          paymentRequestIdResult.paymentRequestId,
+          paymentRequestId,
         );
       app.auditLog.createEvent({
         eventType: AuditLogEventType.TRANSACTION_STATUS_UPDATE,
@@ -176,9 +188,12 @@ export default async function transactions(app: FastifyInstance) {
     "/",
     {
       preValidation: (req, res) =>
-        app.checkPermissions(req, res, [
-          authPermissions.TRANSACTION_SELF_WRITE,
-        ]),
+        app.checkPermissions(
+          req,
+          res,
+          [authPermissions.TRANSACTION_SELF_WRITE],
+          { optionalAuth: true },
+        ),
       schema: {
         tags: TAGS,
         body: CreateTransactionBody,
@@ -190,9 +205,18 @@ export default async function transactions(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
-      const userId = request.userData?.userId;
+      const { paymentRequestId } = request.body;
+      const { authenticated } =
+        await app.paymentRequest.getPaymentRequestPublicInfo(paymentRequestId);
+      const { userData } = request;
 
-      if (!userId) {
+      if (authenticated && !userData) {
+        throw app.httpErrors.unauthorized("Unauthorized!");
+      }
+
+      const userId = request.userData?.userId ?? "";
+
+      if (authenticated && !userId) {
         throw app.httpErrors.unauthorized("Unauthorized!");
       }
 
@@ -231,10 +255,14 @@ export default async function transactions(app: FastifyInstance) {
   }>(
     "/generatePaymentIntentId",
     {
+      // this endpoint could become entirely public?
       preValidation: (req, res) =>
-        app.checkPermissions(req, res, [
-          authPermissions.TRANSACTION_SELF_WRITE,
-        ]),
+        app.checkPermissions(
+          req,
+          res,
+          [authPermissions.TRANSACTION_SELF_WRITE],
+          { optionalAuth: true },
+        ),
       schema: {
         tags: TAGS,
         response: {

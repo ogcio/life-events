@@ -54,6 +54,7 @@ export default async function Page({ params: { locale } }: Props) {
     const allowCustomAmountField = formData.get("allowCustomAmount") === "on";
     const redirectUrlField = formData.get("redirect-url") as string;
     const statusField = formData.get("status") as PaymentRequestStatus;
+    const authenticated = formData.get("authenticated") === "on";
 
     const providerDetails: {
       id: string;
@@ -113,6 +114,7 @@ export default async function Page({ params: { locale } }: Props) {
         allowCustomAmount: allowCustomAmountField,
         status: statusField,
         providers,
+        authenticated,
       });
 
     formResult.errors = errorHandler(error, validationMap) ?? {};

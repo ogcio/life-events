@@ -296,6 +296,12 @@
           "inactiveDescription": "This payment request is inactive and cannot be used to receive payments.",
           "invalid": "Payment request status cannot be active if no providers are selected."
         },
+        "authenticated": {
+          "title": "Require the user to be authenticated",
+          "header": "Does it need authentication?",
+          "true": "Yes",
+          "false": "No"
+        },
         "title": "Title",
         "titleRequired": "Title is required.",
         "description": "External description",

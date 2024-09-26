@@ -133,10 +133,16 @@ export const checkPermissionsPlugin = async (
       req: FastifyRequest,
       rep: FastifyReply,
       permissions: string[],
-      matchConfig?: MatchConfig,
+      options?: {
+        optionalAuth?: boolean;
+        matchConfig?: MatchConfig;
+      },
     ) => {
+      const { optionalAuth = false, matchConfig } = options || {};
       const authHeader = req.headers.authorization;
+
       if (!authHeader) {
+        if (optionalAuth) return;
         throw new AuthenticationError(ERROR_PROCESS);
       }
       try {

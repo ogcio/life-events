@@ -15,10 +15,10 @@ const formatQueryResult = async <T, O>(
 
 export class Payments {
   client: ReturnType<typeof createClient<paths>>;
-  constructor(authToken: string) {
+  constructor(authToken?: string) {
     const authMiddleware: Middleware = {
       async onRequest(req) {
-        req.headers.set("Authorization", `Bearer ${authToken}`);
+        if (authToken) req.headers.set("Authorization", `Bearer ${authToken}`);
         return req;
       },
     };

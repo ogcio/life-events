@@ -14,11 +14,16 @@ type HeaderProps = {
 };
 
 export default async ({ locale }: HeaderProps) => {
-  const { user, isPublicServant } =
-    await AuthenticationFactory.getInstance().getContext();
+  const instance = AuthenticationFactory.getInstance();
+  const isLoggedIn = await instance.isAuthenticated();
 
-  const [firstName, lastName] = user.name ? user.name.split(" ") : ["", ""];
-  const initials = firstName.charAt(0) + lastName.charAt(0);
+  let initials = "";
+
+  if (isLoggedIn) {
+    const { user, isPublicServant } = await instance.getContext();
+    const [firstName, lastName] = user.name ? user.name.split(" ") : ["", ""];
+    initials = firstName.charAt(0) + lastName.charAt(0);
+  }
 
   return (
     <header
@@ -36,11 +41,12 @@ export default async ({ locale }: HeaderProps) => {
           }}
         >
           <div className={styles.leftSideContainer}>
-            <Hamburger
+            {/* TODO: render userName only if user is logged in */}
+            {/* <Hamburger
               userName={`${firstName} ${lastName}`}
-              publicServant={isPublicServant}
+              publicServant={isLoggedIn && isPublicServant}
               locale={locale}
-            />
+            /> */}
             <a
               href="/"
               className="govie-header__link govie-header__link--homepage"
@@ -55,7 +61,7 @@ export default async ({ locale }: HeaderProps) => {
           </div>
           <div className={styles.rightsideContainer}>
             <LanguageSwitch theme="dark" />
-            <UserIcon initials={initials} />
+            {isLoggedIn && <UserIcon initials={initials} />}
 
             <Link
               href={"/signout"}

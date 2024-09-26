@@ -1,0 +1,3 @@
+ALTER TABLE payment_requests 
+ADD COLUMN authenticated BOOLEAN NOT NULL DEFAULT TRUE;
+

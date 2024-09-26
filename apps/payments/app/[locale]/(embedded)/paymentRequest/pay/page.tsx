@@ -32,7 +32,9 @@ type Props = {
 };
 
 async function getPaymentRequestDetails(paymentId: string) {
-  const paymentsApi = await AuthenticationFactory.getPaymentsClient();
+  const paymentsApi = await AuthenticationFactory.getPaymentsClient({
+    withAuthentication: false,
+  });
   const { data: details, error } =
     await paymentsApi.getPaymentRequestPublicInfo(paymentId);
 
@@ -62,9 +64,6 @@ async function selectCustomAmount(requestId: string, formData: FormData) {
 export default async function Page(props: Props) {
   if (!props.searchParams?.paymentId || !props.searchParams?.id)
     return notFound();
-
-  const isPublicServant =
-    await AuthenticationFactory.getInstance().isPublicServant();
 
   const embed = props.searchParams?.embed === "true";
 
@@ -100,6 +99,10 @@ export default async function Page(props: Props) {
     this,
     props.searchParams?.paymentId,
   );
+
+  const isPublicServant =
+    details.authenticated &&
+    (await AuthenticationFactory.getInstance().isPublicServant());
 
   const content = (
     <div

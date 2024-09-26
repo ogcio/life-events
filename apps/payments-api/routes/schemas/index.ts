@@ -120,6 +120,7 @@ export const PaymentRequest = Type.Object({
   reference: Type.String(),
   providers: Type.Array(ProviderDetails),
   status: PaymentRequestStatus,
+  authenticated: Type.Boolean(),
 });
 
 export const PaymentRequestDetails = Type.Composite([
@@ -143,6 +144,7 @@ export const CreatePaymentRequest = Type.Object({
   status: Type.Union([PaymentRequestStatus], {
     validator: "PaymentRequestStatusValidator",
   }),
+  authenticated: Type.Boolean(),
 });
 
 export const EditPaymentRequest = Type.Composite([
@@ -187,8 +189,8 @@ export const FullTransaction = Type.Object({
   updatedAt: Type.String(),
   userId: Type.String(),
   userData: Type.Object({
-    name: Type.String(),
-    email: Type.String(),
+    name: Type.Optional(Type.String()),
+    email: Type.Optional(Type.String()),
   }),
 });
 
