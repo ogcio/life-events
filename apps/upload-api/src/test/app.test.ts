@@ -1,7 +1,7 @@
 import { FastifyInstance } from "fastify";
 
 import t from "tap";
-import { CONFIG_TYPE } from "../utils/storeConfig.js";
+import { CONFIG_TYPE, SCHEDULER_TOKEN } from "../utils/storeConfig.js";
 
 t.test("under pressure handler should throw an error", async (t) => {
   let pressureHandler = (
@@ -27,6 +27,10 @@ t.test("under pressure handler should throw an error", async (t) => {
       "../utils/storeConfig.js": {
         storeConfig: () => Promise.resolve(),
         CONFIG_TYPE,
+        SCHEDULER_TOKEN,
+      },
+      "../utils/scheduleCleanupTask.js": {
+        default: () => Promise.resolve(),
       },
     },
   );

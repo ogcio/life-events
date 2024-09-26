@@ -6,6 +6,8 @@ export enum CONFIG_TYPE {
   BOOLEAN = "boolean",
 }
 
+export const SCHEDULER_TOKEN = "SCHEDULER_TOKEN";
+
 const storeConfig = (
   pool: Pool,
   key: string,
