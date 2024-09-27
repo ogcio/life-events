@@ -25,13 +25,23 @@ import insertFileMetadata from "./utils/insertFileMetadata.js";
 import updateFileMetadata from "./utils/updateFileMetadata.js";
 import getDbVersion from "./utils/getDbVersion.js";
 import { Permissions } from "../../types/permissions.js";
-import { join } from "node:path";
 import getFilename from "./utils/getFilename.js";
 
 const FILE_UPLOAD = "FILE_UPLOAD";
 const FILE_DOWNLOAD = "FILE_DOWNLOAD";
 
 const API_DOCS_TAG = "Files";
+
+const FORBIDDEN_EXTENSIONS = [".exe", ".sh"];
+
+const isFilenameAllowed = (filename: string) => {
+  if (filename.startsWith(".")) {
+    return false;
+  }
+  return !FORBIDDEN_EXTENSIONS.some((extension) =>
+    filename.endsWith(extension),
+  );
+};
 
 const deleteObject = (
   s3Client: S3Client,
@@ -59,6 +69,10 @@ const scanAndUpload = async (app: FastifyInstance, request: FastifyRequest) => {
 
   if (!data.filename) {
     throw new BadRequestError(FILE_UPLOAD, "Filename is not provided");
+  }
+
+  if (!isFilenameAllowed(data.filename)) {
+    throw new BadRequestError(FILE_UPLOAD, "File not allowed");
   }
 
   const filename = await getFilename(app.pg, data.filename, userId);

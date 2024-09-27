@@ -73,7 +73,6 @@ t.test("getFilename", async (t) => {
       const pg = {
         query: () => Promise.resolve({ rows: [{ filename: "filename-1" }] }),
       };
-      console.log("here");
 
       let value = await getFilename(
         pg as unknown as fastifyPostgres.PostgresDb,

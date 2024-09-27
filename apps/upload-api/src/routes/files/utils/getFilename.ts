@@ -15,8 +15,6 @@ const getFilename = async (
     filename = filename_;
   }
 
-  console.log({ filename, extension });
-
   const matchingFilesQuery = await pg.query<{
     filename: string;
     createdAt: string;
@@ -29,8 +27,6 @@ const getFilename = async (
   `,
     [filename, userId],
   );
-
-  console.log({ match: matchingFilesQuery.rows });
 
   if (!matchingFilesQuery.rows.length) {
     return `${filename}${extension}`;
