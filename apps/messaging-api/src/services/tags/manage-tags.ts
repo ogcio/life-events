@@ -1,9 +1,8 @@
 import { PoolClient } from "pg";
 import { Tag } from "../../types/usersSchemaDefinitions.js";
-import { ServerError } from "shared-errors";
+import { httpErrors } from "@fastify/sensible";
 
 const TAGS_PATH_SEPARATOR = ".";
-const MANAGE_TAGS_ERROR = "MANAGE_TAGS_ERROR";
 export const processTagsPerUser = async (params: {
   userId: string;
   tags: string[];
@@ -61,7 +60,7 @@ const linkTagsToUser = async (params: {
   );
 
   if (result.rowCount !== params.toLinkTags.length) {
-    throw new ServerError(MANAGE_TAGS_ERROR, "Error linking tags");
+    throw httpErrors.internalServerError("Error linking tags");
   }
 };
 
@@ -116,7 +115,7 @@ const insertTags = async (params: {
   );
 
   if (result.rowCount !== itemsCount) {
-    throw new ServerError(MANAGE_TAGS_ERROR, "Error importing tags");
+    throw httpErrors.internalServerError("Error importing tags");
   }
 
   return result.rows;

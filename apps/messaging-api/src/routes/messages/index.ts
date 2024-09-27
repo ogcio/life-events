@@ -20,7 +20,6 @@ import { HttpError } from "../../types/httpErrors.js";
 import { Permissions } from "../../types/permissions.js";
 import { ensureUserCanAccessUser } from "api-auth";
 import { QueryResult } from "pg";
-import { ServerError, AuthorizationError, NotFoundError } from "shared-errors";
 import {
   sanitizePagination,
   formatAPIResponse,
@@ -73,22 +72,19 @@ export default async function messages(app: FastifyInstance) {
       },
     },
     async function getMessagesHandler(request, _reply) {
-      const errorProcess = "GET_MESSAGES";
       const loggedInOrgId = request?.userData?.organizationId;
       const loggedInProfileId = request?.userData?.userId;
       const queryRecipientUserId = request.query.recipientUserId;
       const queryOrganisationId = request.query.organisationId;
 
       if (!queryOrganisationId && !queryRecipientUserId) {
-        throw new AuthorizationError(
-          errorProcess,
+        throw app.httpErrors.unauthorized(
           "not allowed to access messages from all organisations",
         );
       }
 
       if (queryOrganisationId && !queryRecipientUserId && !loggedInOrgId) {
-        throw new AuthorizationError(
-          errorProcess,
+        throw app.httpErrors.unauthorized(
           "As a citizen you have to set the query recipient user id",
         );
       }
@@ -112,8 +108,7 @@ export default async function messages(app: FastifyInstance) {
         // for the logged in user when it has not been imported by
         // any organization yet
         if (!allUserIds && loggedInProfileId === queryRecipientUserId) {
-          throw new NotFoundError(
-            errorProcess,
+          throw app.httpErrors.notFound(
             "You have not been registered yet in messaging building block",
           );
         }
@@ -121,14 +116,13 @@ export default async function messages(app: FastifyInstance) {
         // As a public servant, requested messages
         // for a user that is not been imported yet
         if (!allUserIds && loggedInOrgId) {
-          throw new NotFoundError(errorProcess, "No user found");
+          throw app.httpErrors.notFound("No user found");
         }
 
         // As a citizen, request other user's
         // messages
         if (!allUserIds) {
-          throw new AuthorizationError(
-            errorProcess,
+          throw app.httpErrors.unauthorized(
             "Can't access other users' messages",
           );
         }
@@ -139,8 +133,7 @@ export default async function messages(app: FastifyInstance) {
               allUserIds &&
               allUserIds.messageUserId !== queryRecipientUserId
         ) {
-          throw new AuthorizationError(
-            errorProcess,
+          throw app.httpErrors.unauthorized(
             "Can't access other users' messages",
           );
         }
@@ -156,10 +149,7 @@ export default async function messages(app: FastifyInstance) {
         userIdsRepresentingUser.length &&
         request.query.status !== "delivered"
       ) {
-        throw new AuthorizationError(
-          errorProcess,
-          "only delivered messages allowed",
-        );
+        throw app.httpErrors.unauthorized("only delivered messages allowed");
       }
 
       // Only query organisation you're allowed to see
@@ -168,10 +158,7 @@ export default async function messages(app: FastifyInstance) {
         loggedInOrgId &&
         queryOrganisationId !== loggedInOrgId
       ) {
-        throw new AuthorizationError(
-          errorProcess,
-          "illegal organisation request",
-        );
+        throw app.httpErrors.unauthorized("illegal organisation request");
       }
 
       const { limit, offset } = sanitizePagination({
@@ -234,10 +221,12 @@ export default async function messages(app: FastifyInstance) {
           ],
         );
       } catch (error) {
-        throw new ServerError(
-          errorProcess,
+        throw app.httpErrors.createError(
+          500,
           "failed to query organisation messages",
-          error,
+          {
+            parent: error,
+          },
         );
       }
 
@@ -297,7 +286,7 @@ export default async function messages(app: FastifyInstance) {
       return {
         data: await getMessage({
           pg: app.pg,
-          userId: ensureUserIdIsSet(request, "GET_MESSAGE"),
+          userId: ensureUserIdIsSet(request),
           messageId: request.params.messageId,
         }),
       };
@@ -331,12 +320,9 @@ export default async function messages(app: FastifyInstance) {
       },
     },
     async function createMessageHandler(request, reply) {
-      const errorKey = "FAILED_TO_CREATE_MESSAGE";
-
       const userData = ensureUserCanAccessUser(
         request.userData,
         request.body.recipientUserId,
-        errorKey,
       );
       const senderUser = {
         profileId: userData.userId,
@@ -349,12 +335,11 @@ export default async function messages(app: FastifyInstance) {
             ...request.body,
             ...request.body.message,
             organisationId: userData.organizationId!,
-            senderUserProfileId: ensureUserIdIsSet(request, errorKey),
+            senderUserProfileId: ensureUserIdIsSet(request),
             attachments: request.body.attachments ?? [],
           },
         ],
         scheduleAt: request.body.scheduleAt,
-        errorProcess: errorKey,
         pgPool: app.pg.pool,
         logger: request.log,
         senderUser,

@@ -6,14 +6,13 @@ import {
   UsersImport,
 } from "../../types/usersSchemaDefinitions.js";
 import { Profile } from "building-blocks-sdk";
-import { NotFoundError, ServerError } from "shared-errors";
 import { PaginationParams } from "../../types/schemaDefinitions.js";
+import { httpErrors } from "@fastify/sensible";
 
 const getUser = async (params: {
   client: PoolClient;
   whereClauses: string[];
   whereValues: string[];
-  errorCode: string;
   logicalWhereOperator?: string;
   withDetails?: boolean;
 }): Promise<User> => {
@@ -38,14 +37,11 @@ const getUser = async (params: {
     );
   } catch (error) {
     const message = isNativeError(error) ? error.message : "unknown error";
-    throw new ServerError(
-      params.errorCode,
-      `Error retrieving user: ${message}`,
-    );
+    throw httpErrors.internalServerError(`Error retrieving user: ${message}`);
   }
 
   if (!result || result.rowCount === 0) {
-    throw new NotFoundError(params.errorCode, "Cannot find the user");
+    throw httpErrors.notFound("Cannot find the user");
   }
 
   return result.rows[0];
@@ -54,26 +50,22 @@ const getUser = async (params: {
 export const getUserById = async (params: {
   client: PoolClient;
   userId: string;
-  errorCode: string;
 }): Promise<User> =>
   getUser({
     client: params.client,
     whereClauses: ["id = $1"],
     whereValues: [params.userId],
-    errorCode: params.errorCode,
   });
 
 export const getUserByUserProfileId = async (params: {
   userProfileId: string;
   client: PoolClient;
-  errorCode: string;
   withDetails?: boolean;
 }): Promise<User> =>
   getUser({
     client: params.client,
     whereClauses: ["user_profile_id = $1"],
     whereValues: [params.userProfileId],
-    errorCode: params.errorCode,
     withDetails: params.withDetails,
   });
 
@@ -81,7 +73,6 @@ export const getUserByContacts = async (params: {
   email: string | null;
   phone: string | null;
   client: PoolClient;
-  errorCode: string;
 }): Promise<User> => {
   const clauses = [];
   const values = [];
@@ -101,7 +92,6 @@ export const getUserByContacts = async (params: {
     client: params.client,
     whereClauses: clauses,
     whereValues: values,
-    errorCode: params.errorCode,
     logicalWhereOperator: "OR",
     withDetails: true,
   });
@@ -111,7 +101,6 @@ export const getUserImports = async (params: {
   client: PoolClient;
   whereClauses: string[];
   whereValues: string[];
-  errorCode: string;
   logicalWhereOperator?: string;
   limit?: number;
   offset?: number;
@@ -158,8 +147,7 @@ export const getUserImports = async (params: {
     };
   } catch (error) {
     const message = isNativeError(error) ? error.message : "unknown error";
-    throw new ServerError(
-      params.errorCode,
+    throw httpErrors.internalServerError(
       `Error retrieving user imports: ${message}`,
     );
   }
@@ -169,7 +157,6 @@ export const getSettingsPerUser = async (params: {
   client: PoolClient;
   userId: string;
   organisationSettingId?: string;
-  errorCode: string;
   limit?: number;
   includeUserDetails?: boolean;
   offset?: number;
@@ -230,10 +217,10 @@ export const getSettingsPerUser = async (params: {
       totalCount: (await countResult).rows[0].total,
     };
   } catch (error) {
-    throw new ServerError(
-      params.errorCode,
+    throw httpErrors.createError(
+      500,
       `Error retrieving organisation settings`,
-      error,
+      { parent: error },
     );
   }
 };
@@ -241,19 +228,16 @@ export const getSettingsPerUser = async (params: {
 export const getSettingsPerUserProfile = async (params: {
   client: PoolClient;
   userProfileId: string;
-  errorCode: string;
   pagination?: PaginationParams;
 }): Promise<{ data: OrganisationSetting[]; totalCount: number }> => {
-  const { client, userProfileId, errorCode } = params;
+  const { client, userProfileId } = params;
   const userByProfile = await getUserByUserProfileId({
     client,
     userProfileId,
-    errorCode: errorCode,
   });
   return getSettingsPerUser({
     client,
     userId: userByProfile.id,
-    errorCode: errorCode,
   });
 };
 

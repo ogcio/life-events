@@ -55,7 +55,7 @@ const decodeLogtoToken = async (
 export const ensureUserCanAccessUser = (
   loggedUserData: ExtractedUserData | undefined,
   requestedUserId: string,
-  errorProcess: string,
+  errorProcess?: string,
 ): ExtractedUserData => {
   if (loggedUserData && requestedUserId === loggedUserData.userId) {
     return loggedUserData;
@@ -66,7 +66,7 @@ export const ensureUserCanAccessUser = (
   }
 
   throw new AuthorizationError(
-    errorProcess,
+    errorProcess ?? "",
     "You can't access this user's data",
   );
 };

@@ -1,8 +1,8 @@
 import { FastifyInstance } from "fastify";
-import { isLifeEventsError, ServerError } from "shared-errors";
 import { getErrorMessage } from "../utils/error-utils.js";
 import getVersion from "../utils/get-version.js";
-const ERROR_PROCESS = "HEALTHCHECK";
+import { httpErrors } from "@fastify/sensible";
+import { isHttpError } from "http-errors";
 
 export default async function healthCheck(app: FastifyInstance) {
   app.get(
@@ -28,17 +28,16 @@ const checkDb = async (app: FastifyInstance): Promise<void> => {
   try {
     const res = await app.pg.query('SELECT 1 as "column"');
     if (res.rowCount !== 1) {
-      throw new ServerError(
-        ERROR_PROCESS,
+      throw httpErrors.internalServerError(
         `Expected 1 record, got ${res.rowCount}`,
       );
     }
   } catch (e) {
-    if (isLifeEventsError(e)) {
+    if (isHttpError(e)) {
       throw e;
     }
 
-    throw new ServerError(ERROR_PROCESS, getErrorMessage(e));
+    throw httpErrors.internalServerError(getErrorMessage(e));
   } finally {
     pool.release();
   }

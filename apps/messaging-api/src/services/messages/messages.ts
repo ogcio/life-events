@@ -11,16 +11,7 @@ import {
   ProfileSdkFacade,
 } from "../users/shared-users.js";
 import { isNativeError } from "util/types";
-import {
-  BadRequestError,
-  isLifeEventsError,
-  LifeEventsError,
-  NotFoundError,
-  ServerError,
-  ThirdPartyError,
-  AuthorizationError,
-} from "shared-errors";
-import { LoggingError, toLoggingError } from "logging-wrapper";
+import { LoggingError, toLoggingError } from "@ogcio/fastify-logging-wrapper";
 import {
   MessagingEventLogger,
   MessagingEventType,
@@ -36,8 +27,8 @@ import {
   newMessagingService,
 } from "./messaging.js";
 import { Upload } from "building-blocks-sdk";
-
-const EXECUTE_JOB_ERROR = "EXECUTE_JOB_ERROR";
+import { HttpError, httpErrors } from "@fastify/sensible";
+import { isHttpError } from "http-errors";
 
 export const getMessage = async (params: {
   pg: PostgresDb;
@@ -84,8 +75,7 @@ export const getMessage = async (params: {
   );
 
   if (data.rowCount === 0) {
-    throw new NotFoundError(
-      "GET_MESSAGE_ERROR",
+    throw httpErrors.notFound(
       `No message with id ${params.messageId} for the logged in user does exist`,
     );
   }
@@ -139,7 +129,7 @@ export const executeJob = async (params: {
       await eventLogger.log(MessagingEventType.deliverMessageError, [
         { messageId: "" }, // job id error field?
       ]);
-      throw new NotFoundError(EXECUTE_JOB_ERROR, "job doesn't exist");
+      throw httpErrors.notFound("job doesn't exist");
     }
 
     await eventLogger.log(MessagingEventType.deliverMessagePending, [
@@ -147,10 +137,7 @@ export const executeJob = async (params: {
     ]);
 
     if (jobResult.status === "working") {
-      throw new BadRequestError(
-        EXECUTE_JOB_ERROR,
-        "job is already in progress",
-      );
+      throw httpErrors.badRequest("job is already in progress");
     }
 
     job = await client
@@ -179,12 +166,12 @@ export const executeJob = async (params: {
     await eventLogger.log(MessagingEventType.deliverMessageError, [
       { messageId: "" },
     ]);
-    if (isLifeEventsError(err)) {
+    if (isHttpError(err)) {
       throw err;
     }
 
     const msg = utils.isError(err) ? err.message : "failed to fetch job";
-    throw new ServerError(EXECUTE_JOB_ERROR, msg);
+    throw httpErrors.internalServerError(msg);
   } finally {
     client.release();
   }
@@ -193,7 +180,7 @@ export const executeJob = async (params: {
     await eventLogger.log(MessagingEventType.deliverMessageError, [
       { messageId: job?.jobId || "" },
     ]);
-    throw new ServerError(EXECUTE_JOB_ERROR, "job row missing critical fields");
+    throw httpErrors.internalServerError("job row missing critical fields");
   }
 
   let error: LoggingError | undefined;
@@ -213,15 +200,13 @@ export const executeJob = async (params: {
 
       const firstError = serviceErrors.filter((err) => err.critical).at(0);
       if (firstError) {
-        error = toLoggingError(
-          new ServerError(EXECUTE_JOB_ERROR, firstError.msg),
-        );
+        error = toLoggingError(httpErrors.internalServerError(firstError.msg));
       }
     } catch (err) {
       const msg = utils.isError(err)
         ? err.message
         : "failed to create message job";
-      error = toLoggingError(new ServerError(EXECUTE_JOB_ERROR, msg));
+      error = toLoggingError(httpErrors.internalServerError(msg));
     }
   }
 
@@ -243,13 +228,13 @@ export const executeJob = async (params: {
       const msg = utils.isError(err)
         ? err.message
         : "failed to update job delivery status";
-      throw new ServerError(EXECUTE_JOB_ERROR, msg);
+      throw httpErrors.internalServerError(msg);
     }
 
     await eventLogger.log(MessagingEventType.deliverMessageError, [
       { messageId: job.jobId },
     ]);
-    throw new ServerError(EXECUTE_JOB_ERROR, error.message);
+    throw httpErrors.internalServerError(error.message);
   }
   await eventLogger.log(MessagingEventType.deliverMessage, [
     { messageId: job.jobId },
@@ -261,8 +246,6 @@ type scheduledMessageByTemplateStatus =
   | "working"
   | "failed"
   | "delivered";
-
-const ERROR_PROCESS = "SCHEDULE_MESSAGE";
 
 const scheduleMessage = async (
   pool: Pool,
@@ -305,10 +288,7 @@ const scheduleMessage = async (
       .then((res) => res.rows.at(0));
 
     if (!messageUser) {
-      throw new NotFoundError(
-        ERROR_PROCESS,
-        `failed to find message for id ${messageId}`,
-      );
+      throw httpErrors.notFound(`failed to find message for id ${messageId}`);
     }
 
     preferredTransports.push(...(messageUser?.transports ?? []));
@@ -346,7 +326,7 @@ const scheduleMessage = async (
     const { data } = await profileService.selectUsers([userId]);
     const user = data?.at(0);
     if (!user) {
-      throw new NotFoundError(ERROR_PROCESS, "no user profile found");
+      throw httpErrors.notFound("no user profile found");
     }
 
     for (const transport of preferredTransports) {
@@ -499,7 +479,6 @@ const scheduleMessage = async (
 export const processMessages = async (params: {
   inputMessages: Omit<CreateMessageParams, "senderApplicationId">[];
   scheduleAt: string;
-  errorProcess: string;
   pgPool: Pool;
   logger: FastifyBaseLogger;
   senderUser: { profileId: string; organizationId?: string };
@@ -508,12 +487,11 @@ export const processMessages = async (params: {
   allOrNone: boolean;
 }): Promise<{
   scheduledMessages: { jobId: string; userId: string; entityId: string }[];
-  errors: LifeEventsError[];
+  errors: HttpError[];
 }> => {
   const {
     inputMessages,
     scheduleAt,
-    errorProcess,
     pgPool,
     logger,
     senderUser,
@@ -522,8 +500,7 @@ export const processMessages = async (params: {
   } = params;
   const { organizationId } = params;
   if (!organizationId && !senderUser.organizationId) {
-    throw new BadRequestError(
-      errorProcess,
+    throw httpErrors.badRequest(
       "You have to set organization id to send messages",
     );
   }
@@ -554,8 +531,7 @@ export const processMessages = async (params: {
       );
 
       if (isAnyUserNotActiveAndAccepted.rows.at(0)?.exists) {
-        throw new AuthorizationError(
-          params.errorProcess,
+        throw httpErrors.unauthorized(
           "user exist that isn't accepted and active for any of the input messages, no message sent",
         );
       }
@@ -567,22 +543,20 @@ export const processMessages = async (params: {
     const eventLoggingEntries = [];
     const outputMessages: {
       scheduledMessages: { jobId: string; userId: string; entityId: string }[];
-      errors: LifeEventsError[];
+      errors: HttpError[];
     } = { scheduledMessages: [], errors: [] };
     if (
       senderUser.organizationId &&
       organizationId &&
       organizationId !== senderUser.organizationId
     ) {
-      throw new BadRequestError(
-        errorProcess,
+      throw httpErrors.badRequest(
         "You can't send messages to a different organization you are logged in to",
       );
     }
     const toUseOrganizationId = organizationId ?? senderUser.organizationId;
     if (!toUseOrganizationId) {
-      throw new BadRequestError(
-        errorProcess,
+      throw httpErrors.badRequest(
         "You have to choose an organization id to send a message",
       );
     }
@@ -592,7 +566,6 @@ export const processMessages = async (params: {
       : await getUserProfileSenderData({
           senderUserId: senderUser.profileId,
           organizationId: toUseOrganizationId,
-          errorProcess,
         });
 
     try {
@@ -606,7 +579,6 @@ export const processMessages = async (params: {
             messageService,
             eventLogger,
             poolClient,
-            errorProcess,
             uploadClient,
           }),
         );
@@ -673,7 +645,6 @@ const getApplicationSenderData = (
 const getUserProfileSenderData = async (params: {
   senderUserId: string;
   organizationId?: string;
-  errorProcess: string;
 }): Promise<{
   senderUser: {
     fullName: string;
@@ -681,19 +652,17 @@ const getUserProfileSenderData = async (params: {
     userProfileId: string;
   };
 }> => {
-  const { senderUserId, organizationId, errorProcess } = params;
+  const { senderUserId, organizationId } = params;
 
   const profileSdk = await getProfileSdk(organizationId);
   const senderUserProfile = await profileSdk.getUser(senderUserId);
   if (!senderUserProfile.data) {
-    throw new NotFoundError(errorProcess, "Sender user cannot be found");
+    throw httpErrors.notFound("Sender user cannot be found");
   }
   if (senderUserProfile.error) {
-    throw new ThirdPartyError(
-      errorProcess,
-      senderUserProfile.error.detail,
-      senderUserProfile.error,
-    );
+    throw httpErrors.createError(503, senderUserProfile.error.detail, {
+      parent: senderUserProfile.error,
+    });
   }
 
   const senderFullName =
@@ -741,7 +710,6 @@ const createMessageWithLog = async (params: {
   eventLogger: MessagingEventLogger;
   createMessageParams: Omit<CreateMessageParams, "senderApplicationId">;
   poolClient: PoolClient;
-  errorProcess: string;
   uploadClient: Upload;
 }): Promise<{
   createdMessage?: {
@@ -749,7 +717,7 @@ const createMessageWithLog = async (params: {
     user_id: string;
     profile: MessagingUserProfile & { fullName: string };
   };
-  error?: LifeEventsError;
+  error?: HttpError;
 }> => {
   const createMessage = params.createMessageParams;
   const receiverUserProfiles = await getUserProfiles(
@@ -759,8 +727,7 @@ const createMessageWithLog = async (params: {
 
   if (receiverUserProfiles.length === 0) {
     return {
-      error: new NotFoundError(
-        params.errorProcess,
+      error: httpErrors.notFound(
         `User with profile id ${params.createMessageParams.receiverUserId} not found`,
       ),
     };
@@ -786,10 +753,10 @@ const createMessageWithLog = async (params: {
     });
   } catch (error) {
     return {
-      error: new ServerError(
-        params.errorProcess,
+      error: httpErrors.createError(
+        500,
         `failed to create message for recipient id ${createMessage.receiverUserId}`,
-        error,
+        { parent: error },
       ),
     };
   }
@@ -842,7 +809,7 @@ const checkAttachments = async (params: {
   if (sharedFiles.error || !sharedFiles.data) {
     let message = "Error retrieving shared files";
     message += sharedFiles.error ? `: ${sharedFiles.error.detail}` : "";
-    throw new ThirdPartyError(ERROR_PROCESS, message, sharedFiles.error);
+    throw httpErrors.createError(503, message, { parent: sharedFiles.error });
   }
 
   const sharedFileIds: { [id: string]: string } = {};
@@ -854,8 +821,7 @@ const checkAttachments = async (params: {
 
   for (const toSendAttachmentId of params.attachmentIds) {
     if (!(toSendAttachmentId in sharedFileIds)) {
-      throw new BadRequestError(
-        ERROR_PROCESS,
+      throw httpErrors.badRequest(
         `The attachment with id ${toSendAttachmentId} is not shared with the user with profile id ${params.userProfileId} for this organization`,
       );
     }
