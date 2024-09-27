@@ -235,7 +235,7 @@ const processOrganizationUserRelation = async (params: {
   try {
     orgUserRelation = await getUserOrganisationRelation(params);
   } catch (error) {
-    if (!isHttpError(error) || error.errorCode !== 404) {
+    if (!isHttpError(error) || error.statusCode !== 404) {
       throw error;
     }
   }
@@ -452,7 +452,7 @@ const getUserOrganisationRelation = async (params: {
 
     return result.rows[0];
   } catch (error) {
-    if (isHttpError(error) && error.errorCode === 404) {
+    if (isHttpError(error) && error.statusCode === 404) {
       throw error;
     }
     const message = isNativeError(error) ? error.message : "unknown error";
@@ -505,7 +505,7 @@ const getUserIfMapped = async (params: {
       withDetails: true,
     });
   } catch (error) {
-    if (isHttpError(error) && error.errorCode === 404) {
+    if (isHttpError(error) && error.statusCode === 404) {
       return undefined;
     }
 
@@ -526,7 +526,7 @@ const getUserByContactsIfMapped = async (params: {
       client,
     });
   } catch (error) {
-    if (isHttpError(error) && error.errorCode === 404) {
+    if (isHttpError(error) && error.statusCode === 404) {
       return undefined;
     }
 
