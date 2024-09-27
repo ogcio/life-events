@@ -1451,6 +1451,10 @@ paths:
                             type: string
                           email:
                             type: string
+                          submissionId:
+                            type: string
+                          journeyId:
+                            type: string
                         required:
                           - name
                           - email
@@ -1681,6 +1685,10 @@ paths:
                               type: string
                             email:
                               type: string
+                            submissionId:
+                              type: string
+                            journeyId:
+                              type: string
                           required:
                             - name
                             - email
@@ -1845,6 +1853,10 @@ paths:
                     name:
                       type: string
                     email:
+                      type: string
+                    submissionId:
+                      type: string
+                    journeyId:
                       type: string
                   required:
                     - name
@@ -2295,6 +2307,10 @@ paths:
                           name:
                             type: string
                           email:
+                            type: string
+                          submissionId:
+                            type: string
+                          journeyId:
                             type: string
                         required:
                           - name

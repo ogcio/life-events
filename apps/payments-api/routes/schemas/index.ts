@@ -189,6 +189,8 @@ export const FullTransaction = Type.Object({
   userData: Type.Object({
     name: Type.String(),
     email: Type.String(),
+    submissionId: Type.Optional(Type.String()),
+    journeyId: Type.Optional(Type.String()),
   }),
 });
 

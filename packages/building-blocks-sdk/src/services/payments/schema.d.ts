@@ -686,6 +686,8 @@ export interface paths {
                 userData: {
                   name: string;
                   email: string;
+                  submissionId?: string;
+                  journeyId?: string;
                 };
                 description: string;
                 providerName: string;
@@ -805,6 +807,8 @@ export interface paths {
                 userData: {
                   name: string;
                   email: string;
+                  submissionId?: string;
+                  journeyId?: string;
                 };
                 description: string;
                 providerName: string;
@@ -892,6 +896,8 @@ export interface paths {
             userData: {
               name: string;
               email: string;
+              submissionId?: string;
+              journeyId?: string;
             };
           };
         };
@@ -1139,6 +1145,8 @@ export interface paths {
                 userData: {
                   name: string;
                   email: string;
+                  submissionId?: string;
+                  journeyId?: string;
                 };
                 description: string;
                 providerName: string;

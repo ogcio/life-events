@@ -6,6 +6,16 @@ import { TransactionStatuses } from "../../../../../types/TransactionStatuses";
 import { BankTransferData } from "../../paymentSetup/providers/types";
 import { AuthenticationFactory } from "../../../../../libraries/authentication-factory";
 
+type Params = {
+  searchParams: {
+    paymentId: string;
+    integrationRef: string;
+    submissionId?: string;
+    journeyId?: string;
+    amount?: string;
+  };
+};
+
 async function getPaymentDetails(paymentId: string, amount?: number) {
   const paymentsApi = await AuthenticationFactory.getPaymentsClient();
   const { data: details, error } =
@@ -66,15 +76,7 @@ async function generatePaymentIntentId(): Promise<string> {
   return result.data.intentId;
 }
 
-export default async function Bank(params: {
-  searchParams:
-    | {
-        paymentId: string;
-        integrationRef: string;
-        amount?: string;
-      }
-    | undefined;
-}) {
+export default async function Bank(params: Params) {
   const authContext = AuthenticationFactory.getInstance();
   const { user, isPublicServant } = await authContext.getContext();
   const paymentsApi = await AuthenticationFactory.getPaymentsClient();
@@ -83,7 +85,14 @@ export default async function Bank(params: {
     return redirect("/not-found", RedirectType.replace);
   }
 
-  if (!params.searchParams?.paymentId) {
+  const {
+    paymentId,
+    integrationRef,
+    submissionId = "",
+    journeyId = "",
+  } = params.searchParams;
+
+  if (!paymentId) {
     redirect(routeDefinitions.paymentRequest.pay.path(), RedirectType.replace);
   }
 
@@ -104,12 +113,17 @@ export default async function Bank(params: {
   const paymentIntentId = await generatePaymentIntentId();
 
   const { data: transaction, error } = await paymentsApi.createTransaction({
-    paymentRequestId: params.searchParams.paymentId,
+    paymentRequestId: paymentId,
     extPaymentId: paymentIntentId,
-    integrationReference: params.searchParams.integrationRef,
+    integrationReference: integrationRef,
     amount: paymentDetails.amount,
     paymentProviderId: paymentDetails.providerId,
-    userData: { email: user?.email ?? "", name: user?.name ?? "" },
+    userData: {
+      email: user?.email ?? "",
+      name: user?.name ?? "",
+      submissionId,
+      journeyId,
+    },
   });
 
   if (error) {

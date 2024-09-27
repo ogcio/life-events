@@ -28,6 +28,8 @@ export type TransactionEntry = {
   userData: {
     name: string;
     email: string;
+    journeyId?: string;
+    submissionId?: string;
   };
   userId: string;
 };
