@@ -2,51 +2,43 @@ import fastifyPostgres from "@fastify/postgres";
 
 const getFilename = async (
   pg: fastifyPostgres.PostgresDb,
-  filename_: string,
+  inputFilename: string,
   userId: string,
 ) => {
-  let filename = "";
-  let extension = "";
-
-  if (filename_.lastIndexOf(".") > 0) {
-    filename = filename_.slice(0, filename_.lastIndexOf("."));
-    extension = filename_.slice(filename_.lastIndexOf("."));
-  } else {
-    filename = filename_;
-  }
-
-  const matchingFilesQuery = await pg.query<{
-    filename: string;
-    createdAt: string;
-  }>(
+  const fileExistsQuery = await pg.query(
     `
-    SELECT file_name as filename
+    SELECT file_name as "fileName"
     FROM files
-    WHERE deleted = false AND owner = $2 AND substring(file_name from '^(.*).[^.]+$') LIKE $1 || '%'
-    ORDER BY created_at DESC LIMIT 1
+    WHERE deleted = false AND owner = $1 AND file_name = $2
   `,
-    [filename, userId],
+    [userId, inputFilename],
   );
 
-  if (!matchingFilesQuery.rows.length) {
-    return `${filename}${extension}`;
+  if (!fileExistsQuery.rows.length) {
+    return inputFilename;
   }
 
-  let existingFileName = matchingFilesQuery.rows[0].filename;
-  if (existingFileName.lastIndexOf(".") > 0) {
-    existingFileName = existingFileName.slice(
-      0,
-      existingFileName.lastIndexOf("."),
+  let clashingFileExists = true;
+  let newIndex = 1;
+  let newFilename = "";
+  while (clashingFileExists) {
+    newFilename = `${inputFilename.slice(0, inputFilename.lastIndexOf("."))}-${newIndex++}${inputFilename.slice(inputFilename.lastIndexOf("."))}`;
+
+    const clashingFileCheckQuery = await pg.query(
+      `
+    SELECT file_name as "fileName"
+    FROM files
+    WHERE deleted = false AND owner = $1 AND file_name = $2
+  `,
+      [userId, newFilename],
     );
+
+    if (!clashingFileCheckQuery.rows.length) {
+      clashingFileExists = false;
+    }
   }
 
-  const fileIndex = existingFileName.match(/-(\d+)$/);
-
-  if (fileIndex) {
-    return `${filename}-${parseInt(fileIndex[1]) + 1}${extension}`;
-  } else {
-    return `${filename}-1${extension}`;
-  }
+  return newFilename;
 };
 
 export default getFilename;

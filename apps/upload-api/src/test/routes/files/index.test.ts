@@ -365,6 +365,24 @@ t.test("files", async (t) => {
       },
     );
 
+    t.test(
+      "should return an error when a a file with no extension is uploaded",
+      (t) => {
+        decorateRequest(app, { file: passthroughStream, filename: "test" });
+
+        app
+          .inject({
+            method: "POST",
+            url: "/files",
+          })
+          .then((response) => {
+            t.equal(response.statusCode, 400);
+            t.equal(response.json().detail, "File not allowed");
+            t.end();
+          });
+      },
+    );
+
     t.test("should return an error when AV scan fails in POST", async (t) => {
       decorateRequest(app, {
         file: passthroughStream,
