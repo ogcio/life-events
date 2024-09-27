@@ -175,7 +175,6 @@ export default async function messages(app: FastifyInstance) {
     `,
         [eventId],
       );
-
       if (!queryResult.rows.length) {
         return app.httpErrors.notFound("no event found");
       }

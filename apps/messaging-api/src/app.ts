@@ -19,7 +19,7 @@ import fastifyMultipart from "@fastify/multipart";
 import v8 from "v8";
 import getVersion from "./utils/get-version.js";
 import _Ajv from "ajv";
-import { httpErrors } from "@fastify/sensible";
+import fastifySensible, { httpErrors } from "@fastify/sensible";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -43,6 +43,8 @@ export async function build(opts?: FastifyServerOptions) {
     schema: envSchema,
     dotenv: true,
   });
+
+  app.register(fastifySensible);
 
   app.register(fastifySwagger, {
     openapi: {
