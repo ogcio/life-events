@@ -58,7 +58,6 @@ async function getTransactionDetails(extPaymentId: string) {
   );
 
   if (!rows.length) {
-    console.error("Transaction not found", extPaymentId);
     throw new Error("Transaction not found");
   }
 
