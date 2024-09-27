@@ -25,11 +25,26 @@ import insertFileMetadata from "./utils/insertFileMetadata.js";
 import updateFileMetadata from "./utils/updateFileMetadata.js";
 import getDbVersion from "./utils/getDbVersion.js";
 import { Permissions } from "../../types/permissions.js";
+import getFilename from "./utils/getFilename.js";
+import { randomUUID } from "node:crypto";
 
 const FILE_UPLOAD = "FILE_UPLOAD";
 const FILE_DOWNLOAD = "FILE_DOWNLOAD";
 
 const API_DOCS_TAG = "Files";
+
+const FORBIDDEN_EXTENSIONS = [".exe", ".sh"];
+
+const isFilenameAllowed = (filename: string) => {
+  // it is a dotfile or does not have extension
+  if (filename.startsWith(".") || !filename.match(/\.\S+$/)) {
+    return false;
+  }
+
+  return !FORBIDDEN_EXTENSIONS.some((extension) =>
+    filename.endsWith(extension),
+  );
+};
 
 const deleteObject = (
   s3Client: S3Client,
@@ -55,11 +70,15 @@ const scanAndUpload = async (app: FastifyInstance, request: FastifyRequest) => {
   const stream = data.file;
   const fileMimeType = data.mimetype;
 
-  const filename = data.filename;
-
-  if (!filename) {
+  if (!data.filename) {
     throw new BadRequestError(FILE_UPLOAD, "Filename is not provided");
   }
+
+  if (!isFilenameAllowed(data.filename)) {
+    throw new BadRequestError(FILE_UPLOAD, "File not allowed");
+  }
+
+  const filename = await getFilename(app.pg, data.filename, userId);
 
   const eventEmitter = new EventEmitter();
 
@@ -76,6 +95,8 @@ const scanAndUpload = async (app: FastifyInstance, request: FastifyRequest) => {
     length += chunk.length;
   });
 
+  const fileUuid = randomUUID();
+
   const organizationId = request.userData?.organizationId as string;
 
   const getDbVersionPromise = getDbVersion(app.avClient);
@@ -90,12 +111,13 @@ const scanAndUpload = async (app: FastifyInstance, request: FastifyRequest) => {
 
       if (isInfected) {
         await insertFileMetadata(app.pg, {
+          id: fileUuid,
           createdAt: new Date(),
           lastScan: new Date(),
           fileSize: length,
           infected: true,
           infectionDescription: viruses.join(","),
-          key: `${userId}/${filename}`,
+          key: `${userId}/${fileUuid}`,
           mimeType: fileMimeType,
           ownerId: userId as string,
           fileName: filename,
@@ -118,7 +140,7 @@ const scanAndUpload = async (app: FastifyInstance, request: FastifyRequest) => {
     leavePartsOnError: false, // optional manually handle dropped parts
     params: {
       Bucket: s3Config.bucketName,
-      Key: `${userId}/${filename}`,
+      Key: `${userId}/${fileUuid}`,
       Body: s3uploadPassthrough,
     },
   });
@@ -130,6 +152,7 @@ const scanAndUpload = async (app: FastifyInstance, request: FastifyRequest) => {
       const dbVersion = await getDbVersionPromise;
 
       const data = await insertFileMetadata(app.pg, {
+        id: fileUuid,
         createdAt: new Date(),
         lastScan: new Date(),
         fileSize: length,

@@ -128,6 +128,9 @@ t.test("files", async (t) => {
         }
       },
     },
+    "../../../routes/files/utils/getFilename.js": {
+      default: (pg: unknown, filename: string) => Promise.resolve(filename),
+    },
     "../../../utils/authentication-factory.js": t.createMock(
       authenticationFactory,
       {
@@ -328,6 +331,57 @@ t.test("files", async (t) => {
           t.end();
         });
     });
+
+    t.test("should return an error when a dotfile is uploaded", (t) => {
+      decorateRequest(app, { file: passthroughStream, filename: ".env" });
+
+      app
+        .inject({
+          method: "POST",
+          url: "/files",
+        })
+        .then((response) => {
+          t.equal(response.statusCode, 400);
+          t.equal(response.json().detail, "File not allowed");
+          t.end();
+        });
+    });
+
+    t.test(
+      "should return an error when a a file with a forbidden extension is uploaded",
+      (t) => {
+        decorateRequest(app, { file: passthroughStream, filename: "test.exe" });
+
+        app
+          .inject({
+            method: "POST",
+            url: "/files",
+          })
+          .then((response) => {
+            t.equal(response.statusCode, 400);
+            t.equal(response.json().detail, "File not allowed");
+            t.end();
+          });
+      },
+    );
+
+    t.test(
+      "should return an error when a a file with no extension is uploaded",
+      (t) => {
+        decorateRequest(app, { file: passthroughStream, filename: "test" });
+
+        app
+          .inject({
+            method: "POST",
+            url: "/files",
+          })
+          .then((response) => {
+            t.equal(response.statusCode, 400);
+            t.equal(response.json().detail, "File not allowed");
+            t.end();
+          });
+      },
+    );
 
     t.test("should return an error when AV scan fails in POST", async (t) => {
       decorateRequest(app, {
