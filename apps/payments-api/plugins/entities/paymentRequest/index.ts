@@ -13,6 +13,7 @@ import {
   EditPaymentRequestDO,
   PaymentRequestDetailsDO,
   PaymentRequestDO,
+  PaymentRequestPublicInfoDO,
 } from "./types";
 
 export type PaymentRequestPlugin = Awaited<ReturnType<typeof buildPlugin>>;
@@ -77,7 +78,7 @@ const buildGetPaymentRequestById =
 
 const buildGetPaymentRequestPublicInfo =
   (repo: PaymentRequestRepo, log: FastifyBaseLogger, httpErrors: HttpErrors) =>
-  async (requestId: string): Promise<PaymentRequestDetailsDO> => {
+  async (requestId: string): Promise<PaymentRequestPublicInfoDO> => {
     let result;
 
     try {

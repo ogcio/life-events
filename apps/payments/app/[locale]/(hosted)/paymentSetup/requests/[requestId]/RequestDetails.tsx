@@ -139,7 +139,9 @@ export const RequestDetails = async ({
         </div>
         <div className="govie-summary-list__row">
           <dt className="govie-summary-list__key">{t("form.description")}</dt>
-          <dt className="govie-summary-list__value">{details.description}</dt>
+          <dt className="govie-summary-list__value">
+            <pre style={{ fontFamily: "inherit" }}>{details.description}</pre>
+          </dt>
         </div>
 
         <div className="govie-summary-list__row">
