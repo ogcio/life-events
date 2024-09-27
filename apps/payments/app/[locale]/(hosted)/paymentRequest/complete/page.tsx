@@ -41,6 +41,30 @@ async function updateTransaction(extPaymentId: string, status: string) {
   return rows[0];
 }
 
+async function getTransactionDetails(extPaymentId: string) {
+  "use server";
+
+  const { rows } = await pgpool.query<{
+    transaction_id: number;
+    payment_request_id: string;
+    integration_reference: string;
+  }>(
+    `
+    SELECT transaction_id, payment_request_id, integration_reference
+    FROM payment_transactions
+    where ext_payment_id = $1
+    `,
+    [extPaymentId],
+  );
+
+  if (!rows.length) {
+    console.error("Transaction not found", extPaymentId);
+    throw new Error("Transaction not found");
+  }
+
+  return rows[0];
+}
+
 async function getRequestDetails(requestId: string) {
   const paymentsApi = await AuthenticationFactory.getPaymentsClient();
   const { data: details, error } =
@@ -57,7 +81,7 @@ export default async function Page(props: Props) {
   const { payment_id, payment_intent, redirect_status, order_id, error } =
     props.searchParams;
   let extPaymentId = payment_id ?? "";
-
+  let isStripe = false;
   let status = TransactionStatuses.Succeeded;
 
   if (payment_id) {
@@ -73,6 +97,7 @@ export default async function Page(props: Props) {
       status = TransactionStatuses.Succeeded;
     } else if (payment_intent && redirect_status) {
       // It's a Stripe transaction
+      isStripe = true;
       extPaymentId = payment_intent;
 
       const mappedStatus = getInternalStatus(redirect_status);
@@ -90,7 +115,13 @@ export default async function Page(props: Props) {
     status = TransactionStatuses.Failed;
   }
 
-  const transactionDetail = await updateTransaction(extPaymentId, status);
+  let transactionDetail;
+
+  if (isStripe) {
+    transactionDetail = await getTransactionDetails(extPaymentId);
+  } else {
+    transactionDetail = await updateTransaction(extPaymentId, status);
+  }
 
   if (status === TransactionStatuses.Failed) {
     return (

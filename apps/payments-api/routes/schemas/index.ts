@@ -251,6 +251,7 @@ export const Transaction = Type.Composite([
     "status",
     "amount",
     "extPaymentId",
+    "paymentProviderId",
     "updatedAt",
   ]),
   Type.Object({
