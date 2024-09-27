@@ -1,20 +1,30 @@
 import fastifyPostgres from "@fastify/postgres";
 
-const getFilename = async (
+const isFilenameAlreadyPresent = async (
   pg: fastifyPostgres.PostgresDb,
-  inputFilename: string,
   userId: string,
+  filename: string,
 ) => {
-  const fileExistsQuery = await pg.query(
+  const clashingFileCheckQuery = await pg.query(
     `
     SELECT file_name as "fileName"
     FROM files
     WHERE deleted = false AND owner = $1 AND file_name = $2
   `,
-    [userId, inputFilename],
+    [userId, filename],
   );
 
-  if (!fileExistsQuery.rows.length) {
+  return clashingFileCheckQuery.rows.length > 0;
+};
+
+const getFilename = async (
+  pg: fastifyPostgres.PostgresDb,
+  inputFilename: string,
+  userId: string,
+) => {
+  const fileExists = await isFilenameAlreadyPresent(pg, userId, inputFilename);
+
+  if (!fileExists) {
     return inputFilename;
   }
 
@@ -24,16 +34,9 @@ const getFilename = async (
   while (clashingFileExists) {
     newFilename = `${inputFilename.slice(0, inputFilename.lastIndexOf("."))}-${newIndex++}${inputFilename.slice(inputFilename.lastIndexOf("."))}`;
 
-    const clashingFileCheckQuery = await pg.query(
-      `
-    SELECT file_name as "fileName"
-    FROM files
-    WHERE deleted = false AND owner = $1 AND file_name = $2
-  `,
-      [userId, newFilename],
-    );
+    const fileExists = await isFilenameAlreadyPresent(pg, userId, newFilename);
 
-    if (!clashingFileCheckQuery.rows.length) {
+    if (!fileExists) {
       clashingFileExists = false;
     }
   }
