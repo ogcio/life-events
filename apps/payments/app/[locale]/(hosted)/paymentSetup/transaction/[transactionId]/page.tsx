@@ -120,6 +120,22 @@ export default async function ({
               {details.userData.email}
             </dt>
           </div>
+          {details.userData.submissionId && (
+            <div className="govie-summary-list__row">
+              <dt className="govie-summary-list__key">{t("submissionId")}</dt>
+              <dt className="govie-summary-list__value">
+                {details.userData.submissionId}
+              </dt>
+            </div>
+          )}
+          {details.userData.journeyId && (
+            <div className="govie-summary-list__row">
+              <dt className="govie-summary-list__key">{t("journeyId")}</dt>
+              <dt className="govie-summary-list__value">
+                {details.userData.journeyId}
+              </dt>
+            </div>
+          )}
         </dl>
 
         {details.providerType &&
