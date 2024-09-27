@@ -292,8 +292,10 @@
           "header": "Payment request status",
           "active": "Active",
           "inactive": "Inactive",
+          "draft": "Draft",
           "activeDescription": "This payment request is active and can be used to receive payments.",
           "inactiveDescription": "This payment request is inactive and cannot be used to receive payments.",
+          "draftDescription": "This payment request is a draft and cannot be used to receive payments.",
           "invalid": "Payment request status cannot be active if no providers are selected."
         },
         "title": "Title",
@@ -313,6 +315,7 @@
         "referenceRequired": "Reference is required.",
         "amount": "Amount",
         "amountRequired": "Amount is required.",
+        "amountMinimumValidation": "Amount must be greaten than @limit@.",
         "amountMaximumValidation": "Amount must be less than @limit@.",
         "currencySymbol": "€",
         "redirectUrl": "Redirect url",
@@ -339,7 +342,8 @@
     },
     "paymentRequestStatus": {
       "active": "Active",
-      "inactive": "Inactive"
+      "inactive": "Inactive",
+      "draft": "Draft"
     },
     "providerType": {
       "banktransfer": "Bank transfer",
