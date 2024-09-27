@@ -382,7 +382,7 @@ export function newMessagingService(
       const schedulerSdk = await getSchedulerSdk(organisationId);
       const { error } = await schedulerSdk.scheduleTasks(scheduleBody);
       if (error) {
-        throw httpErrors.createError(503, error.detail, { parent: error });
+        throw httpErrors.createError(503, error.message, { parent: error });
       }
 
       return jobs;
