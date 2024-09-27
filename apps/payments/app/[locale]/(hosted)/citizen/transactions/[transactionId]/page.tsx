@@ -74,6 +74,14 @@ export default async function ({ params: { transactionId } }) {
             {details.data.userData.email}
           </dt>
         </div>
+        {details.data.userData.journeyTitle && (
+          <div className="govie-summary-list__row">
+            <dt className="govie-summary-list__key">{t("journeyTitle")}</dt>
+            <dt className="govie-summary-list__value">
+              {details.data.userData.journeyTitle}
+            </dt>
+          </div>
+        )}
       </dl>
     </div>
   );
