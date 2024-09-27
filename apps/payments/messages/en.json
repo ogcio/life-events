@@ -84,8 +84,6 @@
       "payerName": "Payer name",
       "payerEmail": "Payer email",
       "referenceCode": "Payment reference code",
-      "submissionId": "Form submission id",
-      "journeyId": "Journey id",
       "journeyTitle": "Journey title"
     }
   },
@@ -273,7 +271,10 @@
         "providerType": "Provider type",
         "payerName": "Payer name",
         "payerEmail": "Payer email",
-        "referenceCode": "Payment reference code"
+        "referenceCode": "Payment reference code",
+        "submissionId": "Form submission id",
+        "journeyId": "Journey id",
+        "journeyTitle": "Journey title"
       },
       "transactionFound": "Transaction found with this reference code",
       "assignTitle": "Assign to user",
