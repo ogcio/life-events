@@ -13,7 +13,7 @@ import apiAuthPlugin from "api-auth";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import healthCheck from "./routes/healthcheck.js";
-import { initializeErrorHandler } from "error-handler";
+import { initializeErrorHandler } from "@ogcio/fastify-error-handler";
 import { initializeLoggingHooks } from "@ogcio/fastify-logging-wrapper";
 import fastifyMultipart from "@fastify/multipart";
 import v8 from "v8";
