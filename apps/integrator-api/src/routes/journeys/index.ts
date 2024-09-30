@@ -7,6 +7,7 @@ import {
   ParamsWithJourneyId,
 } from "../schemas";
 import { formatAPIResponse } from "../../utils/responseFormatter";
+import { authPermissions } from "../../types/authPermissions";
 
 const TAGS = ["Journeys"];
 
@@ -17,9 +18,8 @@ export default async function journeys(app: FastifyInstance) {
   }>(
     "/:journeyId",
     {
-      // TODO: add prevalidation
-      // preValidation: (req, res) =>
-      //   app.checkPermissions(req, res, [authPermissions.JOURNEY_ALL]),
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [authPermissions.JOURNEY_READ]),
       schema: {
         tags: TAGS,
         response: {

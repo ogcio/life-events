@@ -21,5 +21,12 @@ declare module "fastify" {
     Logger = FastifyLoggerInstance,
   > {
     journeys: JourneyPlugin;
+
+    checkPermissions: (
+      request: FastifyRequest,
+      reply: FastifyReply,
+      permissions: string[],
+      matchConfig?: { method: "AND" | "OR" },
+    ) => Promise<void>;
   }
 }
