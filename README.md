@@ -39,18 +39,11 @@ Before running Bearer reports locally, ensure you have the following installed:
 
 Welcome fellow developer, in order to start the dev environment, after you have installed all the prerequisite software, the first thing needed is to run `npm install` to install all dependencies.
 
-You need to have the `.env` files for every app of the monorepo.
-You can run:
-
-```
-make init-env
-```
-
-to create a copy of every `.env` file based on the corresponding `.env.sample`.
-
-then you can run `make start` to start every app. This command will create and run all required docker containers
+After that, you can run `make start` to start every app. This command will create and run all required docker containers
 
 Note: Logto is required to use authentication, please refer to [OGCIO Logto](https://github.com/ogcio/logto)
+
+After merging new changes from remote branches, you can run npm install to update dependencies. It's possible that new environment variables have been added, so you can run make update-env to update your .env files based on the latest .env.sample. Note: This script replaces the entire .env files. If you have custom entries, it might be better to update the files manually to avoid overwriting them.
 
 #### NPM Commands
 
