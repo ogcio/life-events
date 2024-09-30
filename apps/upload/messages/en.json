@@ -9,6 +9,7 @@
         "file": "File",
         "fileSize": "File size",
         "uploadedBy": "Uploaded by",
+        "fileTTL": "Delete after",
         "action": "action"
       },
       "data": {
@@ -54,6 +55,7 @@
       "name": "Name",
       "fileSize": "File size",
       "createdAt": "Created at",
+      "expiresAt": "Expires at",
       "fileType": "File type",
       "uploadedBy": "Uploaded by"
     },

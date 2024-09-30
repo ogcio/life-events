@@ -236,6 +236,8 @@ paths:
                               - firstName
                               - lastName
                               - ppsn
+                        expiresAt:
+                          type: string
                       required:
                         - fileName
                         - key
@@ -455,6 +457,8 @@ paths:
                             - firstName
                             - lastName
                             - ppsn
+                      expiresAt:
+                        type: string
                     required:
                       - fileName
                       - key
