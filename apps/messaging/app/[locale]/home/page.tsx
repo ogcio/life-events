@@ -29,7 +29,7 @@ export default async (props: { searchParams?: { tab?: string } }) => {
   const messages = await messagingSdk.getMessagesForUser(userInfo.id, {
     offset: 0,
     limit: 100,
-    isSeen: shouldGetAllMessages ? undefined : false, //isSeenQuery,
+    isSeen: shouldGetAllMessages ? undefined : false,
   });
 
   return (
