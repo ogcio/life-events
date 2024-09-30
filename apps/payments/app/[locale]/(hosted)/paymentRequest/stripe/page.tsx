@@ -42,6 +42,8 @@ export default async function Card(props: {
         paymentId: string;
         integrationRef: string;
         amount?: string;
+        submissionId?: string;
+        journeyId?: string;
       }
     | undefined;
 }) {
@@ -62,8 +64,10 @@ export default async function Card(props: {
     return redirect("/not-found", RedirectType.replace);
   }
 
+  const { paymentId, submissionId = "", journeyId = "" } = props.searchParams;
+
   const paymentDetails = await getPaymentDetails(
-    props.searchParams.paymentId,
+    paymentId,
     props.searchParams.amount,
   );
 
@@ -80,7 +84,12 @@ export default async function Card(props: {
     integrationReference: props.searchParams.integrationRef,
     amount: paymentDetails.amount,
     paymentProviderId: paymentDetails.providerId,
-    userData: { email: user?.email ?? "", name: user?.name ?? "" },
+    userData: {
+      email: user?.email ?? "",
+      name: user?.name ?? "",
+      submissionId,
+      journeyId,
+    },
   });
 
   if (error) {
