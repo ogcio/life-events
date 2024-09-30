@@ -1,8 +1,8 @@
-import { Container, Footer, PhaseBanner, Link } from "@govie-react/ds";
 import Main from "./Main";
 import Header from "../Header";
 import { getTranslations } from "next-intl/server";
 import { getLinks } from "../../utils/messaging";
+import { Container, Footer, Link, PhaseBanner } from "@govie-ds/react";
 
 export default async function homeLayout(
   props: React.PropsWithChildren<{ params: { locale: string } }>,
