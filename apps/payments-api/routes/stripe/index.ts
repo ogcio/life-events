@@ -58,7 +58,7 @@ export default async function stripe(app: FastifyInstance) {
        * For testing purposes we are falling back to stored secrets
        *
        *  const stripeSecret = (provider.data as StripeData).liveSecretKey;
-       *  const endpointSecret = (provider.data as StripeData).endpointSecret; // Has to be implemented
+       *  const endpointSecret = (provider.data as StripeData).webhookSigningKey; // Has to be implemented
        */
 
       // Temporary solution!
@@ -68,6 +68,10 @@ export default async function stripe(app: FastifyInstance) {
       const instance = new Stripe(stripeSecret!);
 
       let event: Stripe.Event;
+
+      if (!endpointSecret) {
+        throw app.httpErrors.notFound("Webhook signing key not found!");
+      }
 
       try {
         event = instance.webhooks.constructEvent(

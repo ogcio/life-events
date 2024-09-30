@@ -31,6 +31,7 @@ export const BankTransferData = Type.Object({
 export const StripeData = Type.Object({
   livePublishableKey: Type.String(),
   liveSecretKey: Type.String(),
+  webhookSigningKey: Type.Optional(Type.String()),
 });
 
 export const WorldpayData = Type.Object({

@@ -43,7 +43,7 @@ const buildGetProviderById =
     }
 
     const provider = result.rows[0];
-    const secretFields = getSecretFields(provider.type);
+    const secretFields = getSecretFields(provider.type, provider.data);
 
     return {
       ...provider,
@@ -80,7 +80,10 @@ const buildUpdateProvider =
       throw httpErrors.unprocessableEntity("Provider's data is invalid!");
     }
 
-    const secretFields = getSecretFields(provider.rows[0].type);
+    const secretFields = getSecretFields(
+      provider.rows[0].type,
+      provider.rows[0].data,
+    );
     const providerEncrypted = {
       ...providerData,
       data: secretsHandlerFactory
@@ -107,7 +110,7 @@ const buildGetProvidersList =
     }
 
     return result.rows.map((provider) => {
-      const secretFields = getSecretFields(provider.type);
+      const secretFields = getSecretFields(provider.type, provider.data);
       return {
         ...provider,
         data: secretsHandlerFactory
@@ -135,7 +138,10 @@ const buildCreateProvider =
       throw httpErrors.unprocessableEntity("Provider's data is invalid!");
     }
 
-    const secretFields = getSecretFields(createProvider.type);
+    const secretFields = getSecretFields(
+      createProvider.type,
+      createProvider.data,
+    );
 
     const providerEncrypted = {
       ...createProvider,

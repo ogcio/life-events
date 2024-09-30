@@ -191,6 +191,8 @@ paths:
                               type: string
                             liveSecretKey:
                               type: string
+                            webhookSigningKey:
+                              type: string
                           required:
                             - livePublishableKey
                             - liveSecretKey
@@ -312,6 +314,8 @@ paths:
                           livePublishableKey:
                             type: string
                           liveSecretKey:
+                            type: string
+                          webhookSigningKey:
                             type: string
                         required:
                           - livePublishableKey
@@ -633,6 +637,8 @@ paths:
                                       livePublishableKey:
                                         type: string
                                       liveSecretKey:
+                                        type: string
+                                      webhookSigningKey:
                                         type: string
                                     required:
                                       - livePublishableKey
@@ -1027,6 +1033,8 @@ paths:
                                   type: string
                                 liveSecretKey:
                                   type: string
+                                webhookSigningKey:
+                                  type: string
                               required:
                                 - livePublishableKey
                                 - liveSecretKey
@@ -1255,6 +1263,8 @@ paths:
                                 livePublishableKey:
                                   type: string
                                 liveSecretKey:
+                                  type: string
+                                webhookSigningKey:
                                   type: string
                               required:
                                 - livePublishableKey
