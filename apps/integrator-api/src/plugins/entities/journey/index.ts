@@ -22,7 +22,7 @@ const buildGetJourneyById =
     }
 
     if (!result?.rowCount) {
-      throw httpErrors.notFound("The requested transaction was not found");
+      throw httpErrors.notFound("The requested journey was not found");
     }
 
     return result?.rows[0];
@@ -33,7 +33,7 @@ const buildPlugin = (
   log: FastifyBaseLogger,
   httpErrors: HttpErrors,
 ) => {
-  return { getJourney: buildGetJourneyById(repo, log, httpErrors) };
+  return { getJourneyById: buildGetJourneyById(repo, log, httpErrors) };
 };
 
 const initPlugin: FastifyPluginAsync = async (fastify: FastifyInstance) => {

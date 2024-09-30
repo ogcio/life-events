@@ -9,7 +9,7 @@ export class JourneyRepo {
     this.pg = pg;
   }
 
-  getJourneyById(journeyId: string): Promise<QueryResult<JourneyDetailsDO[]>> {
+  getJourneyById(journeyId: string): Promise<QueryResult<JourneyDetailsDO>> {
     return this.pg.query(
       `SELECT
           j.id,

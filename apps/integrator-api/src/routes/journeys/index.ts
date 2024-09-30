@@ -18,23 +18,20 @@ export default async function journeys(app: FastifyInstance) {
     "/:journeyId",
     {
       // TODO: add prevalidation
+      // preValidation: (req, res) =>
+      //   app.checkPermissions(req, res, [authPermissions.JOURNEY_ALL]),
       schema: {
         tags: TAGS,
         response: {
           200: GenericResponse(JourneyDetails),
+          401: HttpError,
           404: HttpError,
         },
       },
     },
     async (request, reply) => {
-      const organizationId = request.userData?.organizationId;
       const { journeyId } = request.params;
-
-      const journeyDetails = await app.journeys.getJourneyById(
-        journeyId,
-        undefined,
-        organizationId,
-      );
+      const journeyDetails = await app.journeys.getJourneyById(journeyId);
 
       reply.send(formatAPIResponse(journeyDetails));
     },

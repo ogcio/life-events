@@ -9,6 +9,7 @@ import {
   RawServerBase,
   RawServerDefault,
 } from "fastify";
+import { JourneyPlugin } from "../plugins/entities/journey";
 
 declare module "fastify" {
   export interface FastifyInstance<
@@ -18,5 +19,7 @@ declare module "fastify" {
     RawReply extends
       RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
     Logger = FastifyLoggerInstance,
-  > {}
+  > {
+    journeys: JourneyPlugin;
+  }
 }
