@@ -6,6 +6,7 @@ import {
   getTransactionStatusFromStripeEventType,
   removeEmptyProps,
 } from "./utils";
+import { StripeData } from "../../plugins/entities/providers/types";
 
 const TAGS = ["Stripe"];
 
@@ -58,7 +59,7 @@ export default async function stripe(app: FastifyInstance) {
        * For testing purposes we are falling back to stored secrets
        *
        *  const stripeSecret = (provider.data as StripeData).liveSecretKey;
-       *  const endpointSecret = (provider.data as StripeData).webhookSigningKey; // Has to be implemented
+       *  const endpointSecret = (provider.data as StripeData).webhookSigningKey;
        */
 
       // Temporary solution!
