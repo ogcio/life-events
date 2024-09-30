@@ -31,7 +31,7 @@ export default async function journeys(app: FastifyInstance) {
     },
     async (request, reply) => {
       const { journeyId } = request.params;
-      const journeyDetails = await app.journeys.getJourneyById(journeyId);
+      const journeyDetails = await app.journey.getJourneyById(journeyId);
 
       reply.send(formatAPIResponse(journeyDetails));
     },

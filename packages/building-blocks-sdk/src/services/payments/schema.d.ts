@@ -688,6 +688,7 @@ export interface paths {
                   email: string;
                   submissionId?: string;
                   journeyId?: string;
+                  journeyTitle?: string;
                 };
                 description: string;
                 providerName: string;
@@ -809,6 +810,7 @@ export interface paths {
                   email: string;
                   submissionId?: string;
                   journeyId?: string;
+                  journeyTitle?: string;
                 };
                 description: string;
                 providerName: string;
@@ -898,6 +900,7 @@ export interface paths {
               email: string;
               submissionId?: string;
               journeyId?: string;
+              journeyTitle?: string;
             };
           };
         };
@@ -1147,6 +1150,7 @@ export interface paths {
                   email: string;
                   submissionId?: string;
                   journeyId?: string;
+                  journeyTitle?: string;
                 };
                 description: string;
                 providerName: string;

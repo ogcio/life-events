@@ -17,7 +17,7 @@ import apiAuthPlugin from "api-auth";
 import { initializeErrorHandler } from "error-handler";
 import { initializeLoggingHooks } from "logging-wrapper";
 import healthCheck from "./src/routes/healthcheck";
-import journey from "./src/plugins/entities/journey";
+import journey from "./src/plugins/entities/journey/index.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);

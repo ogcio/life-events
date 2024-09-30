@@ -20,7 +20,7 @@ declare module "fastify" {
       RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
     Logger = FastifyLoggerInstance,
   > {
-    journeys: JourneyPlugin;
+    journey: JourneyPlugin;
 
     checkPermissions: (
       request: FastifyRequest,

@@ -136,6 +136,14 @@ export default async function ({
               </dt>
             </div>
           )}
+          {details.userData.journeyTitle && (
+            <div className="govie-summary-list__row">
+              <dt className="govie-summary-list__key">{t("journeyTitle")}</dt>
+              <dt className="govie-summary-list__value">
+                {details.userData.journeyTitle}
+              </dt>
+            </div>
+          )}
         </dl>
 
         {details.providerType &&

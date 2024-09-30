@@ -16,7 +16,7 @@ export class JourneyRepo {
           j.title,
           j.user_id as "userId",
           j.organization_id as "organizationId",
-          j.status"
+          j.status
         FROM journeys j
         WHERE j.id = $1`,
       [journeyId],
