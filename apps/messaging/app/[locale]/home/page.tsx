@@ -24,14 +24,12 @@ export default async (props: { searchParams?: { tab?: string } }) => {
   const messagingSdk = await AuthenticationFactory.getMessagingClient();
   const userInfo = await AuthenticationFactory.getInstance().getUser();
 
-  let isSeenQuery: boolean | undefined = false;
-  if (props.searchParams?.tab) {
-    isSeenQuery = props.searchParams?.tab === "all";
-  }
+  let shouldGetAllMessages = props.searchParams?.tab === "all";
+
   const messages = await messagingSdk.getMessagesForUser(userInfo.id, {
     offset: 0,
     limit: 100,
-    isSeen: isSeenQuery,
+    isSeen: shouldGetAllMessages ? undefined : false, //isSeenQuery,
   });
 
   return (
@@ -41,14 +39,14 @@ export default async (props: { searchParams?: { tab?: string } }) => {
       <Tabs>
         <TabItem
           value="unread"
-          checked={Boolean(!isSeenQuery)}
+          checked={Boolean(!shouldGetAllMessages)}
           href={unreadUrl.href}
         >
           {tHome("unread")}
         </TabItem>
         <TabItem
           value="all"
-          checked={Boolean(Boolean(isSeenQuery))}
+          checked={Boolean(Boolean(shouldGetAllMessages))}
           href={allUrl.href}
         >
           {tHome("all")}
@@ -76,7 +74,7 @@ export default async (props: { searchParams?: { tab?: string } }) => {
                     url.pathname = `/home/${messageId}`;
                     url.searchParams.append(
                       "tab",
-                      isSeenQuery ? "all" : "unread",
+                      shouldGetAllMessages ? "all" : "unread",
                     );
                     return url.href;
                   })(message.id)}
