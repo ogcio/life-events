@@ -1444,7 +1444,7 @@ paths:
                         type: string
                       userId:
                         type: string
-                      userData:
+                      metadata:
                         type: object
                         properties:
                           name:
@@ -1476,7 +1476,7 @@ paths:
                       - updatedAt
                       - title
                       - userId
-                      - userData
+                      - metadata
                       - description
                       - providerName
                       - providerType
@@ -1680,7 +1680,7 @@ paths:
                           type: string
                         userId:
                           type: string
-                        userData:
+                        metadata:
                           type: object
                           properties:
                             name:
@@ -1712,7 +1712,7 @@ paths:
                         - updatedAt
                         - title
                         - userId
-                        - userData
+                        - metadata
                         - description
                         - providerName
                         - providerType
@@ -1851,7 +1851,7 @@ paths:
                   type: number
                 paymentProviderId:
                   type: string
-                userData:
+                metadata:
                   type: object
                   properties:
                     name:
@@ -1873,7 +1873,7 @@ paths:
                 - integrationReference
                 - amount
                 - paymentProviderId
-                - userData
+                - metadata
         required: true
       responses:
         "200":
@@ -2307,7 +2307,7 @@ paths:
                         type: string
                       userId:
                         type: string
-                      userData:
+                      metadata:
                         type: object
                         properties:
                           name:
@@ -2339,7 +2339,7 @@ paths:
                       - updatedAt
                       - title
                       - userId
-                      - userData
+                      - metadata
                       - description
                       - providerName
                       - providerType

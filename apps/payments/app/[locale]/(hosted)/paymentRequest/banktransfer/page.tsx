@@ -118,7 +118,7 @@ export default async function Bank(params: Params) {
     integrationReference: integrationRef,
     amount: paymentDetails.amount,
     paymentProviderId: paymentDetails.providerId,
-    userData: {
+    metadata: {
       email: user?.email ?? "",
       name: user?.name ?? "",
       submissionId,

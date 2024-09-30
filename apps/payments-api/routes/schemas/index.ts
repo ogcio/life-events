@@ -186,7 +186,7 @@ export const FullTransaction = Type.Object({
   createdAt: Type.String(),
   updatedAt: Type.String(),
   userId: Type.String(),
-  userData: Type.Object({
+  metadata: Type.Object({
     name: Type.String(),
     email: Type.String(),
     submissionId: Type.Optional(Type.String()),
@@ -210,7 +210,7 @@ export const Transaction = Type.Composite([
 
 export const TransactionDetails = Type.Composite([
   Transaction,
-  Type.Pick(FullTransaction, ["extPaymentId", "userId", "userData"]),
+  Type.Pick(FullTransaction, ["extPaymentId", "userId", "metadata"]),
   Type.Object({
     description: Type.String(),
     providerName: Type.String(),

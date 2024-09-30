@@ -65,20 +65,20 @@ export default async function ({ params: { transactionId } }) {
         <div className="govie-summary-list__row">
           <dt className="govie-summary-list__key">{t("payerName")}</dt>
           <dt className="govie-summary-list__value">
-            {details.data.userData.name}
+            {details.data.metadata.name}
           </dt>
         </div>
         <div className="govie-summary-list__row">
           <dt className="govie-summary-list__key">{t("payerEmail")}</dt>
           <dt className="govie-summary-list__value">
-            {details.data.userData.email}
+            {details.data.metadata.email}
           </dt>
         </div>
-        {details.data.userData.journeyTitle && (
+        {details.data.metadata.journeyTitle && (
           <div className="govie-summary-list__row">
             <dt className="govie-summary-list__key">{t("journeyTitle")}</dt>
             <dt className="govie-summary-list__value">
-              {details.data.userData.journeyTitle}
+              {details.data.metadata.journeyTitle}
             </dt>
           </div>
         )}

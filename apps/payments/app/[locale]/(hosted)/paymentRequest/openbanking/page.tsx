@@ -108,7 +108,7 @@ export default async function Bank(props: {
     integrationReference: props.searchParams.integrationRef,
     amount: paymentDetails.amount,
     paymentProviderId: paymentDetails.providerId,
-    userData: {
+    metadata: {
       email: user?.email ?? "",
       name: user?.name ?? "",
       submissionId,

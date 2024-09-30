@@ -198,12 +198,12 @@ export default async function transactions(app: FastifyInstance) {
       }
 
       const transactionBody = request.body;
-      const journeyId = request.body.userData.journeyId;
+      const journeyId = request.body.metadata.journeyId;
       if (journeyId) {
         const journeyDetails = await getJourneyById(journeyId);
         if (!journeyDetails)
           throw app.httpErrors.notFound("Journey not found!");
-        transactionBody.userData.journeyTitle = journeyDetails.title;
+        transactionBody.metadata.journeyTitle = journeyDetails.title;
       }
 
       const result = await app.transactions.createTransaction(

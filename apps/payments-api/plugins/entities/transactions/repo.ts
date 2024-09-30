@@ -36,7 +36,7 @@ export class TransactionsRepo {
         t.transaction_id as "transactionId",
         t.status,
         t.user_id as "userId",
-        t.user_data as "userData",
+        t.metadata,
         pr.title,
         pr.payment_request_id as "paymentRequestId",
         pr.description,
@@ -77,7 +77,7 @@ export class TransactionsRepo {
         t.transaction_id as "transactionId",
         t.status,
         t.user_id as "userId",
-        t.user_data as "userData",
+        t.metadata,
         pr.title,
         pr.payment_request_id as "paymentRequestId",
         pr.description,
@@ -116,7 +116,7 @@ export class TransactionsRepo {
   ): Promise<QueryResult<{ transactionId: string; extPaymentId: string }>> {
     return this.pg.query(
       `INSERT INTO payment_transactions
-        (payment_request_id, ext_payment_id, integration_reference, amount, status, created_at, updated_at, payment_provider_id, user_id, user_data)
+        (payment_request_id, ext_payment_id, integration_reference, amount, status, created_at, updated_at, payment_provider_id, user_id, metadata)
         VALUES ($1, $2, $3, $4, $5, now(), now(), $6, $7, $8)
         RETURNING transaction_id as "transactionId", ext_payment_id as "extPaymentId";
       `,
@@ -128,7 +128,7 @@ export class TransactionsRepo {
         TransactionStatusesEnum.Initiated,
         transaction.paymentProviderId,
         userId,
-        transaction.userData,
+        transaction.metadata,
       ],
     );
   }
@@ -200,7 +200,7 @@ export class TransactionsRepo {
         updated_at as "updatedAt",
         amount,
         payment_provider_id as "paymentProviderId",
-        user_data as "userData",
+        metadata,
         user_id as "userId"
       FROM payment_transactions 
       WHERE ext_payment_id = $1`,

@@ -25,7 +25,7 @@ export type TransactionEntry = {
   updatedAt;
   amount: number;
   paymentProviderId: string;
-  userData: {
+  metadata: {
     name: string;
     email: string;
     journeyId?: string;
