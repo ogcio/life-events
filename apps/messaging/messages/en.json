@@ -427,6 +427,9 @@
     "details": "Details",
     "noMessages": "You have no messages",
     "backLink": "Back",
-    "markAsUnread": "Mark as unread"
+    "markAsUnread": "Mark as unread",
+    "englishMenuLabel": "English",
+    "gaeilgeMenuLabel": "Gaeilge",
+    "messagingNavLabel": "Life Events Messages"
   }
 }
