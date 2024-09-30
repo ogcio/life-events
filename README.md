@@ -17,6 +17,7 @@ The docs application will start usually at `http://localhost:3000`. From there y
 ### Pipeline Integration
 
 Bearer has been added as a step in our CI/CD pipeline. This step performs the following tasks:
+
 - Monitors API calls made by our application.
 - Ensures compliance with data protection regulations.
 - Fails the pipeline if any critical or high issues are found.
@@ -28,9 +29,28 @@ To facilitate local development and testing, npm commands that allow you to run 
 #### Prerequisites
 
 Before running Bearer reports locally, ensure you have the following installed:
+
 - Node.js (>=14.x)
 - npm (>=6.x)
 - Bearer CLI (follow the [installation instructions](https://docs.bearer.com/quickstart/))
+- Docker
+
+#### Running life events locally
+
+Welcome fellow developer, in order to start the dev environment, after you have installed all the prerequisite software, the first thing needed is to run `npm install` to install all dependencies.
+
+You need to have the `.env` files for every app of the monorepo.
+You can run:
+
+```
+make init-env
+```
+
+to create a copy of every `.env` file based on the corresponding `.env.sample`.
+
+then you can run `make start` to start every app. This command will create and run all required docker containers
+
+Note: Logto is required to use authentication, please refer to [OGCIO Logto](https://github.com/ogcio/logto)
 
 #### NPM Commands
 
