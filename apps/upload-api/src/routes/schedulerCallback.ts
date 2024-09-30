@@ -32,7 +32,8 @@ export default async function scheduler(app: FastifyInstance) {
       await scheduleCleanupTask(app);
 
       // check if there are files with expired TTL, schedule for deletion
-      await scheduleExpiredFilesForDeletion(app.pg.pool, now);
+
+      await scheduleExpiredFilesForDeletion(app.pg.pool);
 
       const filesToDeleteQueryResult = await getExpiredFiles(app.pg.pool, now);
 

@@ -1,3 +1,4 @@
+import fastifyPostgres from "@fastify/postgres";
 import { FileMetadataType } from "../../../types/schemaDefinitions.js";
 import { Pool, PoolClient } from "pg";
 
@@ -94,14 +95,40 @@ const getExpiredFiles = (pool: Pool, expirationDate: Date) => {
   return pool.query<FileMetadataType>(query, [expirationDate]);
 };
 
-const scheduleExpiredFilesForDeletion = (pool: Pool, now: Date) => {
+const getDeletionDate = () => {
+  const currentDate = new Date();
+
+  const deletionDate = new Date(currentDate);
+  deletionDate.setDate(currentDate.getDate() + 30);
+  return deletionDate;
+};
+
+const scheduleExpiredFilesForDeletion = (pool: Pool) => {
+  const date = getDeletionDate();
+  const now = new Date();
+
   return pool.query<FileMetadataType>(
     `
     UPDATE files
     SET scheduled_deletion_at = $1, expires_at = NULL
-    WHERE expires_at < $1;
+    WHERE expires_at < $2;
   `,
-    [now],
+    [date, now],
+  );
+};
+
+const scheduleFileForDeletion = (
+  pg: fastifyPostgres.PostgresDb,
+  fileId: string,
+) => {
+  const date = getDeletionDate();
+  return pg.query(
+    `
+    UPDATE files
+    SET scheduled_deletion_at = $2, expires_at = NULL
+    WHERE id = $1;
+    `,
+    [fileId, date],
   );
 };
 
@@ -124,4 +151,5 @@ export {
   getExpiredFiles,
   markFilesAsDeleted,
   scheduleExpiredFilesForDeletion,
+  scheduleFileForDeletion,
 };

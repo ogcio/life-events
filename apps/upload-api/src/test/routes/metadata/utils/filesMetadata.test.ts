@@ -7,7 +7,10 @@ import {
   getExpiredFiles,
   markFilesAsDeleted,
   scheduleExpiredFilesForDeletion,
+  scheduleFileForDeletion,
 } from "../../../../routes/metadata/utils/filesMetadata.js";
+import { PostgresDb } from "@fastify/postgres";
+import { log } from "console";
 
 // Mock the PoolClient query method
 class MockPoolClient {
@@ -170,17 +173,51 @@ t.test("filesMetadata", async (t) => {
     },
   );
 
-  t.test(
-    "scheduleExpiredFilesForDeletion should execute a query with the correct parameters",
-    async (t) => {
-      const params: string[] = [];
-      const pool = { query: (...args: string[]) => params.push(...args) };
+  t.test("Schedule file deletion", async (t) => {
+    const OriginalDate = Date;
 
-      const date = new Date("2024-01-01T10:00Z");
+    t.before(() => {
+      Date = class extends Date {
+        constructor() {
+          super(OriginalDate.UTC(2024, 0, 5, 0, 0, 0));
+        }
+      };
+    });
 
-      scheduleExpiredFilesForDeletion(pool as Pool, date);
+    t.after(() => {
+      Date = OriginalDate;
+    });
 
-      t.match(params[1], [date]);
-    },
-  );
+    t.test(
+      "scheduleExpiredFilesForDeletion should execute a query with the correct parameters",
+      async (t) => {
+        const params: string[] = [];
+        const pool = { query: (...args: string[]) => params.push(...args) };
+
+        scheduleExpiredFilesForDeletion(pool as Pool);
+
+        t.equal(
+          params[1][0].toString(),
+          new OriginalDate(OriginalDate.UTC(2024, 1, 4, 0, 0, 0)).toString(),
+        );
+      },
+    );
+
+    t.test(
+      "scheduleFileForDeletion should execute a query with the correct params",
+      async (t) => {
+        const params: string[] = [];
+        const pg = {
+          query: (...args: string[]) => params.push(...args),
+        };
+
+        scheduleFileForDeletion(pg as PostgresDb, "fileId");
+        t.equal(params[1][0], "fileId");
+        t.equal(
+          params[1][1].toString(),
+          new OriginalDate(OriginalDate.UTC(2024, 1, 4, 0, 0, 0)).toString(),
+        );
+      },
+    );
+  });
 });
