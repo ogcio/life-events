@@ -75,7 +75,6 @@ export default async function stripe(app: FastifyInstance) {
           sig,
           endpointSecret!,
         );
-        console.log(event);
       } catch (err) {
         throw app.httpErrors.getHttpError(
           400,
