@@ -1,11 +1,22 @@
-import { Link, Heading, Paragraph } from "@govie-react/ds";
+import {
+  Link,
+  Heading,
+  Paragraph,
+  Tabs,
+  TabItem,
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableData,
+  Icon,
+} from "@govie-ds/react";
 import { getTranslations } from "next-intl/server";
-
-import { Tab, Tabs } from "./Tabs";
-import { Table, Tbody, Td, Th, Thead, Tr } from "./Table";
 import { AuthenticationFactory } from "../../utils/authentication-factory";
 import dayjs from "dayjs";
 import { allUrl, baseUrl, unreadUrl } from "./utils";
+import React from "react";
 
 export default async (props: { searchParams?: { tab?: string } }) => {
   const tHome = await getTranslations("Home");
@@ -13,12 +24,12 @@ export default async (props: { searchParams?: { tab?: string } }) => {
   const messagingSdk = await AuthenticationFactory.getMessagingClient();
   const userInfo = await AuthenticationFactory.getInstance().getUser();
 
-  const isSeenQuery = props.searchParams?.tab === "unread" ? false : undefined;
+  let shouldGetAllMessages = props.searchParams?.tab === "all";
 
   const messages = await messagingSdk.getMessagesForUser(userInfo.id, {
     offset: 0,
     limit: 100,
-    isSeen: isSeenQuery,
+    isSeen: shouldGetAllMessages ? undefined : false,
   });
 
   return (
@@ -26,54 +37,65 @@ export default async (props: { searchParams?: { tab?: string } }) => {
       <Heading>{tHome("header")}</Heading>
 
       <Tabs>
-        <Tab
-          active={
-            !props.searchParams?.tab || props.searchParams?.tab === "unread"
-          }
+        <TabItem
+          value="unread"
+          checked={Boolean(!shouldGetAllMessages)}
           href={unreadUrl.href}
         >
           {tHome("unread")}
-        </Tab>
-        <Tab
-          active={Boolean(
-            props.searchParams?.tab && props.searchParams?.tab === "all",
-          )}
+        </TabItem>
+        <TabItem
+          value="all"
+          checked={Boolean(Boolean(shouldGetAllMessages))}
           href={allUrl.href}
         >
           {tHome("all")}
-        </Tab>
+        </TabItem>
       </Tabs>
 
       <Table>
-        <Thead>
-          <Tr>
-            <Th>{tHome("date")}</Th>
-            <Th>{tHome("details")}</Th>
-            <Th />
-          </Tr>
-        </Thead>
-        <Tbody>
+        <TableHead>
+          <TableRow>
+            <TableHeader>{tHome("date")}</TableHeader>
+            <TableHeader>{tHome("details")}</TableHeader>
+            <TableHeader></TableHeader>
+          </TableRow>
+        </TableHead>
+        <TableBody>
           {messages.data?.map((message) => (
-            <Tr key={message.id}>
-              <Td>{dayjs(message.createdAt).format("D MMM YYYY")}</Td>
-              <Td>
+            <TableRow key={message.id}>
+              <TableData>
+                {dayjs(message.createdAt).format("D MMM YYYY")}
+              </TableData>
+              <TableData>
                 <Link
                   href={((messageId) => {
                     const url = new URL(baseUrl);
                     url.pathname = `/home/${messageId}`;
+                    url.searchParams.append(
+                      "tab",
+                      shouldGetAllMessages ? "all" : "unread",
+                    );
                     return url.href;
                   })(message.id)}
                 >
                   {message.subject}
                 </Link>
-              </Td>
-              <Td></Td>
-            </Tr>
+              </TableData>
+              <TableData>
+                <Icon
+                  icon="attach_file"
+                  color={message.attachmentsCount ? "default" : "disabled"}
+                />
+              </TableData>
+            </TableRow>
           ))}
-        </Tbody>
+        </TableBody>
       </Table>
 
-      {!messages.data?.length && <Paragraph>{tHome("noMessages")}</Paragraph>}
+      {!messages.data?.length && (
+        <Paragraph align="center">{tHome("noMessages")}</Paragraph>
+      )}
     </>
   );
 };
