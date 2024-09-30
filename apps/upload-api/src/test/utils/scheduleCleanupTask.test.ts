@@ -1,8 +1,6 @@
 import { FastifyInstance } from "fastify";
 import t from "tap";
-import { getSchedulerSdk } from "../../utils/authentication-factory.js";
 import { SCHEDULER_TOKEN } from "../../utils/storeConfig.js";
-getSchedulerSdk;
 
 t.test("scheduleCleanupTask", async (t) => {
   const OriginalDate = Date;
