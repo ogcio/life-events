@@ -1,4 +1,4 @@
-import { getOrganizationToken } from "api-auth";
+import { getAccessToken, getOrganizationToken } from "api-auth";
 import { Integrator, Profile } from "building-blocks-sdk";
 
 const getBaseProfileConfig = (): {
@@ -28,13 +28,11 @@ const getOrganizationProfileToken = (organizationId: string): Promise<string> =>
     organizationId,
   });
 
-const getOrganizationIntegratorToken = (
-  organizationId: string,
-): Promise<string> =>
-  getOrganizationToken({
+const getCitizenIntegrationToken = (): Promise<string> =>
+  getAccessToken({
     ...getIntegratorBaseConfig(),
     scopes: ["integrator:journey:read"],
-    organizationId,
+    resource: `${process.env.INTEGRATOR_BACKEND_URL}/`,
   });
 
 export const getProfileSdk = async (
@@ -44,9 +42,7 @@ export const getProfileSdk = async (
   return new Profile(token);
 };
 
-export const getIntegratorSdk = async (
-  organizationId: string,
-): Promise<Integrator> => {
-  const token = await getOrganizationIntegratorToken(organizationId);
+export const getIntegratorSdk = async (): Promise<Integrator> => {
+  const token = await getCitizenIntegrationToken();
   return new Integrator(token);
 };
