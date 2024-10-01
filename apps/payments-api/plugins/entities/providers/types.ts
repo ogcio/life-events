@@ -4,20 +4,17 @@ import {
   CreateProvider,
   OpenBankingData,
   ParamsWithProviderId,
-  Provider,
   ProviderData,
   ProviderReply,
   ProviderStatus,
   ProviderTypes,
   RealexData,
-  RealexEncryptedData,
   RealexHppResponse,
+  RealexPaymentObject,
   RealexStatusUpdateQueryParams,
   StripeData,
-  StripeEncryptedData,
   UpdateProvider,
   WorldpayData,
-  WorldpayEncryptedData,
 } from "../../../routes/schemas";
 
 export type OpenBankingData = Static<typeof OpenBankingData>;
