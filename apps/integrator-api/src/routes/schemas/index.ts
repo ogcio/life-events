@@ -1,5 +1,10 @@
 import { Static, TSchema, Type } from "@sinclair/typebox";
 
+export const Id = Type.Object({
+  id: Type.String(),
+});
+export type Id = Static<typeof Id>;
+
 export const PaginationLink = Type.Object({
   href: Type.Optional(Type.String()),
 });
@@ -49,3 +54,11 @@ export const JourneyDetails = Type.Object({
 });
 
 export type JourneyDetailsDO = Static<typeof JourneyDetails>;
+
+export const CreateJourneyBody = Type.Object({
+  title: Type.String(),
+  organizationId: Type.String(),
+  userId: Type.String(),
+});
+
+export type CreateJourneyBodyDO = Static<typeof CreateJourneyBody>;

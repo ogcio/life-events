@@ -1,7 +1,9 @@
 import { FastifyInstance } from "fastify";
 import { HttpError } from "../../types/httpErrors";
 import {
+  CreateJourneyBodyDO,
   GenericResponse,
+  Id,
   JourneyDetails,
   JourneyDetailsDO,
   ParamsWithJourneyId,
@@ -34,6 +36,36 @@ export default async function journeys(app: FastifyInstance) {
       const journeyDetails = await app.journey.getJourneyById(journeyId);
 
       reply.send(formatAPIResponse(journeyDetails));
+    },
+  );
+
+  app.post<{
+    Body: CreateJourneyBodyDO;
+    Reply: GenericResponse<Id> | Error;
+  }>(
+    "/",
+    {
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [authPermissions.JOURNEY_WRITE]),
+      schema: {
+        tags: TAGS,
+        response: {
+          200: GenericResponse(Id),
+          401: HttpError,
+          404: HttpError,
+        },
+      },
+    },
+    async (request, reply) => {
+      const userId = request.userData?.userId;
+
+      if (!userId) {
+        throw app.httpErrors.unauthorized("Unauthorized!");
+      }
+
+      const { id } = await app.journey.createJourney(request.body);
+
+      reply.send(formatAPIResponse({ id }));
     },
   );
 }
