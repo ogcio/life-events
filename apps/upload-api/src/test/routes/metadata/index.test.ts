@@ -3,6 +3,7 @@ import { FastifyInstance, FastifyPluginCallback } from "fastify";
 import fp from "fastify-plugin";
 import t from "tap";
 import * as authenticationFactory from "../../../utils/authentication-factory.js";
+import { CONFIG_TYPE } from "../../../utils/storeConfig.js";
 
 const buildApp = async ({
   profileSdkResponse,
@@ -11,6 +12,7 @@ const buildApp = async ({
   getSharedFiles,
   getFileMetadataById,
   getFileSharings,
+  getSharedFilesPerOrganization,
   scheduleFileForDeletion,
   removeAllFileSharings,
 }: {
@@ -20,6 +22,7 @@ const buildApp = async ({
   getSharedFiles?: () => Promise<unknown>;
   getFileMetadataById?: () => Promise<unknown>;
   getFileSharings?: () => Promise<unknown>;
+  getSharedFilesPerOrganization?: () => Promise<unknown>;
   scheduleFileForDeletion?: () => Promise<unknown>;
   removeAllFileSharings?: () => Promise<unknown>;
 }) => {
@@ -58,12 +61,22 @@ const buildApp = async ({
         default: fp(async (fastify) => {
           fastify.decorate("checkPermissions", async (request) => {
             request.userData = {
+              isM2MApplication: false,
               userId: "userId",
               accessToken: "accessToken",
               organizationId: "ogcio",
             };
           });
         }),
+      },
+
+      "../../../utils/storeConfig.js": {
+        storeConfig: () => Promise.resolve(),
+        CONFIG_TYPE,
+        SCHEDULER_TOKEN: "SCHEDULER_TOKEN",
+      },
+      "../../../utils/scheduleCleanupTask.js": {
+        default: () => Promise.resolve(),
       },
     },
   );
@@ -84,6 +97,7 @@ const buildApp = async ({
       getOwnedFiles,
       getOrganizationFiles,
       getSharedFiles,
+      getSharedFilesPerOrganization,
     },
     "../../../routes/utils/getFileMetadataById.js": {
       default: getFileMetadataById,

@@ -1,5 +1,5 @@
 import { getAccessToken, getOrganizationToken } from "api-auth";
-import { Profile, Scheduler } from "building-blocks-sdk";
+import { Profile, Scheduler, Upload } from "building-blocks-sdk";
 import { AuthorizationError } from "shared-errors";
 
 const getBaseProfileConfig = (): {
@@ -79,4 +79,19 @@ export const ensureOrganizationIdIsSet = (
   }
 
   throw new AuthorizationError(errorProcess, errorMessage);
+};
+
+const getOrganizationUploadToken = (organizationId: string): Promise<string> =>
+  getOrganizationToken({
+    logtoOidcEndpoint: process.env.LOGTO_OIDC_ENDPOINT ?? "",
+    applicationId: process.env.LOGTO_M2M_UPLOADER_APP_ID ?? "",
+    applicationSecret: process.env.LOGTO_M2M_UPLOADER_APP_SECRET ?? "",
+    scopes: ["upload:file:*"],
+    organizationId,
+  });
+
+export const getUploadSdk = async (organizationId: string): Promise<Upload> => {
+  const token = await getOrganizationUploadToken(organizationId);
+
+  return new Upload(token);
 };

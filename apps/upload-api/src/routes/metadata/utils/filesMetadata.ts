@@ -1,5 +1,5 @@
 import { FileMetadataType } from "../../../types/schemaDefinitions.js";
-import { PoolClient } from "pg";
+import { Pool, PoolClient } from "pg";
 
 const baseQuery = `
   SELECT 
@@ -12,7 +12,9 @@ const baseQuery = `
     last_scan as "lastScan",
     infected,
     infection_description as "infectionDescription", 
-    deleted, file_name as "fileName"
+    deleted, 
+    file_name as "fileName",
+    scheduled_deletion_at as "scheduledDeletionAt"
   FROM
     files
 `;
@@ -72,4 +74,41 @@ const getSharedFiles = (
   return client.query<FileMetadataType>(query, [userId, ...toExclude]);
 };
 
-export { getOwnedFiles, getOrganizationFiles, getSharedFiles };
+const getSharedFilesPerOrganization = (
+  client: PoolClient,
+  organizationId: string,
+  userId: string,
+) => {
+  const query = `${baseQuery} 
+    INNER JOIN files_users ON files.id = files_users.file_id 
+    WHERE files_users.user_id = $1 and files.organization_id = $2
+    AND ${EXCLUDE_DELETED};
+  `;
+
+  return client.query<FileMetadataType>(query, [userId, organizationId]);
+};
+
+const getExpiredFiles = (pool: Pool, expirationDate: Date) => {
+  const query = `${baseQuery} WHERE scheduled_deletion_at < $1 and deleted = false`;
+  return pool.query<FileMetadataType>(query, [expirationDate]);
+};
+
+const markFilesAsDeleted = (pool: Pool, ids: string[]) => {
+  return pool.query<FileMetadataType>(
+    `
+    UPDATE files
+    SET deleted = true, deleted_at = NOW()
+    WHERE id = ANY($1::uuid[]);
+  `,
+    [ids],
+  );
+};
+
+export {
+  getOwnedFiles,
+  getOrganizationFiles,
+  getSharedFiles,
+  getSharedFilesPerOrganization,
+  getExpiredFiles,
+  markFilesAsDeleted,
+};

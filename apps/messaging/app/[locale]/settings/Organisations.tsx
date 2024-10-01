@@ -46,7 +46,7 @@ export default async () => {
                   href={(() => {
                     const url = new URL(
                       `${userOrganisationsRoutes.url}/${organisationSetting.id}`,
-                      process.env.HOST_URL,
+                      process.env.NEXT_PUBLIC_MESSAGING_SERVICE_ENTRY_POINT,
                     );
                     return url.href;
                   })()}

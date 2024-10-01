@@ -32,13 +32,15 @@ variables:
     - template: pipeline-variables/${{ coalesce(variables['Build.SourceBranchName'], 'fallback') }}.yml
   - ${{ else }}:
     - template: pipeline-variables/dev.yml
+  - name: runSmokeTest
+    value: ${{ eq('dev', variables['Build.SourceBranchName']) }}
 
 resources:
   repositories:
     - repository: pipeline-templates
       type: github
       name: ogcio/building-blocks-pipelines
-      ref: main
+      ref: unitTestReporting
       endpoint: ogcio
 
 stages:
@@ -145,3 +147,14 @@ stages:
           awsRegion: ${{ variables.awsRegion }}
           serviceName: ${{ serviceName }}-service
           clusterName: life-events-ecs
+    - stage: Smoke_Tests_${{ replace(serviceName, '-', '_') }}
+      displayName: Run smoke tests - ${{ serviceName }}
+      condition: ${{ variables.runSmokeTests }}
+      pool: 'Openshift'
+      dependsOn: Deploy_${{ replace(serviceName, '-', '_') }}
+      jobs:
+        - template: test/smoke_test.yml@pipeline-templates
+          parameters:
+            serviceName: ${{ serviceName }}
+            testPath: './apps/'
+

@@ -187,32 +187,42 @@ export default async function messages(app: FastifyInstance) {
       type QueryRow = Static<typeof MessageListItemWithCount>;
 
       let messagesQueryResult: QueryResult<QueryRow> | undefined;
-
       try {
         messagesQueryResult = await app.pg.pool.query<QueryRow>(
           `
-            with count_selection as (
-              select count(*) from messages
-              where
-              case when $1::text is not null then organisation_id = $1 else true end
-              and case when $5 > 0 then user_id = any ($2) else true end
-            )
-            select 
-              id,
-              subject,
-              thread_name as "threadName",
-              organisation_id as "organisationId",
-              user_id as "recipientUserId",
-              created_at as "createdAt",
-              (select count from count_selection) as "count"
-            from messages
-            where 
-            case when $1::text is not null then organisation_id = $1 else true end
-            and case when $5 > 0 then user_id = any ($2) else true end
-            and case when $6::boolean is not null then is_seen = $6::boolean else true end
-            order by created_at desc
-            limit $3
-            offset $4
+          WITH count_selection AS (
+              SELECT count(*) 
+              FROM messages
+              WHERE
+                  CASE WHEN $1::text IS NOT NULL THEN organisation_id = $1 ELSE true END
+                  AND CASE WHEN $5 > 0 THEN user_id = ANY ($2) ELSE true END
+          )
+          SELECT 
+              messages.id,
+              messages.subject,
+              messages.thread_name AS "threadName",
+              messages.organisation_id AS "organisationId",
+              messages.user_id AS "recipientUserId",
+              messages.created_at AS "createdAt",
+              (SELECT count FROM count_selection) AS "count",
+              COALESCE(COUNT(attachments_messages.attachment_id), 0) AS "attachmentsCount"
+          FROM messages
+          LEFT JOIN attachments_messages 
+              ON attachments_messages.message_id = messages.id
+          WHERE 
+              CASE WHEN $1::text IS NOT NULL THEN organisation_id = $1 ELSE true END
+              AND CASE WHEN $5 > 0 THEN user_id = ANY ($2) ELSE true END
+              AND CASE WHEN $6::boolean IS NOT NULL THEN messages.is_seen = $6::boolean ELSE true END
+          GROUP BY 
+              messages.id, 
+              messages.subject, 
+              messages.thread_name, 
+              messages.organisation_id, 
+              messages.user_id, 
+              messages.created_at
+          ORDER BY messages.created_at DESC
+          LIMIT $3
+          OFFSET $4;
         `,
           [
             queryOrganisationId || null,
@@ -243,6 +253,7 @@ export default async function messages(app: FastifyInstance) {
               organisationId,
               threadName,
               recipientUserId,
+              attachmentsCount,
             }) => ({
               id,
               subject,
@@ -250,6 +261,7 @@ export default async function messages(app: FastifyInstance) {
               threadName,
               organisationId,
               recipientUserId,
+              attachmentsCount,
             }),
           ) ?? [],
         request,
@@ -338,6 +350,7 @@ export default async function messages(app: FastifyInstance) {
             ...request.body.message,
             organisationId: userData.organizationId!,
             senderUserProfileId: ensureUserIdIsSet(request, errorKey),
+            attachments: request.body.attachments ?? [],
           },
         ],
         scheduleAt: request.body.scheduleAt,

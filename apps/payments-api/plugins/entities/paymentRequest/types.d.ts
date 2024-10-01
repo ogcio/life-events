@@ -5,6 +5,7 @@ import {
   ParamsWithPaymentRequestId,
   PaymentRequest,
   PaymentRequestDetails,
+  PaymentRequestPublicInfo,
 } from "../../../routes/schemas";
 
 export type PaymentRequestDO = Static<typeof PaymentRequest>;
@@ -13,4 +14,7 @@ export type CreatePaymentRequestDO = Static<typeof CreatePaymentRequest>;
 export type EditPaymentRequestDO = Static<typeof EditPaymentRequest>;
 export type ParamsWithPaymentRequestIdDO = Static<
   typeof ParamsWithPaymentRequestId
+>;
+export type PaymentRequestPublicInfoDO = Static<
+  typeof PaymentRequestPublicInfo
 >;

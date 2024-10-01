@@ -673,12 +673,12 @@ paths:
                             - type: string
                               enum:
                                 - inactive
+                            - type: string
+                              enum:
+                                - draft
                       required:
                         - paymentRequestId
                         - title
-                        - description
-                        - amount
-                        - reference
                         - providers
                         - status
                   metadata:
@@ -740,17 +740,47 @@ paths:
                   validator: RequiredValidator
                   type: string
                 description:
-                  type: string
+                  validator:
+                    name: OptionalRequiredValidator
+                    options:
+                      field: status
+                      operation: notEqual
+                      value: draft
+                  anyOf:
+                    - type: string
+                    - type: "null"
                 reference:
-                  validator: RequiredValidator
-                  type: string
+                  validator:
+                    name: OptionalRequiredValidator
+                    options:
+                      field: status
+                      operation: notEqual
+                      value: draft
+                  anyOf:
+                    - type: string
+                    - type: "null"
                 amount:
-                  minimum: 1
-                  maximum: 1000000
-                  type: number
+                  validator:
+                    name: OptionalRequiredValidator
+                    options:
+                      field: status
+                      operation: notEqual
+                      value: draft
+                  anyOf:
+                    - minimum: 1
+                      maximum: 1000000
+                      type: number
+                    - type: "null"
                 redirectUrl:
-                  validator: RequiredValidator
-                  type: string
+                  validator:
+                    name: OptionalRequiredValidator
+                    options:
+                      field: status
+                      operation: notEqual
+                      value: draft
+                  anyOf:
+                    - type: string
+                    - type: "null"
                 allowAmountOverride:
                   type: boolean
                 allowCustomAmount:
@@ -767,6 +797,9 @@ paths:
                     - type: string
                       enum:
                         - inactive
+                    - type: string
+                      enum:
+                        - draft
                   validator: PaymentRequestStatusValidator
               required:
                 - title
@@ -803,17 +836,47 @@ paths:
                   validator: RequiredValidator
                   type: string
                 description:
-                  type: string
+                  validator:
+                    name: OptionalRequiredValidator
+                    options:
+                      field: status
+                      operation: notEqual
+                      value: draft
+                  anyOf:
+                    - type: string
+                    - type: "null"
                 reference:
-                  validator: RequiredValidator
-                  type: string
+                  validator:
+                    name: OptionalRequiredValidator
+                    options:
+                      field: status
+                      operation: notEqual
+                      value: draft
+                  anyOf:
+                    - type: string
+                    - type: "null"
                 amount:
-                  minimum: 1
-                  maximum: 1000000
-                  type: number
+                  validator:
+                    name: OptionalRequiredValidator
+                    options:
+                      field: status
+                      operation: notEqual
+                      value: draft
+                  anyOf:
+                    - minimum: 1
+                      maximum: 1000000
+                      type: number
+                    - type: "null"
                 redirectUrl:
-                  validator: RequiredValidator
-                  type: string
+                  validator:
+                    name: OptionalRequiredValidator
+                    options:
+                      field: status
+                      operation: notEqual
+                      value: draft
+                  anyOf:
+                    - type: string
+                    - type: "null"
                 allowAmountOverride:
                   type: boolean
                 allowCustomAmount:
@@ -830,6 +893,9 @@ paths:
                     - type: string
                       enum:
                         - inactive
+                    - type: string
+                      enum:
+                        - draft
                   validator: PaymentRequestStatusValidator
                 paymentRequestId:
                   type: string
@@ -1000,6 +1066,9 @@ paths:
                       - type: string
                         enum:
                           - inactive
+                      - type: string
+                        enum:
+                          - draft
                   redirectUrl:
                     type: string
                   allowAmountOverride:
@@ -1009,12 +1078,8 @@ paths:
                 required:
                   - paymentRequestId
                   - title
-                  - description
-                  - amount
-                  - reference
                   - providers
                   - status
-                  - redirectUrl
                   - allowAmountOverride
                   - allowCustomAmount
         "404":
@@ -1230,6 +1295,9 @@ paths:
                       - type: string
                         enum:
                           - inactive
+                      - type: string
+                        enum:
+                          - draft
                   redirectUrl:
                     type: string
                   allowAmountOverride:
@@ -1452,6 +1520,8 @@ paths:
                         required:
                           - name
                           - email
+                      description:
+                        type: string
                       providerName:
                         type: string
                       providerType:
@@ -1467,6 +1537,7 @@ paths:
                       - title
                       - userId
                       - userData
+                      - description
                       - providerName
                       - providerType
                       - paymentRequestId
@@ -1679,6 +1750,8 @@ paths:
                           required:
                             - name
                             - email
+                        description:
+                          type: string
                         providerName:
                           type: string
                         providerType:
@@ -1694,6 +1767,7 @@ paths:
                         - title
                         - userId
                         - userData
+                        - description
                         - providerName
                         - providerType
                         - paymentRequestId
@@ -2291,6 +2365,8 @@ paths:
                         required:
                           - name
                           - email
+                      description:
+                        type: string
                       providerName:
                         type: string
                       providerType:
@@ -2306,6 +2382,7 @@ paths:
                       - title
                       - userId
                       - userData
+                      - description
                       - providerName
                       - providerType
                       - paymentRequestId

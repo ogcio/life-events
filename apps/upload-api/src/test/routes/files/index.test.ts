@@ -9,6 +9,7 @@ import { FieldDef } from "pg";
 import { PassThrough } from "stream";
 import t from "tap";
 import * as authenticationFactory from "../../../utils/authentication-factory.js";
+import { CONFIG_TYPE, SCHEDULER_TOKEN } from "../../../utils/storeConfig.js";
 
 const nextTick = () =>
   new Promise<void>((resolve) => setTimeout(() => resolve()));
@@ -89,12 +90,21 @@ t.test("files", async (t) => {
         default: fp(async (fastify) => {
           fastify.decorate("checkPermissions", async (request) => {
             request.userData = {
+              isM2MApplication: false,
               userId: "userId",
               accessToken: "accessToken",
               organizationId: "ogcio",
             };
           });
         }),
+      },
+      "../../../utils/storeConfig.js": {
+        storeConfig: () => Promise.resolve(),
+        CONFIG_TYPE,
+        SCHEDULER_TOKEN,
+      },
+      "../../../utils/scheduleCleanupTask.js": {
+        default: () => Promise.resolve(),
       },
     },
   );
@@ -117,6 +127,9 @@ t.test("files", async (t) => {
           });
         }
       },
+    },
+    "../../../routes/files/utils/getFilename.js": {
+      default: (pg: unknown, filename: string) => Promise.resolve(filename),
     },
     "../../../utils/authentication-factory.js": t.createMock(
       authenticationFactory,
@@ -304,65 +317,6 @@ t.test("files", async (t) => {
       },
     );
 
-    t.test(
-      "Should return a 400 status code when an error in deletion happens",
-      { skip: "Legacy test" },
-      (t) => {
-        decorateRequest(app, {
-          file: passthroughStream,
-          filename: "sample.txt",
-        });
-
-        app
-          .inject({
-            method: "POST",
-            url: "/files",
-          })
-          .then((response) => {
-            t.equal(response.statusCode, 400);
-            t.end();
-          });
-
-        setTimeout(() => {
-          passthroughStream.truncated = true;
-          uploadEventEmitter.emit("fileUploaded");
-          antivirusPassthrough.emit("scan-complete", { isInfected: false });
-          setTimeout(() => {
-            s3SendEventEmitter.emit("send-error");
-          });
-        });
-      },
-    );
-
-    t.test(
-      "should return a 400 status code when an error happens in deleting infected file",
-      { skip: "Legacy test" },
-      (t) => {
-        decorateRequest(app, {
-          file: passthroughStream,
-          filename: "sample.txt",
-        });
-
-        app
-          .inject({
-            method: "POST",
-            url: "/files",
-          })
-          .then((response) => {
-            t.equal(response.statusCode, 400);
-            t.end();
-          });
-
-        setTimeout(() => {
-          uploadEventEmitter.emit("fileUploaded");
-          antivirusPassthrough.emit("scan-complete", { isInfected: true });
-          setTimeout(() => {
-            s3SendEventEmitter.emit("send-error");
-          });
-        });
-      },
-    );
-
     t.test("should return an error when filename is not provided", (t) => {
       decorateRequest(app, { file: passthroughStream });
 
@@ -377,6 +331,57 @@ t.test("files", async (t) => {
           t.end();
         });
     });
+
+    t.test("should return an error when a dotfile is uploaded", (t) => {
+      decorateRequest(app, { file: passthroughStream, filename: ".env" });
+
+      app
+        .inject({
+          method: "POST",
+          url: "/files",
+        })
+        .then((response) => {
+          t.equal(response.statusCode, 400);
+          t.equal(response.json().detail, "File not allowed");
+          t.end();
+        });
+    });
+
+    t.test(
+      "should return an error when a a file with a forbidden extension is uploaded",
+      (t) => {
+        decorateRequest(app, { file: passthroughStream, filename: "test.exe" });
+
+        app
+          .inject({
+            method: "POST",
+            url: "/files",
+          })
+          .then((response) => {
+            t.equal(response.statusCode, 400);
+            t.equal(response.json().detail, "File not allowed");
+            t.end();
+          });
+      },
+    );
+
+    t.test(
+      "should return an error when a a file with no extension is uploaded",
+      (t) => {
+        decorateRequest(app, { file: passthroughStream, filename: "test" });
+
+        app
+          .inject({
+            method: "POST",
+            url: "/files",
+          })
+          .then((response) => {
+            t.equal(response.statusCode, 400);
+            t.equal(response.json().detail, "File not allowed");
+            t.end();
+          });
+      },
+    );
 
     t.test("should return an error when AV scan fails in POST", async (t) => {
       decorateRequest(app, {

@@ -81,7 +81,7 @@ test.describe("Payment Request with open banking provider", () => {
     await paymentRequestsPage.goto();
     await paymentRequestsPage.checkHeader();
     await paymentRequestsPage.checkRequestIsVisible(name);
-    await paymentRequestsPage.checkBeneficiaryAccounts(name, [
+    await paymentRequestsPage.checkRecipientAccounts(name, [
       openBankingProvider,
     ]);
     await paymentRequestsPage.checkAmount(name, mockAmount);
@@ -153,7 +153,7 @@ test.describe("Payment Request with open banking provider", () => {
     await paymentRequestsPage.goto();
     await paymentRequestsPage.checkHeader();
     await paymentRequestsPage.checkRequestIsVisible(name);
-    await paymentRequestsPage.checkBeneficiaryAccounts(name, [
+    await paymentRequestsPage.checkRecipientAccounts(name, [
       openBankingProvider,
     ]);
     await paymentRequestsPage.checkAmount(name, mockAmount);

@@ -1,9 +1,11 @@
 import t from "tap";
-import { PoolClient } from "pg";
+import { Pool, PoolClient } from "pg";
 import {
   getOwnedFiles,
   getOrganizationFiles,
   getSharedFiles,
+  getExpiredFiles,
+  markFilesAsDeleted,
 } from "../../../../routes/metadata/utils/filesMetadata.js";
 
 // Mock the PoolClient query method
@@ -136,6 +138,34 @@ t.test("filesMetadata", async (t) => {
       getSharedFiles(client as PoolClient, "userId", toExclude);
 
       t.match(params[1], ["userId", "file-1", "file-2"]);
+    },
+  );
+
+  t.test(
+    "getExpiredFiles should execute a query with the correct parameters",
+    async (t) => {
+      const params: string[] = [];
+      const pool = { query: (...args: string[]) => params.push(...args) };
+
+      const expirationDate = new Date(Date.UTC(2024, 0, 0, 0, 0, 0));
+
+      getExpiredFiles(pool as Pool, expirationDate);
+
+      t.match(params[1], expirationDate);
+    },
+  );
+
+  t.test(
+    "markFilesAsDeleted should execute a query with the correct parameters",
+    async (t) => {
+      const params: string[] = [];
+      const pool = { query: (...args: string[]) => params.push(...args) };
+
+      const ids = ["id-1", "id-2"];
+
+      markFilesAsDeleted(pool as Pool, ids);
+
+      t.match(params[1], [ids]);
     },
   );
 });

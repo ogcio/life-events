@@ -18,6 +18,7 @@ export default async function (request: NextRequest) {
   })(request);
 
   nextResponse.headers.append("x-pathname", request.nextUrl.pathname);
+  nextResponse.headers.append("x-href", request.nextUrl.href);
   return nextResponse;
 }
 

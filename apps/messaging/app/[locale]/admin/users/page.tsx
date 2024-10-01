@@ -83,7 +83,10 @@ export default async (props: {
         <div style={linkStyle(isUsers)}>
           <Link
             href={(() => {
-              const url = new URL(usersRoute.url, process.env.HOST_URL);
+              const url = new URL(
+                usersRoute.url,
+                process.env.NEXT_PUBLIC_MESSAGING_SERVICE_ENTRY_POINT,
+              );
               url.searchParams.append(searchKeyListType, searchValueUsers);
               return url.href;
             })()}
@@ -95,7 +98,10 @@ export default async (props: {
         <div style={linkStyle(isImports)}>
           <Link
             href={(() => {
-              const url = new URL(usersRoute.url, process.env.HOST_URL);
+              const url = new URL(
+                usersRoute.url,
+                process.env.NEXT_PUBLIC_MESSAGING_SERVICE_ENTRY_POINT,
+              );
               url.searchParams.append(searchKeyListType, searchValueImports);
               return url.href;
             })()}
@@ -107,7 +113,10 @@ export default async (props: {
         <div style={linkStyle(isImportCsv)}>
           <Link
             href={(() => {
-              const url = new URL(usersRoute.url, process.env.HOST_URL);
+              const url = new URL(
+                usersRoute.url,
+                process.env.NEXT_PUBLIC_MESSAGING_SERVICE_ENTRY_POINT,
+              );
               url.searchParams.append(searchKeyListType, searchValueImportCsv);
               return url.href;
             })()}

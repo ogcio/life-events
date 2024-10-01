@@ -22,6 +22,13 @@ import { envSchema } from "./config.js";
 import healthCheck from "./routes/healthcheck.js";
 import fastifyUnderPressure from "@fastify/under-pressure";
 import { CustomError } from "shared-errors";
+import {
+  CONFIG_TYPE,
+  SCHEDULER_TOKEN,
+  storeConfig,
+} from "./utils/storeConfig.js";
+import { randomUUID } from "crypto";
+import scheduleCleanupTask from "./utils/scheduleCleanupTask.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -114,6 +121,16 @@ export async function build(opts?: FastifyServerOptions) {
   app.register(routes, { prefix: "/api/v1" });
 
   app.register(sensible);
+
+  await storeConfig(
+    app.pg.pool,
+    SCHEDULER_TOKEN,
+    randomUUID(),
+    "token to allow scheduler jobs to access the API",
+    CONFIG_TYPE.STRING,
+  );
+
+  await scheduleCleanupTask(app);
 
   return app;
 }
