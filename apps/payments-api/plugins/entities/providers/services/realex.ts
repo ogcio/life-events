@@ -97,7 +97,7 @@ const buildVerifyPaymentStatusUpdate =
       throw httpErrors.unprocessableEntity("Provider is not enabled");
     }
 
-    const secretFields = getSecretFields("realex");
+    const secretFields = getSecretFields("realex", provider.data);
     const { sharedSecret } = secretsHandlerFactory
       .getInstance()
       .getClearTextData(provider.data, secretFields);
