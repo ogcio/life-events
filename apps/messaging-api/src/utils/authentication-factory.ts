@@ -64,7 +64,7 @@ export const ensureUserIdIsSet = (request: {
     return request.userData.userId;
   }
 
-  throw httpErrors.unauthorized("User id is not set");
+  throw httpErrors.forbidden("User id is not set");
 };
 
 export const ensureOrganizationIdIsSet = (request: {
@@ -74,7 +74,7 @@ export const ensureOrganizationIdIsSet = (request: {
     return request.userData.organizationId;
   }
 
-  throw httpErrors.unauthorized("Organization id is not set");
+  throw httpErrors.forbidden("Organization id is not set");
 };
 
 const getOrganizationUploadToken = (organizationId: string): Promise<string> =>

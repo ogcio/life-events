@@ -78,13 +78,13 @@ export default async function messages(app: FastifyInstance) {
       const queryOrganisationId = request.query.organisationId;
 
       if (!queryOrganisationId && !queryRecipientUserId) {
-        throw app.httpErrors.unauthorized(
+        throw app.httpErrors.forbidden(
           "not allowed to access messages from all organisations",
         );
       }
 
       if (queryOrganisationId && !queryRecipientUserId && !loggedInOrgId) {
-        throw app.httpErrors.unauthorized(
+        throw app.httpErrors.forbidden(
           "As a citizen you have to set the query recipient user id",
         );
       }
@@ -122,9 +122,7 @@ export default async function messages(app: FastifyInstance) {
         // As a citizen, request other user's
         // messages
         if (!allUserIds) {
-          throw app.httpErrors.unauthorized(
-            "Can't access other users' messages",
-          );
+          throw app.httpErrors.forbidden("Can't access other users' messages");
         }
         if (
           allUserIds.profileId
@@ -133,9 +131,7 @@ export default async function messages(app: FastifyInstance) {
               allUserIds &&
               allUserIds.messageUserId !== queryRecipientUserId
         ) {
-          throw app.httpErrors.unauthorized(
-            "Can't access other users' messages",
-          );
+          throw app.httpErrors.forbidden("Can't access other users' messages");
         }
 
         userIdsRepresentingUser.push(allUserIds.messageUserId);
@@ -149,7 +145,7 @@ export default async function messages(app: FastifyInstance) {
         userIdsRepresentingUser.length &&
         request.query.status !== "delivered"
       ) {
-        throw app.httpErrors.unauthorized("only delivered messages allowed");
+        throw app.httpErrors.forbidden("only delivered messages allowed");
       }
 
       // Only query organisation you're allowed to see
@@ -158,7 +154,7 @@ export default async function messages(app: FastifyInstance) {
         loggedInOrgId &&
         queryOrganisationId !== loggedInOrgId
       ) {
-        throw app.httpErrors.unauthorized("illegal organisation request");
+        throw app.httpErrors.forbidden("illegal organisation request");
       }
 
       const { limit, offset } = sanitizePagination({

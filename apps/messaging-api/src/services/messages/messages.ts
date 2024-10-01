@@ -531,7 +531,7 @@ export const processMessages = async (params: {
       );
 
       if (isAnyUserNotActiveAndAccepted.rows.at(0)?.exists) {
-        throw httpErrors.unauthorized(
+        throw httpErrors.forbidden(
           "user exist that isn't accepted and active for any of the input messages, no message sent",
         );
       }
