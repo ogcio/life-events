@@ -113,15 +113,39 @@ export default async function ({
           <div className="govie-summary-list__row">
             <dt className="govie-summary-list__key">{t("payerName")}</dt>
             <dt className="govie-summary-list__value">
-              {details.userData.name}
+              {details.metadata.name}
             </dt>
           </div>
           <div className="govie-summary-list__row">
             <dt className="govie-summary-list__key">{t("payerEmail")}</dt>
             <dt className="govie-summary-list__value">
-              {details.userData.email}
+              {details.metadata.email}
             </dt>
           </div>
+          {details.metadata.submissionId && (
+            <div className="govie-summary-list__row">
+              <dt className="govie-summary-list__key">{t("submissionId")}</dt>
+              <dt className="govie-summary-list__value">
+                {details.metadata.submissionId}
+              </dt>
+            </div>
+          )}
+          {details.metadata.journeyId && (
+            <div className="govie-summary-list__row">
+              <dt className="govie-summary-list__key">{t("journeyId")}</dt>
+              <dt className="govie-summary-list__value">
+                {details.metadata.journeyId}
+              </dt>
+            </div>
+          )}
+          {details.metadata.journeyTitle && (
+            <div className="govie-summary-list__row">
+              <dt className="govie-summary-list__key">{t("journeyTitle")}</dt>
+              <dt className="govie-summary-list__value">
+                {details.metadata.journeyTitle}
+              </dt>
+            </div>
+          )}
         </dl>
 
         {details.providerType &&

@@ -28,6 +28,7 @@ import {
 import { TransactionStatusesEnum } from "../../plugins/entities/transactions";
 import { authPermissions } from "../../types/authPermissions";
 import { AuditLogEventType } from "../../plugins/auditLog/auditLogEvents";
+import { getJourneyById } from "../../services/getJourney";
 
 const TAGS = ["Transactions"];
 
@@ -196,14 +197,23 @@ export default async function transactions(app: FastifyInstance) {
         throw app.httpErrors.unauthorized("Unauthorized!");
       }
 
+      const transactionBody = request.body;
+      const journeyId = request.body.metadata.journeyId;
+      if (journeyId) {
+        const journeyDetails = await getJourneyById(journeyId);
+        if (!journeyDetails)
+          throw app.httpErrors.notFound("Journey not found!");
+        transactionBody.metadata.journeyTitle = journeyDetails.title;
+      }
+
       const result = await app.transactions.createTransaction(
         userId,
-        request.body,
+        transactionBody,
       );
 
       const orgIdResult =
         await app.paymentRequest.getOrganizationIdFromPaymentRequest(
-          request.body.paymentRequestId,
+          transactionBody.paymentRequestId,
         );
 
       app.auditLog.createEvent({

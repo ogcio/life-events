@@ -61,6 +61,8 @@ export default async function Bank(props: {
         integrationRef: string;
         amount?: string;
         customAmount?: string;
+        submissionId?: string;
+        journeyId?: string;
       }
     | undefined;
 }) {
@@ -73,16 +75,22 @@ export default async function Bank(props: {
     return redirect("/not-found", RedirectType.replace);
   }
 
-  const amount = props.searchParams.amount
-    ? parseFloat(props.searchParams.amount)
-    : undefined;
+  const {
+    paymentId,
+    amount: amountParam,
+    customAmount: customAmountParam,
+    submissionId = "",
+    journeyId = "",
+  } = props.searchParams;
 
-  const customAmount = props.searchParams.customAmount
-    ? parseFloat(props.searchParams.customAmount)
+  const amount = amountParam ? parseFloat(amountParam) : undefined;
+
+  const customAmount = customAmountParam
+    ? parseFloat(customAmountParam)
     : undefined;
 
   const details = await getPaymentDetails(
-    props.searchParams.paymentId,
+    paymentId,
     { email: user?.email ?? "", name: user?.name ?? "" },
     amount,
     customAmount,
@@ -100,7 +108,12 @@ export default async function Bank(props: {
     integrationReference: props.searchParams.integrationRef,
     amount: paymentDetails.amount,
     paymentProviderId: paymentDetails.providerId,
-    userData: { email: user?.email ?? "", name: user?.name ?? "" },
+    metadata: {
+      email: user?.email ?? "",
+      name: user?.name ?? "",
+      submissionId,
+      journeyId,
+    },
   });
 
   if (error) {

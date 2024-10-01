@@ -683,9 +683,12 @@ export interface paths {
                 updatedAt: string;
                 title: string;
                 userId: string;
-                userData: {
+                metadata: {
                   name: string;
                   email: string;
+                  submissionId?: string;
+                  journeyId?: string;
+                  journeyTitle?: string;
                 };
                 description: string;
                 providerName: string;
@@ -802,9 +805,12 @@ export interface paths {
                 updatedAt: string;
                 title: string;
                 userId: string;
-                userData: {
+                metadata: {
                   name: string;
                   email: string;
+                  submissionId?: string;
+                  journeyId?: string;
+                  journeyTitle?: string;
                 };
                 description: string;
                 providerName: string;
@@ -889,9 +895,12 @@ export interface paths {
             integrationReference: string;
             amount: number;
             paymentProviderId: string;
-            userData: {
+            metadata: {
               name: string;
               email: string;
+              submissionId?: string;
+              journeyId?: string;
+              journeyTitle?: string;
             };
           };
         };
@@ -1136,9 +1145,12 @@ export interface paths {
                 updatedAt: string;
                 title: string;
                 userId: string;
-                userData: {
+                metadata: {
                   name: string;
                   email: string;
+                  submissionId?: string;
+                  journeyId?: string;
+                  journeyTitle?: string;
                 };
                 description: string;
                 providerName: string;

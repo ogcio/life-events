@@ -17,6 +17,7 @@ import apiAuthPlugin from "api-auth";
 import { initializeErrorHandler } from "error-handler";
 import { initializeLoggingHooks } from "logging-wrapper";
 import healthCheck from "./src/routes/healthcheck";
+import journey from "./src/plugins/entities/journey/index.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -85,6 +86,8 @@ export async function build(opts?: FastifyServerOptions) {
   app.register(routes, { prefix: "/api/v1" });
 
   app.register(sensible);
+
+  app.register(journey);
 
   return app;
 }
