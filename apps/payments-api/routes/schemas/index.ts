@@ -359,6 +359,28 @@ export const RealexHppResponse = Type.Object({
   BATCHID: Type.String(),
 });
 
+export const RealexStatusUpdateQueryParams = Type.Object({
+  sha1hash: Type.String(),
+  timestamp: Type.String(),
+  merchantid: Type.String(),
+  orderid: Type.String(),
+  result: Type.String(),
+  message: Type.String(),
+  pasref: Type.String(),
+  paymentmethod: Type.String(),
+  waitfornotification: Type.String(),
+  fundstatus: Type.String(),
+  paymentpurpose: Type.String(),
+  acountholdername: Type.String(),
+  country: Type.String(),
+  accountnumber: Type.String(),
+  iban: Type.String(),
+  bic: Type.String(),
+  bankname: Type.String(),
+  bankcode: Type.String(),
+  redirectoptional: Type.String(),
+});
+
 /**
  * Citizen
  */

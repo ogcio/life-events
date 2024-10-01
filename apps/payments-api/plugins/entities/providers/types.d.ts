@@ -12,6 +12,7 @@ import {
   RealexData,
   RealexEncryptedData,
   RealexHppResponse,
+  RealexStatusUpdateQueryParams,
   StripeData,
   StripeEncryptedData,
   UpdateProvider,
@@ -37,3 +38,15 @@ export type CreateProviderDO = Static<typeof CreateProvider>;
 
 export type RealexPaymentObjectDO = Static<typeof RealexPaymentObject>;
 export type RealexHppResponseDO = Static<typeof RealexHppResponse>;
+
+export type RealexStatusUpdateDO = Static<typeof RealexStatusUpdateQueryParams>;
+
+export enum RealexStatusEnum {
+  SUCCESSFUL = "00",
+  PENDING = "01",
+  DECLINED = "100",
+  INSUFFICIENT_FUNDS = "101",
+  FAILURE = "199",
+  UNKNOWN = "330",
+  VARIOUS_FAILURE = "550",
+}

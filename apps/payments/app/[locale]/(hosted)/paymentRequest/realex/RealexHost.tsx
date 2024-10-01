@@ -6,11 +6,17 @@ type Props = {
   payment: any;
   locale: string;
   responseUrl: string;
+  statusUpdateUrl: string;
 };
 
 const PAYMENT_DEFAULT_COUNTRY = "IE";
 
-export default function RealexHost({ payment, locale, responseUrl }: Props) {
+export default function RealexHost({
+  payment,
+  locale,
+  responseUrl,
+  statusUpdateUrl,
+}: Props) {
   const t = useTranslations();
 
   const formRef = useRef(null);
@@ -33,6 +39,7 @@ export default function RealexHost({ payment, locale, responseUrl }: Props) {
       <form ref={formRef} action={payment.URL} method="POST">
         {formInputs}
         <input type="hidden" name="MERCHANT_RESPONSE_URL" value={responseUrl} />
+        <input type="hidden" name="HPP_TX_STATUS_URL" value={statusUpdateUrl} />
         <input
           type="hidden"
           name="HPP_CUSTOMER_COUNTRY"
