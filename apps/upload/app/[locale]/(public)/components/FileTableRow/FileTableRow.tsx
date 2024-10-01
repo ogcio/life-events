@@ -24,9 +24,9 @@ const TableRow = async ({ file, isPublicServant }: TableRowProps) => {
         scope="row"
       >
         {!file.infected && !file.deleted && (
-          <a href={`/api/file/${file.id}`} target="_blank">
+          <Link href={`/api/file/${file.id}`} target="_blank">
             {file.fileName}
-          </a>
+          </Link>
         )}
         {file.infected && (
           <span>
