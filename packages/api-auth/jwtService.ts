@@ -60,32 +60,6 @@ async function readOrGenerateKeyPair(
   return keyStore[serviceName];
 }
 
-//NOTE: readLocalPublicKey and readLocalPrivateKey are not used at the moment
-// Since we're generating at runtime the key.
-// We can evaluate if we want to remove them in the future
-/**
- * Reads the public key from a file and returns it as a JWK.
- * @param publicKeyFilePath - The path to the public key file.
- */
-async function readLocalPublicKey(publicKeyFilePath: string) {
-  const pemKey = await fs.readFile(publicKeyFilePath, "utf8");
-  return exportJWK(
-    createPublicKey({
-      key: pemKey,
-      format: "pem",
-    }),
-  );
-}
-
-/**
- * Reads the private key from a file and returns it in JWK format.
- * @param privateKeyFilePath - The path to the private key file.
- */
-async function readLocalPrivateKey(privateKeyFilePath: string) {
-  const pemKey = await fs.readFile(privateKeyFilePath, "utf8");
-  return importPKCS8(pemKey, defaultAlgorithm);
-}
-
 interface JWTOptions {
   algorithm?: string; // Algorithm used for signing the token
   expirationTime?: string; // Token expiration time (e.g., "1h")
@@ -171,11 +145,4 @@ async function verifyJWT(
 
   return payload;
 }
-export {
-  readLocalPublicKey,
-  readLocalPrivateKey,
-  createSignedJWT,
-  getJWKSRoute,
-  verifyJWT,
-  readOrGenerateKeyPair,
-};
+export { createSignedJWT, getJWKSRoute, verifyJWT, readOrGenerateKeyPair };
