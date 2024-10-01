@@ -16,13 +16,13 @@ import sensible from "@fastify/sensible";
 import schemaValidators from "./routes/schemas/validations";
 import apiAuthPlugin from "api-auth";
 import { initializeErrorHandler } from "error-handler";
-import { initializeLoggingHooks } from "logging-wrapper";
+import { initializeLoggingHooks } from "@ogcio/fastify-logging-wrapper";
 import providers from "./plugins/entities/providers";
 import citizen from "./plugins/entities/citizen";
 import transactions from "./plugins/entities/transactions";
 import paymentRequest from "./plugins/entities/paymentRequest";
 import auditLog from "./plugins/auditLog";
-import rawbody, { RawBodyPluginOptions } from "fastify-raw-body";
+import rawbody from "fastify-raw-body";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
