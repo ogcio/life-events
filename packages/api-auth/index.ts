@@ -2,11 +2,7 @@ import { createRemoteJWKSet, jwtVerify } from "jose";
 import { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
 import fp from "fastify-plugin";
 import { getMapFromScope, validatePermission } from "./utils.js";
-import {
-  AuthenticationError,
-  AuthorizationError,
-  getErrorMessage,
-} from "shared-errors";
+import { getErrorMessage } from "@ogcio/shared-errors";
 
 type ExtractedUserData = {
   userId: string;
