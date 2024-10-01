@@ -30,7 +30,7 @@ Run `stripe login` and continue the login process in your browser (two-step veri
 Or
 
 Use the `--api-key` flag and use your API key in the login command
-`stripe login --api-key sk_test_51OzFkUK1VL0xyyr2R2BgmPDDKJkE08SzaLfVndazsCmIGOjc69OZsm7pegOLj9jA2zpogLdgJNScFoAkXk2GLPr500MsTOnb5Z`
+`stripe login --api-key YOUR_API_KEY`
 
 - Run `stripe listen` to start listening to the incoming events. To forward the incoming calls to your locally hosted API, you have to set the `--forward-to` flag and your local endpoint (without specifying the protocol): `stipre listen --forward-to localhost:8000/api/v1/YOUR_WEBHOOK`
 
