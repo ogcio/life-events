@@ -15,7 +15,7 @@ import healthCheck from "./routes/healthcheck";
 import sensible from "@fastify/sensible";
 import schemaValidators from "./routes/schemas/validations";
 import apiAuthPlugin from "api-auth";
-import { initializeErrorHandler } from "error-handler";
+import { initializeErrorHandler } from "@ogcio/fastify-error-handler";
 import { initializeLoggingHooks } from "@ogcio/fastify-logging-wrapper";
 import providers from "./plugins/entities/providers";
 import citizen from "./plugins/entities/citizen";
