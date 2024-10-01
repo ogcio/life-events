@@ -1,6 +1,7 @@
 import { FastifyInstance } from "fastify";
 import { HttpError } from "../../types/httpErrors";
 import {
+  CreateJourneyBody,
   CreateJourneyBodyDO,
   GenericResponse,
   Id,
@@ -49,6 +50,7 @@ export default async function journeys(app: FastifyInstance) {
         app.checkPermissions(req, res, [authPermissions.JOURNEY_WRITE]),
       schema: {
         tags: TAGS,
+        body: CreateJourneyBody,
         response: {
           200: GenericResponse(Id),
           401: HttpError,

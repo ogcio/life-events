@@ -45,4 +45,14 @@ export class Integrator {
       }),
     );
   }
+
+  async createJourney(
+    data: paths["/api/v1/journeys/"]["post"]["requestBody"]["content"]["application/json"],
+  ) {
+    return formatQueryResult(
+      this.client.POST("/api/v1/journeys/", {
+        body: data,
+      }),
+    );
+  }
 }

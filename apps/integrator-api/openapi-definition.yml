@@ -144,6 +144,23 @@ paths:
   /api/v1/journeys/:
     post:
       tags: *a1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                organizationId:
+                  type: string
+                userId:
+                  type: string
+              required:
+                - title
+                - organizationId
+                - userId
+        required: true
       responses:
         "200":
           description: Default Response
