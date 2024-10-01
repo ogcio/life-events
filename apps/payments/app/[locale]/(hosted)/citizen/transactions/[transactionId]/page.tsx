@@ -37,7 +37,9 @@ export default async function ({ params: { transactionId } }) {
         <div className="govie-summary-list__row">
           <dt className="govie-summary-list__key">{t("description")}</dt>
           <dt className="govie-summary-list__value">
-            {details.data.description}
+            <pre style={{ fontFamily: "inherit" }}>
+              {details.data.description}
+            </pre>
           </dt>
         </div>
         <div className="govie-summary-list__row">

@@ -79,7 +79,7 @@ export default async function Page(props: Props) {
 
   const { messages } = await getRequestConfig({ locale: props.params.locale });
 
-  if (!details) return notFound();
+  if (!details || details.status === "draft") return notFound();
 
   const allowCustomAmount = details.allowCustomAmount;
 

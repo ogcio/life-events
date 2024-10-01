@@ -292,9 +292,9 @@ export interface paths {
               data: {
                 paymentRequestId: string;
                 title: string;
-                description: string;
-                amount: number;
-                reference: string;
+                description?: string;
+                amount?: number;
+                reference?: string;
                 providers: {
                   userId: string;
                   id: string;
@@ -325,7 +325,7 @@ export interface paths {
                       };
                   createdAt: string;
                 }[];
-                status: "active" | "inactive";
+                status: "active" | "inactive" | "draft";
               }[];
               metadata?: {
                 links?: {
@@ -362,14 +362,14 @@ export interface paths {
         content: {
           "application/json": {
             title: string;
-            description: string;
-            reference: string;
-            amount: number;
-            redirectUrl: string;
+            description: string | null;
+            reference: string | null;
+            amount: number | null;
+            redirectUrl: string | null;
             allowAmountOverride: boolean;
             allowCustomAmount: boolean;
             providers: string[];
-            status: "active" | "inactive";
+            status: "active" | "inactive" | "draft";
             paymentRequestId: string;
             providersUpdate: {
               toDisable: string[];
@@ -394,14 +394,14 @@ export interface paths {
         content: {
           "application/json": {
             title: string;
-            description: string;
-            reference: string;
-            amount: number;
-            redirectUrl: string;
+            description: string | null;
+            reference: string | null;
+            amount: number | null;
+            redirectUrl: string | null;
             allowAmountOverride: boolean;
             allowCustomAmount: boolean;
             providers: string[];
-            status: "active" | "inactive";
+            status: "active" | "inactive" | "draft";
           };
         };
       };
@@ -431,9 +431,9 @@ export interface paths {
             "application/json": {
               paymentRequestId: string;
               title: string;
-              description: string;
-              amount: number;
-              reference: string;
+              description?: string;
+              amount?: number;
+              reference?: string;
               providers: {
                 userId: string;
                 id: string;
@@ -464,8 +464,8 @@ export interface paths {
                     };
                 createdAt: string;
               }[];
-              status: "active" | "inactive";
-              redirectUrl: string;
+              status: "active" | "inactive" | "draft";
+              redirectUrl?: string;
               allowAmountOverride: boolean;
               allowCustomAmount: boolean;
             };
@@ -575,7 +575,7 @@ export interface paths {
                     };
                 createdAt: string;
               }[];
-              status: "active" | "inactive";
+              status: "active" | "inactive" | "draft";
               redirectUrl: string;
               allowAmountOverride: boolean;
               allowCustomAmount: boolean;
