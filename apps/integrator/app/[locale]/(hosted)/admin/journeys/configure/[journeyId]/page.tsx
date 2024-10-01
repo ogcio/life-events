@@ -13,7 +13,9 @@ import Link from "next/link";
 import styles from "./style.module.scss";
 import {
   activateJourney,
+  clearStepConnections,
   loadJourneyById,
+  saveStepConnections,
 } from "../../../../../../../libraries/journeyEditor/queries";
 import InputField from "../../../../../../components/InputField";
 import CopyLink from "../../../../../../components/CopyBtn";
@@ -67,6 +69,8 @@ export default async ({ params: { locale, journeyId } }: Props) => {
 
   const editor = new JourneyEditor(journey, journeyDefaultFlow);
   const steps = editor.getStepsInfo();
+  const stepConnections = editor.getStepConnections();
+
   const journeyCompleted = editor.isCompleted();
 
   const saveJourneyAction = async () => {
@@ -82,7 +86,19 @@ export default async ({ params: { locale, journeyId } }: Props) => {
     await activateJourney(pgpool, {
       journeyId,
       organizationId: organization.id,
+      startStepId: stepConnections[0]?.sourceStepId,
     });
+
+    await clearStepConnections(pgpool, {
+      journeyId,
+    });
+
+    if (stepConnections.length) {
+      await saveStepConnections(pgpool, {
+        journeyId,
+        connections: stepConnections,
+      });
+    }
 
     redirect(`/${locale}/admin/journeys/configure/${journeyId}`);
   };

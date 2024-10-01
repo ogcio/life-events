@@ -3,12 +3,13 @@ BEGIN
     -- Table to store journeys, which represent an overarching flow made of multiple steps
     CREATE TABLE IF NOT EXISTS journeys (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),  -- Unique identifier for the journey
-        title VARCHAR(255) NOT NULL,                 -- Title or name of the journey
+        title VARCHAR(255) NOT NULL,                    -- Title or name of the journey
         user_id VARCHAR(12) NOT NULL,                   -- Identifier for the user creating the journey (assumes a user system exists)
-        organization_id VARCHAR(21) NOT NULL,          -- The organization's id to which the journey belongs
+        organization_id VARCHAR(21) NOT NULL,           -- The organization's id to which the journey belongs
+        start_step_id UUID,                             -- Foreign key to the specific step in the journey
         status TEXT NOT NULL,                           -- Journey's status
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Timestamp of when the journey was created
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- Timestamp of the last time the journey was updated
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP  -- Timestamp of the last time the journey was updated
     );
 
     -- Table to store the individual steps within a journey
@@ -20,6 +21,14 @@ BEGIN
         step_data JSONB,                                 -- Step-specific data stored as a JSONB object, schema varies based on step_type
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  -- Timestamp of when the step was created
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP   -- Timestamp of the last time the step was updated
+    );
+
+    -- Table to store the linkage between journey steps
+    CREATE TABLE IF NOT EXISTS journey_steps_connections (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),  -- Unique identifier for the step
+        journey_id UUID REFERENCES journeys(id) ON DELETE CASCADE, -- Foreign key to the journey
+        source_step_id UUID REFERENCES journey_steps(id) ON DELETE CASCADE, -- Foreign key to the specific step in the journey
+        destination_step_id UUID REFERENCES journey_steps(id) ON DELETE CASCADE -- Foreign key to the specific step in the journey
     );
 
     -- Table to track individual submissions by users through a journey
