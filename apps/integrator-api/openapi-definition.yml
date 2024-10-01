@@ -12,4 +12,4 @@ paths:
         "200":
           description: Default Response
 tags:
-  - name: Providers
+  - name: Integrator
