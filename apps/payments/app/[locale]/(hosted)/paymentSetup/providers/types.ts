@@ -22,6 +22,7 @@ export type BankTransferData = {
 export type StripeData = {
   livePublishableKey: string;
   liveSecretKey: string;
+  webhookSigningKey?: string;
 };
 
 export type WorldpayData = {

@@ -82,6 +82,11 @@ export const providersDataMap = {
       required: true,
       isSecret: true,
     },
+    webhookSigningKey: {
+      type: "text",
+      required: false,
+      isSecret: true,
+    },
   },
   realex: {
     merchantId: {
@@ -158,12 +163,15 @@ export const mapProviderData = (
   );
 };
 
-export const getSecretFields = (type: ProviderTypes) => {
+export const getSecretFields = (
+  type: ProviderTypes,
+  data: Record<string, string>,
+) => {
   return Object.entries(providersDataMap[type]).reduce<Array<string>>(
     (acc, curr) => {
       const [key, props] = curr;
 
-      if (props.isSecret) {
+      if (props.isSecret && data[key]) {
         acc.push(key);
       }
 

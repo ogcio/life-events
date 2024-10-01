@@ -46,9 +46,11 @@
     "dotenv": "^16.4.5",
     "error-handler": "*",
     "fastify": "^4.27.0",
+    "fastify-raw-body": "^4.2.1",
     "fastify-plugin": "^4.5.1",
     "logging-wrapper": "*",
-    "pg": "^8.11.5"
+    "pg": "^8.11.5",
+    "stripe": "^15.8.0"
   },
   "devDependencies": {
     "@openapitools/openapi-generator-cli": "^2.13.4",

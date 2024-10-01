@@ -191,6 +191,8 @@ paths:
                               type: string
                             liveSecretKey:
                               type: string
+                            webhookSigningKey:
+                              type: string
                           required:
                             - livePublishableKey
                             - liveSecretKey
@@ -312,6 +314,8 @@ paths:
                           livePublishableKey:
                             type: string
                           liveSecretKey:
+                            type: string
+                          webhookSigningKey:
                             type: string
                         required:
                           - livePublishableKey
@@ -633,6 +637,8 @@ paths:
                                       livePublishableKey:
                                         type: string
                                       liveSecretKey:
+                                        type: string
+                                      webhookSigningKey:
                                         type: string
                                     required:
                                       - livePublishableKey
@@ -1027,6 +1033,8 @@ paths:
                                   type: string
                                 liveSecretKey:
                                   type: string
+                                webhookSigningKey:
+                                  type: string
                               required:
                                 - livePublishableKey
                                 - liveSecretKey
@@ -1256,6 +1264,8 @@ paths:
                                   type: string
                                 liveSecretKey:
                                   type: string
+                                webhookSigningKey:
+                                  type: string
                               required:
                                 - livePublishableKey
                                 - liveSecretKey
@@ -1400,6 +1410,8 @@ paths:
                           type: number
                         extPaymentId:
                           type: string
+                        paymentProviderId:
+                          type: string
                         updatedAt:
                           type: string
                         title:
@@ -1409,6 +1421,7 @@ paths:
                         - status
                         - amount
                         - extPaymentId
+                        - paymentProviderId
                         - updatedAt
                         - title
                   metadata:
@@ -1504,6 +1517,8 @@ paths:
                         allOf:
                           - type: string
                           - type: string
+                      paymentProviderId:
+                        type: string
                       updatedAt:
                         type: string
                       title:
@@ -1533,6 +1548,7 @@ paths:
                       - status
                       - amount
                       - extPaymentId
+                      - paymentProviderId
                       - updatedAt
                       - title
                       - userId
@@ -1734,6 +1750,8 @@ paths:
                           allOf:
                             - type: string
                             - type: string
+                        paymentProviderId:
+                          type: string
                         updatedAt:
                           type: string
                         title:
@@ -1763,6 +1781,7 @@ paths:
                         - status
                         - amount
                         - extPaymentId
+                        - paymentProviderId
                         - updatedAt
                         - title
                         - userId
@@ -2349,6 +2368,8 @@ paths:
                         allOf:
                           - type: string
                           - type: string
+                      paymentProviderId:
+                        type: string
                       updatedAt:
                         type: string
                       title:
@@ -2378,6 +2399,7 @@ paths:
                       - status
                       - amount
                       - extPaymentId
+                      - paymentProviderId
                       - updatedAt
                       - title
                       - userId
@@ -3018,6 +3040,34 @@ paths:
                   - requestId
                   - name
         "500":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  requestId:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - requestId
+                  - name
+  /api/v1/stripe/webhook:
+    post:
+      tags:
+        - Stripe
+      responses:
+        "404":
           description: Default Response
           content:
             application/json:
