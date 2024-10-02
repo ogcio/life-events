@@ -9,7 +9,6 @@ import {
 import addFileSharing from "./utils/addFileSharing.js";
 import { ServerError } from "shared-errors";
 import removeFileSharing from "./utils/removeFileSharing.js";
-import { Query } from "pg";
 import getFileSharings from "./utils/getFileSharings.js";
 
 const SHARE_CREATE = "SHARE_CREATE";
@@ -97,17 +96,14 @@ export default async function routes(app: FastifyInstance) {
     },
     async (request) => {
       const { fileId } = request.query;
-
-      const sharings: Sharing[] = [];
       try {
         const sharingsQueryResponse = await getFileSharings(app.pg, fileId);
         if (sharingsQueryResponse.rows.length) {
-          [sharings.push(...sharingsQueryResponse.rows)];
+          return { data: sharingsQueryResponse.rows };
         }
       } catch (err) {
         throw new ServerError(SHARE_DELETE, "Internal server error", err);
       }
-      return { data: sharings };
     },
   );
 }
