@@ -8,7 +8,9 @@ import fp from "fastify-plugin";
 import { JourneyRepo } from "./repo";
 import {
   CreateJourneyBodyDO,
-  JourneyDetailsDO,
+  FullJourneyDO,
+  Id,
+  JourneyPublicDetailsDO,
   Journeys,
   JourneyStatusType,
 } from "../../../routes/schemas";
@@ -16,7 +18,7 @@ import {
 export type JourneyPlugin = Awaited<ReturnType<typeof buildPlugin>>;
 
 const buildGetJourneys =
-  (repo: JourneyRepo, log: FastifyBaseLogger, httpErrors: HttpErrors) =>
+  (repo: JourneyRepo, log: FastifyBaseLogger) =>
   async (organizationId: string): Promise<Journeys> => {
     let result;
 
@@ -31,11 +33,29 @@ const buildGetJourneys =
 
 const buildGetJourneyById =
   (repo: JourneyRepo, log: FastifyBaseLogger, httpErrors: HttpErrors) =>
-  async (journeyId: string): Promise<JourneyDetailsDO> => {
+  async (journeyId: string, organizationId: string): Promise<FullJourneyDO> => {
     let result;
 
     try {
-      result = await repo.getJourneyById(journeyId);
+      result = await repo.getJourneyById(journeyId, organizationId);
+    } catch (err) {
+      log.error((err as Error).message);
+    }
+
+    if (!result?.rowCount) {
+      throw httpErrors.notFound("The requested journey was not found");
+    }
+
+    return result?.rows[0];
+  };
+
+const buildGetJourneyPublicInfo =
+  (repo: JourneyRepo, log: FastifyBaseLogger, httpErrors: HttpErrors) =>
+  async (journeyId: string): Promise<JourneyPublicDetailsDO> => {
+    let result;
+
+    try {
+      result = await repo.getJourneyPublicInfo(journeyId);
     } catch (err) {
       log.error((err as Error).message);
     }
@@ -49,7 +69,7 @@ const buildGetJourneyById =
 
 const buildCreateJourney =
   (repo: JourneyRepo, log: FastifyBaseLogger, httpErrors: HttpErrors) =>
-  async (journey: CreateJourneyBodyDO): Promise<JourneyDetailsDO> => {
+  async (journey: CreateJourneyBodyDO): Promise<JourneyPublicDetailsDO> => {
     let result;
 
     try {
@@ -71,7 +91,7 @@ const buildUpdateJourneyStatus =
     journeyId: string;
     status: JourneyStatusType;
     organizationId: string;
-  }): Promise<JourneyDetailsDO> => {
+  }): Promise<Id> => {
     let result;
 
     try {
@@ -93,8 +113,9 @@ const buildPlugin = (
   httpErrors: HttpErrors,
 ) => {
   return {
-    getJourneys: buildGetJourneys(repo, log, httpErrors),
+    getJourneys: buildGetJourneys(repo, log),
     getJourneyById: buildGetJourneyById(repo, log, httpErrors),
+    getJourneyPublicInfo: buildGetJourneyPublicInfo(repo, log, httpErrors),
     createJourney: buildCreateJourney(repo, log, httpErrors),
     updateJourneyStatus: buildUpdateJourneyStatus(repo, log, httpErrors),
   };

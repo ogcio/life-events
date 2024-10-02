@@ -3,10 +3,11 @@ import { HttpError } from "../../types/httpErrors";
 import {
   CreateJourneyBody,
   CreateJourneyBodyDO,
+  FullJourneyDO,
   GenericResponse,
   Id,
-  JourneyDetails,
-  JourneyDetailsDO,
+  JourneyPublicDetails,
+  JourneyPublicDetailsDO,
   Journeys,
   ParamsWithJourneyId,
   UpdateJourneyBody,
@@ -30,7 +31,6 @@ export default async function journeys(app: FastifyInstance) {
         response: {
           200: GenericResponse(Journeys),
           401: HttpError,
-          404: HttpError,
         },
       },
     },
@@ -48,7 +48,7 @@ export default async function journeys(app: FastifyInstance) {
   );
 
   app.get<{
-    Reply: GenericResponse<JourneyDetailsDO> | Error;
+    Reply: GenericResponse<FullJourneyDO> | Error;
     Params: ParamsWithJourneyId;
   }>(
     "/:journeyId",
@@ -58,7 +58,7 @@ export default async function journeys(app: FastifyInstance) {
       schema: {
         tags: TAGS,
         response: {
-          200: GenericResponse(JourneyDetails),
+          200: GenericResponse(JourneyPublicDetails),
           401: HttpError,
           404: HttpError,
         },
@@ -66,9 +66,43 @@ export default async function journeys(app: FastifyInstance) {
     },
     async (request, reply) => {
       const { journeyId } = request.params;
-      const journeyDetails = await app.journey.getJourneyById(journeyId);
+      const organizationId = request.userData?.organizationId;
+
+      if (!organizationId) {
+        throw app.httpErrors.unauthorized("Unauthorized!");
+      }
+
+      const journeyDetails = await app.journey.getJourneyById(
+        journeyId,
+        organizationId,
+      );
 
       reply.send(formatAPIResponse(journeyDetails));
+    },
+  );
+
+  app.get<{
+    Reply: GenericResponse<JourneyPublicDetailsDO> | Error;
+    Params: ParamsWithJourneyId;
+  }>(
+    "/:journeyId/public-info",
+    {
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [authPermissions.JOURNEY_READ]),
+      schema: {
+        tags: TAGS,
+        response: {
+          200: GenericResponse(JourneyPublicDetails),
+          404: HttpError,
+        },
+      },
+    },
+    async (request, reply) => {
+      const { journeyId } = request.params;
+
+      const details = await app.journey.getJourneyPublicInfo(journeyId);
+
+      reply.send(formatAPIResponse(details));
     },
   );
 
@@ -86,7 +120,7 @@ export default async function journeys(app: FastifyInstance) {
         response: {
           200: GenericResponse(Id),
           401: HttpError,
-          404: HttpError,
+          500: HttpError,
         },
       },
     },
@@ -97,15 +131,15 @@ export default async function journeys(app: FastifyInstance) {
         throw app.httpErrors.unauthorized("Unauthorized!");
       }
 
-      const { id } = await app.journey.createJourney(request.body);
+      const res = await app.journey.createJourney(request.body);
 
-      reply.send(formatAPIResponse({ id }));
+      reply.send(formatAPIResponse(res));
     },
   );
 
   app.patch<{
     Body: UpdateJourneyBodyDO;
-    Reply: {};
+    Reply: GenericResponse<Id> | Error;
     Params: ParamsWithJourneyId;
   }>(
     "/:journeyId",
@@ -117,6 +151,7 @@ export default async function journeys(app: FastifyInstance) {
         body: UpdateJourneyBody,
         response: {
           200: GenericResponse(Id),
+          401: HttpError,
           500: HttpError,
         },
       },
@@ -131,13 +166,13 @@ export default async function journeys(app: FastifyInstance) {
         throw app.httpErrors.unauthorized("Unauthorized!");
       }
 
-      const { id } = await app.journey.updateJourneyStatus({
+      const res = await app.journey.updateJourneyStatus({
         journeyId,
         status,
         organizationId,
       });
 
-      reply.send();
+      reply.send(formatAPIResponse(res));
     },
   );
 }

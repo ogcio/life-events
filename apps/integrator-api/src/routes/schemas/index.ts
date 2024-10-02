@@ -51,27 +51,25 @@ export const JourneyStatus = Type.Union([
 ]);
 export type JourneyStatusType = Static<typeof JourneyStatus>;
 
-export const JourneyDetails = Type.Object({
+export const JourneyPublicDetails = Type.Object({
   id: Type.String(),
   title: Type.String(),
   userId: Type.String(),
   organizationId: Type.String(),
   status: JourneyStatus,
 });
-export type JourneyDetailsDO = Static<typeof JourneyDetails>;
+export type JourneyPublicDetailsDO = Static<typeof JourneyPublicDetails>;
 
-export const FullJourney = Type.Object({
-  id: Type.String(),
-  title: Type.String(),
-  userId: Type.String(),
-  organizationId: Type.String(),
-  status: JourneyStatus,
-  createdAt: Type.String(),
-  updatedAt: Type.String(),
-});
+export const FullJourney = Type.Composite([
+  JourneyPublicDetails,
+  Type.Object({
+    createdAt: Type.String(),
+    updatedAt: Type.String(),
+  }),
+]);
 export type FullJourneyDO = Static<typeof FullJourney>;
 
-export const Journeys = Type.Array(JourneyDetails);
+export const Journeys = Type.Array(JourneyPublicDetails);
 export type Journeys = Static<typeof Journeys>;
 
 export const CreateJourneyBody = Type.Object({
@@ -82,5 +80,5 @@ export const CreateJourneyBody = Type.Object({
 
 export type CreateJourneyBodyDO = Static<typeof CreateJourneyBody>;
 
-export const UpdateJourneyBody = Type.Pick(JourneyDetails, ["status"]);
+export const UpdateJourneyBody = Type.Pick(JourneyPublicDetails, ["status"]);
 export type UpdateJourneyBodyDO = Static<typeof UpdateJourneyBody>;

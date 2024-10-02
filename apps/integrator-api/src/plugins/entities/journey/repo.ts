@@ -2,7 +2,8 @@ import { PostgresDb } from "@fastify/postgres";
 import { QueryResult } from "pg";
 import {
   CreateJourneyBodyDO,
-  JourneyDetailsDO,
+  Id,
+  JourneyPublicDetailsDO,
   JourneyStatusType,
 } from "../../../routes/schemas";
 
@@ -18,7 +19,9 @@ export class JourneyRepo {
     this.pg = pg;
   }
 
-  getJourneys(organizationId: string): Promise<QueryResult<JourneyDetailsDO>> {
+  getJourneys(
+    organizationId: string,
+  ): Promise<QueryResult<JourneyPublicDetailsDO>> {
     return this.pg.query(
       `SELECT
         id,
@@ -35,18 +38,39 @@ export class JourneyRepo {
     );
   }
 
-  getJourneyById(journeyId: string): Promise<QueryResult<JourneyDetailsDO>> {
+  getJourneyById(
+    journeyId: string,
+    organizationId: string,
+  ): Promise<QueryResult<JourneyPublicDetailsDO>> {
+    return this.pg.query(
+      `SELECT
+          j.id,
+          j.title,
+          j.user_id as "userId",
+          j.organization_id as "organizationId",
+          j.status,
+          j.created_at as "createdAt",
+          j.updated_at as "updatedAt",
+        FROM journeys as j
+        LEFT JOIN journey_steps as s ON s.journey_id = j.id
+        WHERE j.id = $1 AND j.organization_id = $2
+        GROUP BY j.id`,
+      [journeyId, organizationId],
+    );
+  }
+
+  getJourneyPublicInfo(
+    journeyId: string,
+  ): Promise<QueryResult<JourneyPublicDetailsDO>> {
     return this.pg.query(
       `SELECT
           id,
           title,
           user_id as "userId",
           organization_id as "organizationId",
-          status,
-          created_at as "createdAt",
-          updated_at as "updatedAt",
+          status
         FROM journeys
-        WHERE j.id = $1`,
+        WHERE id = $1`,
       [journeyId],
     );
   }
@@ -69,7 +93,7 @@ export class JourneyRepo {
     journeyId: string;
     status: JourneyStatusType;
     organizationId: string;
-  }) {
+  }): Promise<QueryResult<Id>> {
     return this.pg.query(
       `UPDATE journeys
         SET status = $3, updated_at = now()::DATE

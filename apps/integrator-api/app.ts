@@ -18,7 +18,6 @@ import { initializeErrorHandler } from "error-handler";
 import { initializeLoggingHooks } from "logging-wrapper";
 import healthCheck from "./src/routes/healthcheck";
 import journey from "./src/plugins/entities/journey/index.js";
-import citizen from "./src/plugins/citizen";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -88,7 +87,6 @@ export async function build(opts?: FastifyServerOptions) {
 
   app.register(sensible);
 
-  app.register(citizen);
   app.register(journey);
 
   return app;
