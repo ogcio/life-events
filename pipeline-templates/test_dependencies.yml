@@ -13,7 +13,6 @@ parameters:
       - analytics
 
 
-
 jobs:
   - job: Run_dependencies_tests
     displayName: Run unit tests for dependencies
@@ -43,5 +42,3 @@ jobs:
           testResultsFiles: 'packages/${{ dependency }}/results.xml'
           testRunTitle: 'Unit test results for ${{ dependency }}:$(Build.BuildId)'
         condition: succeededOrFailed()
-
- 
