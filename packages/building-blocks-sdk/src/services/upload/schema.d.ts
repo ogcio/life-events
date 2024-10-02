@@ -16,6 +16,11 @@ export interface paths {
   };
   "/api/v1/files/": {
     post: {
+      requestBody?: {
+        content: {
+          "multipart/form-data": unknown;
+        };
+      };
       responses: {
         /** @description Default Response */
         201: {

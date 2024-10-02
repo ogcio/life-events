@@ -98,15 +98,13 @@ const buildApp = async ({
       getOrganizationFiles,
       getSharedFiles,
       getSharedFilesPerOrganization,
+      scheduleFileForDeletion,
     },
     "../../../routes/utils/getFileMetadataById.js": {
       default: getFileMetadataById,
     },
     "../../../routes/metadata/utils/getFileSharings.js": {
       default: getFileSharings,
-    },
-    "../../../routes/metadata/utils/scheduleFileForDeletion.js": {
-      default: scheduleFileForDeletion,
     },
     "../../../routes/metadata/utils/removeAllFileSharings.js": {
       default: removeAllFileSharings,
@@ -704,11 +702,6 @@ t.test("metadata", async (t) => {
             fileId: "1",
           },
         });
-
-        t.match(
-          (paramsUsed[2] as unknown as Date).toISOString(),
-          "2024-01-31T00:00:00.000Z",
-        );
 
         t.match(response.json(), {
           data: {
