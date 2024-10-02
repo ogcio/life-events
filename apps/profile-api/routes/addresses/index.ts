@@ -1,7 +1,6 @@
 import { FastifyInstance } from "fastify";
 import { Type } from "@sinclair/typebox";
 import { HttpError } from "../../types/httpErrors";
-import { NotFoundError, ServerError } from "shared-errors";
 import {
   AddressesList,
   AddressesListSchema,
@@ -20,7 +19,6 @@ import { getErrorMessage } from "../../utils/error-utils";
 import { Permissions } from "../../types/permissions";
 
 const ADDRESSES_TAGS = ["Addresses"];
-const ERROR_PROCESS = "USER_PROFILE_ADDRESSES";
 
 export default async function addresses(app: FastifyInstance) {
   app.get<{ Reply: AddressesList }>(
@@ -61,7 +59,7 @@ export default async function addresses(app: FastifyInstance) {
 
         reply.send(result.rows);
       } catch (error) {
-        throw new ServerError(ERROR_PROCESS, getErrorMessage(error));
+        throw app.httpErrors.internalServerError(getErrorMessage(error));
       }
     },
   );
@@ -117,7 +115,7 @@ export default async function addresses(app: FastifyInstance) {
 
         reply.send({ id: result.rows[0].id });
       } catch (error) {
-        throw new ServerError(ERROR_PROCESS, getErrorMessage(error));
+        throw app.httpErrors.internalServerError(getErrorMessage(error));
       }
     },
   );
@@ -166,7 +164,7 @@ export default async function addresses(app: FastifyInstance) {
       }
 
       if (!result?.rows.length) {
-        throw new NotFoundError(ERROR_PROCESS, "Address not found");
+        throw app.httpErrors.notFound("Address not found");
       }
 
       reply.send(result.rows[0]);
@@ -231,12 +229,12 @@ export default async function addresses(app: FastifyInstance) {
         );
 
         if (!result?.rows.length) {
-          throw new NotFoundError(ERROR_PROCESS, "Address not found");
+          throw app.httpErrors.notFound("Address not found");
         }
 
         reply.send({ id: result.rows[0].id });
       } catch (error) {
-        throw new ServerError(ERROR_PROCESS, getErrorMessage(error));
+        throw app.httpErrors.internalServerError(getErrorMessage(error));
       }
     },
   );
@@ -291,12 +289,12 @@ export default async function addresses(app: FastifyInstance) {
         );
 
         if (!result?.rows.length) {
-          throw new NotFoundError(ERROR_PROCESS, "Address not found");
+          throw app.httpErrors.notFound("Address not found");
         }
 
         reply.send({ id: result.rows[0].id });
       } catch (error) {
-        throw new ServerError(ERROR_PROCESS, getErrorMessage(error));
+        throw app.httpErrors.internalServerError(getErrorMessage(error));
       }
     },
   );
@@ -336,11 +334,11 @@ export default async function addresses(app: FastifyInstance) {
           [userId, addressId],
         );
       } catch (error) {
-        throw new ServerError(ERROR_PROCESS, getErrorMessage(error));
+        throw app.httpErrors.internalServerError(getErrorMessage(error));
       }
 
       if (!result?.rows.length) {
-        throw new NotFoundError(ERROR_PROCESS, "Address not found");
+        throw app.httpErrors.notFound("Address not found");
       }
 
       reply.send({ id: result.rows[0].id });

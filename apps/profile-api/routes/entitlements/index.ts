@@ -4,12 +4,10 @@ import {
   EntitlementsList,
   EntitlementsListSchema,
 } from "../../types/schemaDefinitions";
-import { ServerError } from "shared-errors";
 import { getErrorMessage } from "../../utils/error-utils";
 import { Permissions } from "../../types/permissions";
 
 const ENTITLEMENTS_TAGS = ["Entitlements"];
-const ERROR_PROCESS = "USER_PROFILE_ENTITLEMENTS";
 
 export default async function entitlements(app: FastifyInstance) {
   app.get<{ Reply: EntitlementsList }>(
@@ -65,7 +63,7 @@ export default async function entitlements(app: FastifyInstance) {
           },
         ];
       } catch (error) {
-        throw new ServerError(ERROR_PROCESS, getErrorMessage(error));
+        throw app.httpErrors.internalServerError(getErrorMessage(error));
       }
     },
   );

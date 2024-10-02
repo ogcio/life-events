@@ -1,9 +1,9 @@
 import { FastifyError } from "fastify";
-import { isLifeEventsError } from "shared-errors";
 import { isNativeError } from "util/types";
+import { isHttpError } from "http-errors";
 
 export const getErrorMessage = (e: unknown): string => {
-  if (isNativeError(e) || isLifeEventsError(e) || isFastifyError(e)) {
+  if (isNativeError(e) || isHttpError(e) || isFastifyError(e)) {
     return e.message;
   }
   switch (typeof e) {
