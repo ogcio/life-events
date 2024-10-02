@@ -11,12 +11,10 @@ import {
 } from "../../../types/schemaDefinitions.js";
 import { PostgresDb } from "@fastify/postgres";
 import { ALL_TRANSPORTS } from "../shared-users.js";
-import { ServerError } from "shared-errors";
 import { CreateMessageParams } from "../../messages/messaging.js";
 import { processMessages } from "../../messages/messages.js";
 import { getProfileSdk } from "../../../utils/authentication-factory.js";
-
-const SEND_INVITATIONS_ERROR = "SEND_INVITATIONS_ERROR";
+import { httpErrors } from "@fastify/sensible";
 
 export const sendInvitationsForUsersImport = async (params: {
   pg: PostgresDb;
@@ -90,7 +88,6 @@ export const sendInvitationsForUsersImport = async (params: {
     await processMessages({
       inputMessages: sent.toCreateMessages,
       scheduleAt: new Date().toISOString(),
-      errorProcess: SEND_INVITATIONS_ERROR,
       pgPool: pg.pool,
       logger: params.logger,
       senderUser: {
@@ -153,10 +150,10 @@ const getSettingsPerUserIds = async (params: {
 
     return result.rows;
   } catch (error) {
-    throw new ServerError(
-      SEND_INVITATIONS_ERROR,
+    throw httpErrors.createError(
+      500,
       `Error retrieving organisation settings`,
-      error,
+      { parent: error },
     );
   }
 };
@@ -352,10 +349,7 @@ const getLanguagePerUser = async (params: {
   organisationId: string;
 }): Promise<{ [x: string]: string }> => {
   if (params.userIdsToSearchFor.length === 0) {
-    throw new ServerError(
-      "GET_LANGUAGE_PER_USER",
-      "At least one user is needed",
-    );
+    throw httpErrors.internalServerError("At least one user is needed");
   }
 
   const mappedIds: { [userProfileId: string]: string } = {};

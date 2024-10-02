@@ -3,7 +3,6 @@ import { Permissions } from "../../types/permissions.js";
 import { Type } from "@sinclair/typebox";
 import {
   getCsvExample,
-  IMPORT_USERS_ERROR,
   importCsvFileFromRequest,
   importCsvRecords,
 } from "../../services/users/import/import-users.js";
@@ -26,13 +25,13 @@ import {
   getUserImportsForOrganisation,
 } from "../../services/users/import/read-user-imports.js";
 import { HttpError } from "../../types/httpErrors.js";
-import { BadRequestError } from "shared-errors";
 import { ensureOrganizationIdIsSet } from "../../utils/authentication-factory.js";
 import {
   formatAPIResponse,
   sanitizePagination,
 } from "../../utils/pagination.js";
 import { Value } from "@sinclair/typebox/value";
+import { httpErrors } from "@fastify/sensible";
 
 const tags = ["User Imports"];
 enum MimeTypes {
@@ -72,7 +71,7 @@ export default async function userImports(app: FastifyInstance) {
       const response = await getUserImportsForOrganisation({
         logger: request.log,
         pool: app.pg.pool,
-        organisationId: ensureOrganizationIdIsSet(request, "GET_USER_IMPORTS"),
+        organisationId: ensureOrganizationIdIsSet(request),
         pagination,
       });
 
@@ -168,7 +167,7 @@ export default async function userImports(app: FastifyInstance) {
       data: await getUserImportForOrganisation({
         logger: request.log,
         pool: app.pg.pool,
-        organisationId: ensureOrganizationIdIsSet(request, "GET_USER_IMPORT"),
+        organisationId: ensureOrganizationIdIsSet(request),
         importId: request.params.importId,
         includeUsersData: parseBooleanEnum(
           request.query.includeImportedData ?? "true",
@@ -205,10 +204,7 @@ export default async function userImports(app: FastifyInstance) {
   const saveRequestFile = async (request: FastifyRequest): Promise<string> => {
     const file = await request.files();
     if (!file) {
-      throw new BadRequestError(
-        IMPORT_USERS_ERROR,
-        "File is missing in the request",
-      );
+      throw httpErrors.badRequest("File is missing in the request");
     }
 
     const savedFiles = await request.saveRequestFiles();

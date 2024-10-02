@@ -14,11 +14,9 @@ import {
   getOrgToken,
   isAuthenticated,
 } from "./authentication-context";
-import { AuthenticationError } from "shared-errors";
 import { notFound } from "next/navigation";
 import { getCommonLogger } from "nextjs-logging-wrapper";
-
-const ERROR_PROCESS = "AUTHENTICATION_CONTEXT";
+import createError from "http-errors";
 
 export interface AuthenticationContextConfig {
   resourceUrl?: string;
@@ -83,7 +81,7 @@ export class BaseAuthenticationContext {
   ): AuthSessionContext {
     if (!context.user) {
       getCommonLogger().error({
-        error: new AuthenticationError(ERROR_PROCESS, "Missing user"),
+        error: createError.Unauthorized("Missing user"),
       });
       throw notFound();
     }
