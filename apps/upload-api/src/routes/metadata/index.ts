@@ -17,12 +17,10 @@ import {
 import {
   getOrganizationFiles,
   getSharedFiles,
-  getSharedFilesPerOrganization,
   scheduleFileForDeletion,
   getUserFiles,
 } from "./utils/filesMetadata.js";
 import getFileMetadataById from "../utils/getFileMetadataById.js";
-import getFileSharings from "./utils/getFileSharings.js";
 import removeAllFileSharings from "./utils/removeAllFileSharings.js";
 
 const METADATA_INDEX = "METADATA_INDEX";
@@ -55,7 +53,7 @@ export default async function routes(app: FastifyInstance) {
         },
       },
     },
-    async (request, reply) => {
+    async (request) => {
       const userId = ensureUserIdIsSet(request, METADATA_INDEX);
       const organizationId = request.userData?.organizationId;
       ensureUserCanAccessResource({
@@ -72,12 +70,10 @@ export default async function routes(app: FastifyInstance) {
 
       const queryOrganizationId = request.query.organizationId;
 
-      const files: FileMetadataType[] = [];
-
       /**
        * if public servant
-       * if queries user return all owned files + all shared files
-       * if queries org return all org files
+       * if queries user return all owned files + all shared files withhin org
+       * if queries org return all org files withing org
        *
        * if no public servant return shared files
        */
@@ -85,105 +81,48 @@ export default async function routes(app: FastifyInstance) {
       try {
         if (organizationId) {
           if (queryUserId) {
-            const ownedFiles = await getUserFiles(client, queryUserId, []);
-            files.push(...ownedFiles.rows);
-            const sharedFiles = await getSharedFilesPerOrganization(
+            const userFiles = await getUserFiles({
               client,
               organizationId,
-              queryUserId,
-              files.map(({ id }) => id as string),
-            );
-
-            files.push(...sharedFiles.rows);
+              userId: queryUserId,
+              toExclude: [],
+            });
+            return { data: userFiles };
           }
 
           if (queryOrganizationId && queryOrganizationId === organizationId) {
-            const filesResponse = await getOrganizationFiles(
+            const filesResponse = await getOrganizationFiles({
               client,
-              queryOrganizationId,
-              files.map(({ id }) => id as string),
-            );
-            files.push(...filesResponse.rows);
+              organizationId,
+              toExclude: [],
+            });
+            return { data: filesResponse.rows };
           }
-        } else {
-          if (queryUserId === userId) {
-            const sharedFiles = await getSharedFiles(client, queryUserId, []);
-            files.push(...sharedFiles.rows);
-          }
+
+          throw new BadRequestError(
+            GET_METADATA,
+            "You are not authorized to access other organization data",
+          );
         }
 
-        // if (organizationId && queryUserId) {
-        //   //if I am public servant I want to get user files and files shared within my org
-        //   // const ownedFiles = await getUserFiles(client, queryUserId, []);
-        //   // files.push(...ownedFiles.rows);
-        //   const sharedFiles = await getSharedFilesPerOrganization(
-        //     client,
-        //     organizationId,
-        //     queryUserId,
-        //     files.map(({ id }) => id as string),
-        //   );
+        if (queryUserId === userId) {
+          const sharedFiles = await getSharedFiles({
+            client,
+            userId: queryUserId,
+            toExclude: [],
+          });
+          return { data: sharedFiles.rows };
+        }
 
-        //   files.push(...sharedFiles.rows);
-        // }
-
-        // if (!organizationId && queryUserId) {
-        //   // citizen accessing accesible files
-        //   const sharedFiles = await getSharedFiles(client, queryUserId, []);
-        //   files.push(...sharedFiles.rows);
-        // }
-
-        // // get files for requested org
-        // if (queryOrganizationId) {
-        //   const filesResponse = await getOrganizationFiles(
-        //     client,
-        //     queryOrganizationId,
-        //     files.map(({ id }) => id as string),
-        //   );
-        //   files.push(...filesResponse.rows);
-        // }
+        throw new BadRequestError(
+          GET_METADATA,
+          "You are not authorized to access other users data",
+        );
       } catch (e) {
         throw new ServerError(METADATA_INDEX, "Error getting files", e);
       } finally {
         client.release();
       }
-
-      // try {
-      //   if (organizationId && queryUserId) {
-      //     //if I am public servant I want to get user files and files shared within my org
-      //     // const ownedFiles = await getUserFiles(client, queryUserId, []);
-      //     // files.push(...ownedFiles.rows);
-      //     const sharedFiles = await getSharedFilesPerOrganization(
-      //       client,
-      //       organizationId,
-      //       queryUserId,
-      //       files.map(({ id }) => id as string),
-      //     );
-
-      //     files.push(...sharedFiles.rows);
-      //   }
-
-      //   if (!organizationId && queryUserId) {
-      //     // citizen accessing accesible files
-      //     const sharedFiles = await getSharedFiles(client, queryUserId, []);
-      //     files.push(...sharedFiles.rows);
-      //   }
-
-      //   // get files for requested org
-      //   if (queryOrganizationId) {
-      //     const filesResponse = await getOrganizationFiles(
-      //       client,
-      //       queryOrganizationId,
-      //       files.map(({ id }) => id as string),
-      //     );
-      //     files.push(...filesResponse.rows);
-      //   }
-      // } catch (e) {
-      //   throw new ServerError(METADATA_INDEX, "Error getting files", e);
-      // } finally {
-      //   client.release();
-      // }
-
-      reply.send({ data: files });
     },
   );
 
@@ -210,7 +149,6 @@ export default async function routes(app: FastifyInstance) {
 
       let file: FileMetadataType | undefined = undefined;
 
-      const sharingsData: string[] = [];
       try {
         const fileData = await getFileMetadataById(app.pg, fileId);
         if (fileData.rows) {
@@ -220,14 +158,6 @@ export default async function routes(app: FastifyInstance) {
         if (!file) {
           return new NotFoundError(GET_METADATA, "File not found");
         }
-
-        const sharingsDataQueryResult = await getFileSharings(app.pg, fileId);
-
-        if (sharingsDataQueryResult.rows) {
-          sharingsDataQueryResult.rows.forEach(({ userId }) =>
-            sharingsData.push(userId),
-          );
-        }
       } catch (err) {
         throw new ServerError(GET_METADATA, "Error retrieving files", err);
       }
@@ -235,7 +165,6 @@ export default async function routes(app: FastifyInstance) {
       const fileMetadata = {
         ...file,
         owner: file.ownerId,
-        sharedWith: sharingsData,
       };
 
       return reply.send({ data: fileMetadata });
@@ -292,19 +221,28 @@ const ensureUserCanAccessResource = (params: {
   queryOrganizationId?: string;
   organizationId?: string;
 }) => {
-  if (
-    !params.queryUserId ||
-    params.organizationId ||
-    params.queryUserId === params.loggedInUserId
-  ) {
+  //public servant
+  if (params.organizationId) {
+    if (params.organizationId !== params.queryOrganizationId) {
+      throw new AuthorizationError(
+        params.errorProcess,
+        "You are not allowed to access data for the requested organization",
+      );
+    }
     return;
   }
 
-  // if public servant allow only to query within the org
-  if (params.organizationId !== params.queryOrganizationId) {
+  if (params.loggedInUserId !== params.queryUserId) {
     throw new AuthorizationError(
       params.errorProcess,
       "You are not allowed to access data for the requested user",
+    );
+  }
+
+  if (params.queryOrganizationId) {
+    throw new AuthorizationError(
+      params.errorProcess,
+      "You are not allowed to access data for the requested organization",
     );
   }
 };

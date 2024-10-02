@@ -6,11 +6,6 @@ info:
 components:
   schemas: {}
 paths:
-  /health:
-    get:
-      responses:
-        "200":
-          description: Default Response
   /api/v1/files/:
     post:
       tags:
@@ -201,10 +196,6 @@ paths:
                           type: string
                         antivirusDbVersion:
                           type: string
-                        sharedWith:
-                          type: array
-                          items:
-                            type: string
                         expiresAt:
                           type: string
                       required:
@@ -387,10 +378,6 @@ paths:
                         type: string
                       antivirusDbVersion:
                         type: string
-                      sharedWith:
-                        type: array
-                        items:
-                          type: string
                       expiresAt:
                         type: string
                     required:
@@ -450,10 +437,10 @@ paths:
                   - detail
                   - requestId
                   - name
-  /api/v1/metadata/share/:
+  /api/v1/permissions/:
     post:
       tags:
-        - Metadata share
+        - Permissions
       requestBody:
         content:
           application/json:
@@ -536,7 +523,7 @@ paths:
                   - name
     delete:
       tags:
-        - Metadata share
+        - Permissions
       requestBody:
         content:
           application/json:
@@ -551,6 +538,62 @@ paths:
                 - fileId
                 - userId
         required: true
+      responses:
+        4XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  requestId:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - requestId
+                  - name
+        5XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  requestId:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - requestId
+                  - name
+    get:
+      tags:
+        - Permissions
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: fileId
+          required: true
       responses:
         4XX:
           description: Default Response
