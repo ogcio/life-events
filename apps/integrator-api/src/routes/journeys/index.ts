@@ -7,6 +7,7 @@ import {
   Id,
   JourneyDetails,
   JourneyDetailsDO,
+  Journeys,
   ParamsWithJourneyId,
 } from "../schemas";
 import { formatAPIResponse } from "../../utils/responseFormatter";
@@ -15,6 +16,35 @@ import { authPermissions } from "../../types/authPermissions";
 const TAGS = ["Journeys"];
 
 export default async function journeys(app: FastifyInstance) {
+  app.get<{
+    Reply: GenericResponse<Journeys> | Error;
+  }>(
+    "/",
+    {
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [authPermissions.JOURNEY_READ]),
+      schema: {
+        tags: TAGS,
+        response: {
+          200: GenericResponse(Journeys),
+          401: HttpError,
+          404: HttpError,
+        },
+      },
+    },
+    async (request, reply) => {
+      const organizationId = request.userData?.organizationId;
+
+      if (!organizationId) {
+        throw app.httpErrors.unauthorized("Unauthorized!");
+      }
+
+      const journeys = await app.journey.getJourneys(organizationId);
+
+      reply.send(formatAPIResponse(journeys));
+    },
+  );
+
   app.get<{
     Reply: GenericResponse<JourneyDetailsDO> | Error;
     Params: ParamsWithJourneyId;

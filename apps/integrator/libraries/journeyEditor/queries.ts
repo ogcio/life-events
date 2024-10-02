@@ -61,26 +61,3 @@ export const loadJourneyById = (
 
   return pg.query<Journey>(query, queryData);
 };
-
-export const getJourneys = (
-  pg: Pool,
-  data: {
-    organizationId: string;
-  },
-) => {
-  return pg.query<JourneyInfo>(
-    `
-      SELECT
-        id,
-        title,
-        status,
-        created_at as "createdAt",
-        updated_at as "updatedAt",
-        user_id as "userId"
-      FROM journeys
-      WHERE organization_id = $1
-      ORDER BY created_at DESC
-    `,
-    [data.organizationId],
-  );
-};

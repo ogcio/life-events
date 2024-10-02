@@ -14,15 +14,34 @@ export class JourneyRepo {
     this.pg = pg;
   }
 
+  getJourneys(organizationId: string): Promise<QueryResult<JourneyDetailsDO>> {
+    return this.pg.query(
+      `SELECT
+        id,
+        title,
+        status,
+        organization_id as "organizationId",
+        created_at as "createdAt",
+        updated_at as "updatedAt",
+        user_id as "userId"
+      FROM journeys
+      WHERE organization_id = $1
+      ORDER BY created_at DESC`,
+      [organizationId],
+    );
+  }
+
   getJourneyById(journeyId: string): Promise<QueryResult<JourneyDetailsDO>> {
     return this.pg.query(
       `SELECT
-          j.id,
-          j.title,
-          j.user_id as "userId",
-          j.organization_id as "organizationId",
-          j.status
-        FROM journeys j
+          id,
+          title,
+          user_id as "userId",
+          organization_id as "organizationId",
+          status,
+          created_at as "createdAt",
+          updated_at as "updatedAt",
+        FROM journeys
         WHERE j.id = $1`,
       [journeyId],
     );

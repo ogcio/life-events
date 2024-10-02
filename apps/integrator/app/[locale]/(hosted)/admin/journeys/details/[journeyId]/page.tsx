@@ -43,11 +43,6 @@ const loadJourney = async (journeyId: string): Promise<Journey> => {
   return result.rows[0];
 };
 
-const getUserName = async (userId: string, profileApi: Profile) => {
-  const user = await profileApi.getUser(userId);
-  return `${user.data?.firstName} ${user.data?.lastName}`;
-};
-
 export default async ({ params: { locale, journeyId } }: Props) => {
   dayjs.extend(advancedFormat);
 

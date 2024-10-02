@@ -46,6 +46,10 @@ export class Integrator {
     );
   }
 
+  async getJourneys() {
+    return formatQueryResult(this.client.GET("/api/v1/journeys/", {}));
+  }
+
   async createJourney(
     data: paths["/api/v1/journeys/"]["post"]["requestBody"]["content"]["application/json"],
   ) {
