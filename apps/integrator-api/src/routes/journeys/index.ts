@@ -9,6 +9,8 @@ import {
   JourneyDetailsDO,
   Journeys,
   ParamsWithJourneyId,
+  UpdateJourneyBody,
+  UpdateJourneyBodyDO,
 } from "../schemas";
 import { formatAPIResponse } from "../../utils/responseFormatter";
 import { authPermissions } from "../../types/authPermissions";
@@ -98,6 +100,44 @@ export default async function journeys(app: FastifyInstance) {
       const { id } = await app.journey.createJourney(request.body);
 
       reply.send(formatAPIResponse({ id }));
+    },
+  );
+
+  app.patch<{
+    Body: UpdateJourneyBodyDO;
+    Reply: {};
+    Params: ParamsWithJourneyId;
+  }>(
+    "/:journeyId",
+    {
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [authPermissions.JOURNEY_WRITE]),
+      schema: {
+        tags: TAGS,
+        body: UpdateJourneyBody,
+        response: {
+          200: GenericResponse(Id),
+          500: HttpError,
+        },
+      },
+    },
+    async (request, reply) => {
+      const { journeyId } = request.params;
+      const { status } = request.body;
+
+      const organizationId = request.userData?.organizationId;
+
+      if (!organizationId) {
+        throw app.httpErrors.unauthorized("Unauthorized!");
+      }
+
+      const { id } = await app.journey.updateJourneyStatus({
+        journeyId,
+        status,
+        organizationId,
+      });
+
+      reply.send();
     },
   );
 }

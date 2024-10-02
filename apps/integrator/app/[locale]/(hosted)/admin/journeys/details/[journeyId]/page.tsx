@@ -11,7 +11,6 @@ import dayjs from "dayjs";
 import { generateJourneyLink } from "../../../../../../utils/journey";
 import { JourneyEditor } from "../../../../../../../libraries/journeyEditor";
 import journeyDefaultFlow from "../../../../../../../libraries/journeyEditor/journeyStepFlow";
-import { Profile } from "building-blocks-sdk";
 import { getUserNameById } from "../../../../../../utils/profileHelpers";
 
 type Props = {

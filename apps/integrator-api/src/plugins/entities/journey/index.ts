@@ -10,6 +10,7 @@ import {
   CreateJourneyBodyDO,
   JourneyDetailsDO,
   Journeys,
+  JourneyStatusType,
 } from "../../../routes/schemas";
 
 export type JourneyPlugin = Awaited<ReturnType<typeof buildPlugin>>;
@@ -64,6 +65,28 @@ const buildCreateJourney =
     return result?.rows[0];
   };
 
+const buildUpdateJourneyStatus =
+  (repo: JourneyRepo, log: FastifyBaseLogger, httpErrors: HttpErrors) =>
+  async (data: {
+    journeyId: string;
+    status: JourneyStatusType;
+    organizationId: string;
+  }): Promise<JourneyDetailsDO> => {
+    let result;
+
+    try {
+      result = await repo.updateJourneyStatus(data);
+    } catch (err) {
+      log.error((err as Error).message);
+    }
+
+    if (!result?.rows[0]?.id) {
+      throw httpErrors.internalServerError("Something went wrong!");
+    }
+
+    return result?.rows[0];
+  };
+
 const buildPlugin = (
   repo: JourneyRepo,
   log: FastifyBaseLogger,
@@ -73,6 +96,7 @@ const buildPlugin = (
     getJourneys: buildGetJourneys(repo, log, httpErrors),
     getJourneyById: buildGetJourneyById(repo, log, httpErrors),
     createJourney: buildCreateJourney(repo, log, httpErrors),
+    updateJourneyStatus: buildUpdateJourneyStatus(repo, log, httpErrors),
   };
 };
 

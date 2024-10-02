@@ -1,22 +1,5 @@
 import { Pool } from "pg";
-import { Journey, JourneyInfo, JourneyStatus } from "./types";
-
-export const activateJourney = (
-  pg: Pool,
-  data: {
-    journeyId: string;
-    organizationId: string;
-  },
-) => {
-  return pg.query(
-    `
-      UPDATE journeys
-      SET status = $3, updated_at = now()::DATE
-      WHERE id = $1 and organization_id = $2
-    `,
-    [data.journeyId, data.organizationId, JourneyStatus.ACTIVE],
-  );
-};
+import { Journey } from "./types";
 
 export const loadJourneyById = (
   pg: Pool,

@@ -26,7 +26,7 @@ export interface paths {
                 title: string;
                 userId: string;
                 organizationId: string;
-                status: string;
+                status: "active" | "draft";
                 createdAt: string;
                 updatedAt: string;
               }[];
@@ -178,7 +178,7 @@ export interface paths {
                 title: string;
                 userId: string;
                 organizationId: string;
-                status: string;
+                status: "active" | "draft";
                 createdAt: string;
                 updatedAt: string;
               };
@@ -225,6 +225,70 @@ export interface paths {
         };
         /** @description Default Response */
         404: {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              requestId: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
+      };
+    };
+    patch: {
+      parameters: {
+        path: {
+          journeyId: string;
+        };
+      };
+      requestBody: {
+        content: {
+          "application/json": {
+            status: "active" | "draft";
+          };
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              data: {
+                id: string;
+              };
+              metadata?: {
+                links?: {
+                  self: {
+                    href?: string;
+                  };
+                  next?: {
+                    href?: string;
+                  };
+                  prev?: {
+                    href?: string;
+                  };
+                  first: {
+                    href?: string;
+                  };
+                  last: {
+                    href?: string;
+                  };
+                  pages: {
+                    [key: string]: {
+                      href?: string;
+                    };
+                  };
+                };
+                totalCount?: number;
+              };
+            };
+          };
+        };
+        /** @description Default Response */
+        500: {
           content: {
             "application/json": {
               code: string;

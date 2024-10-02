@@ -1,6 +1,10 @@
 import { PostgresDb } from "@fastify/postgres";
 import { QueryResult } from "pg";
-import { CreateJourneyBodyDO, JourneyDetailsDO } from "../../../routes/schemas";
+import {
+  CreateJourneyBodyDO,
+  JourneyDetailsDO,
+  JourneyStatusType,
+} from "../../../routes/schemas";
 
 enum JourneyStatus {
   ACTIVE = "active",
@@ -58,6 +62,20 @@ export class JourneyRepo {
         JourneyStatus.DRAFT,
         journey.userId,
       ],
+    );
+  }
+
+  updateJourneyStatus(data: {
+    journeyId: string;
+    status: JourneyStatusType;
+    organizationId: string;
+  }) {
+    return this.pg.query(
+      `UPDATE journeys
+        SET status = $3, updated_at = now()::DATE
+        WHERE id = $1 and organization_id = $2
+        RETURNING id`,
+      [data.journeyId, data.organizationId, data.status],
     );
   }
 }

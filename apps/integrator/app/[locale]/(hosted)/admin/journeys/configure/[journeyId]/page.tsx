@@ -11,10 +11,7 @@ import {
 import ds from "design-system";
 import Link from "next/link";
 import styles from "./style.module.scss";
-import {
-  activateJourney,
-  loadJourneyById,
-} from "../../../../../../../libraries/journeyEditor/queries";
+import { loadJourneyById } from "../../../../../../../libraries/journeyEditor/queries";
 import InputField from "../../../../../../components/InputField";
 import CopyLink from "../../../../../../components/CopyBtn";
 import journeyDefaultFlow from "../../../../../../../libraries/journeyEditor/journeyStepFlow";
@@ -72,17 +69,8 @@ export default async ({ params: { locale, journeyId } }: Props) => {
   const saveJourneyAction = async () => {
     "use server";
 
-    const { organization } =
-      await AuthenticationFactory.getInstance().getContext();
-
-    if (!organization) {
-      throw new Error("Unauthorized!");
-    }
-
-    await activateJourney(pgpool, {
-      journeyId,
-      organizationId: organization.id,
-    });
+    const integratorApi = await AuthenticationFactory.getIntegratorClient();
+    await integratorApi.updateJourneyStatus(journeyId, { status: "active" });
 
     redirect(`/${locale}/admin/journeys/configure/${journeyId}`);
   };

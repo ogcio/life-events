@@ -45,12 +45,18 @@ export const ParamsWithJourneyId = Type.Object({
 
 export type ParamsWithJourneyId = Static<typeof ParamsWithJourneyId>;
 
+export const JourneyStatus = Type.Union([
+  Type.Literal("active"),
+  Type.Literal("draft"),
+]);
+export type JourneyStatusType = Static<typeof JourneyStatus>;
+
 export const JourneyDetails = Type.Object({
   id: Type.String(),
   title: Type.String(),
   userId: Type.String(),
   organizationId: Type.String(),
-  status: Type.String(),
+  status: JourneyStatus,
   createdAt: Type.String(),
   updatedAt: Type.String(),
 });
@@ -67,3 +73,6 @@ export const CreateJourneyBody = Type.Object({
 });
 
 export type CreateJourneyBodyDO = Static<typeof CreateJourneyBody>;
+
+export const UpdateJourneyBody = Type.Pick(JourneyDetails, ["status"]);
+export type UpdateJourneyBodyDO = Static<typeof UpdateJourneyBody>;

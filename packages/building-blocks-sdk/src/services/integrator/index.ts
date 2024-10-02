@@ -59,4 +59,18 @@ export class Integrator {
       }),
     );
   }
+
+  async updateJourneyStatus(
+    journeyId: paths["/api/v1/journeys/{journeyId}"]["patch"]["parameters"]["path"]["journeyId"],
+    data: paths["/api/v1/journeys/{journeyId}"]["patch"]["requestBody"]["content"]["application/json"],
+  ) {
+    return formatQueryResult(
+      this.client.PATCH("/api/v1/journeys/{journeyId}", {
+        params: {
+          path: { journeyId },
+        },
+        body: data,
+      }),
+    );
+  }
 }
