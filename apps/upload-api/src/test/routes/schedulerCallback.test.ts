@@ -60,6 +60,7 @@ const buildApp = async (
     "../../utils/scheduleCleanupTask.js": () => Promise.resolve(),
     "../../routes/metadata/utils/filesMetadata.js": {
       getExpiredFiles,
+      scheduleExpiredFilesForDeletion: () => Promise.resolve(),
       markFilesAsDeleted: () => {
         markFilesAsDeletedCalled = true;
 

@@ -15,6 +15,13 @@ paths:
     post:
       tags:
         - Files
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              anyOf:
+                - {}
+                - {}
       responses:
         "201":
           description: Default Response
@@ -229,6 +236,8 @@ paths:
                               - firstName
                               - lastName
                               - ppsn
+                        expiresAt:
+                          type: string
                       required:
                         - fileName
                         - key
@@ -448,6 +457,8 @@ paths:
                             - firstName
                             - lastName
                             - ppsn
+                      expiresAt:
+                        type: string
                     required:
                       - fileName
                       - key

@@ -1,3 +1,4 @@
+import fastifyPostgres from "@fastify/postgres";
 import { FileMetadataType } from "../../../types/schemaDefinitions.js";
 import { Pool, PoolClient } from "pg";
 
@@ -14,7 +15,8 @@ const baseQuery = `
     infection_description as "infectionDescription", 
     deleted, 
     file_name as "fileName",
-    scheduled_deletion_at as "scheduledDeletionAt"
+    scheduled_deletion_at as "scheduledDeletionAt",
+    expires_at as "expiresAt"
   FROM
     files
 `;
@@ -93,6 +95,43 @@ const getExpiredFiles = (pool: Pool, expirationDate: Date) => {
   return pool.query<FileMetadataType>(query, [expirationDate]);
 };
 
+const getDeletionDate = () => {
+  const currentDate = new Date();
+
+  const deletionDate = new Date(currentDate);
+  deletionDate.setDate(currentDate.getDate() + 30);
+  return deletionDate;
+};
+
+const scheduleExpiredFilesForDeletion = (pool: Pool) => {
+  const date = getDeletionDate();
+  const now = new Date();
+
+  return pool.query<FileMetadataType>(
+    `
+    UPDATE files
+    SET scheduled_deletion_at = $1, expires_at = NULL
+    WHERE expires_at < $2;
+  `,
+    [date, now],
+  );
+};
+
+const scheduleFileForDeletion = (
+  pg: fastifyPostgres.PostgresDb,
+  fileId: string,
+) => {
+  const date = getDeletionDate();
+  return pg.query(
+    `
+    UPDATE files
+    SET scheduled_deletion_at = $2, expires_at = NULL
+    WHERE id = $1;
+    `,
+    [fileId, date],
+  );
+};
+
 const markFilesAsDeleted = (pool: Pool, ids: string[]) => {
   return pool.query<FileMetadataType>(
     `
@@ -111,4 +150,6 @@ export {
   getSharedFilesPerOrganization,
   getExpiredFiles,
   markFilesAsDeleted,
+  scheduleExpiredFilesForDeletion,
+  scheduleFileForDeletion,
 };
