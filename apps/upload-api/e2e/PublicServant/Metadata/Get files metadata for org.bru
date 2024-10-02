@@ -1,17 +1,16 @@
 meta {
-  name: Get files for user
+  name: Get files metadata for org
   type: http
-  seq: 2
+  seq: 1
 }
 
 get {
-  url: {{baseUrl}}/api/v1/metadata?userId=test-user-file&organizationId=first-testing
+  url: {{baseUrl}}/api/v1/metadata?organizationId=first-testing
   body: none
   auth: none
 }
 
 params:query {
-  userId: test-user-file
   organizationId: first-testing
 }
 

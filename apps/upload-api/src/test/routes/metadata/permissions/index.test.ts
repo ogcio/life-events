@@ -66,7 +66,7 @@ const buildApp = async ({
   );
 
   const routes = await t.mockImport<
-    typeof import("../../../../routes/metadata//share/index.js")
+    typeof import("../../../../routes/metadata/permissions/index.js")
   >("../../../../routes/metadata/share/index.js", {
     "../../../../routes/metadata/share/utils/removeFileSharing.js": {
       default: removeFileSharing,

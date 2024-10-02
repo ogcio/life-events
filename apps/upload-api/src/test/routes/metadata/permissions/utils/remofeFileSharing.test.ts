@@ -1,5 +1,5 @@
 import t from "tap";
-import removeFileSharing from "../../../../../routes/metadata/share/utils/removeFileSharing.js";
+import removeFileSharing from "../../../../../routes/metadata/permissions/utils/removeFileSharing.js";
 import { PostgresDb } from "@fastify/postgres";
 
 t.test("removeFileSharing", async () => {

@@ -1,0 +1,19 @@
+meta {
+  name: Get file permissions
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/api/v1/permissions?fileId=b37a18c0-ac9d-445b-b55c-04af826e4cad
+  body: none
+  auth: none
+}
+
+params:query {
+  fileId: b37a18c0-ac9d-445b-b55c-04af826e4cad
+}
+
+headers {
+  Authorization: Bearer {{accessToken}}
+}
