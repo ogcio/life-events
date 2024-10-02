@@ -1,9 +1,9 @@
 import { getIntegratorSdk } from "../utils/authenticationFactory";
 
-export const getJourneyById = async (id: string) => {
+export const getJourneyDetails = async (id: string) => {
   const integratorSdk = await getIntegratorSdk();
 
-  const journeyDetails = await integratorSdk.getJourneyById(id);
+  const journeyDetails = await integratorSdk.getJourneyDetails(id);
 
   return journeyDetails.data?.data;
 };

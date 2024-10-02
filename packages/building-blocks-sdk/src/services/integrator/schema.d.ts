@@ -14,6 +14,82 @@ export interface paths {
       };
     };
   };
+  "/api/v1/citizen/journeys/{journeyId}": {
+    get: {
+      parameters: {
+        path: {
+          journeyId: string;
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              data: {
+                id: string;
+                title: string;
+                userId: string;
+                organizationId: string;
+                status: "active" | "draft";
+              };
+              metadata?: {
+                links?: {
+                  self: {
+                    href?: string;
+                  };
+                  next?: {
+                    href?: string;
+                  };
+                  prev?: {
+                    href?: string;
+                  };
+                  first: {
+                    href?: string;
+                  };
+                  last: {
+                    href?: string;
+                  };
+                  pages: {
+                    [key: string]: {
+                      href?: string;
+                    };
+                  };
+                };
+                totalCount?: number;
+              };
+            };
+          };
+        };
+        /** @description Default Response */
+        401: {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              requestId: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        404: {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              requestId: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
+      };
+    };
+  };
   "/api/v1/journeys/": {
     get: {
       responses: {
@@ -27,8 +103,6 @@ export interface paths {
                 userId: string;
                 organizationId: string;
                 status: "active" | "draft";
-                createdAt: string;
-                updatedAt: string;
               }[];
               metadata?: {
                 links?: {
@@ -179,8 +253,6 @@ export interface paths {
                 userId: string;
                 organizationId: string;
                 status: "active" | "draft";
-                createdAt: string;
-                updatedAt: string;
               };
               metadata?: {
                 links?: {

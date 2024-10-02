@@ -57,11 +57,19 @@ export const JourneyDetails = Type.Object({
   userId: Type.String(),
   organizationId: Type.String(),
   status: JourneyStatus,
+});
+export type JourneyDetailsDO = Static<typeof JourneyDetails>;
+
+export const FullJourney = Type.Object({
+  id: Type.String(),
+  title: Type.String(),
+  userId: Type.String(),
+  organizationId: Type.String(),
+  status: JourneyStatus,
   createdAt: Type.String(),
   updatedAt: Type.String(),
 });
-
-export type JourneyDetailsDO = Static<typeof JourneyDetails>;
+export type FullJourneyDO = Static<typeof FullJourney>;
 
 export const Journeys = Type.Array(JourneyDetails);
 export type Journeys = Static<typeof Journeys>;

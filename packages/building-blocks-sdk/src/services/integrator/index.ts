@@ -32,6 +32,20 @@ export class Integrator {
   /**
    * JOURNEYS
    */
+  async getJourneyDetails(
+    journeyId: paths["/api/v1/citizen/journeys/{journeyId}"]["get"]["parameters"]["path"]["journeyId"],
+  ) {
+    return formatQueryResult(
+      this.client.GET("/api/v1/citizen/journeys/{journeyId}", {
+        params: {
+          path: {
+            journeyId,
+          },
+        },
+      }),
+    );
+  }
+
   async getJourneyById(
     journeyId: paths["/api/v1/journeys/{journeyId}"]["get"]["parameters"]["path"]["journeyId"],
   ) {

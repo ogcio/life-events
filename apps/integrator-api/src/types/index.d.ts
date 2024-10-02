@@ -10,6 +10,7 @@ import {
   RawServerDefault,
 } from "fastify";
 import { JourneyPlugin } from "../plugins/entities/journey";
+import { CitizenPlugin } from "../plugins/citizen";
 
 declare module "fastify" {
   export interface FastifyInstance<
@@ -21,6 +22,7 @@ declare module "fastify" {
     Logger = FastifyLoggerInstance,
   > {
     journey: JourneyPlugin;
+    citizen: CitizenPlugin;
 
     checkPermissions: (
       request: FastifyRequest,
