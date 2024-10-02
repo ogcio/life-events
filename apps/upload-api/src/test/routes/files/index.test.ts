@@ -17,7 +17,11 @@ const nextTick = () =>
 const decorateRequest = (
   fastify: FastifyInstance,
   data:
-    | { file: PassThrough & { truncated: boolean }; filename?: string }
+    | {
+        file: PassThrough & { truncated: boolean };
+        filename?: string;
+        fields?: { [key: string]: { value: string } };
+      }
     | null
     | undefined,
 ) => {
@@ -236,6 +240,7 @@ t.test("files", async (t) => {
       decorateRequest(app, {
         file: passthroughStream,
         filename: "tooBig.txt",
+        fields: {},
       });
 
       app
@@ -259,6 +264,7 @@ t.test("files", async (t) => {
       decorateRequest(app, {
         file: passthroughStream,
         filename: "sample.txt",
+        fields: {},
       });
 
       app
@@ -288,11 +294,43 @@ t.test("files", async (t) => {
     });
 
     t.test(
-      "Should return a 200 status code when file is uploaded",
+      "Should return a 200 status code when file is uploaded with no expiration date",
       async (t) => {
         decorateRequest(app, {
           file: passthroughStream,
           filename: "sample.txt",
+          fields: {},
+        });
+
+        app
+          .inject({
+            method: "POST",
+            url: "/files",
+          })
+          .then((response) => {
+            t.equal(response.statusCode, 201);
+            t.end();
+          });
+
+        passthroughStream.end(Buffer.alloc(1));
+        await nextTick();
+        antivirusVersionEventEmitter.emit("version", "");
+        await nextTick();
+        uploadEventEmitter.emit("fileUploaded", { Key: "key" });
+        await nextTick();
+        pgEventEmitter.emit("done", [{ id: "1" }]);
+        await nextTick();
+        antivirusPassthrough.emit("scan-complete", { isInfected: false });
+      },
+    );
+
+    t.test(
+      "Should return a 200 status code when file is uploaded with expiration date",
+      async (t) => {
+        decorateRequest(app, {
+          file: passthroughStream,
+          filename: "sample.txt",
+          fields: { expirationDate: { value: "2024-01-01T10:00" } },
         });
 
         app
@@ -318,7 +356,7 @@ t.test("files", async (t) => {
     );
 
     t.test("should return an error when filename is not provided", (t) => {
-      decorateRequest(app, { file: passthroughStream });
+      decorateRequest(app, { file: passthroughStream, fields: {} });
 
       app
         .inject({
@@ -333,7 +371,11 @@ t.test("files", async (t) => {
     });
 
     t.test("should return an error when a dotfile is uploaded", (t) => {
-      decorateRequest(app, { file: passthroughStream, filename: ".env" });
+      decorateRequest(app, {
+        file: passthroughStream,
+        filename: ".env",
+        fields: {},
+      });
 
       app
         .inject({
@@ -350,7 +392,11 @@ t.test("files", async (t) => {
     t.test(
       "should return an error when a a file with a forbidden extension is uploaded",
       (t) => {
-        decorateRequest(app, { file: passthroughStream, filename: "test.exe" });
+        decorateRequest(app, {
+          file: passthroughStream,
+          filename: "test.exe",
+          fields: {},
+        });
 
         app
           .inject({
@@ -368,7 +414,11 @@ t.test("files", async (t) => {
     t.test(
       "should return an error when a a file with no extension is uploaded",
       (t) => {
-        decorateRequest(app, { file: passthroughStream, filename: "test" });
+        decorateRequest(app, {
+          file: passthroughStream,
+          filename: "test",
+          fields: {},
+        });
 
         app
           .inject({
@@ -387,6 +437,7 @@ t.test("files", async (t) => {
       decorateRequest(app, {
         file: passthroughStream,
         filename: "sample.txt",
+        fields: {},
       });
 
       app
@@ -410,6 +461,7 @@ t.test("files", async (t) => {
       decorateRequest(app, {
         file: passthroughStream,
         filename: "sample.txt",
+        fields: {},
       });
 
       app
@@ -434,6 +486,7 @@ t.test("files", async (t) => {
         decorateRequest(app, {
           file: passthroughStream,
           filename: "sample.txt",
+          fields: {},
         });
 
         app
@@ -459,6 +512,7 @@ t.test("files", async (t) => {
         decorateRequest(app, {
           file: passthroughStream,
           filename: "sample.txt",
+          fields: {},
         });
 
         app
@@ -482,68 +536,6 @@ t.test("files", async (t) => {
         await nextTick();
       },
     );
-  });
-
-  t.test("delete", async (t) => {
-    // t.test("Should throw an error when DELETE with no key is called", (t) => {
-    //   app
-    //     .inject({
-    //       method: "DELETE",
-    //       url: "/files/",
-    //     })
-    //     .then((response) => {
-    //       t.equal(response.statusCode, 400);
-    //       t.end();
-    //     });
-    // });
-    // t.test("Should delete a file successfully", async (t) => {
-    //   app
-    //     .inject({
-    //       method: "DELETE",
-    //       url: "/files/dummyfile.txt",
-    //     })
-    //     .then((response) => {
-    //       t.equal(response.statusCode, 200);
-    //       t.end();
-    //     });
-    //   await nextTick();
-    //   pgEventEmitter.emit("done", [{ key: "key" }]);
-    //   await nextTick();
-    //   s3SendEventEmitter.emit("sendComplete");
-    //   await nextTick();
-    //   pgEventEmitter.emit("done", [{ key: "key" }]);
-    //   await nextTick();
-    // });
-    // t.test("should throw an error when delete fails", async (t) => {
-    //   app
-    //     .inject({
-    //       method: "DELETE",
-    //       url: "/files/dummyfile.txt",
-    //     })
-    //     .then((response) => {
-    //       t.equal(response.statusCode, 500);
-    //       t.end();
-    //     });
-    //   await nextTick();
-    //   pgEventEmitter.emit("done", [{ key: "key" }]);
-    //   await nextTick();
-    //   s3SendEventEmitter.emit("send-error");
-    //   await nextTick();
-    // });
-    // t.test("should throw not found when metadata is not present", async (t) => {
-    //   app
-    //     .inject({
-    //       method: "DELETE",
-    //       url: "/files/dummyfile.txt",
-    //     })
-    //     .then((response) => {
-    //       t.equal(response.statusCode, 404);
-    //       t.end();
-    //     });
-    //   await nextTick();
-    //   pgEventEmitter.emit("done", []);
-    //   await nextTick();
-    // });
   });
 
   t.test("get", async (t) => {

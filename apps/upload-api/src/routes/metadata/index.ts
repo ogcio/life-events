@@ -23,10 +23,10 @@ import {
   getOrganizationFiles,
   getSharedFiles,
   getSharedFilesPerOrganization,
+  scheduleFileForDeletion,
 } from "./utils/filesMetadata.js";
 import getFileMetadataById from "../utils/getFileMetadataById.js";
 import getFileSharings from "./utils/getFileSharings.js";
-import scheduleFileForDeletion from "./utils/scheduleFileForDeletion.js";
 import removeAllFileSharings from "./utils/removeAllFileSharings.js";
 import { PoolClient } from "pg";
 
@@ -222,12 +222,7 @@ export default async function routes(app: FastifyInstance) {
       }
 
       try {
-        const currentDate = new Date();
-
-        const deletionDate = new Date(currentDate);
-        deletionDate.setDate(currentDate.getDate() + 30);
-
-        await scheduleFileForDeletion(app.pg, fileId, deletionDate);
+        await scheduleFileForDeletion(app.pg, fileId);
 
         await removeAllFileSharings(app.pg, fileId);
       } catch (err) {

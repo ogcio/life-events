@@ -6,13 +6,13 @@
 
 import { PoolClient } from "pg";
 import { utils } from "../../utils.js";
-import { BadRequestError, ServerError, ThirdPartyError } from "shared-errors";
 import { randomUUID } from "crypto";
 import {
   AllProviderTypes,
   SecurityLevels,
 } from "../../types/schemaDefinitions.js";
 import { getSchedulerSdk } from "../../utils/authentication-factory.js";
+import { httpErrors } from "@fastify/sensible";
 
 type TemplateContent = {
   subject: string;
@@ -32,8 +32,6 @@ type User = {
   email: string;
   phone: string;
 };
-
-const ERROR_PROCESS = "Messaging Service";
 
 type CreatedTemplateMessage = {
   userId: string;
@@ -199,10 +197,7 @@ export function newMessagingService(
       organizationId: string,
     ): Promise<CreatedTemplateMessage[]> {
       if (!templateContents.length) {
-        throw new BadRequestError(
-          ERROR_PROCESS,
-          "no template contents provided",
-        );
+        throw httpErrors.badRequest("no template contents provided");
       }
 
       const valueArgsArray: string[] = [];
@@ -368,7 +363,7 @@ export function newMessagingService(
         );
         jobs.push(...jobInsertResult.rows);
       } catch (err) {
-        throw new ServerError(ERROR_PROCESS, "failed to create jobs");
+        throw httpErrors.internalServerError("failed to create jobs");
       }
 
       const scheduleBody = jobs.map((job) => {
@@ -387,7 +382,7 @@ export function newMessagingService(
       const schedulerSdk = await getSchedulerSdk(organisationId);
       const { error } = await schedulerSdk.scheduleTasks(scheduleBody);
       if (error) {
-        throw new ThirdPartyError("SCHEDULE_MESSAGES", error.detail, error);
+        throw httpErrors.createError(503, error.message, { parent: error });
       }
 
       return jobs;

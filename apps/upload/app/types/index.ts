@@ -20,4 +20,5 @@ export type FileMetadata = {
   infected: boolean;
   infectionDescription?: string;
   sharedWith?: FileOwner[];
+  expiresAt?: string;
 };

@@ -3,6 +3,7 @@ import { getConfigValue, SCHEDULER_TOKEN } from "../utils/storeConfig.js";
 import {
   getExpiredFiles,
   markFilesAsDeleted,
+  scheduleExpiredFilesForDeletion,
 } from "./metadata/utils/filesMetadata.js";
 import { DeleteObjectsCommand } from "@aws-sdk/client-s3";
 import { FileMetadataType } from "../types/schemaDefinitions.js";
@@ -29,6 +30,10 @@ export default async function scheduler(app: FastifyInstance) {
       app.log.info(`Cleanup job running at ${now.toISOString()}`);
 
       await scheduleCleanupTask(app);
+
+      // check if there are files with expired TTL, schedule for deletion
+
+      await scheduleExpiredFilesForDeletion(app.pg.pool);
 
       const filesToDeleteQueryResult = await getExpiredFiles(app.pg.pool, now);
 
