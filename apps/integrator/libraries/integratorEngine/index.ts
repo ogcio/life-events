@@ -37,6 +37,15 @@ export class IntegratorEngine {
 
   private prepareJourneySteps() {
     this.journeySteps = [];
+
+    if (
+      !this.journey.initialStepId ||
+      !this.journey.steps ||
+      !this.journey.connections
+    ) {
+      return;
+    }
+
     const stepsMap: Record<string, JourneyStep> = this.journey.steps.reduce(
       (acc, step) => {
         acc[step.id] = step;

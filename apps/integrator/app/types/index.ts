@@ -53,9 +53,9 @@ export type Journey = {
   userId: string;
   organizationId: string;
   status: string;
-  initialStepId: string;
-  steps: JourneyStep[];
-  connections: JourneyStepConnection[];
+  initialStepId?: string;
+  steps?: JourneyStep[];
+  connections?: JourneyStepConnection[];
   createdAt: Date;
   updatedAt: Date;
 };
