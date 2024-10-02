@@ -17,5 +17,5 @@ auth:bearer {
 assert {
   res.status: eq 404
   res.body.requestId: isDefined
-  res.body.detail: eq Route not found
+  res.body.detail: contains Route not found
 }

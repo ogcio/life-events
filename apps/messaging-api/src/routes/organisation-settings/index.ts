@@ -52,13 +52,11 @@ export default async function organisationSettings(app: FastifyInstance) {
       request: FastifyRequest<{ Querystring: PaginationParams }>,
       _reply: FastifyReply,
     ) => {
-      const errorCode = "GET_ORGANISATION_SETTINGS";
       const client = await app.pg.pool.connect();
       try {
         const dbData = await getSettingsPerUserProfile({
-          userProfileId: ensureUserIdIsSet(request, errorCode),
+          userProfileId: ensureUserIdIsSet(request),
           client,
-          errorCode,
           pagination: sanitizePagination({
             limit: request.query.limit,
             offset: request.query.offset,
@@ -106,7 +104,7 @@ export default async function organisationSettings(app: FastifyInstance) {
       _reply: FastifyReply,
     ) => ({
       data: await getOrganisationSettingsForProfile({
-        userProfileId: ensureUserIdIsSet(request, "GET_ORGANIZATION_SETTING"),
+        userProfileId: ensureUserIdIsSet(request),
         organisationSettingId: request.params.organisationSettingId,
         pg: app.pg,
       }),
@@ -143,16 +141,15 @@ export default async function organisationSettings(app: FastifyInstance) {
       request: FastifyRequest<PatchOrgInvitationSchema>,
       _reply: FastifyReply,
     ) => {
-      const errorCode = "UPDATE_ORGANISATION_SETTINGS";
       await updateInvitationStatus({
-        userProfileId: ensureUserIdIsSet(request, errorCode),
+        userProfileId: ensureUserIdIsSet(request),
         pg: app.pg,
         feedback: { userStatusFeedback: "active" },
       });
 
       return {
         data: await updateOrganisationFeedback({
-          userProfileId: ensureUserIdIsSet(request, errorCode),
+          userProfileId: ensureUserIdIsSet(request),
           organisationSettingId: request.params.organisationSettingId,
           pg: app.pg,
           feedback: request.body,

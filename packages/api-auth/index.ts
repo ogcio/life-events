@@ -49,7 +49,7 @@ const decodeLogtoToken = async (
 export const ensureUserCanAccessUser = (
   loggedUserData: ExtractedUserData | undefined,
   requestedUserId: string,
-  errorProcess: string,
+  errorProcess?: string,
 ): ExtractedUserData => {
   if (loggedUserData && requestedUserId === loggedUserData.userId) {
     return loggedUserData;

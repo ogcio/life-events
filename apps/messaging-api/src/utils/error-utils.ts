@@ -1,9 +1,9 @@
 import { FastifyError } from "fastify";
-import { AuthorizationError, isLifeEventsError } from "shared-errors";
 import { isNativeError } from "util/types";
-
+import { isHttpError } from "http-errors";
+import { httpErrors } from "@fastify/sensible";
 export const getErrorMessage = (e: unknown): string => {
-  if (isNativeError(e) || isLifeEventsError(e) || isFastifyError(e)) {
+  if (isNativeError(e) || isHttpError(e) || isFastifyError(e)) {
     return e.message;
   }
   switch (typeof e) {
@@ -32,11 +32,9 @@ const isFastifyError = (e: unknown): e is FastifyError =>
 
 export const ensureUserIsOrganisationMember = (
   user: { organizationId?: string } | undefined,
-  errorProcess: string,
 ): string => {
   if (!user?.organizationId) {
-    throw new AuthorizationError(
-      errorProcess,
+    throw httpErrors.forbidden(
       "You have to be part of an organisation to invoke this endpoint",
     );
   }
