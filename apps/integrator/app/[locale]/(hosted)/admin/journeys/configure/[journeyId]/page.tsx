@@ -86,7 +86,7 @@ export default async ({ params: { locale, journeyId } }: Props) => {
     await activateJourney(pgpool, {
       journeyId,
       organizationId: organization.id,
-      startStepId: stepConnections[0]?.sourceStepId,
+      initialStepId: stepConnections[0]?.sourceStepId,
     });
 
     await clearStepConnections(pgpool, {

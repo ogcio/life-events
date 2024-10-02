@@ -1,12 +1,5 @@
 import { PluginData } from "./plugins";
 
-export type Journey = {
-  id: string;
-  title: string;
-  createdAt: Date;
-  updatedAt: Date;
-};
-
 export enum STEP_TYPE {
   FORM = "form",
   PAYMENT = "payment",
@@ -44,6 +37,25 @@ export type Submission = {
   id: string;
   userId: string;
   journeyId: string;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type JourneyStepConnection = {
+  id: string;
+  sourceStepId: string;
+  destinationStepId: string;
+};
+
+export type Journey = {
+  id: string;
+  title: string;
+  userId: string;
+  organizationId: string;
+  status: string;
+  initialStepId: string;
+  steps: JourneyStep[];
+  connections: JourneyStepConnection[];
   createdAt: Date;
   updatedAt: Date;
 };

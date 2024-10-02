@@ -26,19 +26,19 @@ export const activateJourney = (
   data: {
     journeyId: string;
     organizationId: string;
-    startStepId: string | undefined;
+    initialStepId: string | undefined;
   },
 ) => {
   return pg.query(
     `
       UPDATE journeys
-      SET start_step_id = $3, status = $4, updated_at = now()::DATE
+      SET initial_step_id = $3, status = $4, updated_at = now()::DATE
       WHERE id = $1 and organization_id = $2
     `,
     [
       data.journeyId,
       data.organizationId,
-      data.startStepId,
+      data.initialStepId,
       JourneyStatus.ACTIVE,
     ],
   );
@@ -76,7 +76,7 @@ export const loadJourneyById = (
             )
         ) as steps,
         j.status,
-        j.start_step_id as "startStepId",
+        j.initial_step_id as "initialStepId",
         j.created_at as "createdAt",
         j.updated_at as "updatedAt",
         j.user_id as "userId"

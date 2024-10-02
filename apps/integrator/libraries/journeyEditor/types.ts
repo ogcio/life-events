@@ -32,7 +32,7 @@ export type Journey = {
   title: string;
   steps: JourneyStep[];
   status: JourneyStatus;
-  startStepId?: string;
+  initialStepId?: string;
   createdAt: string;
   updatedAt: string;
   userId: string;
