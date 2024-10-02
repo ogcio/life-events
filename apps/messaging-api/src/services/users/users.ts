@@ -1,11 +1,10 @@
 import { Pool } from "pg";
 import { PaginationParams } from "../../types/schemaDefinitions.js";
 import { utils } from "../../utils.js";
-import { isLifeEventsError, NotFoundError, ServerError } from "shared-errors";
 import { SELECTABLE_TRANSPORTS } from "./shared-users.js";
 import { UserPerOrganisation } from "../../types/usersSchemaDefinitions.js";
-
-const ERROR_PROCESS = "GET_USERS";
+import { httpErrors } from "@fastify/sensible";
+import { isHttpError } from "http-errors";
 
 export const getUsers = async (params: {
   pool: Pool;
@@ -37,7 +36,9 @@ export const getUsers = async (params: {
       total: (await countResponse).rows[0].count,
     };
   } catch (error) {
-    throw new ServerError(ERROR_PROCESS, `error fetching recipients`, error);
+    throw httpErrors.createError(500, `error fetching recipients`, {
+      parent: error,
+    });
   } finally {
     client.release();
   }
@@ -61,18 +62,19 @@ export const getUser = async (params: {
     );
 
     if (response.rowCount === 0) {
-      throw new NotFoundError(
-        ERROR_PROCESS,
+      throw httpErrors.notFound(
         `User with id ${params.userId} not found or inactive`,
       );
     }
 
     return response.rows[0];
   } catch (error) {
-    if (isLifeEventsError(error)) {
+    if (isHttpError(error)) {
       throw error;
     }
-    throw new ServerError(ERROR_PROCESS, `error fetching recipients`, error);
+    throw httpErrors.createError(500, `error fetching recipients`, {
+      parent: error,
+    });
   } finally {
     client.release();
   }

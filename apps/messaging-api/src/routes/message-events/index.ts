@@ -18,7 +18,6 @@ import {
   sanitizePagination,
 } from "../../utils/pagination.js";
 import { ensureOrganizationIdIsSet } from "../../utils/authentication-factory.js";
-import { NotFoundError } from "shared-errors";
 
 const tags = ["Message events"];
 
@@ -99,7 +98,7 @@ export default async function messages(app: FastifyInstance) {
             order by l.created_at;
         `,
         [
-          ensureOrganizationIdIsSet(request, "GET_MESSAGES"),
+          ensureOrganizationIdIsSet(request),
           textSearchILikeClause,
           limit,
           offset,
@@ -176,9 +175,8 @@ export default async function messages(app: FastifyInstance) {
     `,
         [eventId],
       );
-
       if (!queryResult.rows.length) {
-        return new NotFoundError("GET_EVENT", "no event found");
+        return app.httpErrors.notFound("no event found");
       }
 
       return { data: queryResult.rows };

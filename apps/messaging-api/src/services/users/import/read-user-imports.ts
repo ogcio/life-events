@@ -2,10 +2,8 @@ import { FastifyBaseLogger } from "fastify";
 import { Pool } from "pg";
 import { getUserImports } from "../shared-users.js";
 import { UsersImport } from "../../../types/usersSchemaDefinitions.js";
-import { NotFoundError } from "shared-errors";
 import { PaginationParams } from "../../../types/schemaDefinitions.js";
-
-export const READ_USER_IMPORTS_ERROR = "READ_USER_IMPORTS_ERROR";
+import { httpErrors } from "@fastify/sensible";
 
 export const getUserImportsForOrganisation = async (params: {
   logger: FastifyBaseLogger;
@@ -19,7 +17,6 @@ export const getUserImportsForOrganisation = async (params: {
       client,
       whereClauses: ["organisation_id = $1"],
       whereValues: [params.organisationId],
-      errorCode: READ_USER_IMPORTS_ERROR,
       includeUsersData: false,
       limit: params.pagination.limit
         ? Number(params.pagination.limit)
@@ -47,13 +44,11 @@ export const getUserImportForOrganisation = async (params: {
       whereClauses: ["import_id = $1", "organisation_id = $2"],
       whereValues: [params.importId, params.organisationId],
       limit: 1,
-      errorCode: READ_USER_IMPORTS_ERROR,
       includeUsersData: params.includeUsersData,
     });
 
     if (results.data.length === 0) {
-      throw new NotFoundError(
-        READ_USER_IMPORTS_ERROR,
+      throw httpErrors.notFound(
         `Users import with id ${params.importId} and organisation ${params.organisationId} not found`,
       );
     }

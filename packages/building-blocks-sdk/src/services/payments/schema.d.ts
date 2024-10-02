@@ -37,6 +37,7 @@ export interface paths {
                 | {
                     livePublishableKey: string;
                     liveSecretKey: string;
+                    webhookSigningKey?: string;
                   }
                 | {
                     merchantCode: string;
@@ -161,6 +162,7 @@ export interface paths {
                 | {
                     livePublishableKey: string;
                     liveSecretKey: string;
+                    webhookSigningKey?: string;
                   }
                 | {
                     merchantCode: string;
@@ -314,6 +316,7 @@ export interface paths {
                     | {
                         livePublishableKey: string;
                         liveSecretKey: string;
+                        webhookSigningKey?: string;
                       }
                     | {
                         merchantCode: string;
@@ -453,6 +456,7 @@ export interface paths {
                   | {
                       livePublishableKey: string;
                       liveSecretKey: string;
+                      webhookSigningKey?: string;
                     }
                   | {
                       merchantCode: string;
@@ -564,6 +568,7 @@ export interface paths {
                   | {
                       livePublishableKey: string;
                       liveSecretKey: string;
+                      webhookSigningKey?: string;
                     }
                   | {
                       merchantCode: string;
@@ -624,6 +629,7 @@ export interface paths {
                   | "failed";
                 amount: number;
                 extPaymentId: string;
+                paymentProviderId: string;
                 updatedAt: string;
                 title: string;
               }[];
@@ -680,6 +686,7 @@ export interface paths {
                   | "failed";
                 amount: number;
                 extPaymentId: string & string;
+                paymentProviderId: string;
                 updatedAt: string;
                 title: string;
                 userId: string;
@@ -799,6 +806,7 @@ export interface paths {
                   | "failed";
                 amount: number;
                 extPaymentId: string & string;
+                paymentProviderId: string;
                 updatedAt: string;
                 title: string;
                 userId: string;
@@ -1133,6 +1141,7 @@ export interface paths {
                   | "failed";
                 amount: number;
                 extPaymentId: string & string;
+                paymentProviderId: string;
                 updatedAt: string;
                 title: string;
                 userId: string;
@@ -1523,6 +1532,25 @@ export interface paths {
         };
         /** @description Default Response */
         500: {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              requestId: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  "/api/v1/stripe/webhook": {
+    post: {
+      responses: {
+        /** @description Default Response */
+        404: {
           content: {
             "application/json": {
               code: string;

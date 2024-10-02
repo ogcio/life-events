@@ -187,6 +187,8 @@
       "liveSecretKey": "Live secret key",
       "liveSecretKeyHint": "Your secret key for the live environment from Stripe.",
       "liveSecretKeyRequired": "Live secret key is required.",
+      "webhookSigningKey": "Wehook signing key",
+      "webhookSigningKeyHint": "This secret key from your Stripe account is used to validate the incoming calls from Stripe via webhooks.",
       "confirm": "Confirm"
     },
     "AddWorldpay": {

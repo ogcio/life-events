@@ -13,14 +13,13 @@ import apiAuthPlugin from "api-auth";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import healthCheck from "./routes/healthcheck.js";
-import { initializeErrorHandler } from "error-handler";
-import { initializeLoggingHooks } from "logging-wrapper";
+import { initializeErrorHandler } from "@ogcio/fastify-error-handler";
+import { initializeLoggingHooks } from "@ogcio/fastify-logging-wrapper";
 import fastifyMultipart from "@fastify/multipart";
 import v8 from "v8";
-import { CustomError } from "shared-errors";
 import getVersion from "./utils/get-version.js";
 import _Ajv from "ajv";
-const Ajv = _Ajv as unknown as typeof _Ajv.default;
+import fastifySensible, { httpErrors } from "@fastify/sensible";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -44,6 +43,8 @@ export async function build(opts?: FastifyServerOptions) {
     schema: envSchema,
     dotenv: true,
   });
+
+  app.register(fastifySensible);
 
   app.register(fastifySwagger, {
     openapi: {
@@ -116,12 +117,8 @@ export async function build(opts?: FastifyServerOptions) {
     maxRssBytes: v8.getHeapStatistics().total_available_size,
     maxEventLoopUtilization: 0.98,
     pressureHandler: (_req, _rep, type, value) => {
-      const pressureError = "UNDER_PRESSURE_ERROR";
-      throw new CustomError(
-        pressureError,
+      throw httpErrors.serviceUnavailable(
         `System is under pressure. Pressure type: ${type}. Pressure value: ${value}`,
-        503,
-        pressureError,
       );
     },
   });
