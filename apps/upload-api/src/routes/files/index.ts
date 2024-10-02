@@ -12,11 +12,6 @@ import { HttpError } from "../../types/httpErrors.js";
 import { getGenericResponseSchema } from "../../types/schemaDefinitions.js";
 import PromiseTransform from "./PromiseTransform.js";
 
-enum MimeTypes {
-  Json = "application/json",
-  FormData = "multipart/form-data",
-}
-
 import {
   BadRequestError,
   CustomError,
@@ -231,7 +226,7 @@ export default async function routes(app: FastifyInstance) {
       preValidation: (req, res) =>
         app.checkPermissions(req, res, [Permissions.Upload.Write]),
       schema: {
-        consumes: [MimeTypes.FormData],
+        consumes: ["multipart/form-data"],
         body: Type.Union([Type.Any(), Type.Unknown()]),
         tags: [API_DOCS_TAG],
         response: {

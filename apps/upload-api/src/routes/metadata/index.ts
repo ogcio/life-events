@@ -237,8 +237,6 @@ export default async function routes(app: FastifyInstance) {
     userIds: string[];
     organizationId?: string;
   }): Promise<{ [key: string]: FileOwnerType }> => {
-    console.log("usersdatat ret", { org: params.organizationId });
-
     const profileSdk = await getProfileSdk(params.organizationId);
     try {
       const usersResponse = await profileSdk.selectUsers(params.userIds);
