@@ -9,7 +9,6 @@ import {
 import addFileSharing from "./utils/addFileSharing.js";
 import { ServerError } from "shared-errors";
 import removeFileSharing from "./utils/removeFileSharing.js";
-import { Query } from "pg";
 import getFileSharings from "./utils/getFileSharings.js";
 
 const SHARE_CREATE = "SHARE_CREATE";
