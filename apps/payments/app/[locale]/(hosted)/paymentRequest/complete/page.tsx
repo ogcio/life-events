@@ -80,7 +80,7 @@ export default async function Page(props: Props) {
   const { payment_id, payment_intent, redirect_status, order_id, error } =
     props.searchParams;
   let extPaymentId = payment_id ?? "";
-  let isStripe = false;
+  let updateStatus = true;
   let status = TransactionStatuses.Succeeded;
 
   if (payment_id) {
@@ -92,11 +92,12 @@ export default async function Page(props: Props) {
   if (!extPaymentId) {
     if (order_id) {
       // It's a Realex transaction
+      updateStatus = false;
       extPaymentId = order_id;
       status = TransactionStatuses.Succeeded;
     } else if (payment_intent && redirect_status) {
       // It's a Stripe transaction
-      isStripe = true;
+      updateStatus = false;
       extPaymentId = payment_intent;
 
       const mappedStatus = getInternalStatus(redirect_status);
@@ -116,10 +117,10 @@ export default async function Page(props: Props) {
 
   let transactionDetail;
 
-  if (isStripe) {
-    transactionDetail = await getTransactionDetails(extPaymentId);
-  } else {
+  if (updateStatus) {
     transactionDetail = await updateTransaction(extPaymentId, status);
+  } else {
+    transactionDetail = await getTransactionDetails(extPaymentId);
   }
 
   if (status === TransactionStatuses.Failed) {

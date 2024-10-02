@@ -2639,6 +2639,108 @@ paths:
                   - detail
                   - requestId
                   - name
+  /api/v1/realex/statusUpdate:
+    get:
+      tags: *a4
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: sha1hash
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: timestamp
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: merchantid
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: orderid
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: result
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: message
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: pasref
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: paymentmethod
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: waitfornotification
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: fundstatus
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: paymentpurpose
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: acountholdername
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: country
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: accountnumber
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: iban
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: bic
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: bankname
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: bankcode
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: redirectoptional
+          required: true
+      responses:
+        "200":
+          description: Default Response
   /api/v1/test/citizen:
     get:
       responses:

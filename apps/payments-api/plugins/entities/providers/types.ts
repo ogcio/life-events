@@ -4,19 +4,17 @@ import {
   CreateProvider,
   OpenBankingData,
   ParamsWithProviderId,
-  Provider,
   ProviderData,
   ProviderReply,
   ProviderStatus,
   ProviderTypes,
   RealexData,
-  RealexEncryptedData,
   RealexHppResponse,
+  RealexPaymentObject,
+  RealexStatusUpdateQueryParams,
   StripeData,
-  StripeEncryptedData,
   UpdateProvider,
   WorldpayData,
-  WorldpayEncryptedData,
 } from "../../../routes/schemas";
 
 export type OpenBankingData = Static<typeof OpenBankingData>;
@@ -37,3 +35,15 @@ export type CreateProviderDO = Static<typeof CreateProvider>;
 
 export type RealexPaymentObjectDO = Static<typeof RealexPaymentObject>;
 export type RealexHppResponseDO = Static<typeof RealexHppResponse>;
+
+export type RealexStatusUpdateDO = Static<typeof RealexStatusUpdateQueryParams>;
+
+export enum RealexStatusEnum {
+  SUCCESSFUL = "00",
+  PENDING = "01",
+  DECLINED = "100",
+  INSUFFICIENT_FUNDS = "101",
+  FAILURE = "199",
+  UNKNOWN = "330",
+  VARIOUS_FAILURE = "550",
+}
