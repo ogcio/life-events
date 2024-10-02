@@ -2,8 +2,14 @@ import { ProvidersRepo } from "../repo";
 import { HttpErrors } from "@fastify/sensible";
 import { getSecretFields } from "../dataMapper";
 import secretsHandlerFactory from "../../../../services/providersSecretsService";
-import { RealexHppResponseDO, RealexPaymentObjectDO } from "../types";
+import {
+  RealexHppResponseDO,
+  RealexPaymentObjectDO,
+  RealexStatusEnum,
+  RealexStatusUpdateDO,
+} from "../types";
 import { RealexService } from "../../../../services/realexService";
+import { TransactionStatusesEnum } from "../../transactions";
 
 const buildGetPaymentObject =
   (repo: ProvidersRepo, httpErrors: HttpErrors) =>
@@ -77,6 +83,55 @@ const buildVerifyPaymentResponse =
     return realexService.generateHTMLResponse(body);
   };
 
+const buildVerifyPaymentStatusUpdate =
+  (repo: ProvidersRepo, httpErrors: HttpErrors) =>
+  async (
+    params: RealexStatusUpdateDO,
+    providerId: string,
+  ): Promise<boolean> => {
+    const providerResult = await repo.getProviderById(providerId);
+    const provider = providerResult.rows[0];
+    if (!provider) throw httpErrors.notFound("Provider not found");
+
+    if (provider.status !== "connected") {
+      throw httpErrors.unprocessableEntity("Provider is not enabled");
+    }
+
+    const secretFields = getSecretFields("realex", provider.data);
+    const { sharedSecret } = secretsHandlerFactory
+      .getInstance()
+      .getClearTextData(provider.data, secretFields);
+
+    const realexService = new RealexService(sharedSecret);
+    const isResponseValid = realexService.verifyStatusUpdateHash(params);
+    if (!isResponseValid) {
+      throw httpErrors.unprocessableEntity(
+        "Payment response contains untrusted data",
+      );
+    }
+
+    return true;
+  };
+
+const getTransactionStatus = (
+  result: RealexStatusEnum,
+): TransactionStatusesEnum => {
+  switch (result) {
+    case RealexStatusEnum.SUCCESSFUL:
+      return TransactionStatusesEnum.Succeeded;
+    case RealexStatusEnum.PENDING:
+    case RealexStatusEnum.UNKNOWN:
+      return TransactionStatusesEnum.Pending;
+    case RealexStatusEnum.DECLINED:
+    case RealexStatusEnum.INSUFFICIENT_FUNDS:
+    case RealexStatusEnum.FAILURE:
+    case RealexStatusEnum.VARIOUS_FAILURE:
+      return TransactionStatusesEnum.Failed;
+    default:
+      return TransactionStatusesEnum.Pending;
+  }
+};
+
 export default function buildRealex(
   repo: ProvidersRepo,
   httpErrors: HttpErrors,
@@ -84,5 +139,7 @@ export default function buildRealex(
   return {
     getPaymentObject: buildGetPaymentObject(repo, httpErrors),
     verifyPaymentResponse: buildVerifyPaymentResponse(repo, httpErrors),
+    verifyPaymentStatusUpdate: buildVerifyPaymentStatusUpdate(repo, httpErrors),
+    getTransactionStatus,
   };
 }

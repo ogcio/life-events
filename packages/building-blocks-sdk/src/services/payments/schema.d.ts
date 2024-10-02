@@ -1295,6 +1295,39 @@ export interface paths {
       };
     };
   };
+  "/api/v1/realex/statusUpdate": {
+    get: {
+      parameters: {
+        query: {
+          sha1hash: string;
+          timestamp: string;
+          merchantid: string;
+          orderid: string;
+          result: string;
+          message: string;
+          pasref: string;
+          paymentmethod: string;
+          waitfornotification: string;
+          fundstatus: string;
+          paymentpurpose: string;
+          acountholdername: string;
+          country: string;
+          accountnumber: string;
+          iban: string;
+          bic: string;
+          bankname: string;
+          bankcode: string;
+          redirectoptional: string;
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: never;
+        };
+      };
+    };
+  };
   "/api/v1/test/citizen": {
     get: {
       responses: {
