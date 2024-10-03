@@ -1,0 +1,17 @@
+{
+  "Home": {
+    "gaeilgeMenuLabel": "Gaeilge",
+    "englishMenuLabel": "English"
+  },
+  "Category": {
+    "en": "Béarla",
+    "ga": "Gaeilge",
+    "subcategoriesHeading": "Fochatagóirí",
+    "title": "Teideal",
+    "text": "Téacs",
+    "save": "Sábháil",
+    "links": "Links",
+    "isExternal": "Tá seachtrach",
+    "href": "href"
+  }
+}

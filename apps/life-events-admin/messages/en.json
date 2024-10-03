@@ -1,0 +1,17 @@
+{
+  "Home": {
+    "gaeilgeMenuLabel": "Gaeilge",
+    "englishMenuLabel": "English"
+  },
+  "Category": {
+    "en": "Engilsh",
+    "ga": "Irish",
+    "subcategoriesHeading": "Subcategories",
+    "title": "Title",
+    "text": "Text",
+    "save": "Save",
+    "links": "Links",
+    "isExternal": "Is external",
+    "href": "href"
+  }
+}
