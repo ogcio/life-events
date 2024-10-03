@@ -148,7 +148,7 @@ export default async function journeys(app: FastifyInstance) {
     },
   );
 
-  app.patch<{
+  app.put<{
     Body: UpdateJourneyBodyDO;
     Reply: GenericResponse<Id> | Error;
     Params: ParamsWithJourneyId;

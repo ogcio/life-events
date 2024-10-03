@@ -75,11 +75,11 @@ export class Integrator {
   }
 
   async activateJourney(
-    journeyId: paths["/api/v1/journeys/{journeyId}"]["patch"]["parameters"]["path"]["journeyId"],
-    data: paths["/api/v1/journeys/{journeyId}"]["patch"]["requestBody"]["content"]["application/json"],
+    journeyId: paths["/api/v1/journeys/{journeyId}"]["put"]["parameters"]["path"]["journeyId"],
+    data: paths["/api/v1/journeys/{journeyId}"]["put"]["requestBody"]["content"]["application/json"],
   ) {
     return formatQueryResult(
-      this.client.PATCH("/api/v1/journeys/{journeyId}", {
+      this.client.PUT("/api/v1/journeys/{journeyId}", {
         params: {
           path: { journeyId },
         },

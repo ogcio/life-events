@@ -242,7 +242,7 @@ export interface paths {
         };
       };
     };
-    patch: {
+    put: {
       parameters: {
         path: {
           journeyId: string;
