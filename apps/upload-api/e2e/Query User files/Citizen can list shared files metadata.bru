@@ -1,0 +1,24 @@
+meta {
+  name: Citizen can list shared files metadata
+  type: http
+  seq: 9
+}
+
+get {
+  url: {{baseUrl}}/api/v1/metadata?userId=e2e-user-1
+  body: none
+  auth: none
+}
+
+params:query {
+  userId: e2e-user-1
+}
+
+headers {
+  Authorization: Bearer {{citizenAccessToken}}
+}
+
+assert {
+  res.body.data[0].id: eq {{fileId}}
+  res.body.data.length: eq 1
+}

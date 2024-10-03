@@ -1,7 +1,7 @@
 meta {
-  name: Get files metadata for org
+  name: PS gets organization files metadata
   type: http
-  seq: 1
+  seq: 3
 }
 
 get {
@@ -16,4 +16,9 @@ params:query {
 
 headers {
   Authorization: Bearer {{accessToken}}
+}
+
+assert {
+  res.status: eq 200
+  res.body.data[0].id: eq {{fileId}}
 }

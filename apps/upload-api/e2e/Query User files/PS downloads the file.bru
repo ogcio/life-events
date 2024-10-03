@@ -1,7 +1,7 @@
 meta {
-  name: Get a file
+  name: PS downloads the file
   type: http
-  seq: 2
+  seq: 7
 }
 
 get {
@@ -16,4 +16,8 @@ params:path {
 
 headers {
   Authorization: Bearer {{accessToken}}
+}
+
+assert {
+  res.status: eq 200
 }
