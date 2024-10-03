@@ -1,0 +1,19 @@
+meta {
+  name: Get files metadata for org
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/v1/metadata?organizationId=first-testing
+  body: none
+  auth: none
+}
+
+params:query {
+  organizationId: first-testing
+}
+
+headers {
+  Authorization: Bearer {{accessToken}}
+}

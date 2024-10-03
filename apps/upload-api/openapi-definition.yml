@@ -6,11 +6,6 @@ info:
 components:
   schemas: {}
 paths:
-  /health:
-    get:
-      responses:
-        "200":
-          description: Default Response
   /api/v1/files/:
     post:
       tags:
@@ -158,6 +153,11 @@ paths:
           in: query
           name: userId
           required: false
+        - schema:
+            type: string
+          in: query
+          name: organizationId
+          required: false
       responses:
         "200":
           description: Default Response
@@ -177,26 +177,8 @@ paths:
                           type: string
                         key:
                           type: string
-                        owner:
-                          type: object
-                          properties:
-                            id:
-                              type: string
-                            firstName:
-                              type: string
-                            lastName:
-                              type: string
-                            ppsn:
-                              type: string
-                            email:
-                              type: string
-                            phone:
-                              type: string
-                          required:
-                            - id
-                            - firstName
-                            - lastName
-                            - ppsn
+                        ownerId:
+                          type: string
                         fileSize:
                           type: number
                         mimeType:
@@ -214,33 +196,12 @@ paths:
                           type: string
                         antivirusDbVersion:
                           type: string
-                        sharedWith:
-                          type: array
-                          items:
-                            type: object
-                            properties:
-                              id:
-                                type: string
-                              firstName:
-                                type: string
-                              lastName:
-                                type: string
-                              ppsn:
-                                type: string
-                              email:
-                                type: string
-                              phone:
-                                type: string
-                            required:
-                              - id
-                              - firstName
-                              - lastName
-                              - ppsn
                         expiresAt:
                           type: string
                       required:
                         - fileName
                         - key
+                        - ownerId
                         - fileSize
                         - mimeType
                         - createdAt
@@ -398,26 +359,8 @@ paths:
                         type: string
                       key:
                         type: string
-                      owner:
-                        type: object
-                        properties:
-                          id:
-                            type: string
-                          firstName:
-                            type: string
-                          lastName:
-                            type: string
-                          ppsn:
-                            type: string
-                          email:
-                            type: string
-                          phone:
-                            type: string
-                        required:
-                          - id
-                          - firstName
-                          - lastName
-                          - ppsn
+                      ownerId:
+                        type: string
                       fileSize:
                         type: number
                       mimeType:
@@ -435,33 +378,12 @@ paths:
                         type: string
                       antivirusDbVersion:
                         type: string
-                      sharedWith:
-                        type: array
-                        items:
-                          type: object
-                          properties:
-                            id:
-                              type: string
-                            firstName:
-                              type: string
-                            lastName:
-                              type: string
-                            ppsn:
-                              type: string
-                            email:
-                              type: string
-                            phone:
-                              type: string
-                          required:
-                            - id
-                            - firstName
-                            - lastName
-                            - ppsn
                       expiresAt:
                         type: string
                     required:
                       - fileName
                       - key
+                      - ownerId
                       - fileSize
                       - mimeType
                       - createdAt
@@ -515,10 +437,10 @@ paths:
                   - detail
                   - requestId
                   - name
-  /api/v1/metadata/share/:
+  /api/v1/permissions/:
     post:
       tags:
-        - Metadata share
+        - Permissions
       requestBody:
         content:
           application/json:
@@ -601,7 +523,7 @@ paths:
                   - name
     delete:
       tags:
-        - Metadata share
+        - Permissions
       requestBody:
         content:
           application/json:
@@ -616,6 +538,62 @@ paths:
                 - fileId
                 - userId
         required: true
+      responses:
+        4XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  requestId:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - requestId
+                  - name
+        5XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  requestId:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - requestId
+                  - name
+    get:
+      tags:
+        - Permissions
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: fileId
+          required: true
       responses:
         4XX:
           description: Default Response

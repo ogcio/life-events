@@ -2,23 +2,25 @@ import { PostgresDb } from "@fastify/postgres";
 import { FastifyInstance, FastifyPluginCallback } from "fastify";
 import fp from "fastify-plugin";
 import t from "tap";
-import { CONFIG_TYPE, SCHEDULER_TOKEN } from "../../../../utils/storeConfig.js";
+import { CONFIG_TYPE, SCHEDULER_TOKEN } from "../../../utils/storeConfig.js";
 
 const buildApp = async ({
   removeFileSharing,
   addFileSharing,
+  getFileSharings,
 }: {
   removeFileSharing?: () => Promise<unknown>;
   addFileSharing?: () => Promise<unknown>;
+  getFileSharings?: () => Promise<unknown>;
 }) => {
-  const { build } = await t.mockImport<typeof import("../../../../app.js")>(
-    "../../../../app.js",
+  const { build } = await t.mockImport<typeof import("../../../app.js")>(
+    "../../../app.js",
     {
       "@fastify/autoload": {
         default: async () => {},
       },
 
-      "../../../../routes/index.js": {
+      "../../../routes/index.js": {
         default: async () => {},
       },
       "@fastify/multipart": {
@@ -54,39 +56,42 @@ const buildApp = async ({
           });
         }),
       },
-      "../../../../utils/storeConfig.js": {
+      "../../../utils/storeConfig.js": {
         storeConfig: () => Promise.resolve(),
         CONFIG_TYPE,
         SCHEDULER_TOKEN,
       },
-      "../../../../utils/scheduleCleanupTask.js": {
+      "../../../utils/scheduleCleanupTask.js": {
         default: () => Promise.resolve(),
       },
     },
   );
 
   const routes = await t.mockImport<
-    typeof import("../../../../routes/metadata//share/index.js")
-  >("../../../../routes/metadata/share/index.js", {
-    "../../../../routes/metadata/share/utils/removeFileSharing.js": {
+    typeof import("../../../routes/permissions/index.js")
+  >("../../../routes/permissions/index.js", {
+    "../../../routes/permissions/utils/removeFileSharing.js": {
       default: removeFileSharing,
     },
-    "../../../../routes/metadata/share/utils/addFileSharing.js": {
+    "../../../routes/permissions/utils/addFileSharing.js": {
       default: addFileSharing,
+    },
+    "../../../routes/permissions/utils/getFileSharings.js": {
+      default: getFileSharings,
     },
   });
 
   const app = await build();
 
   await app.register(routes as unknown as FastifyPluginCallback, {
-    prefix: "/metadata/share",
+    prefix: "/permissions",
   });
 
   await app.ready();
   return app;
 };
 
-t.test("metadata/share", async (t) => {
+t.test("permissions", async (t) => {
   let app: FastifyInstance;
 
   t.afterEach(async () => {
@@ -106,7 +111,7 @@ t.test("metadata/share", async (t) => {
 
       const response = await app.inject({
         method: "POST",
-        url: "/metadata/share",
+        url: "/permissions",
         body: { fileId: "fileId", userId: "userId" },
       });
 
@@ -128,7 +133,7 @@ t.test("metadata/share", async (t) => {
 
         const response = await app.inject({
           method: "POST",
-          url: "/metadata/share",
+          url: "/permissions",
           body: { fileId: "fileId", userId: "userId" },
         });
 
@@ -150,7 +155,7 @@ t.test("metadata/share", async (t) => {
 
       const response = await app.inject({
         method: "DELETE",
-        url: "/metadata/share",
+        url: "/permissions",
         body: { fileId: "fileId", userId: "userId" },
       });
 
@@ -168,12 +173,53 @@ t.test("metadata/share", async (t) => {
 
         const response = await app.inject({
           method: "DELETE",
-          url: "/metadata/share",
+          url: "/permissions",
           body: { fileId: "fileId", userId: "userId" },
         });
 
         t.equal(response.statusCode, 500);
       },
     );
+  });
+
+  t.test("list", async (t) => {
+    t.test("Should list file sharings", async (t) => {
+      app = await buildApp({
+        getFileSharings: () =>
+          Promise.resolve({
+            rows: [{ fileId: "fileId", userId: "userId" }],
+          }),
+      });
+
+      await app.ready();
+
+      const response = await app.inject({
+        method: "GET",
+        url: "/permissions",
+        query: { fileId: "fileId" },
+      });
+
+      const body = response.json();
+
+      t.same(body, { data: [{ fileId: "fileId", userId: "userId" }] });
+
+      t.equal(response.statusCode, 200);
+    });
+
+    t.test("Should throw an error when get file sharing fails", async (t) => {
+      app = await buildApp({
+        getFileSharings: () => Promise.reject("Error"),
+      });
+
+      await app.ready();
+
+      const response = await app.inject({
+        method: "GET",
+        url: "/permissions",
+        query: { fileId: "fileId" },
+      });
+
+      t.equal(response.statusCode, 500);
+    });
   });
 });

@@ -244,55 +244,6 @@ export default async function routes(app: FastifyInstance) {
     },
   );
 
-  // app.delete<{ Params: { id: string } }>(
-  //   "/:id",
-  //   {
-  //     preValidation: (req, res) =>
-  //       app.checkPermissions(req, res, [Permissions.Upload.Write]),
-  //     schema: {
-  //       tags: [API_DOCS_TAG],
-  //       params: Type.Object({ id: Type.String() }),
-  //       response: {
-  //         200: getGenericResponseSchema(
-  //           Type.Object({ message: Type.String() }),
-  //         ),
-  //         "4xx": HttpError,
-  //         "5xx": HttpError,
-  //       },
-  //     },
-  //   },
-  //   async (request, reply) => {
-  //     const fileId = request.params.id;
-
-  //     if (!fileId) {
-  //       throw new BadRequestError(FILE_DELETE, "File key not provided");
-  //     }
-
-  //     const fileData = await getFileMetadataById(app.pg, fileId);
-
-  //     const file = fileData.rows?.[0];
-
-  //     if (!file) {
-  //       throw new NotFoundError(FILE_DELETE);
-  //     }
-
-  //     try {
-  //       await app.s3Client.client.send(
-  //         new DeleteObjectCommand({
-  //           Bucket: app.s3Client.bucketName,
-  //           Key: file.key,
-  //         }),
-  //       );
-
-  //       await deleteFileMetadata(app.pg, fileId);
-  //     } catch (err) {
-  //       throw new ServerError(FILE_DELETE, "Internal server error", err);
-  //     }
-
-  //     reply.send({ data: { message: "File deleted succesfully" } });
-  //   },
-  // );
-
   app.get<{ Params: { id: string } }>(
     "/:id",
     {
