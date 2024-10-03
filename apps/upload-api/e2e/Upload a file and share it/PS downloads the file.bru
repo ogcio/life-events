@@ -1,7 +1,7 @@
 meta {
-  name: Get a non-existing file
+  name: PS downloads the file
   type: http
-  seq: 3
+  seq: 6
 }
 
 get {
@@ -11,7 +11,7 @@ get {
 }
 
 params:path {
-  fileId: 6511847d-9a4e-4451-8147-d08b14c5b803
+  fileId: {{fileId}}
 }
 
 headers {
@@ -19,6 +19,5 @@ headers {
 }
 
 assert {
-  res.status: eq 404
-  res.body.code: eq NOT_FOUND_ERROR
+  res.status: eq 200
 }

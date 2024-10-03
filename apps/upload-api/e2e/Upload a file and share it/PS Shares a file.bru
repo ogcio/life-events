@@ -1,10 +1,10 @@
 meta {
-  name: Delete file sharing
+  name: PS Shares a file
   type: http
-  seq: 2
+  seq: 7
 }
 
-delete {
+post {
   url: {{baseUrl}}/api/v1/permissions
   body: formUrlEncoded
   auth: none
@@ -16,9 +16,10 @@ headers {
 
 body:form-urlencoded {
   fileId: {{fileId}}
-  userId: user-id
+  userId: e2e-user-1
 }
 
 assert {
-  res.status: eq 200
+  res.status: eq 201
+  res.body.data.userId: eq e2e-user-1
 }
