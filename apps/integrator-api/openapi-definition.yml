@@ -283,12 +283,91 @@ paths:
                           - type: string
                             enum:
                               - draft
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                      initialStepId:
+                        type: string
+                      steps:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            journeyId:
+                              type: string
+                            stepType:
+                              anyOf:
+                                - type: string
+                                  enum:
+                                    - form
+                                - type: string
+                                  enum:
+                                    - payment
+                                - type: string
+                                  enum:
+                                    - messaging
+                            stepData:
+                              anyOf:
+                                - type: object
+                                  properties:
+                                    url:
+                                      type: string
+                                    title:
+                                      type: string
+                                  required:
+                                    - url
+                                    - title
+                                - type: object
+                                  properties:
+                                    url:
+                                      type: string
+                                    title:
+                                      type: string
+                                  required:
+                                    - url
+                                    - title
+                                - type: object
+                                  properties: {}
+                            createdAt:
+                              type: string
+                            updatedAt:
+                              type: string
+                          required:
+                            - id
+                            - journeyId
+                            - stepType
+                            - stepData
+                            - createdAt
+                            - updatedAt
+                      connections:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            sourceStepId:
+                              type: string
+                            destinationStepId:
+                              type: string
+                          required:
+                            - id
+                            - sourceStepId
+                            - destinationStepId
                     required:
                       - id
                       - title
                       - userId
                       - organizationId
                       - status
+                      - createdAt
+                      - updatedAt
+                      - initialStepId
+                      - steps
+                      - connections
                   metadata:
                     type: object
                     properties:

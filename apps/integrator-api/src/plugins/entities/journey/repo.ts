@@ -1,11 +1,12 @@
 import { PostgresDb } from "@fastify/postgres";
 import { QueryResult } from "pg";
+import { CreateJourneyBodyDO, Id } from "../../../routes/schemas";
 import {
-  CreateJourneyBodyDO,
-  Id,
+  JourneyDetailsDO,
   JourneyPublicDetailsDO,
+  JourneysDO,
   JourneyStatusType,
-} from "../../../routes/schemas";
+} from "./types";
 
 enum JourneyStatus {
   ACTIVE = "active",
@@ -19,9 +20,7 @@ export class JourneyRepo {
     this.pg = pg;
   }
 
-  getJourneys(
-    organizationId: string,
-  ): Promise<QueryResult<JourneyPublicDetailsDO>> {
+  getJourneys(organizationId: string): Promise<QueryResult<JourneysDO>> {
     return this.pg.query(
       `SELECT
         id,
@@ -41,7 +40,7 @@ export class JourneyRepo {
   getJourneyById(
     journeyId: string,
     organizationId: string,
-  ): Promise<QueryResult<JourneyPublicDetailsDO>> {
+  ): Promise<QueryResult<JourneyDetailsDO>> {
     return this.pg.query(
       `SELECT
           j.id,
@@ -49,10 +48,10 @@ export class JourneyRepo {
           j.user_id as "userId",
           j.organization_id as "organizationId",
           j.status,
+          j.initial_step_id as "initialStepId",
           j.created_at as "createdAt",
           j.updated_at as "updatedAt",
         FROM journeys as j
-        LEFT JOIN journey_steps as s ON s.journey_id = j.id
         WHERE j.id = $1 AND j.organization_id = $2
         GROUP BY j.id`,
       [journeyId, organizationId],

@@ -8,8 +8,8 @@ import fp from "fastify-plugin";
 import { JourneyRepo } from "./repo";
 import {
   CreateJourneyBodyDO,
-  FullJourneyDO,
   Id,
+  JourneyDetailsDO,
   JourneyPublicDetailsDO,
   Journeys,
   JourneyStatusType,
@@ -33,7 +33,10 @@ const buildGetJourneys =
 
 const buildGetJourneyById =
   (repo: JourneyRepo, log: FastifyBaseLogger, httpErrors: HttpErrors) =>
-  async (journeyId: string, organizationId: string): Promise<FullJourneyDO> => {
+  async (
+    journeyId: string,
+    organizationId: string,
+  ): Promise<JourneyDetailsDO> => {
     let result;
 
     try {

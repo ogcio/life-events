@@ -3,11 +3,11 @@ import { HttpError } from "../../types/httpErrors";
 import {
   CreateJourneyBody,
   CreateJourneyBodyDO,
+  FullJourney,
   FullJourneyDO,
   GenericResponse,
   Id,
   JourneyPublicDetails,
-  JourneyPublicDetailsDO,
   Journeys,
   ParamsWithJourneyId,
   UpdateJourneyBody,
@@ -15,12 +15,16 @@ import {
 } from "../schemas";
 import { formatAPIResponse } from "../../utils/responseFormatter";
 import { authPermissions } from "../../types/authPermissions";
+import {
+  JourneyPublicDetailsDO,
+  JourneysDO,
+} from "../../plugins/entities/journey/types";
 
 const TAGS = ["Journeys"];
 
 export default async function journeys(app: FastifyInstance) {
   app.get<{
-    Reply: GenericResponse<Journeys> | Error;
+    Reply: GenericResponse<JourneysDO> | Error;
   }>(
     "/",
     {
@@ -58,7 +62,7 @@ export default async function journeys(app: FastifyInstance) {
       schema: {
         tags: TAGS,
         response: {
-          200: GenericResponse(JourneyPublicDetails),
+          200: GenericResponse(FullJourney),
           401: HttpError,
           404: HttpError,
         },
@@ -77,7 +81,14 @@ export default async function journeys(app: FastifyInstance) {
         organizationId,
       );
 
-      reply.send(formatAPIResponse(journeyDetails));
+      // TODO: call steps apis to retrieve steps and connections
+      const fullJourney = {
+        ...journeyDetails,
+        steps: [],
+        connections: [],
+      };
+
+      reply.send(formatAPIResponse(fullJourney));
     },
   );
 

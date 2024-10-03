@@ -8,7 +8,6 @@ export type Id = Static<typeof Id>;
 export const PaginationLink = Type.Object({
   href: Type.Optional(Type.String()),
 });
-
 export const PaginationLinks = Type.Object({
   self: PaginationLink,
   next: Type.Optional(PaginationLink),
@@ -17,7 +16,6 @@ export const PaginationLinks = Type.Object({
   last: PaginationLink,
   pages: Type.Record(Type.String(), PaginationLink),
 });
-
 export type PaginationLinks = Static<typeof PaginationLinks>;
 
 export const GenericResponse = <T extends TSchema>(T: T) =>
@@ -30,7 +28,6 @@ export const GenericResponse = <T extends TSchema>(T: T) =>
       }),
     ),
   });
-
 export type GenericResponse<T> = {
   data: T;
   metadata?: {
@@ -42,14 +39,12 @@ export type GenericResponse<T> = {
 export const ParamsWithJourneyId = Type.Object({
   journeyId: Type.String(),
 });
-
 export type ParamsWithJourneyId = Static<typeof ParamsWithJourneyId>;
 
 export const JourneyStatus = Type.Union([
   Type.Literal("active"),
   Type.Literal("draft"),
 ]);
-export type JourneyStatusType = Static<typeof JourneyStatus>;
 
 export const JourneyPublicDetails = Type.Object({
   id: Type.String(),
@@ -58,7 +53,6 @@ export const JourneyPublicDetails = Type.Object({
   organizationId: Type.String(),
   status: JourneyStatus,
 });
-export type JourneyPublicDetailsDO = Static<typeof JourneyPublicDetails>;
 
 export const StepType = Type.Union([
   Type.Literal("form"),
@@ -93,7 +87,6 @@ export const JourneyStep = Type.Object({
   id: Type.String(),
   journeyId: Type.String(),
   stepType: StepType,
-  stepNumber: Type.Number(),
   stepData: StepData,
   createdAt: Type.String(),
   updatedAt: Type.String(),
@@ -107,27 +100,31 @@ export const JourneyStepConnection = Type.Object({
 });
 export type JourneyStepConnection = Static<typeof JourneyStepConnection>;
 
-export const FullJourney = Type.Composite([
+export const JourneyDetails = Type.Composite([
   JourneyPublicDetails,
   Type.Object({
     createdAt: Type.String(),
     updatedAt: Type.String(),
     initialStepId: Type.String(),
-    steps: Type.Optional(Type.Array(JourneyStep)),
-    connections: Type.Optional(Type.Array(JourneyStepConnection)),
+  }),
+]);
+
+export const FullJourney = Type.Composite([
+  JourneyDetails,
+  Type.Object({
+    steps: Type.Array(JourneyStep),
+    connections: Type.Array(JourneyStepConnection),
   }),
 ]);
 export type FullJourneyDO = Static<typeof FullJourney>;
 
 export const Journeys = Type.Array(JourneyPublicDetails);
-export type Journeys = Static<typeof Journeys>;
 
 export const CreateJourneyBody = Type.Object({
   title: Type.String(),
   organizationId: Type.String(),
   userId: Type.String(),
 });
-
 export type CreateJourneyBodyDO = Static<typeof CreateJourneyBody>;
 
 export const UpdateJourneyBody = Type.Pick(FullJourney, [

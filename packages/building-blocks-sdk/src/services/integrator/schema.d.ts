@@ -164,6 +164,27 @@ export interface paths {
                 userId: string;
                 organizationId: string;
                 status: "active" | "draft";
+                createdAt: string;
+                updatedAt: string;
+                initialStepId: string;
+                steps: {
+                  id: string;
+                  journeyId: string;
+                  stepType: "form" | "payment" | "messaging";
+                  stepData:
+                    | {
+                        url: string;
+                        title: string;
+                      }
+                    | Record<string, never>;
+                  createdAt: string;
+                  updatedAt: string;
+                }[];
+                connections: {
+                  id: string;
+                  sourceStepId: string;
+                  destinationStepId: string;
+                }[];
               };
               metadata?: {
                 links?: {
