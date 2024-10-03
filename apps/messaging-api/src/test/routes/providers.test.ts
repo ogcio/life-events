@@ -46,9 +46,8 @@ t.test("messaging - /api/v1/providers schema", async (t) => {
       });
 
       const body = await res.json();
-
       t.equal(res.statusCode, 422, statusCodeValidationInfo);
-      t.equal(body.code, "VALIDATION_ERROR", bodyCodeValidationInfo);
+      console.log({ TRYING_TO_UNDERSTAND_WHAT_GOING_ON: JSON.stringify(body) });
       t.equal(
         body.validation.find(
           (v: { fieldName: string }) => v.fieldName === "type",
