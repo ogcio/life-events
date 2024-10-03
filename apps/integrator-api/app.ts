@@ -18,6 +18,8 @@ import { initializeErrorHandler } from "error-handler";
 import { initializeLoggingHooks } from "logging-wrapper";
 import healthCheck from "./src/routes/healthcheck";
 import journey from "./src/plugins/entities/journey/index.js";
+import journeyStepConnections from "./src/plugins/entities/journeyStepConnections";
+import journeySteps from "./src/plugins/entities/journeySteps";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -88,6 +90,8 @@ export async function build(opts?: FastifyServerOptions) {
   app.register(sensible);
 
   app.register(journey);
+  app.register(journeyStepConnections);
+  app.register(journeySteps);
 
   return app;
 }

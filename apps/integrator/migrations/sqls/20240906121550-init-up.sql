@@ -17,7 +17,6 @@ BEGIN
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),  -- Unique identifier for the step
         journey_id UUID REFERENCES journeys(id) ON DELETE CASCADE, -- Foreign key to the journey
         step_type VARCHAR(50) NOT NULL,                  -- Type of step, e.g., "form", "payment", "messaging"
-        step_number INT NOT NULL,                        -- Step sequence number in the journey
         step_data JSONB,                                 -- Step-specific data stored as a JSONB object, schema varies based on step_type
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  -- Timestamp of when the step was created
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP   -- Timestamp of the last time the step was updated

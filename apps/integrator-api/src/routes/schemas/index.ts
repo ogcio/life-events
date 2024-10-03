@@ -36,6 +36,64 @@ export type GenericResponse<T> = {
   };
 };
 
+export const EmptyBody = Type.Optional(Type.Object({}));
+
+/**
+ * Journey Step Connections
+ */
+export const JourneyStepConnection = Type.Object({
+  id: Type.String(),
+  sourceStepId: Type.String(),
+  destinationStepId: Type.String(),
+});
+
+export const CreateJourneyStepConnection = Type.Composite([
+  Type.Pick(JourneyStepConnection, ["sourceStepId", "destinationStepId"]),
+  Type.Object({
+    journeyId: Type.String(),
+  }),
+]);
+
+export const ParamsWithJourneyStepConnectionId = Type.Object({
+  connectionId: Type.String(),
+});
+
+/**
+ * Journey Steps
+ */
+export const JourneyStepTypes = Type.Union([
+  Type.Literal("form"),
+  Type.Literal("payment"),
+  Type.Literal("messaging"),
+]);
+
+export const JourneyStep = Type.Object({
+  id: Type.String(),
+  journeyId: Type.String(),
+  stepType: JourneyStepTypes,
+  stepData: Type.Any(), // Defined step types
+  createdAt: Type.String(),
+  updatedAt: Type.String(),
+});
+
+export const CreateJourneyStep = Type.Pick(JourneyStep, [
+  "journeyId",
+  "stepType",
+  "stepData",
+]);
+
+export const UpdateJourneyStep = Type.Pick(JourneyStep, [
+  "stepType",
+  "stepData",
+]);
+
+export const ParamsWithJourneyStepId = Type.Object({
+  stepId: Type.String(),
+});
+
+/**
+ * Journey
+ */
 export const ParamsWithJourneyId = Type.Object({
   journeyId: Type.String(),
 });
