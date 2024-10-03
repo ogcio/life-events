@@ -1,0 +1,19 @@
+meta {
+  name: Get files for user
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/v1/metadata?userId=e2e-user-1
+  body: none
+  auth: none
+}
+
+params:query {
+  userId: e2e-user-1
+}
+
+headers {
+  Authorization: Bearer {{citizenAccessToken}}
+}

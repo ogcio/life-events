@@ -2,15 +2,19 @@ import { Type } from "@sinclair/typebox";
 import { FastifyInstance } from "fastify";
 import { Permissions } from "../../../types/permissions.js";
 import { HttpError } from "../../../types/httpErrors.js";
-import { getGenericResponseSchema } from "../../../types/schemaDefinitions.js";
+import {
+  getGenericResponseSchema,
+  Sharing,
+} from "../../../types/schemaDefinitions.js";
 import addFileSharing from "./utils/addFileSharing.js";
 import { ServerError } from "shared-errors";
 import removeFileSharing from "./utils/removeFileSharing.js";
+import getFileSharings from "./utils/getFileSharings.js";
 
 const SHARE_CREATE = "SHARE_CREATE";
 const SHARE_DELETE = "SHARE_DELETE";
 
-const API_DOCS_TAG = "Metadata share";
+const API_DOCS_TAG = "Permissions";
 
 export default async function routes(app: FastifyInstance) {
   app.post<{ Body: { fileId: string; userId: string } }>(
@@ -71,6 +75,38 @@ export default async function routes(app: FastifyInstance) {
         throw new ServerError(SHARE_DELETE, "Internal server error", err);
       }
       reply.send();
+    },
+  );
+
+  app.get<{ Querystring: { fileId: string } }>(
+    "/",
+    {
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [Permissions.Upload.Write]),
+      schema: {
+        tags: [API_DOCS_TAG],
+        querystring: Type.Object({
+          fileId: Type.String(),
+        }),
+        response: {
+          "4xx": HttpError,
+          "5xx": HttpError,
+        },
+      },
+    },
+    async (request) => {
+      const { fileId } = request.query;
+
+      const sharings: Sharing[] = [];
+      try {
+        const sharingsQueryResponse = await getFileSharings(app.pg, fileId);
+        if (sharingsQueryResponse.rows.length) {
+          [sharings.push(...sharingsQueryResponse.rows)];
+        }
+      } catch (err) {
+        throw new ServerError(SHARE_DELETE, "Internal server error", err);
+      }
+      return { data: sharings };
     },
   );
 }
