@@ -89,17 +89,18 @@ export class JourneyRepo {
     );
   }
 
-  updateJourneyStatus(data: {
+  activateJourney(data: {
     journeyId: string;
     status: JourneyStatusType;
+    initialStepId?: string;
     organizationId: string;
   }): Promise<QueryResult<Id>> {
     return this.pg.query(
       `UPDATE journeys
-        SET status = $3, updated_at = now()::DATE
+        SET initial_step_id = $3, status = $4, updated_at = now()::DATE
         WHERE id = $1 and organization_id = $2
         RETURNING id`,
-      [data.journeyId, data.organizationId, data.status],
+      [data.journeyId, data.organizationId, data.initialStepId, data.status],
     );
   }
 }

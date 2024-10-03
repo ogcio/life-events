@@ -398,8 +398,11 @@ paths:
                     - type: string
                       enum:
                         - draft
+                initialStepId:
+                  type: string
               required:
                 - status
+                - initialStepId
         required: true
       parameters:
         - schema:

@@ -231,6 +231,7 @@ export interface paths {
         content: {
           "application/json": {
             status: "active" | "draft";
+            initialStepId: string;
           };
         };
       };

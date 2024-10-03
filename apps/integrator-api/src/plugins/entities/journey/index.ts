@@ -85,17 +85,18 @@ const buildCreateJourney =
     return result?.rows[0];
   };
 
-const buildUpdateJourneyStatus =
+const buildActivateJourney =
   (repo: JourneyRepo, log: FastifyBaseLogger, httpErrors: HttpErrors) =>
   async (data: {
     journeyId: string;
     status: JourneyStatusType;
+    initialStepId?: string;
     organizationId: string;
   }): Promise<Id> => {
     let result;
 
     try {
-      result = await repo.updateJourneyStatus(data);
+      result = await repo.activateJourney(data);
     } catch (err) {
       log.error((err as Error).message);
     }
@@ -117,7 +118,7 @@ const buildPlugin = (
     getJourneyById: buildGetJourneyById(repo, log, httpErrors),
     getJourneyPublicInfo: buildGetJourneyPublicInfo(repo, log, httpErrors),
     createJourney: buildCreateJourney(repo, log, httpErrors),
-    updateJourneyStatus: buildUpdateJourneyStatus(repo, log, httpErrors),
+    activateJourney: buildActivateJourney(repo, log, httpErrors),
   };
 };
 

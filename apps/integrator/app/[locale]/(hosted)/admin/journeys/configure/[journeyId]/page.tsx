@@ -76,8 +76,10 @@ export default async ({ params: { locale, journeyId } }: Props) => {
     "use server";
 
     const integratorApi = await AuthenticationFactory.getIntegratorClient();
-    // TODO: here pass initialStepId: stepConnections[0]?.sourceStepId,
-    await integratorApi.updateJourneyStatus(journeyId, { status: "active" });
+    await integratorApi.activateJourney(journeyId, {
+      status: "active",
+      initialStepId: stepConnections[0]?.sourceStepId,
+    });
     await clearStepConnections(pgpool, {
       journeyId,
     });

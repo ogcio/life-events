@@ -158,7 +158,6 @@ export default async function journeys(app: FastifyInstance) {
     },
     async (request, reply) => {
       const { journeyId } = request.params;
-      const { status } = request.body;
 
       const organizationId = request.userData?.organizationId;
 
@@ -166,10 +165,10 @@ export default async function journeys(app: FastifyInstance) {
         throw app.httpErrors.unauthorized("Unauthorized!");
       }
 
-      const res = await app.journey.updateJourneyStatus({
+      const res = await app.journey.activateJourney({
         journeyId,
-        status,
         organizationId,
+        ...request.body,
       });
 
       reply.send(formatAPIResponse(res));

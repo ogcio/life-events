@@ -60,11 +60,61 @@ export const JourneyPublicDetails = Type.Object({
 });
 export type JourneyPublicDetailsDO = Static<typeof JourneyPublicDetails>;
 
+export const StepType = Type.Union([
+  Type.Literal("form"),
+  Type.Literal("payment"),
+  Type.Literal("messaging"),
+]);
+export type StepType = Static<typeof StepType>;
+
+export const FormStepData = Type.Object({
+  url: Type.String(),
+  title: Type.String(),
+});
+export type FormStepData = Static<typeof FormStepData>;
+
+export const PaymentStepData = Type.Object({
+  url: Type.String(),
+  title: Type.String(),
+});
+export type PaymentStepData = Static<typeof PaymentStepData>;
+
+export const MessagingStepData = Type.Object({});
+export type MessagingStepData = Static<typeof MessagingStepData>;
+
+export const StepData = Type.Union([
+  FormStepData,
+  PaymentStepData,
+  MessagingStepData,
+]);
+export type StepData = Static<typeof StepData>;
+
+export const JourneyStep = Type.Object({
+  id: Type.String(),
+  journeyId: Type.String(),
+  stepType: StepType,
+  stepNumber: Type.Number(),
+  stepData: StepData,
+  createdAt: Type.String(),
+  updatedAt: Type.String(),
+});
+export type JourneyStep = Static<typeof JourneyStep>;
+
+export const JourneyStepConnection = Type.Object({
+  id: Type.String(),
+  sourceStepId: Type.String(),
+  destinationStepId: Type.String(),
+});
+export type JourneyStepConnection = Static<typeof JourneyStepConnection>;
+
 export const FullJourney = Type.Composite([
   JourneyPublicDetails,
   Type.Object({
     createdAt: Type.String(),
     updatedAt: Type.String(),
+    initialStepId: Type.String(),
+    steps: Type.Optional(Type.Array(JourneyStep)),
+    connections: Type.Optional(Type.Array(JourneyStepConnection)),
   }),
 ]);
 export type FullJourneyDO = Static<typeof FullJourney>;
@@ -80,5 +130,8 @@ export const CreateJourneyBody = Type.Object({
 
 export type CreateJourneyBodyDO = Static<typeof CreateJourneyBody>;
 
-export const UpdateJourneyBody = Type.Pick(JourneyPublicDetails, ["status"]);
+export const UpdateJourneyBody = Type.Pick(FullJourney, [
+  "status",
+  "initialStepId",
+]);
 export type UpdateJourneyBodyDO = Static<typeof UpdateJourneyBody>;

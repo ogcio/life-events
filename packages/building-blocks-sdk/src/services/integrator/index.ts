@@ -74,7 +74,7 @@ export class Integrator {
     );
   }
 
-  async updateJourneyStatus(
+  async activateJourney(
     journeyId: paths["/api/v1/journeys/{journeyId}"]["patch"]["parameters"]["path"]["journeyId"],
     data: paths["/api/v1/journeys/{journeyId}"]["patch"]["requestBody"]["content"]["application/json"],
   ) {
