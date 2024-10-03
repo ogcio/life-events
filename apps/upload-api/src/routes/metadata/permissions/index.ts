@@ -1,18 +1,14 @@
 import { Type } from "@sinclair/typebox";
 import { FastifyInstance } from "fastify";
 import { Permissions } from "../../../types/permissions.js";
-import { HttpError } from "../../../types/httpErrors.js";
+import { HttpError as OutputHttpError } from "../../../types/httpErrors.js";
 import {
   getGenericResponseSchema,
   Sharing,
 } from "../../../types/schemaDefinitions.js";
 import addFileSharing from "./utils/addFileSharing.js";
-import { ServerError } from "shared-errors";
 import removeFileSharing from "./utils/removeFileSharing.js";
 import getFileSharings from "./utils/getFileSharings.js";
-
-const SHARE_CREATE = "SHARE_CREATE";
-const SHARE_DELETE = "SHARE_DELETE";
 
 const API_DOCS_TAG = "Permissions";
 
@@ -32,8 +28,8 @@ export default async function routes(app: FastifyInstance) {
           201: getGenericResponseSchema(
             Type.Object({ fileId: Type.String(), userId: Type.String() }),
           ),
-          "4xx": HttpError,
-          "5xx": HttpError,
+          "4xx": OutputHttpError,
+          "5xx": OutputHttpError,
         },
       },
     },
@@ -42,7 +38,9 @@ export default async function routes(app: FastifyInstance) {
       try {
         await addFileSharing(app.pg, fileId, userId);
       } catch (err) {
-        throw new ServerError(SHARE_CREATE, "Internal server error", err);
+        throw app.httpErrors.createError(500, "Internal server error", {
+          parent: err,
+        });
       }
       reply.status(201);
       reply.send({ data: { fileId, userId } });
@@ -61,8 +59,8 @@ export default async function routes(app: FastifyInstance) {
           userId: Type.String(),
         }),
         response: {
-          "4xx": HttpError,
-          "5xx": HttpError,
+          "4xx": OutputHttpError,
+          "5xx": OutputHttpError,
         },
       },
     },
@@ -72,7 +70,9 @@ export default async function routes(app: FastifyInstance) {
       try {
         await removeFileSharing(app.pg, fileId, userId);
       } catch (err) {
-        throw new ServerError(SHARE_DELETE, "Internal server error", err);
+        throw app.httpErrors.createError(500, "Internal server error", {
+          parent: err,
+        });
       }
       reply.send();
     },
@@ -89,8 +89,8 @@ export default async function routes(app: FastifyInstance) {
           fileId: Type.String(),
         }),
         response: {
-          "4xx": HttpError,
-          "5xx": HttpError,
+          "4xx": OutputHttpError,
+          "5xx": OutputHttpError,
         },
       },
     },
@@ -104,7 +104,9 @@ export default async function routes(app: FastifyInstance) {
           [sharings.push(...sharingsQueryResponse.rows)];
         }
       } catch (err) {
-        throw new ServerError(SHARE_DELETE, "Internal server error", err);
+        throw app.httpErrors.createError(500, "Internal server error", {
+          parent: err,
+        });
       }
       return { data: sharings };
     },

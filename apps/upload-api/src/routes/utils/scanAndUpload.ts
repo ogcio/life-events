@@ -2,7 +2,7 @@ import { DeleteObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { Upload } from "@aws-sdk/lib-storage";
 import EventEmitter from "events";
 import { FastifyInstance, FastifyRequest } from "fastify";
-import { BadRequestError, CustomError, getErrorMessage } from "shared-errors";
+import { getErrorMessage } from "@ogcio/shared-errors";
 import { PassThrough, pipeline } from "stream";
 
 /** THIS IS ALL DEPRECATED CODE, TO BE USED AS REFERENCE */
@@ -20,7 +20,6 @@ const deleteObject = (
   );
 };
 
-const FILE_UPLOAD = "FILE_UPLOAD";
 /**
  * @deprecated This method is used as a reference
  * @param
@@ -34,21 +33,21 @@ const scanAndUpload_ = async (
   const data = await request.file();
 
   if (!data) {
-    throw new BadRequestError(FILE_UPLOAD, "Request is not multipart");
+    throw app.httpErrors.badRequest("Request is not multipart");
   }
 
   const stream = data.file;
   const filename = data.filename;
 
   if (!filename) {
-    throw new BadRequestError(FILE_UPLOAD, "Filename is not provided");
+    throw app.httpErrors.badRequest("Filename is not provided");
   }
 
   const eventEmitter = new EventEmitter();
 
   const promise = new Promise<void>((resolve, reject) => {
     eventEmitter.once("infectedFileDetected", () => {
-      reject(new CustomError(FILE_UPLOAD, "File is infected", 400));
+      reject(app.httpErrors.badRequest("File is infected"));
     });
 
     eventEmitter.once("fileUploaded", () => {
@@ -56,11 +55,13 @@ const scanAndUpload_ = async (
     });
 
     eventEmitter.once("fileTooLarge", () => {
-      reject(new BadRequestError(FILE_UPLOAD, "File is too large"));
+      reject(app.httpErrors.badRequest("File is too large"));
     });
 
     eventEmitter.once("error", (err) => {
-      reject(new BadRequestError("badRequest", getErrorMessage(err), err));
+      reject(
+        app.httpErrors.createError(400, getErrorMessage(err), { parent: err }),
+      );
     });
 
     eventEmitter.on("error", () => {

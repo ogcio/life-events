@@ -6,14 +6,9 @@ import {
   ResponseMetadata,
 } from "../../types/schemaDefinitions.js";
 import { Type } from "@sinclair/typebox";
-import { HttpError } from "../../types/httpErrors.js";
+import { HttpError as OutputHttpError } from "../../types/httpErrors.js";
 import { ensureUserIdIsSet } from "../../utils/authentication-factory.js";
-import {
-  AuthorizationError,
-  BadRequestError,
-  NotFoundError,
-  ServerError,
-} from "shared-errors";
+
 import {
   getOrganizationFiles,
   getSharedFiles,
@@ -22,10 +17,7 @@ import {
 } from "./utils/filesMetadata.js";
 import getFileMetadataById from "../utils/getFileMetadataById.js";
 import removeAllFileSharings from "./utils/removeAllFileSharings.js";
-
-const METADATA_INDEX = "METADATA_INDEX";
-const GET_METADATA = "GET_METADATA";
-const SCHEDULE_DELETION = "SCHEDULE_DELETION";
+import { httpErrors } from "@fastify/sensible";
 
 const API_DOCS_TAG = "Metadata";
 
@@ -48,16 +40,15 @@ export default async function routes(app: FastifyInstance) {
         ),
         response: {
           200: getGenericResponseSchema(Type.Array(ResponseMetadata)),
-          "4xx": HttpError,
-          "5xx": HttpError,
+          "4xx": OutputHttpError,
+          "5xx": OutputHttpError,
         },
       },
     },
     async (request) => {
-      const userId = ensureUserIdIsSet(request, METADATA_INDEX);
+      const userId = ensureUserIdIsSet(request);
       const organizationId = request.userData?.organizationId;
       ensureUserCanAccessResource({
-        errorProcess: METADATA_INDEX,
         loggedInUserId: userId,
         queryUserId: request.query.userId,
         queryOrganizationId: request.query.organizationId,
@@ -99,8 +90,7 @@ export default async function routes(app: FastifyInstance) {
             return { data: filesResponse.rows };
           }
 
-          throw new BadRequestError(
-            GET_METADATA,
+          throw app.httpErrors.forbidden(
             "You are not authorized to access other organization data",
           );
         }
@@ -114,12 +104,13 @@ export default async function routes(app: FastifyInstance) {
           return { data: sharedFiles.rows };
         }
 
-        throw new BadRequestError(
-          GET_METADATA,
+        throw app.httpErrors.forbidden(
           "You are not authorized to access other users data",
         );
       } catch (e) {
-        throw new ServerError(METADATA_INDEX, "Error getting files", e);
+        throw app.httpErrors.createError(500, "Error getting files", {
+          parent: e,
+        });
       } finally {
         client.release();
       }
@@ -139,8 +130,8 @@ export default async function routes(app: FastifyInstance) {
         params: Type.Object({ id: Type.String() }),
         response: {
           200: getGenericResponseSchema(ResponseMetadata),
-          "4xx": HttpError,
-          "5xx": HttpError,
+          "4xx": OutputHttpError,
+          "5xx": OutputHttpError,
         },
       },
     },
@@ -156,10 +147,12 @@ export default async function routes(app: FastifyInstance) {
         }
 
         if (!file) {
-          return new NotFoundError(GET_METADATA, "File not found");
+          return app.httpErrors.notFound("File not found");
         }
       } catch (err) {
-        throw new ServerError(GET_METADATA, "Error retrieving files", err);
+        throw app.httpErrors.createError(500, "Error retrieving files", {
+          parent: err,
+        });
       }
 
       const fileMetadata = {
@@ -181,8 +174,8 @@ export default async function routes(app: FastifyInstance) {
         body: Type.Object({ fileId: Type.String() }),
         response: {
           200: getGenericResponseSchema(Type.Object({ id: Type.String() })),
-          "4xx": HttpError,
-          "5xx": HttpError,
+          "4xx": OutputHttpError,
+          "5xx": OutputHttpError,
         },
       },
     },
@@ -190,7 +183,7 @@ export default async function routes(app: FastifyInstance) {
       const fileId = request.body.fileId;
 
       if (!fileId) {
-        throw new BadRequestError(SCHEDULE_DELETION, "File key not provided");
+        throw app.httpErrors.badRequest("File key not provided");
       }
 
       const fileData = await getFileMetadataById(app.pg, fileId);
@@ -198,7 +191,7 @@ export default async function routes(app: FastifyInstance) {
       const file = fileData.rows?.[0];
 
       if (!file) {
-        throw new NotFoundError(SCHEDULE_DELETION);
+        throw app.httpErrors.notFound("File not found");
       }
 
       try {
@@ -206,7 +199,9 @@ export default async function routes(app: FastifyInstance) {
 
         await removeAllFileSharings(app.pg, fileId);
       } catch (err) {
-        throw new ServerError(SCHEDULE_DELETION, "Error deleting file", err);
+        throw app.httpErrors.createError(500, "Error deleting file", {
+          parent: err,
+        });
       }
 
       reply.send({ data: { id: fileId } });
@@ -215,7 +210,6 @@ export default async function routes(app: FastifyInstance) {
 }
 
 const ensureUserCanAccessResource = (params: {
-  errorProcess: string;
   loggedInUserId: string;
   queryUserId?: string;
   queryOrganizationId?: string;
@@ -224,8 +218,7 @@ const ensureUserCanAccessResource = (params: {
   //public servant
   if (params.organizationId) {
     if (params.organizationId !== params.queryOrganizationId) {
-      throw new AuthorizationError(
-        params.errorProcess,
+      throw httpErrors.forbidden(
         "You are not allowed to access data for the requested organization",
       );
     }
@@ -233,15 +226,13 @@ const ensureUserCanAccessResource = (params: {
   }
 
   if (params.loggedInUserId !== params.queryUserId) {
-    throw new AuthorizationError(
-      params.errorProcess,
+    throw httpErrors.forbidden(
       "You are not allowed to access data for the requested user",
     );
   }
 
   if (params.queryOrganizationId) {
-    throw new AuthorizationError(
-      params.errorProcess,
+    throw httpErrors.forbidden(
       "You are not allowed to access data for the requested organization",
     );
   }
