@@ -96,19 +96,16 @@ export default async function routes(app: FastifyInstance) {
     },
     async (request) => {
       const { fileId } = request.query;
-
-      const sharings: Sharing[] = [];
       try {
         const sharingsQueryResponse = await getFileSharings(app.pg, fileId);
         if (sharingsQueryResponse.rows.length) {
-          [sharings.push(...sharingsQueryResponse.rows)];
+          return { data: sharingsQueryResponse.rows };
         }
       } catch (err) {
         throw app.httpErrors.createError(500, "Internal server error", {
           parent: err,
         });
       }
-      return { data: sharings };
     },
   );
 }
