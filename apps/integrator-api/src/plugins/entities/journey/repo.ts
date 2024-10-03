@@ -5,13 +5,9 @@ import {
   JourneyDetailsDO,
   JourneyPublicDetailsDO,
   JourneysDO,
+  JourneyStatusEnum,
   JourneyStatusType,
 } from "./types";
-
-enum JourneyStatus {
-  ACTIVE = "active",
-  DRAFT = "draft",
-}
 
 export class JourneyRepo {
   pg: PostgresDb;
@@ -82,7 +78,7 @@ export class JourneyRepo {
       [
         journey.title,
         journey.organizationId,
-        JourneyStatus.DRAFT,
+        JourneyStatusEnum.DRAFT,
         journey.userId,
       ],
     );

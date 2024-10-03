@@ -10,3 +10,8 @@ export type JourneyStatusType = Static<typeof JourneyStatus>;
 export type JourneyDetailsDO = Static<typeof JourneyDetails>;
 export type JourneyPublicDetailsDO = Static<typeof JourneyPublicDetails>;
 export type JourneysDO = Static<typeof Journeys>;
+
+export enum JourneyStatusEnum {
+  ACTIVE = "active",
+  DRAFT = "draft",
+}
