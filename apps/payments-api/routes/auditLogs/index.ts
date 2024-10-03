@@ -56,6 +56,14 @@ export default async function auditLogs(app: FastifyInstance) {
         to,
       } = request.query;
 
+      if(process.env.ANALYTICS_WEBSITE_ID)
+        app.analytics.sdk.analytics.trackEvent(process.env.ANALYTICS_WEBSITE_ID, {event: {
+          e_c: "API",
+          e_n: "AuditLogs",
+          e_a: "POST",
+          e_v: 1
+        }});
+
       if (!organizationId) {
         throw app.httpErrors.unauthorized("Unauthorized!");
       }

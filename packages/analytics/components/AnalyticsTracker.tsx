@@ -1,12 +1,14 @@
-"use client";
+import { OGCIO } from "analytics-sdk";
+import Script from 'next/script'
 
-import { init, push } from "../utils/init";
-import { usePathname } from "next/navigation";
-import { useEffect, useRef } from "react";
-import { Dimensions } from "../types/dimensions";
-
-const MATOMO_URL = process.env.NEXT_PUBLIC_MATOMO_URL ?? "";
-const MATOMO_SITE_ID = process.env.NEXT_PUBLIC_MATOMO_SITE_ID ?? "";
+const ANALYTICS_WEBSITE_ID = process.env.ANALYTICS_WEBSITE_ID;
+const authConfig = {
+  applicationId: process.env.AUTH_APP_ID,
+  applicationSecret: process.env.AUTH_APP_SECRET,
+  logtoOidcEndpoint: process.env.AUTH_OIDC_ENDPOINT,
+  organizationId: process.env.AUTH_ORGANIZATION_ID,
+  scopes: process.env.AUTH_SCOPES ? process.env.AUTH_SCOPES.split(",") : undefined
+}
 
 interface AnalyticsTrackerProps {
   /**
@@ -16,64 +18,20 @@ interface AnalyticsTrackerProps {
    * @default undefined
    */
   userId?: string | number;
-  customDimensions?: Dimensions;
 }
 
-export default function AnalyticsTracker({
+export default async function AnalyticsTracker({
   userId,
-  customDimensions,
 }: AnalyticsTrackerProps) {
   // avoid tracking if no MATOMO_URL or MATOMO_SITE_ID
-  if (!MATOMO_URL || !MATOMO_SITE_ID) {
+  if (!ANALYTICS_WEBSITE_ID) {
     return null;
   }
 
-  const pathname = usePathname();
-  const isInitialLoad = useRef(true);
-  const isInitialized = useRef(false);
-
-  const initFunction = () => {
-    // if it's not the initial load, we don't need to set the userId and customDimensions
-    if (!isInitialLoad.current) {
-      return;
-    }
-
-    if (userId) {
-      push(["setUserId", userId]);
-    }
-
-    if (customDimensions) {
-      for (const [key, value] of Object.entries(customDimensions)) {
-        push(["setCustomDimension", key.replace("dimension", ""), value]);
-      }
-    }
-  };
-
-  useEffect(() => {
-    if (isInitialized.current) {
-      return;
-    }
-
-    init({
-      url: MATOMO_URL,
-      siteId: MATOMO_SITE_ID,
-      disableCookies: true,
-      onInitialization: initFunction,
-    });
-
-    isInitialized.current = true;
-
-    return () => push(["HeatmapSessionRecording::disable"]);
-  }, [MATOMO_URL, MATOMO_SITE_ID, userId]);
-
-  useEffect(() => {
-    if (isInitialLoad.current) {
-      isInitialLoad.current = false;
-    } else if (pathname) {
-      push(["setCustomUrl", pathname]);
-      push(["trackPageView"]);
-    }
-  }, [pathname]);
-
-  return null;
+  const ogcioAnalyticsSDK = new OGCIO();
+  await ogcioAnalyticsSDK.auth(authConfig);
+  const trackingScript = await ogcioAnalyticsSDK.analytics.getTrackingCode(process.env.ANALYTICS_WEBSITE_ID, {});
+  return (<>
+    <Script>{trackingScript.data?.data.script}</Script>
+  </>);
 }
