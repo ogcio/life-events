@@ -11,7 +11,11 @@ import {
 import ds from "design-system";
 import Link from "next/link";
 import styles from "./style.module.scss";
-import { loadJourneyById } from "../../../../../../../libraries/journeyEditor/queries";
+import {
+  clearStepConnections,
+  loadJourneyById,
+  saveStepConnections,
+} from "../../../../../../../libraries/journeyEditor/queries";
 import InputField from "../../../../../../components/InputField";
 import CopyLink from "../../../../../../components/CopyBtn";
 import journeyDefaultFlow from "../../../../../../../libraries/journeyEditor/journeyStepFlow";
@@ -64,13 +68,26 @@ export default async ({ params: { locale, journeyId } }: Props) => {
 
   const editor = new JourneyEditor(journey, journeyDefaultFlow);
   const steps = editor.getStepsInfo();
+  const stepConnections = editor.getStepConnections();
+
   const journeyCompleted = editor.isCompleted();
 
   const saveJourneyAction = async () => {
     "use server";
 
     const integratorApi = await AuthenticationFactory.getIntegratorClient();
+    // TODO: here pass initialStepId: stepConnections[0]?.sourceStepId,
     await integratorApi.updateJourneyStatus(journeyId, { status: "active" });
+    await clearStepConnections(pgpool, {
+      journeyId,
+    });
+
+    if (stepConnections.length) {
+      await saveStepConnections(pgpool, {
+        journeyId,
+        connections: stepConnections,
+      });
+    }
 
     redirect(`/${locale}/admin/journeys/configure/${journeyId}`);
   };

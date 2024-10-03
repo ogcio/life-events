@@ -1,5 +1,6 @@
 import { Pool } from "pg";
 import {
+  Journey,
   JourneyStep,
   STEP_STATUS,
   Submission,
@@ -11,6 +12,7 @@ import { IntegratorPlugin } from "./plugins/basePlugin";
 
 export class IntegratorEngine {
   private submission: Submission;
+  private journey: Journey;
   private journeySteps: JourneyStep[];
   private submissionSteps: SubmissionStep[];
 
@@ -20,15 +22,50 @@ export class IntegratorEngine {
   constructor(
     pgpool: Pool,
     submission: Submission,
-    journeySteps: JourneyStep[],
+    journey: Journey,
     submissionSteps: SubmissionStep[],
   ) {
     this.pgpool = pgpool;
     this.pluginManager = new IntegratorPluginManager();
 
     this.submission = submission;
-    this.journeySteps = journeySteps;
+    this.journey = journey;
     this.submissionSteps = submissionSteps;
+
+    this.prepareJourneySteps();
+  }
+
+  private prepareJourneySteps() {
+    this.journeySteps = [];
+
+    if (
+      !this.journey.initialStepId ||
+      !this.journey.steps ||
+      !this.journey.connections
+    ) {
+      return;
+    }
+
+    const stepsMap: Record<string, JourneyStep> = this.journey.steps.reduce(
+      (acc, step) => {
+        acc[step.id] = step;
+        return acc;
+      },
+      {},
+    );
+    const connectionMap: Record<string, string> =
+      this.journey.connections.reduce((acc, connection) => {
+        acc[connection.sourceStepId] = connection.destinationStepId;
+        return acc;
+      }, {});
+
+    let stepId = this.journey.initialStepId;
+    this.journeySteps.push(stepsMap[stepId]);
+
+    while (connectionMap[stepId]) {
+      this.journeySteps.push(stepsMap[connectionMap[stepId]]);
+      stepId = connectionMap[stepId];
+    }
   }
 
   public async execute(userId: string) {

@@ -6,7 +6,7 @@ import {
   getUserSubmissions,
   getUserSubmissionSteps,
 } from "../../../../../../utils/submissions";
-import { getJourneySteps } from "../../../../../../utils/journeys";
+import { getJourney } from "../../../../../../utils/journeys";
 import { IntegratorEngine } from "../../../../../../../libraries/integratorEngine";
 
 type CallbackRouteParams = {
@@ -44,19 +44,19 @@ export async function GET(request: Request, { params }: CallbackRouteParams) {
   );
   const userSubmissionStepsData = userSubmissionStepsQueryResult.rows;
 
-  // get all journey steps
-  const journeyStepsQueryResult = await getJourneySteps(pgpool, journey);
+  // get journey
+  const journeyResult = await getJourney(pgpool, journey);
 
-  if (!journeyStepsQueryResult.rows.length) {
+  if (!journeyResult.rows.length) {
     return notFound();
   }
 
-  const journeySteps = journeyStepsQueryResult.rows;
+  const journeyData = journeyResult.rows[0];
 
   const engine = new IntegratorEngine(
     pgpool,
     submissionData,
-    journeySteps,
+    journeyData,
     userSubmissionStepsData,
   );
 
@@ -65,27 +65,6 @@ export async function GET(request: Request, { params }: CallbackRouteParams) {
   } catch (err) {
     throw new ServerError(INTEGRATOR_CALLBACK, "Internal server error", err);
   }
-
-  // const userSubmissionStepData = userSubmissionStepsQueryResult.rows?.find(
-  //   ({ stepId }) => stepId === step,
-  // );
-
-  // if (!userSubmissionStepData) {
-  //   throw new ServerError(
-  //     INTEGRATOR_CALLBACK,
-  //     "Internal server error",
-  //     new Error("Journey not found"),
-  //   );
-  // }
-
-  // await updateSubmissionStep(
-  //   pgpool,
-  //   userSubmissionStepData.submissionId,
-  //   step,
-  //   userId,
-  //   journey,
-  //   objData,
-  // );
 
   return redirect(`/journey/${journey}`, RedirectType.replace);
 }
