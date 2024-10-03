@@ -4,12 +4,8 @@ import { Permissions } from "../../types/permissions.js";
 import { HttpError } from "../../types/httpErrors.js";
 import { getGenericResponseSchema } from "../../types/schemaDefinitions.js";
 import addFileSharing from "./utils/addFileSharing.js";
-import { ServerError } from "shared-errors";
 import removeFileSharing from "./utils/removeFileSharing.js";
 import getFileSharings from "./utils/getFileSharings.js";
-
-const SHARE_CREATE = "SHARE_CREATE";
-const SHARE_DELETE = "SHARE_DELETE";
 
 const API_DOCS_TAG = "Permissions";
 
@@ -39,7 +35,11 @@ export default async function routes(app: FastifyInstance) {
       try {
         await addFileSharing(app.pg, fileId, userId);
       } catch (err) {
-        throw new ServerError(SHARE_CREATE, "Internal server error", err);
+        throw app.httpErrors.createError(
+          500,
+          "Internal server error adding permissions",
+          { parent: err },
+        );
       }
       reply.status(201);
       reply.send({ data: { fileId, userId } });
@@ -69,7 +69,11 @@ export default async function routes(app: FastifyInstance) {
       try {
         await removeFileSharing(app.pg, fileId, userId);
       } catch (err) {
-        throw new ServerError(SHARE_DELETE, "Internal server error", err);
+        throw app.httpErrors.createError(
+          500,
+          "Internal server error removing permissions",
+          { parent: err },
+        );
       }
       reply.send();
     },
@@ -97,7 +101,11 @@ export default async function routes(app: FastifyInstance) {
         const sharingsQueryResponse = await getFileSharings(app.pg, fileId);
         return { data: sharingsQueryResponse.rows };
       } catch (err) {
-        throw new ServerError(SHARE_DELETE, "Internal server error", err);
+        throw app.httpErrors.createError(
+          500,
+          "Internal server error retrieving permissions",
+          { parent: err },
+        );
       }
     },
   );
