@@ -18,7 +18,7 @@ export class Upload {
   }
 
   async shareFile(fileId: string, userId: string) {
-    const { data, error } = await this.client.POST("/api/v1/metadata/share/", {
+    const { data, error } = await this.client.POST("/api/v1/permissions/", {
       body: { fileId, userId },
     });
 
@@ -26,7 +26,7 @@ export class Upload {
   }
 
   async removeFileSharing(fileId: string, userId: string) {
-    const { error } = await this.client.DELETE("/api/v1/metadata/share/", {
+    const { error } = await this.client.DELETE("/api/v1/permissions/", {
       body: { fileId, userId },
     });
 
