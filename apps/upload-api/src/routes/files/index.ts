@@ -195,7 +195,7 @@ const scanAndUpload = async (app: FastifyInstance, request: FastifyRequest) => {
 
     eventEmitter.once("error", (err) => {
       const err_ = err as HttpError;
-      if (err_.errorCode === 400) {
+      if (err_.statusCode === 400) {
         reject(
           app.httpErrors.createError(400, getErrorMessage(err), {
             parent: err,
