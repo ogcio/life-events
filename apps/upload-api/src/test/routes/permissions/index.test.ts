@@ -2,7 +2,7 @@ import { PostgresDb } from "@fastify/postgres";
 import { FastifyInstance, FastifyPluginCallback } from "fastify";
 import fp from "fastify-plugin";
 import t from "tap";
-import { CONFIG_TYPE, SCHEDULER_TOKEN } from "../../../../utils/storeConfig.js";
+import { CONFIG_TYPE, SCHEDULER_TOKEN } from "../../../utils/storeConfig.js";
 
 const buildApp = async ({
   removeFileSharing,
@@ -13,14 +13,14 @@ const buildApp = async ({
   addFileSharing?: () => Promise<unknown>;
   getFileSharings?: () => Promise<unknown>;
 }) => {
-  const { build } = await t.mockImport<typeof import("../../../../app.js")>(
-    "../../../../app.js",
+  const { build } = await t.mockImport<typeof import("../../../app.js")>(
+    "../../../app.js",
     {
       "@fastify/autoload": {
         default: async () => {},
       },
 
-      "../../../../routes/index.js": {
+      "../../../routes/index.js": {
         default: async () => {},
       },
       "@fastify/multipart": {
@@ -56,27 +56,27 @@ const buildApp = async ({
           });
         }),
       },
-      "../../../../utils/storeConfig.js": {
+      "../../../utils/storeConfig.js": {
         storeConfig: () => Promise.resolve(),
         CONFIG_TYPE,
         SCHEDULER_TOKEN,
       },
-      "../../../../utils/scheduleCleanupTask.js": {
+      "../../../utils/scheduleCleanupTask.js": {
         default: () => Promise.resolve(),
       },
     },
   );
 
   const routes = await t.mockImport<
-    typeof import("../../../../routes/metadata/permissions/index.js")
-  >("../../../../routes/metadata/permissions/index.js", {
-    "../../../../routes/metadata/permissions/utils/removeFileSharing.js": {
+    typeof import("../../../routes/permissions/index.js")
+  >("../../../routes/permissions/index.js", {
+    "../../../routes/permissions/utils/removeFileSharing.js": {
       default: removeFileSharing,
     },
-    "../../../../routes/metadata/permissions/utils/addFileSharing.js": {
+    "../../../routes/permissions/utils/addFileSharing.js": {
       default: addFileSharing,
     },
-    "../../../../routes/metadata/permissions/utils/getFileSharings.js": {
+    "../../../routes/permissions/utils/getFileSharings.js": {
       default: getFileSharings,
     },
   });
@@ -84,14 +84,14 @@ const buildApp = async ({
   const app = await build();
 
   await app.register(routes as unknown as FastifyPluginCallback, {
-    prefix: "/metadata/permissions",
+    prefix: "/permissions",
   });
 
   await app.ready();
   return app;
 };
 
-t.test("metadata/permissions", async (t) => {
+t.test("permissions", async (t) => {
   let app: FastifyInstance;
 
   t.afterEach(async () => {
@@ -111,7 +111,7 @@ t.test("metadata/permissions", async (t) => {
 
       const response = await app.inject({
         method: "POST",
-        url: "/metadata/permissions",
+        url: "/permissions",
         body: { fileId: "fileId", userId: "userId" },
       });
 
@@ -133,7 +133,7 @@ t.test("metadata/permissions", async (t) => {
 
         const response = await app.inject({
           method: "POST",
-          url: "/metadata/permissions",
+          url: "/permissions",
           body: { fileId: "fileId", userId: "userId" },
         });
 
@@ -155,7 +155,7 @@ t.test("metadata/permissions", async (t) => {
 
       const response = await app.inject({
         method: "DELETE",
-        url: "/metadata/permissions",
+        url: "/permissions",
         body: { fileId: "fileId", userId: "userId" },
       });
 
@@ -173,7 +173,7 @@ t.test("metadata/permissions", async (t) => {
 
         const response = await app.inject({
           method: "DELETE",
-          url: "/metadata/permissions",
+          url: "/permissions",
           body: { fileId: "fileId", userId: "userId" },
         });
 
@@ -195,7 +195,7 @@ t.test("metadata/permissions", async (t) => {
 
       const response = await app.inject({
         method: "GET",
-        url: "/metadata/permissions",
+        url: "/permissions",
         query: { fileId: "fileId" },
       });
 
@@ -215,7 +215,7 @@ t.test("metadata/permissions", async (t) => {
 
       const response = await app.inject({
         method: "GET",
-        url: "/metadata/permissions",
+        url: "/permissions",
         query: { fileId: "fileId" },
       });
 

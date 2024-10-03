@@ -22,7 +22,7 @@ import { httpErrors } from "@fastify/sensible";
 const API_DOCS_TAG = "Metadata";
 
 export default async function routes(app: FastifyInstance) {
-  app.get<{ Querystring: { userId?: string; organizationId: string } }>(
+  app.get<{ Querystring: { userId?: string; organizationId?: string } }>(
     "/",
     {
       preValidation: (req, res) =>

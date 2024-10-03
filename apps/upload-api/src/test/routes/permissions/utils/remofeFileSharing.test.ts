@@ -1,12 +1,12 @@
 import t from "tap";
-import addFileSharing from "../../../../../routes/metadata/permissions/utils/addFileSharing.js";
+import removeFileSharing from "../../../../routes/permissions/utils/removeFileSharing.js";
 import { PostgresDb } from "@fastify/postgres";
 
-t.test("addFileSharing", async () => {
+t.test("removeFileSharing", async () => {
   t.test("executes query with correct params", async (t) => {
     const params: string[] = [];
     const pg = { query: (...args: string[]) => params.push(...args) };
-    addFileSharing(pg as PostgresDb, "fileId", "userId");
+    removeFileSharing(pg as PostgresDb, "fileId", "userId");
     t.match(params[1], ["fileId", "userId"]);
   });
 });
