@@ -46,14 +46,6 @@ export const JourneyStatus = Type.Union([
   Type.Literal("draft"),
 ]);
 
-export const JourneyPublicDetails = Type.Object({
-  id: Type.String(),
-  title: Type.String(),
-  userId: Type.String(),
-  organizationId: Type.String(),
-  status: JourneyStatus,
-});
-
 export const StepType = Type.Union([
   Type.Literal("form"),
   Type.Literal("payment"),
@@ -100,13 +92,23 @@ export const JourneyStepConnection = Type.Object({
 });
 export type JourneyStepConnection = Static<typeof JourneyStepConnection>;
 
-export const JourneyDetails = Type.Composite([
-  JourneyPublicDetails,
-  Type.Object({
-    createdAt: Type.String(),
-    updatedAt: Type.String(),
-    initialStepId: Type.String(),
-  }),
+export const JourneyDetails = Type.Object({
+  id: Type.String(),
+  title: Type.String(),
+  userId: Type.String(),
+  organizationId: Type.String(),
+  status: JourneyStatus,
+  createdAt: Type.String(),
+  updatedAt: Type.String(),
+  initialStepId: Type.String(),
+});
+
+export const JourneyPublicDetails = Type.Pick(JourneyDetails, [
+  "id",
+  "title",
+  "userId",
+  "organizationId",
+  "status",
 ]);
 
 export const FullJourney = Type.Composite([
