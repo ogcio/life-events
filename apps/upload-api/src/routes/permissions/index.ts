@@ -1,11 +1,8 @@
 import { Type } from "@sinclair/typebox";
 import { FastifyInstance } from "fastify";
-import { Permissions } from "../../../types/permissions.js";
-import { HttpError } from "../../../types/httpErrors.js";
-import {
-  getGenericResponseSchema,
-  Sharing,
-} from "../../../types/schemaDefinitions.js";
+import { Permissions } from "../../types/permissions.js";
+import { HttpError } from "../../types/httpErrors.js";
+import { getGenericResponseSchema } from "../../types/schemaDefinitions.js";
 import addFileSharing from "./utils/addFileSharing.js";
 import { ServerError } from "shared-errors";
 import removeFileSharing from "./utils/removeFileSharing.js";
@@ -98,9 +95,7 @@ export default async function routes(app: FastifyInstance) {
       const { fileId } = request.query;
       try {
         const sharingsQueryResponse = await getFileSharings(app.pg, fileId);
-        if (sharingsQueryResponse.rows.length) {
-          return { data: sharingsQueryResponse.rows };
-        }
+        return { data: sharingsQueryResponse.rows };
       } catch (err) {
         throw new ServerError(SHARE_DELETE, "Internal server error", err);
       }
