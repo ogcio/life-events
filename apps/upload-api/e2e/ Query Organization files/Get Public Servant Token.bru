@@ -28,5 +28,5 @@ vars:post-response {
 assert {
   res.status: eq 200
   res.body.access_token: isDefined
-  res.body.scope: eq profile:user:read upload:file:*
+  res.body.scope: eq upload:file:*
 }
