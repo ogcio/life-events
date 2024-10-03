@@ -19,7 +19,7 @@ import {
 import { Type } from "@sinclair/typebox";
 import { findUser, getUser } from "../../services/users/find-user";
 import { createUser } from "../../services/users/create-user";
-import { getErrorMessage } from "../../utils/error-utils";
+import { getErrorMessage } from "@ogcio/shared-errors";
 import { isNativeError } from "util/types";
 import { Permissions } from "../../types/permissions";
 import { ensureUserCanAccessUser } from "api-auth";

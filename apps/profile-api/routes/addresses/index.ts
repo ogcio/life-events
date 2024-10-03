@@ -15,7 +15,7 @@ import {
   PatchAddress,
   PatchAddressSchema,
 } from "../../types/schemaDefinitions";
-import { getErrorMessage } from "../../utils/error-utils";
+import { getErrorMessage } from "@ogcio/shared-errors";
 import { Permissions } from "../../types/permissions";
 
 const ADDRESSES_TAGS = ["Addresses"];

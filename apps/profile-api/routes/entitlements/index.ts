@@ -4,7 +4,7 @@ import {
   EntitlementsList,
   EntitlementsListSchema,
 } from "../../types/schemaDefinitions";
-import { getErrorMessage } from "../../utils/error-utils";
+import { getErrorMessage } from "@ogcio/shared-errors";
 import { Permissions } from "../../types/permissions";
 
 const ENTITLEMENTS_TAGS = ["Entitlements"];
