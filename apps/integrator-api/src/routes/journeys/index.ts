@@ -88,7 +88,7 @@ export default async function journeys(app: FastifyInstance) {
     "/:journeyId/public-info",
     {
       preValidation: (req, res) =>
-        app.checkPermissions(req, res, [authPermissions.JOURNEY_READ]),
+        app.checkPermissions(req, res, [authPermissions.JOURNEY_PUBLIC_READ]),
       schema: {
         tags: TAGS,
         response: {
