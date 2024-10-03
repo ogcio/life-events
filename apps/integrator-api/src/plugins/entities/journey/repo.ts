@@ -70,7 +70,7 @@ export class JourneyRepo {
     );
   }
 
-  createJourney(journey: CreateJourneyBodyDO) {
+  createJourney(journey: CreateJourneyBodyDO): Promise<QueryResult<Id>> {
     return this.pg.query(
       `INSERT INTO journeys(title, organization_id, status, user_id)
         VALUES ($1, $2, $3, $4)
