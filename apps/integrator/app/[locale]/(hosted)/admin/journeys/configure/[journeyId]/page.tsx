@@ -12,7 +12,6 @@ import ds from "design-system";
 import Link from "next/link";
 import styles from "./style.module.scss";
 import {
-  activateJourney,
   clearStepConnections,
   loadJourneyById,
   saveStepConnections,
@@ -76,19 +75,11 @@ export default async ({ params: { locale, journeyId } }: Props) => {
   const saveJourneyAction = async () => {
     "use server";
 
-    const { organization } =
-      await AuthenticationFactory.getInstance().getContext();
-
-    if (!organization) {
-      throw new Error("Unauthorized!");
-    }
-
-    await activateJourney(pgpool, {
-      journeyId,
-      organizationId: organization.id,
+    const integratorApi = await AuthenticationFactory.getIntegratorClient();
+    await integratorApi.activateJourney(journeyId, {
+      status: "active",
       initialStepId: stepConnections[0]?.sourceStepId,
     });
-
     await clearStepConnections(pgpool, {
       journeyId,
     });

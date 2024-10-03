@@ -28,7 +28,7 @@ import {
 import { TransactionStatusesEnum } from "../../plugins/entities/transactions";
 import { authPermissions } from "../../types/authPermissions";
 import { AuditLogEventType } from "../../plugins/auditLog/auditLogEvents";
-import { getJourneyById } from "../../services/getJourney";
+import { getJourneyDetails } from "../../services/getJourney";
 
 const TAGS = ["Transactions"];
 
@@ -200,7 +200,7 @@ export default async function transactions(app: FastifyInstance) {
       const transactionBody = request.body;
       const journeyId = request.body.metadata.journeyId;
       if (journeyId) {
-        const journeyDetails = await getJourneyById(journeyId);
+        const journeyDetails = await getJourneyDetails(journeyId);
         if (!journeyDetails)
           throw app.httpErrors.notFound("Journey not found!");
         transactionBody.metadata.journeyTitle = journeyDetails.title;

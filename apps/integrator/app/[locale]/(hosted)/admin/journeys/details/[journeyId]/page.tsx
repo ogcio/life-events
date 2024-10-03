@@ -11,7 +11,6 @@ import dayjs from "dayjs";
 import { generateJourneyLink } from "../../../../../../utils/journey";
 import { JourneyEditor } from "../../../../../../../libraries/journeyEditor";
 import journeyDefaultFlow from "../../../../../../../libraries/journeyEditor/journeyStepFlow";
-import { Profile } from "building-blocks-sdk";
 import { getUserNameById } from "../../../../../../utils/profileHelpers";
 
 type Props = {
@@ -41,11 +40,6 @@ const loadJourney = async (journeyId: string): Promise<Journey> => {
   }
 
   return result.rows[0];
-};
-
-const getUserName = async (userId: string, profileApi: Profile) => {
-  const user = await profileApi.getUser(userId);
-  return `${user.data?.firstName} ${user.data?.lastName}`;
 };
 
 export default async ({ params: { locale, journeyId } }: Props) => {

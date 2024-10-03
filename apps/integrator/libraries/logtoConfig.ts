@@ -12,7 +12,7 @@ export const baseConfig = {
   appSecret: process.env.LOGTO_INTEGRATOR_APP_SECRET as string,
 };
 
-const publicServantExpectedRoles = ["Life Events Public Servant"];
+const publicServantExpectedRoles = ["Integrator Public Servant"];
 
 const buildLoginUrlWithPostLoginRedirect = () => {
   const currentPath = headers().get("x-url");
@@ -33,10 +33,20 @@ export const getAuthenticationContextConfig =
 
 export const postSignoutRedirect = process.env.HOST_URL;
 
+export const integratorPublicServantScopes = [
+  "integrator:journey:*",
+  "integrator:step:*",
+  "integrator:submission:read",
+];
+
 export const getSignInConfiguration = () => ({
   ...baseConfig,
   resources: [],
-  scopes: [...organizationScopes, ...profileApiScopes],
+  scopes: [
+    ...organizationScopes,
+    ...integratorPublicServantScopes,
+    ...profileApiScopes,
+  ],
 });
 
 export const postLoginRedirectUrlCookieName = "logtoPostLoginRedirectUrl";

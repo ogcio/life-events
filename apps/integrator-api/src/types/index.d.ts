@@ -10,7 +10,6 @@ import {
   RawServerDefault,
 } from "fastify";
 import { JourneyPlugin } from "../plugins/entities/journey";
-
 declare module "fastify" {
   export interface FastifyInstance<
     RawServer extends RawServerBase = RawServerDefault,

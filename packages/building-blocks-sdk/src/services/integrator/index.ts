@@ -32,6 +32,20 @@ export class Integrator {
   /**
    * JOURNEYS
    */
+  async getJourneyPublicInfo(
+    journeyId: paths["/api/v1/journeys/{journeyId}/public-info"]["get"]["parameters"]["path"]["journeyId"],
+  ) {
+    return formatQueryResult(
+      this.client.GET("/api/v1/journeys/{journeyId}/public-info", {
+        params: {
+          path: {
+            journeyId,
+          },
+        },
+      }),
+    );
+  }
+
   async getJourneyById(
     journeyId: paths["/api/v1/journeys/{journeyId}"]["get"]["parameters"]["path"]["journeyId"],
   ) {
@@ -42,6 +56,34 @@ export class Integrator {
             journeyId,
           },
         },
+      }),
+    );
+  }
+
+  async getJourneys() {
+    return formatQueryResult(this.client.GET("/api/v1/journeys/", {}));
+  }
+
+  async createJourney(
+    data: paths["/api/v1/journeys/"]["post"]["requestBody"]["content"]["application/json"],
+  ) {
+    return formatQueryResult(
+      this.client.POST("/api/v1/journeys/", {
+        body: data,
+      }),
+    );
+  }
+
+  async activateJourney(
+    journeyId: paths["/api/v1/journeys/{journeyId}"]["put"]["parameters"]["path"]["journeyId"],
+    data: paths["/api/v1/journeys/{journeyId}"]["put"]["requestBody"]["content"]["application/json"],
+  ) {
+    return formatQueryResult(
+      this.client.PUT("/api/v1/journeys/{journeyId}", {
+        params: {
+          path: { journeyId },
+        },
+        body: data,
       }),
     );
   }

@@ -3,8 +3,6 @@ import { notFound } from "next/navigation";
 import { AuthenticationFactory } from "../../../../../../libraries/authentication-factory";
 import { PageWrapper } from "../../../PageWrapper";
 import Link from "next/link";
-import { getJourneys } from "../../../../../../libraries/journeyEditor/queries";
-import { pgpool } from "../../../../../dbConnection";
 import { EmptyStatus } from "../../../../../components/EmptyStatus";
 import dayjs from "dayjs";
 import { generateJourneyLink } from "../../../../../utils/journey";
@@ -16,23 +14,6 @@ type Props = {
   params: {
     locale: string;
   };
-};
-
-const getJourneysList = async () => {
-  "use server";
-
-  const { organization } =
-    await AuthenticationFactory.getInstance().getContext();
-
-  if (!organization) {
-    throw new Error("Unauthorized!");
-  }
-
-  const result = await getJourneys(pgpool, {
-    organizationId: organization.id,
-  });
-
-  return result.rows;
 };
 
 export default async ({ params: { locale } }: Props) => {
@@ -49,7 +30,9 @@ export default async ({ params: { locale } }: Props) => {
   }
 
   const defaultOrgId = await context.getSelectedOrganization();
-  const journeys = await getJourneysList();
+  const integratorApi = await AuthenticationFactory.getIntegratorClient();
+  const journeysRes = await integratorApi.getJourneys();
+  const journeys = journeysRes.data?.data;
 
   return (
     <PageWrapper locale={locale}>

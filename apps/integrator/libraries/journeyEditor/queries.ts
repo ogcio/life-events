@@ -1,48 +1,5 @@
 import { Pool } from "pg";
-import { Journey, JourneyInfo, JourneyStatus } from "./types";
-
-export const createJourney = (
-  pg: Pool,
-  data: {
-    title: string;
-    organizationId: string;
-    userId: string;
-  },
-) => {
-  return pg.query<{
-    id: string;
-  }>(
-    `
-        INSERT INTO journeys(title, organization_id, status, user_id)
-        VALUES ($1, $2, $3, $4)
-        RETURNING id
-      `,
-    [data.title, data.organizationId, JourneyStatus.DRAFT, data.userId],
-  );
-};
-
-export const activateJourney = (
-  pg: Pool,
-  data: {
-    journeyId: string;
-    organizationId: string;
-    initialStepId: string | undefined;
-  },
-) => {
-  return pg.query(
-    `
-      UPDATE journeys
-      SET initial_step_id = $3, status = $4, updated_at = now()::DATE
-      WHERE id = $1 and organization_id = $2
-    `,
-    [
-      data.journeyId,
-      data.organizationId,
-      data.initialStepId,
-      JourneyStatus.ACTIVE,
-    ],
-  );
-};
+import { Journey } from "./types";
 
 export const loadJourneyById = (
   pg: Pool,
@@ -87,29 +44,6 @@ export const loadJourneyById = (
   `;
 
   return pg.query<Journey>(query, queryData);
-};
-
-export const getJourneys = (
-  pg: Pool,
-  data: {
-    organizationId: string;
-  },
-) => {
-  return pg.query<JourneyInfo>(
-    `
-      SELECT
-        id,
-        title,
-        status,
-        created_at as "createdAt",
-        updated_at as "updatedAt",
-        user_id as "userId"
-      FROM journeys
-      WHERE organization_id = $1
-      ORDER BY created_at DESC
-    `,
-    [data.organizationId],
-  );
 };
 
 export const saveStepConnections = (

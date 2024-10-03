@@ -31,7 +31,7 @@ const getOrganizationProfileToken = (organizationId: string): Promise<string> =>
 const getCitizenIntegrationToken = (): Promise<string> =>
   getAccessToken({
     ...getIntegratorBaseConfig(),
-    scopes: ["integrator:journey:read"],
+    scopes: ["integrator:journey.public:read"],
     resource: `${process.env.INTEGRATOR_BACKEND_URL}/`,
   });
 

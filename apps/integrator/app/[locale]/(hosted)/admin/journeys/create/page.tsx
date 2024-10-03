@@ -2,10 +2,8 @@ import { getTranslations } from "next-intl/server";
 import { notFound, redirect } from "next/navigation";
 import { AuthenticationFactory } from "../../../../../../libraries/authentication-factory";
 import { PageWrapper } from "../../../PageWrapper";
-import { pgpool } from "../../../../../dbConnection";
 import Link from "next/link";
 import InputField from "../../../../../components/InputField";
-import { createJourney } from "../../../../../../libraries/journeyEditor/queries";
 
 type Props = {
   params: {
@@ -39,18 +37,13 @@ export default async ({ params: { locale } }: Props) => {
 
     const title = formData.get("title") as string;
 
-    const result = await createJourney(pgpool, {
+    const integratorApi = await AuthenticationFactory.getIntegratorClient();
+    const { data } = await integratorApi.createJourney({
       title,
       organizationId: organization.id,
       userId,
     });
-
-    if (!result.rows?.[0]?.id) {
-      throw new Error("Something went wrong!");
-    }
-
-    const journeyId = result.rows[0].id;
-    redirect(`/${locale}/admin/journeys/configure/${journeyId}`);
+    redirect(`/${locale}/admin/journeys/configure/${data?.data.id}`);
   };
 
   return (
