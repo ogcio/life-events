@@ -9,8 +9,8 @@ import fs from "fs";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import sensible from "@fastify/sensible";
-import { initializeLoggingHooks } from "logging-wrapper";
-import { initializeErrorHandler } from "error-handler";
+import { initializeLoggingHooks } from "@ogcio/fastify-logging-wrapper";
+import { initializeErrorHandler } from "@ogcio/fastify-error-handler";
 import postgres from "@fastify/postgres";
 
 const __filename = fileURLToPath(import.meta.url);

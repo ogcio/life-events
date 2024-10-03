@@ -1,5 +1,5 @@
 import { FastifyInstance } from "fastify";
-import { getErrorMessage } from "../utils/error-utils.js";
+import { getErrorMessage } from "@ogcio/shared-errors";
 import getVersion from "../utils/get-version.js";
 import { httpErrors } from "@fastify/sensible";
 import { isHttpError } from "http-errors";

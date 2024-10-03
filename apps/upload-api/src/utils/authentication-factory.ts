@@ -1,6 +1,6 @@
+import { httpErrors } from "@fastify/sensible";
 import { getOrganizationToken } from "api-auth";
 import { Scheduler } from "building-blocks-sdk";
-import { AuthorizationError } from "shared-errors";
 
 const getBaseSchedulerConfig = (): {
   logtoOidcEndpoint: string;
@@ -31,12 +31,11 @@ export const getSchedulerSdk = async (
 
 export const ensureUserIdIsSet = (
   request: { userData?: { userId?: string } },
-  errorProcess: string,
   errorMessage: string = "User id is not set",
 ): string => {
   if (request.userData && request.userData.userId) {
     return request.userData.userId;
   }
 
-  throw new AuthorizationError(errorProcess, errorMessage);
+  throw httpErrors.forbidden(errorMessage);
 };

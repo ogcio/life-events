@@ -8,18 +8,10 @@ import { Type } from "@sinclair/typebox";
 import { FastifyInstance, FastifyRequest } from "fastify";
 import { EventEmitter } from "node:events";
 import { PassThrough, pipeline } from "stream";
-import { HttpError } from "../../types/httpErrors.js";
+import { HttpError as OutputHttpError } from "../../types/httpErrors.js";
 import { getGenericResponseSchema } from "../../types/schemaDefinitions.js";
 import PromiseTransform from "./PromiseTransform.js";
 
-import {
-  BadRequestError,
-  CustomError,
-  getErrorMessage,
-  LifeEventsError,
-  NotFoundError,
-  ServerError,
-} from "shared-errors";
 import getFileMetadataById from "../utils/getFileMetadataById.js";
 import insertFileMetadata from "./utils/insertFileMetadata.js";
 import updateFileMetadata from "./utils/updateFileMetadata.js";
@@ -27,9 +19,8 @@ import getDbVersion from "./utils/getDbVersion.js";
 import { Permissions } from "../../types/permissions.js";
 import getFilename from "./utils/getFilename.js";
 import { randomUUID } from "node:crypto";
-
-const FILE_UPLOAD = "FILE_UPLOAD";
-const FILE_DOWNLOAD = "FILE_DOWNLOAD";
+import { HttpError } from "@fastify/sensible";
+import { getErrorMessage } from "@ogcio/shared-errors";
 
 const API_DOCS_TAG = "Files";
 
@@ -72,18 +63,18 @@ const scanAndUpload = async (app: FastifyInstance, request: FastifyRequest) => {
   const userId = request.userData?.userId as string;
 
   if (!data) {
-    throw new BadRequestError(FILE_UPLOAD, "Request is not multipart");
+    throw app.httpErrors.badRequest("Request is not multipart");
   }
 
   const stream = data.file;
   const fileMimeType = data.mimetype;
 
   if (!data.filename) {
-    throw new BadRequestError(FILE_UPLOAD, "Filename is not provided");
+    throw app.httpErrors.badRequest("Filename is not provided");
   }
 
   if (!isFilenameAllowed(data.filename)) {
-    throw new BadRequestError(FILE_UPLOAD, "File not allowed");
+    throw app.httpErrors.badRequest("File not allowed");
   }
 
   const filename = await getFilename(app.pg, data.filename, userId);
@@ -133,7 +124,7 @@ const scanAndUpload = async (app: FastifyInstance, request: FastifyRequest) => {
           deleted: true,
           organizationId,
         });
-        return reject(new CustomError(FILE_UPLOAD, "File is infected", 400));
+        return reject(app.httpErrors.badRequest("File is infected"));
       }
       resolve();
     });
@@ -199,17 +190,21 @@ const scanAndUpload = async (app: FastifyInstance, request: FastifyRequest) => {
     });
 
     eventEmitter.once("fileTooLarge", () => {
-      reject(new BadRequestError(FILE_UPLOAD, "File is too large"));
+      reject(app.httpErrors.badRequest("File is too large"));
     });
 
     eventEmitter.once("error", (err) => {
-      const err_ = err as LifeEventsError;
-      if (err_.errorCode === 400) {
-        reject(new BadRequestError("badRequest", getErrorMessage(err), err));
-      } else {
-        app.log.error(err);
+      const err_ = err as HttpError;
+      if (err_.statusCode === 400) {
+        reject(
+          app.httpErrors.createError(400, getErrorMessage(err), {
+            parent: err,
+          }),
+        );
+        return;
       }
-      reject(new ServerError(FILE_UPLOAD, "Server error"));
+      app.log.error(err);
+      reject(app.httpErrors.internalServerError("Server error"));
     });
 
     eventEmitter.on("error", () => {
@@ -231,8 +226,8 @@ export default async function routes(app: FastifyInstance) {
         tags: [API_DOCS_TAG],
         response: {
           201: getGenericResponseSchema(Type.Object({ id: Type.String() })),
-          "4xx": HttpError,
-          "5xx": HttpError,
+          "4xx": OutputHttpError,
+          "5xx": OutputHttpError,
         },
       },
     },
@@ -257,8 +252,8 @@ export default async function routes(app: FastifyInstance) {
         params: Type.Object({ id: Type.String() }),
         response: {
           200: Type.String(),
-          "4xx": HttpError,
-          "5xx": HttpError,
+          "4xx": OutputHttpError,
+          "5xx": OutputHttpError,
         },
       },
     },
@@ -272,11 +267,11 @@ export default async function routes(app: FastifyInstance) {
       const file = fileData.rows.length > 0 ? fileData.rows[0] : undefined;
 
       if (!file) {
-        throw new NotFoundError(FILE_DOWNLOAD, "File not found");
+        throw app.httpErrors.notFound("File not found");
       }
 
       if (file.infected) {
-        throw new CustomError(FILE_DOWNLOAD, "File is infected", 400);
+        throw app.httpErrors.badRequest("File is infected");
       }
 
       try {
@@ -293,15 +288,16 @@ export default async function routes(app: FastifyInstance) {
             ...file,
             deleted: true,
           });
-          throw new NotFoundError(FILE_DOWNLOAD, "File not found");
-        } else {
-          throw new ServerError(FILE_DOWNLOAD, "Internal server error", err);
+          throw app.httpErrors.notFound("File not found");
         }
+        throw app.httpErrors.createError(500, "Error getting file", {
+          parent: err,
+        });
       }
 
       const body = response.Body;
       if (!body) {
-        throw new ServerError(FILE_DOWNLOAD, "Body not found");
+        throw app.httpErrors.internalServerError("Body not found");
       }
       const stream = body.transformToWebStream();
 
@@ -312,7 +308,7 @@ export default async function routes(app: FastifyInstance) {
       if (file.antivirusDbVersion !== antivirusDbVersion) {
         const antivirusPassthrough = app.avClient.passthrough();
 
-        const thePromise = new Promise<void>((resolve, reject) => {
+        const thePromise = new Promise<void>((resolve) => {
           antivirusPassthrough.once("error", (err) => {
             app.log.error(err);
 

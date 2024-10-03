@@ -1,12 +1,7 @@
 import { Pool } from "pg";
 import { DEFAULT_LANGUAGE, UserDetails } from "../../types/schemaDefinitions";
-import {
-  BadRequestError,
-  NotImplementedError,
-  ServerError,
-} from "shared-errors";
+import { httpErrors } from "@fastify/sensible";
 
-const ERROR_PROCESS = "USERS_WEBHOOK";
 const MY_GOV_ID_IDENTITY = "MyGovId (MyGovId connector)";
 
 export const processUserWebhook = async (params: {
@@ -19,8 +14,7 @@ export const processUserWebhook = async (params: {
     case "User.Created":
       return upsertUser({ ...params });
     default:
-      throw new NotImplementedError(
-        ERROR_PROCESS,
+      throw httpErrors.notImplemented(
         `This event, ${params.body.event}, is not managed yet`,
       );
   }
@@ -86,8 +80,7 @@ const upsertUser = async (params: {
   const result = await params.pool.query<{ id: string }>(query, values);
 
   if (result.rowCount === 0) {
-    throw new ServerError(
-      ERROR_PROCESS,
+    throw httpErrors.internalServerError(
       `Cannot upsert user with id ${user.id}`,
     );
   }
@@ -98,10 +91,7 @@ const upsertUser = async (params: {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const webhookBodyDataToUser = (bodyData: any): UserDetails & { id: string } => {
   if (!bodyData.identities[MY_GOV_ID_IDENTITY]) {
-    throw new BadRequestError(
-      ERROR_PROCESS,
-      `Missing the ${MY_GOV_ID_IDENTITY} identity`,
-    );
+    throw httpErrors.badRequest(`Missing the ${MY_GOV_ID_IDENTITY} identity`);
   }
   const identity = bodyData.identities[MY_GOV_ID_IDENTITY].details;
 
