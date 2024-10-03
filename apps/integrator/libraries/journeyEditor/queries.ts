@@ -26,15 +26,21 @@ export const activateJourney = (
   data: {
     journeyId: string;
     organizationId: string;
+    initialStepId: string | undefined;
   },
 ) => {
   return pg.query(
     `
       UPDATE journeys
-      SET status = $3, updated_at = now()::DATE
+      SET initial_step_id = $3, status = $4, updated_at = now()::DATE
       WHERE id = $1 and organization_id = $2
     `,
-    [data.journeyId, data.organizationId, JourneyStatus.ACTIVE],
+    [
+      data.journeyId,
+      data.organizationId,
+      data.initialStepId,
+      JourneyStatus.ACTIVE,
+    ],
   );
 };
 
@@ -70,6 +76,7 @@ export const loadJourneyById = (
             )
         ) as steps,
         j.status,
+        j.initial_step_id as "initialStepId",
         j.created_at as "createdAt",
         j.updated_at as "updatedAt",
         j.user_id as "userId"
@@ -102,5 +109,56 @@ export const getJourneys = (
       ORDER BY created_at DESC
     `,
     [data.organizationId],
+  );
+};
+
+export const saveStepConnections = (
+  pg: Pool,
+  data: {
+    connections: {
+      sourceStepId: string;
+      destinationStepId: string | undefined;
+    }[];
+    journeyId: string;
+  },
+) => {
+  const queryData = [data.journeyId];
+  const queryValues: string[] = [];
+
+  data.connections.forEach((connection, index) => {
+    if (!connection.destinationStepId) {
+      return;
+    }
+
+    queryValues.push(`($1, $${index * 2 + 2}, $${index * 2 + 3})`);
+    queryData.push(connection.sourceStepId, connection.destinationStepId);
+  });
+
+  if (!queryValues.length) {
+    return;
+  }
+
+  return pg.query(
+    `
+    INSERT INTO journey_steps_connections (journey_id, source_step_id, destination_step_id) 
+    VALUES
+        ${queryValues.join(", ")}
+    `,
+    queryData,
+  );
+};
+
+export const clearStepConnections = (
+  pg: Pool,
+  data: {
+    journeyId: string;
+  },
+) => {
+  return pg.query(
+    `
+      DELETE FROM journey_steps_connections
+      WHERE journey_id = $1
+    `,
+    [data.journeyId],
   );
 };

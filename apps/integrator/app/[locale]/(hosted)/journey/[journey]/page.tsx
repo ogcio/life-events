@@ -7,14 +7,8 @@ import {
   getUserSubmissions,
   getUserSubmissionSteps,
 } from "../../../../utils/submissions";
-import { getJourneySteps } from "../../../../utils/journeys";
 import { IntegratorEngine } from "../../../../../libraries/integratorEngine";
-
-// TODO: outsource types to file
-
-type FormStepData = {
-  formUrl: string;
-};
+import { getJourney } from "../../../../utils/journeys";
 
 // TODO: outsource types to file
 
@@ -25,7 +19,7 @@ type Props = {
   };
 };
 
-export default async (props: Props, params) => {
+export default async (props: Props) => {
   const { locale, journey: journeyId } = props.params;
 
   const t = await getTranslations();
@@ -64,15 +58,14 @@ export default async (props: Props, params) => {
     }
   }
 
-  // get all journey steps
-  const journeyStepsQueryResult = await getJourneySteps(pgpool, journeyId);
+  // get journey
+  const journeyResult = await getJourney(pgpool, journeyId);
 
-  if (!journeyStepsQueryResult.rows.length) {
+  if (!journeyResult.rows.length) {
     return notFound();
   }
 
-  const journeySteps = journeyStepsQueryResult.rows;
-  // get all journey steps
+  const journeyData = journeyResult.rows[0];
 
   // get all journey step submissions
   const userSubmissionStepsQueryResult = await getUserSubmissionSteps(
@@ -88,7 +81,7 @@ export default async (props: Props, params) => {
   const engine = new IntegratorEngine(
     pgpool,
     submissionData,
-    journeySteps,
+    journeyData,
     userSubmissionStepsData,
   );
   await engine.execute(userId);

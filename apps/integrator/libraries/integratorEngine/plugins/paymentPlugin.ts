@@ -25,7 +25,7 @@ export class PaymentPlugin extends IntegratorPlugin {
     return this.submissionStep.status;
   }
 
-  public async execute(userId: string): Promise<never> {
+  public async execute(userId: string): Promise<any> {
     const { url } = this.step.stepData as PaymentPluginData;
     return redirect(url);
   }

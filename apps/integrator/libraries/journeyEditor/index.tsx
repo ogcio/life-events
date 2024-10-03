@@ -66,4 +66,19 @@ export class JourneyEditor {
       .filter((step) => step.getInfo().required)
       .every((step) => step.isCompleted());
   }
+
+  getStepConnections() {
+    return this.getStepsInfo()
+      .filter((step, index) => {
+        if (index === 0) {
+          return false;
+        }
+
+        return step.stepId !== undefined;
+      })
+      .map((step, index, arr) => ({
+        sourceStepId: step.stepId!,
+        destinationStepId: arr[index + 1]?.stepId,
+      }));
+  }
 }

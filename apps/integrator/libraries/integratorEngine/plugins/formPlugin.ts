@@ -22,7 +22,7 @@ export class FormPlugin extends IntegratorPlugin {
     return this.submissionStep.status;
   }
 
-  public async execute(userId: string): Promise<never> {
+  public async execute(userId: string): Promise<any> {
     const { url } = this.step.stepData as FormPluginData;
     return redirect(url);
   }

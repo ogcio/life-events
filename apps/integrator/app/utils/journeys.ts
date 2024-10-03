@@ -1,5 +1,42 @@
 import { Pool } from "pg";
-import type { JourneyStep } from "../types";
+import type { Journey, JourneyStep } from "../types";
+
+const getJourney = async (pgpool: Pool, journeyId: string) => {
+  return pgpool.query<Journey>(
+    `
+    SELECT
+      j.id,
+      j.title,
+      j.user_id as "userId",
+      j.organization_id as "organizationId",
+      j.status,
+      j.initial_step_id as "initialStepId",
+      array_agg(
+        json_build_object(
+          'id', js.id,
+          'stepType', js.step_type,
+          'stepNumber', js.step_number,
+          'stepData', js.step_data
+        )
+      ) as steps,
+      array_agg(
+        json_build_object(
+          'id', sc.id,
+          'sourceStepId', sc.source_step_id,
+          'destinationStepId', sc.destination_step_id
+        )
+      ) as connections,
+      j.created_at as "createdAt",
+      j.updated_at as "updatedAt"
+    FROM journeys as j
+    LEFT JOIN journey_steps as js ON js.journey_id = j.id
+    LEFT JOIN journey_steps_connections as sc ON sc.journey_id = j.id
+    WHERE j.id = $1
+    GROuP BY j.id
+    `,
+    [journeyId],
+  );
+};
 
 const getJourneySteps = async (pgpool: Pool, journeyId: string) => {
   return pgpool.query<JourneyStep>(
@@ -14,4 +51,4 @@ const getJourneySteps = async (pgpool: Pool, journeyId: string) => {
   );
 };
 
-export { getJourneySteps };
+export { getJourneySteps, getJourney };
