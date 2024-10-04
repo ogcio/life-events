@@ -26,6 +26,20 @@ export class JourneyStepConnectionsRepo {
     );
   }
 
+  getConnectionsByJourneyId(
+    journeyId: string,
+  ): Promise<QueryResult<JourneyStepConnectionDO>> {
+    return this.pg.query(
+      `SELECT
+          id,
+          source_step_id as "sourceStepId",
+          destination_step_id as "destinationStepId"
+        FROM journey_steps_connections
+        WHERE journey_id = $1`,
+      [journeyId],
+    );
+  }
+
   createConnection(
     connection: CreateJourneyStepConnectionDO,
   ): Promise<QueryResult<JourneyStepConnectionDO>> {

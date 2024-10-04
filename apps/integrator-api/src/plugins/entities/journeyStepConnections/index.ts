@@ -39,6 +39,20 @@ const buildGetConnectionById =
     return result?.rows[0];
   };
 
+const buildGetJourneyConnections =
+  (repo: JourneyStepConnectionsRepo, log: FastifyBaseLogger) =>
+  async (journeyId: string): Promise<JourneyStepConnectionDO[]> => {
+    let result;
+
+    try {
+      result = await repo.getConnectionsByJourneyId(journeyId);
+    } catch (err) {
+      log.error((err as Error).message);
+    }
+
+    return result?.rows ?? [];
+  };
+
 const buildCreateConnection =
   (
     repo: JourneyStepConnectionsRepo,
@@ -96,6 +110,7 @@ const buildPlugin = (
 ) => {
   return {
     getConnectionById: buildGetConnectionById(repo, log, httpErrors),
+    getJourneyStepConnections: buildGetJourneyConnections(repo, log),
     createConnection: buildCreateConnection(repo, log, httpErrors),
     deleteConnection: buildDeleteConnection(repo, log, httpErrors),
   };
