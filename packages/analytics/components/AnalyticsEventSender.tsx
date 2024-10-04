@@ -13,6 +13,7 @@ export default function AnalyticsEventSender() {
       isInitialLoad.current = false;
       return;
     }
+    // TODO: replace with @ogcio/analytics-sdk after npm package release
     if(window["_paq"]) {
       window["_paq"].push(["setCustomUrl", window.location.origin + pathname]);
       window["_paq"].push(["trackPageView"]);
