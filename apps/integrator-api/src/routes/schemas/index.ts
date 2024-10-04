@@ -167,3 +167,23 @@ export const UpdateJourneyBody = Type.Pick(FullJourney, [
   "initialStepId",
 ]);
 export type UpdateJourneyBodyDO = Static<typeof UpdateJourneyBody>;
+
+/**
+ * Run
+ */
+export const RunStatus = Type.Union([
+  Type.Literal("pending"),
+  Type.Literal("failed"),
+  Type.Literal("completed"),
+]);
+
+export const Run = Type.Object({
+  id: Type.String(),
+  userId: Type.String(),
+  journeyId: Type.String(),
+  status: RunStatus,
+  createdAt: Type.String(),
+  updatedAt: Type.String(),
+});
+
+export const Runs = Type.Array(Run);
