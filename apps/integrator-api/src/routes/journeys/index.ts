@@ -3,20 +3,20 @@ import { HttpError } from "../../types/httpErrors";
 import {
   CreateJourneyBody,
   FullJourney,
+  FullJourneyDO,
   GenericResponse,
   Id,
   JourneyPublicDetails,
   Journeys,
   ParamsWithJourneyId,
   UpdateJourneyBody,
+  UpdateJourneyBodyDO,
 } from "../schemas";
 import { formatAPIResponse } from "../../utils/responseFormatter";
 import { authPermissions } from "../../types/authPermissions";
 import {
   CreateJourneyBodyDO,
-  FullJourneyDO,
   JourneyPublicDetailsDO,
-  UpdateJourneyBodyDO,
 } from "../../plugins/entities/journey/types";
 
 const TAGS = ["Journeys"];

@@ -152,6 +152,7 @@ export const FullJourney = Type.Composite([
     connections: Type.Array(JourneyStepConnection),
   }),
 ]);
+export type FullJourneyDO = Static<typeof FullJourney>;
 
 export const Journeys = Type.Array(JourneyPublicDetails);
 
@@ -165,3 +166,4 @@ export const UpdateJourneyBody = Type.Pick(FullJourney, [
   "status",
   "initialStepId",
 ]);
+export type UpdateJourneyBodyDO = Static<typeof UpdateJourneyBody>;
