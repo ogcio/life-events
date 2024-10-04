@@ -10,6 +10,9 @@ import {
   RawServerDefault,
 } from "fastify";
 import { JourneyPlugin } from "../plugins/entities/journey";
+import { JourneyStepConnectionsPlugin } from "../plugins/entities/journeyStepConnections";
+import { JourneyStepsPlugin } from "../plugins/entities/journeySteps";
+
 declare module "fastify" {
   export interface FastifyInstance<
     RawServer extends RawServerBase = RawServerDefault,
@@ -20,6 +23,8 @@ declare module "fastify" {
     Logger = FastifyLoggerInstance,
   > {
     journey: JourneyPlugin;
+    journeyStepConnections: JourneyStepConnectionsPlugin;
+    journeySteps: JourneyStepsPlugin;
 
     checkPermissions: (
       request: FastifyRequest,

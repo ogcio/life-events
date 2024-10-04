@@ -1,10 +1,10 @@
 import { PostgresDb } from "@fastify/postgres";
 import { QueryResult } from "pg";
-import { CreateJourneyBodyDO, Id } from "../../../routes/schemas";
+import { Id } from "../../../routes/schemas";
 import {
+  CreateJourneyBodyDO,
   JourneyDetailsDO,
   JourneyPublicDetailsDO,
-  JourneysDO,
   JourneyStatusEnum,
   JourneyStatusType,
 } from "./types";
@@ -16,7 +16,9 @@ export class JourneyRepo {
     this.pg = pg;
   }
 
-  getJourneys(organizationId: string): Promise<QueryResult<JourneysDO>> {
+  getJourneys(
+    organizationId: string,
+  ): Promise<QueryResult<JourneyPublicDetailsDO>> {
     return this.pg.query(
       `SELECT
         id,

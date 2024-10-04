@@ -2,7 +2,6 @@ import { FastifyInstance } from "fastify";
 import { HttpError } from "../../types/httpErrors";
 import {
   CreateJourneyBody,
-  CreateJourneyBodyDO,
   FullJourney,
   FullJourneyDO,
   GenericResponse,
@@ -16,15 +15,15 @@ import {
 import { formatAPIResponse } from "../../utils/responseFormatter";
 import { authPermissions } from "../../types/authPermissions";
 import {
+  CreateJourneyBodyDO,
   JourneyPublicDetailsDO,
-  JourneysDO,
 } from "../../plugins/entities/journey/types";
 
 const TAGS = ["Journeys"];
 
 export default async function journeys(app: FastifyInstance) {
   app.get<{
-    Reply: GenericResponse<JourneysDO> | Error;
+    Reply: GenericResponse<JourneyPublicDetailsDO[]> | Error;
   }>(
     "/",
     {

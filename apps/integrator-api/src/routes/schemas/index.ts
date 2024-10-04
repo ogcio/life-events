@@ -36,6 +36,86 @@ export type GenericResponse<T> = {
   };
 };
 
+export const EmptyBody = Type.Optional(Type.Object({}));
+
+/**
+ * Journey Step Connections
+ */
+export const JourneyStepConnection = Type.Object({
+  id: Type.String(),
+  sourceStepId: Type.String(),
+  destinationStepId: Type.String(),
+});
+
+export const CreateJourneyStepConnection = Type.Composite([
+  Type.Pick(JourneyStepConnection, ["sourceStepId", "destinationStepId"]),
+  Type.Object({
+    journeyId: Type.String(),
+  }),
+]);
+
+export const ParamsWithJourneyStepConnectionId = Type.Object({
+  connectionId: Type.String(),
+});
+export type ParamsWithJourneyStepConnectionIdDO = Static<
+  typeof ParamsWithJourneyStepConnectionId
+>;
+
+/**
+ * Journey Steps
+ */
+export const JourneyStepTypes = Type.Union([
+  Type.Literal("form"),
+  Type.Literal("payment"),
+  Type.Literal("messaging"),
+]);
+
+export const FormStepData = Type.Object({
+  url: Type.String(),
+  title: Type.String(),
+});
+
+export const PaymentStepData = Type.Object({
+  url: Type.String(),
+  title: Type.String(),
+});
+
+export const MessagingStepData = Type.Object({});
+
+export const StepData = Type.Union([
+  FormStepData,
+  PaymentStepData,
+  MessagingStepData,
+]);
+
+export const JourneyStep = Type.Object({
+  id: Type.String(),
+  journeyId: Type.String(),
+  stepType: JourneyStepTypes,
+  stepData: StepData,
+  createdAt: Type.String(),
+  updatedAt: Type.String(),
+});
+
+export const CreateJourneyStep = Type.Pick(JourneyStep, [
+  "journeyId",
+  "stepType",
+  "stepData",
+]);
+
+export const UpdateJourneyStep = Type.Pick(JourneyStep, [
+  "stepType",
+  "stepData",
+]);
+
+export const ParamsWithJourneyStepId = Type.Object({
+  stepId: Type.String(),
+});
+export type ParamsWithJourneyStepIdDO = Static<typeof ParamsWithJourneyStepId>;
+
+/**
+ * Journey
+ */
 export const ParamsWithJourneyId = Type.Object({
   journeyId: Type.String(),
 });
@@ -45,52 +125,6 @@ export const JourneyStatus = Type.Union([
   Type.Literal("active"),
   Type.Literal("draft"),
 ]);
-
-export const StepType = Type.Union([
-  Type.Literal("form"),
-  Type.Literal("payment"),
-  Type.Literal("messaging"),
-]);
-export type StepType = Static<typeof StepType>;
-
-export const FormStepData = Type.Object({
-  url: Type.String(),
-  title: Type.String(),
-});
-export type FormStepData = Static<typeof FormStepData>;
-
-export const PaymentStepData = Type.Object({
-  url: Type.String(),
-  title: Type.String(),
-});
-export type PaymentStepData = Static<typeof PaymentStepData>;
-
-export const MessagingStepData = Type.Object({});
-export type MessagingStepData = Static<typeof MessagingStepData>;
-
-export const StepData = Type.Union([
-  FormStepData,
-  PaymentStepData,
-  MessagingStepData,
-]);
-export type StepData = Static<typeof StepData>;
-
-export const JourneyStep = Type.Object({
-  id: Type.String(),
-  journeyId: Type.String(),
-  stepType: StepType,
-  stepData: StepData,
-  createdAt: Type.String(),
-  updatedAt: Type.String(),
-});
-export type JourneyStep = Static<typeof JourneyStep>;
-
-export const JourneyStepConnection = Type.Object({
-  id: Type.String(),
-  sourceStepId: Type.String(),
-  destinationStepId: Type.String(),
-});
-export type JourneyStepConnection = Static<typeof JourneyStepConnection>;
 
 export const JourneyDetails = Type.Object({
   id: Type.String(),
@@ -127,7 +161,6 @@ export const CreateJourneyBody = Type.Object({
   organizationId: Type.String(),
   userId: Type.String(),
 });
-export type CreateJourneyBodyDO = Static<typeof CreateJourneyBody>;
 
 export const UpdateJourneyBody = Type.Pick(FullJourney, [
   "status",
