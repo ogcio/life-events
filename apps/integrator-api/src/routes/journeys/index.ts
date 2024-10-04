@@ -2,29 +2,29 @@ import { FastifyInstance } from "fastify";
 import { HttpError } from "../../types/httpErrors";
 import {
   CreateJourneyBody,
-  CreateJourneyBodyDO,
   FullJourney,
-  FullJourneyDO,
   GenericResponse,
   Id,
   JourneyPublicDetails,
   Journeys,
-  ParamsWithJourneyId,
   UpdateJourneyBody,
-  UpdateJourneyBodyDO,
 } from "../schemas";
 import { formatAPIResponse } from "../../utils/responseFormatter";
 import { authPermissions } from "../../types/authPermissions";
 import {
+  CreateJourneyBodyDO,
+  FullJourneyDO,
   JourneyPublicDetailsDO,
   JourneysDO,
+  ParamsWithJourneyId,
+  UpdateJourneyBodyDO,
 } from "../../plugins/entities/journey/types";
 
 const TAGS = ["Journeys"];
 
 export default async function journeys(app: FastifyInstance) {
   app.get<{
-    Reply: GenericResponse<JourneysDO> | Error;
+    Reply: GenericResponse<JourneysDO[]> | Error;
   }>(
     "/",
     {

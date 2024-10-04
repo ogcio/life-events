@@ -1,7 +1,8 @@
 import { PostgresDb } from "@fastify/postgres";
 import { QueryResult } from "pg";
-import { CreateJourneyBodyDO, Id } from "../../../routes/schemas";
+import { Id } from "../../../routes/schemas";
 import {
+  CreateJourneyBodyDO,
   JourneyDetailsDO,
   JourneyPublicDetailsDO,
   JourneysDO,

@@ -461,9 +461,257 @@ paths:
                   - detail
                   - requestId
                   - name
+    put:
+      tags: *a1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  anyOf:
+                    - type: string
+                      enum:
+                        - active
+                    - type: string
+                      enum:
+                        - draft
+                initialStepId:
+                  type: string
+              required:
+                - status
+                - initialStepId
+        required: true
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: journeyId
+          required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                    required:
+                      - id
+                  metadata:
+                    type: object
+                    properties:
+                      links:
+                        type: object
+                        properties:
+                          self:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          next:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          prev:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          first:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          last:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          pages:
+                            type: object
+                            additionalProperties:
+                              type: object
+                              properties:
+                                href:
+                                  type: string
+                        required:
+                          - self
+                          - first
+                          - last
+                          - pages
+                      totalCount:
+                        type: number
+                required:
+                  - data
+        "401":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  requestId:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - requestId
+                  - name
+        "500":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  requestId:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - requestId
+                  - name
+  /api/v1/journeys/{journeyId}/public-info:
+    get:
+      tags: *a1
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: journeyId
+          required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      title:
+                        type: string
+                      userId:
+                        type: string
+                      organizationId:
+                        type: string
+                      status:
+                        anyOf:
+                          - type: string
+                            enum:
+                              - active
+                          - type: string
+                            enum:
+                              - draft
+                    required:
+                      - id
+                      - title
+                      - userId
+                      - organizationId
+                      - status
+                  metadata:
+                    type: object
+                    properties:
+                      links:
+                        type: object
+                        properties:
+                          self:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          next:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          prev:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          first:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          last:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          pages:
+                            type: object
+                            additionalProperties:
+                              type: object
+                              properties:
+                                href:
+                                  type: string
+                        required:
+                          - self
+                          - first
+                          - last
+                          - pages
+                      totalCount:
+                        type: number
+                required:
+                  - data
+        "404":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  requestId:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - requestId
+                  - name
   /api/v1/journey_step_connections/{connectionId}:
     get:
-      tags: &a1
+      tags: &a2
         - StepConnections
       parameters:
         - schema:
@@ -586,7 +834,7 @@ paths:
                   - requestId
                   - name
     delete:
-      tags: *a1
+      tags: *a2
       parameters:
         - schema:
             type: string
@@ -697,7 +945,7 @@ paths:
                   - name
   /api/v1/journey_step_connections/:
     post:
-      tags: *a1
+      tags: *a2
       requestBody:
         content:
           application/json:
@@ -831,7 +1079,7 @@ paths:
                   - name
   /api/v1/journey_steps/{stepId}:
     get:
-      tags: &a2
+      tags: &a3
         - Steps
       parameters:
         - schema:
@@ -865,7 +1113,28 @@ paths:
                           - type: string
                             enum:
                               - messaging
-                      stepData: {}
+                      stepData:
+                        anyOf:
+                          - type: object
+                            properties:
+                              url:
+                                type: string
+                              title:
+                                type: string
+                            required:
+                              - url
+                              - title
+                          - type: object
+                            properties:
+                              url:
+                                type: string
+                              title:
+                                type: string
+                            required:
+                              - url
+                              - title
+                          - type: object
+                            properties: {}
                       createdAt:
                         type: string
                       updatedAt:
@@ -971,7 +1240,7 @@ paths:
                   - requestId
                   - name
     delete:
-      tags: *a2
+      tags: *a3
       parameters:
         - schema:
             type: string
@@ -1081,7 +1350,7 @@ paths:
                   - requestId
                   - name
     put:
-      tags: *a2
+      tags: *a3
       requestBody:
         content:
           application/json:
@@ -1099,7 +1368,28 @@ paths:
                     - type: string
                       enum:
                         - messaging
-                stepData: {}
+                stepData:
+                  anyOf:
+                    - type: object
+                      properties:
+                        url:
+                          type: string
+                        title:
+                          type: string
+                      required:
+                        - url
+                        - title
+                    - type: object
+                      properties:
+                        url:
+                          type: string
+                        title:
+                          type: string
+                      required:
+                        - url
+                        - title
+                    - type: object
+                      properties: {}
               required:
                 - stepType
                 - stepData
@@ -1136,7 +1426,28 @@ paths:
                           - type: string
                             enum:
                               - messaging
-                      stepData: {}
+                      stepData:
+                        anyOf:
+                          - type: object
+                            properties:
+                              url:
+                                type: string
+                              title:
+                                type: string
+                            required:
+                              - url
+                              - title
+                          - type: object
+                            properties:
+                              url:
+                                type: string
+                              title:
+                                type: string
+                            required:
+                              - url
+                              - title
+                          - type: object
+                            properties: {}
                       createdAt:
                         type: string
                       updatedAt:
@@ -1243,7 +1554,7 @@ paths:
                   - name
   /api/v1/journey_steps/:
     post:
-      tags: *a2
+      tags: *a3
       requestBody:
         content:
           application/json:
@@ -1263,7 +1574,28 @@ paths:
                     - type: string
                       enum:
                         - messaging
-                stepData: {}
+                stepData:
+                  anyOf:
+                    - type: object
+                      properties:
+                        url:
+                          type: string
+                        title:
+                          type: string
+                      required:
+                        - url
+                        - title
+                    - type: object
+                      properties:
+                        url:
+                          type: string
+                        title:
+                          type: string
+                      required:
+                        - url
+                        - title
+                    - type: object
+                      properties: {}
               required:
                 - journeyId
                 - stepType
@@ -1295,7 +1627,28 @@ paths:
                           - type: string
                             enum:
                               - messaging
-                      stepData: {}
+                      stepData:
+                        anyOf:
+                          - type: object
+                            properties:
+                              url:
+                                type: string
+                              title:
+                                type: string
+                            required:
+                              - url
+                              - title
+                          - type: object
+                            properties:
+                              url:
+                                type: string
+                              title:
+                                type: string
+                            required:
+                              - url
+                              - title
+                          - type: object
+                            properties: {}
                       createdAt:
                         type: string
                       updatedAt:

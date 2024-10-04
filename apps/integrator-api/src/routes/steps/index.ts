@@ -5,16 +5,10 @@ import {
   EmptyBody,
   GenericResponse,
   JourneyStep,
-  JourneyStepConnection,
   UpdateJourneyStep,
 } from "../schemas";
 import { formatAPIResponse } from "../../utils/responseFormatter";
 import { authPermissions } from "../../types/authPermissions";
-import {
-  CreateJourneyStepConnectionDO,
-  JourneyStepConnectionDO,
-  ParamsWithJourneyStepConnectionIdDO,
-} from "../../plugins/entities/journeyStepConnections/types";
 import {
   CreateJourneyStepDO,
   JourneyStepDO,
@@ -31,7 +25,7 @@ export default async function steps(app: FastifyInstance) {
     "/:stepId",
     {
       preValidation: (req, res) =>
-        app.checkPermissions(req, res, [authPermissions.JOURNEY_READ]),
+        app.checkPermissions(req, res, [authPermissions.JOURNEY_STEP_READ]),
       schema: {
         tags: TAGS,
         response: {
@@ -57,7 +51,7 @@ export default async function steps(app: FastifyInstance) {
     "/",
     {
       preValidation: (req, res) =>
-        app.checkPermissions(req, res, [authPermissions.JOURNEY_READ]),
+        app.checkPermissions(req, res, [authPermissions.JOURNEY_STEP_WRITE]),
       schema: {
         tags: TAGS,
         body: CreateJourneyStep,
@@ -83,7 +77,7 @@ export default async function steps(app: FastifyInstance) {
     "/:stepId",
     {
       preValidation: (req, res) =>
-        app.checkPermissions(req, res, [authPermissions.JOURNEY_READ]),
+        app.checkPermissions(req, res, [authPermissions.JOURNEY_STEP_WRITE]),
       schema: {
         tags: TAGS,
         response: {
@@ -111,7 +105,7 @@ export default async function steps(app: FastifyInstance) {
     "/:stepId",
     {
       preValidation: (req, res) =>
-        app.checkPermissions(req, res, [authPermissions.JOURNEY_READ]),
+        app.checkPermissions(req, res, [authPermissions.JOURNEY_STEP_WRITE]),
       schema: {
         tags: TAGS,
         body: UpdateJourneyStep,

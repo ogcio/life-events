@@ -24,7 +24,7 @@ export default async function stepConnections(app: FastifyInstance) {
     "/:connectionId",
     {
       preValidation: (req, res) =>
-        app.checkPermissions(req, res, [authPermissions.JOURNEY_READ]),
+        app.checkPermissions(req, res, [authPermissions.JOURNEY_STEP_READ]),
       schema: {
         tags: TAGS,
         response: {
@@ -51,7 +51,7 @@ export default async function stepConnections(app: FastifyInstance) {
     "/",
     {
       preValidation: (req, res) =>
-        app.checkPermissions(req, res, [authPermissions.JOURNEY_READ]),
+        app.checkPermissions(req, res, [authPermissions.JOURNEY_STEP_WRITE]),
       schema: {
         tags: TAGS,
         body: CreateJourneyStepConnection,
@@ -79,7 +79,7 @@ export default async function stepConnections(app: FastifyInstance) {
     "/:connectionId",
     {
       preValidation: (req, res) =>
-        app.checkPermissions(req, res, [authPermissions.JOURNEY_READ]),
+        app.checkPermissions(req, res, [authPermissions.JOURNEY_STEP_WRITE]),
       schema: {
         tags: TAGS,
         response: {
