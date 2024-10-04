@@ -185,4 +185,26 @@ export class Integrator {
       }),
     );
   }
+
+  /**
+   * RUNS
+   */
+
+  async getUserRunId(
+    runId: paths["/api/v1/executor/runs/self/{runId}"]["get"]["parameters"]["path"]["runId"],
+  ) {
+    return formatQueryResult(
+      this.client.GET("/api/v1/executor/runs/self/{runId}", {
+        params: {
+          path: {
+            runId,
+          },
+        },
+      }),
+    );
+  }
+
+  async getUserRuns() {
+    return formatQueryResult(this.client.GET("/api/v1/executor/runs/self", {}));
+  }
 }

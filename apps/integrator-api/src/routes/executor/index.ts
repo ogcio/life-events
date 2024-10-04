@@ -17,7 +17,7 @@ export default async function executor(app: FastifyInstance) {
   app.get<{
     Reply: GenericResponse<RunDetailsDO[]> | Error;
   }>(
-    "/runs",
+    "/runs/self",
     {
       preValidation: (req, res) =>
         app.checkPermissions(req, res, [authPermissions.RUN_SELF_READ]),
@@ -46,7 +46,7 @@ export default async function executor(app: FastifyInstance) {
     Reply: GenericResponse<FullRunDO> | Error;
     Params: ParamsWithRunIdDO;
   }>(
-    "/:runId",
+    "/runs/self/:runId",
     {
       preValidation: (req, res) =>
         app.checkPermissions(req, res, [authPermissions.RUN_SELF_READ]),
