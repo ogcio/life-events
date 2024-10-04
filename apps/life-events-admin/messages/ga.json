@@ -1,9 +1,12 @@
 {
   "Home": {
     "gaeilgeMenuLabel": "Gaeilge",
-    "englishMenuLabel": "English"
+    "englishMenuLabel": "English",
+    "category": "Chatagóir",
+    "subcategory": "Fochatagóir",
+    "edit": "Cuir in eagar"
   },
-  "Category": {
+  "Subcategory": {
     "en": "Béarla",
     "ga": "Gaeilge",
     "subcategoriesHeading": "Fochatagóirí",
@@ -11,7 +14,12 @@
     "text": "Téacs",
     "save": "Sábháil",
     "links": "Links",
-    "isExternal": "Tá seachtrach",
-    "href": "href"
+    "isExternal": "Seachtrach link",
+    "href": "Url",
+    "emptyLinkDisclaimer": "Ní thaispeánfar mura líontar url",
+    "left": "Chlé link",
+    "middle": "Meán link",
+    "right": "Ceart link",
+    "back": "Ar ais"
   }
 }

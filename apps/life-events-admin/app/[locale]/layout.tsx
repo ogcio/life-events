@@ -53,9 +53,8 @@ export default async function RootLayout(
         }}
       >
         <Header
-          logo={{ href: "" }}
+          logo={{ href: "/" }}
           languages={languages}
-          navLinks={[{ href: "", label: "123" }]}
           tools={{ items: [{ href: "/signout", icon: "logout" }] }}
         ></Header>
         <main style={{ flex: "auto" }}>

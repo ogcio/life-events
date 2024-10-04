@@ -1,49 +1,15 @@
-type CategoryTable = {
-  id: string;
-  en_name: string;
-  ga_name: string;
-  icon: string;
-};
-
-type SubcategoryTable = {
-  id: string;
-  category_id: string;
-  title_en: string;
-  title_ga: string;
-  text_en: string;
-  text_ga: string;
-};
-
-type SubcategoryItemTable = {
-  id: string;
-  subcategory_id: string;
-  link_1_href: string;
-  link_1_name_en: string;
-  link_1_name_ga: string;
-  link_1_is_external: boolean;
-  link_2_href: string;
-  link_2_name_en: string;
-  link_2_name_ga: string;
-  link_2_is_external: boolean;
-  link_3_href: string;
-  link_3_name_en: string;
-  link_3_name_ga: string;
-  link_3_is_external: boolean;
-  text_en: string;
-  title_en: string;
-  text_ga: string;
-  title_ga: string;
-};
+import { lifeEventsPool } from "./postgres";
 
 type Lang = {
   en: string;
   ga: string;
 };
 
-export type CategoryListModel = {
-  id: string;
-  name: Lang;
-  icon: string;
+export type CategoryTableModel = {
+  categoryId: string;
+  categoryName: Lang;
+  subcategoryId: string;
+  subcategoryName: Lang;
 };
 
 export type CategoryModel = {
@@ -52,12 +18,18 @@ export type CategoryModel = {
   subcategories: SubcategoryModel[];
 };
 
-type Link = { href: string; name: Lang; isExternal: boolean } | null;
+type Link = { href: string; name: Lang; isExternal: boolean };
 export type SubcategoryModel = {
   id: string;
   title: Lang;
   text: Lang;
   items: SubcategoryItemModel[];
+};
+
+export type SubcategoryUpdateModel = {
+  id: string;
+  title: Lang;
+  text: Lang;
 };
 
 export type SubcategoryItemModel = {
@@ -67,183 +39,357 @@ export type SubcategoryItemModel = {
   text: Lang;
 };
 
-const subcategoryTable: SubcategoryTable[] = [
-  {
-    id: "later-years-sub",
-    category_id: "later-years",
-    text_en:
-      "Not everyone thinks about this until it's too late. Making a will is very important and  helps protect your loved ones after you're gone.",
-    text_ga:
-      "Ní cheapann gach duine faoi seo go dtí go bhfuil sé ró-dhéanach. Tá sé an-tábhachtach uacht a dhéanamh agus cuidíonn sé le do mhuintir a chosaint tar éis duit imeacht.",
-    title_en: "Making a Will",
-    title_ga: "Uacht a Dhéanamh",
-  },
-];
+type CategoryTableQueryRow = {
+  category_id: string;
+  category_icon: string;
+  category_name_en: string;
+  category_name_ga: string;
+  subcategory_id: string;
+  subcategory_name_en: string;
+  subcategory_name_ga: string;
+};
 
-const subcategoryItemsTable: SubcategoryItemTable[] = [
-  {
-    id: "1",
-    subcategory_id: "later-years-sub",
-    link_1_href: "/",
-    link_1_is_external: false,
-    link_1_name_en: "Read more",
-    link_1_name_ga: "Léigh níos mó",
-    link_2_href: "/",
-    link_2_is_external: true,
-    link_2_name_en: "Create a Will online",
-    link_2_name_ga: "Cruthaigh Uacht ar líne",
-    link_3_href: "/",
-    link_3_name_en: "FAQs",
-    link_3_name_ga: "FAQs",
-    link_3_is_external: false,
-    text_en: "Read advice from the Citizen's Advice Bureau",
-    text_ga: "Léigh comhairle ó na Citizen's Advice Bureau",
-    title_en: "Why make a will",
-    title_ga: "Cén fáth a dhéanamh uacht",
-  },
-  {
-    id: "2",
-    subcategory_id: "later-years-sub",
-    link_1_href: "/",
-    link_1_is_external: false,
-    link_1_name_en: "Find a Solicitor near you",
-    link_1_name_ga: "Aimsigh Aturnae in aice leat",
-    link_2_href: "/",
-    link_2_is_external: true,
-    link_2_name_en: "FAQs",
-    link_2_name_ga: "FAQs",
-    link_3_href: "",
-    link_3_name_en: "",
-    link_3_name_ga: "",
-    link_3_is_external: false,
-    text_en: "Affordable legal services for all your needs",
-    text_ga: "Seirbhísí dlí inacmhainne do do chuid riachtanas go léir",
-    title_en: "Find a Solicitor",
-    title_ga: "Aimsigh Aturnae",
-  },
-];
+type SubcategoryFormQueryRow = {
+  sub_id: string;
+  sub_title_en: string;
+  sub_title_ga: string;
+  sub_text_en: string;
+  sub_text_ga: string;
+  item_id: string;
+  item_title_en: string;
+  item_title_ga: string;
+  item_text_en: string;
+  item_text_ga: string;
+  item_links: {
+    id: string;
+    href: string;
+    name_en: string;
+    name_ga: string;
+    isExternal: boolean;
+  }[];
+};
 
-const categoriesTable: CategoryTable[] = [
-  {
-    en_name: "Birth",
-    ga_name: "Breith",
-    id: "birth",
-    icon: "",
-  },
-  {
-    en_name: "Health",
-    ga_name: "Sláinte",
-    id: "heath",
-    icon: "",
-  },
-  {
-    en_name: "Driving",
-    ga_name: "Tiomáint",
-    id: "driving",
-    icon: "",
-  },
-  {
-    en_name: "Employment",
-    ga_name: "Fostaíocht",
-    id: "employment",
-    icon: "",
-  },
-  {
-    en_name: "Starting a business",
-    ga_name: "Gnó a thosú",
-    id: "start-a-business",
-    icon: "",
-  },
-  {
-    en_name: "Housing",
-    ga_name: "Tithíocht",
-    id: "housing",
-    icon: "",
-  },
-  {
-    en_name: "Later years",
-    ga_name: "Blianta ina dhiaidh sin",
-    id: "later-years",
-    icon: "",
-  },
-];
+type FullCategoryQueryRow = {
+  category_id: string;
+  category_name_en: string;
+  category_name_ga: string;
+  sub_id: string;
+  sub_title_en: string;
+  sub_title_ga: string;
+  sub_text_en: string;
+  sub_text_ga: string;
+  item_id: string;
+  item_title_en: string;
+  item_title_ga: string;
+  item_text_en: string;
+  item_text_ga: string;
+  item_links: {
+    href: string;
+    name_en: string;
+    name_ga: string;
+    isExternal: boolean;
+  }[];
+};
 
 export const data = {
-  async getCategories(): Promise<CategoryListModel[]> {
-    return categoriesTable.map((row) => ({
-      id: row.id,
-      icon: row.icon,
-      name: {
-        en: row.en_name,
-        ga: row.ga_name,
-      },
-    }));
+  category: {
+    async table(): Promise<CategoryTableModel[]> {
+      const queryResult = await lifeEventsPool.query<CategoryTableQueryRow>(`
+        select 
+            c.id as category_id,
+            c.icon as category_icon,
+            c.name_en as category_name_en,
+            c.name_ga as category_name_ga,
+            s.id as subcategory_id,
+            s.title_en as subcategory_name_en,
+            s.title_ga as subcategory_name_ga
+        from categories c
+        left join subcategories s on s.category_id = c.id        
+        `);
+
+      const categoryTableModels: CategoryTableModel[] = [];
+
+      for (const row of queryResult.rows) {
+        categoryTableModels.push({
+          categoryId: row.category_id,
+          categoryName: {
+            en: row.category_name_en,
+            ga: row.category_name_ga,
+          },
+          subcategoryId: row.subcategory_id,
+          subcategoryName: {
+            en: row.subcategory_name_en,
+            ga: row.subcategory_name_ga,
+          },
+        });
+      }
+
+      return categoryTableModels;
+    },
+
+    async one(id: string): Promise<CategoryModel> {
+      const queryResult = await lifeEventsPool.query<FullCategoryQueryRow>(
+        `
+            select
+                c.id as category_id,
+                c.name_en as category_name_en,
+                c.name_ga as category_name_ga,
+                s.id as sub_id,
+                s.title_en as sub_title_en,
+                s.title_ga as sub_title_ga,
+                s.text_en as sub_text_en,
+                s.text_ga as sub_text_ga,
+                i.id as item_id,
+                i.title_en as item_title_en,
+                i.title_ga as item_title_ga,
+                i.text_en as item_text_en,
+                i.text_ga as item_text_ga,
+                i.links as item_links
+            from categories c
+            left join subcategories s on s.category_id = c.id
+            left join subcategory_items i on i.subcategory_id = s.id
+            where c.id = $1
+            order by s.created_at
+            `,
+        [id],
+      );
+
+      let category1: CategoryModel | null = null;
+
+      for (const row of queryResult.rows) {
+        if (!category1) {
+          category1 = {
+            id: row.category_id,
+            name: { en: row.category_name_en, ga: row.category_name_ga },
+            subcategories: [],
+          };
+        }
+
+        const rowSubcategory = category1.subcategories.find(
+          (sub) => sub.id === row.sub_id,
+        );
+
+        const links: [Link, Link, Link] = [
+          {
+            href: row.item_links[0]?.href || "",
+            isExternal: Boolean(row.item_links[0]?.isExternal),
+            name: {
+              en: row.item_links[0]?.name_en || "",
+              ga: row.item_links[0].name_ga || "",
+            },
+          },
+          {
+            href: row.item_links[1]?.href || "",
+            isExternal: Boolean(row.item_links[1]?.isExternal),
+            name: {
+              en: row.item_links[1]?.name_en || "",
+              ga: row.item_links[1]?.name_ga || "",
+            },
+          },
+          {
+            href: row.item_links[2]?.href || "",
+            isExternal: Boolean(row.item_links[2]?.isExternal),
+            name: {
+              en: row.item_links[2]?.name_en || "",
+              ga: row.item_links[2]?.name_ga || "",
+            },
+          },
+        ];
+
+        const items = [
+          {
+            id: row.item_id,
+            links,
+            text: {
+              en: row.item_text_en,
+              ga: row.item_text_ga,
+            },
+            title: {
+              en: row.item_title_en,
+              ga: row.item_title_ga,
+            },
+          },
+        ];
+
+        if (!rowSubcategory) {
+          category1.subcategories.push({
+            id: row.sub_id,
+            items,
+            text: {
+              en: row.sub_text_en,
+              ga: row.sub_text_ga,
+            },
+            title: {
+              en: row.sub_title_en,
+              ga: row.sub_title_ga,
+            },
+          });
+        } else if (
+          !rowSubcategory.items.some((item) => item.id === row.item_id)
+        ) {
+          rowSubcategory.items.push(...items);
+        }
+      }
+
+      if (!category1) {
+        throw new Error("not_found");
+      }
+
+      return category1;
+    },
   },
+  subcategory: {
+    async formData(id: string): Promise<SubcategoryModel> {
+      const queryResult = await lifeEventsPool.query<SubcategoryFormQueryRow>(
+        `
+        select
+            s.id as sub_id,
+            s.title_en as sub_title_en,
+            s.title_ga as sub_title_ga,
+            s.text_en as sub_text_en,
+            s.text_ga as sub_text_ga,
+            i.id as item_id,
+            i.title_en as item_title_en,
+            i.title_ga as item_title_ga,
+            i.text_en as item_text_en,
+            i.text_ga as item_text_ga,
+            i.links as item_links
+        from subcategories s
+        left join subcategory_items i on i.subcategory_id = s.id
+        where s.id = $1
+        order by i.created_at
+        `,
+        [id],
+      );
 
-  async getCategory(id: string): Promise<CategoryModel> {
-    const category = categoriesTable.find((cat) => cat.id === id);
-    if (!category) {
-      return Promise.reject("not found");
-    }
+      let subcategoryModel: SubcategoryModel | undefined;
 
-    const subcategories = subcategoryTable.filter((s) => s.category_id === id);
+      for (const row of queryResult.rows) {
+        const links: [Link, Link, Link] = [
+          {
+            href: row.item_links[0]?.href || "",
+            isExternal: Boolean(row.item_links[0]?.isExternal),
+            name: {
+              en: row.item_links[0]?.name_en || "",
+              ga: row.item_links[0].name_ga || "",
+            },
+          },
+          {
+            href: row.item_links[1]?.href || "",
+            isExternal: Boolean(row.item_links[1]?.isExternal),
+            name: {
+              en: row.item_links[1]?.name_en || "",
+              ga: row.item_links[1]?.name_ga || "",
+            },
+          },
+          {
+            href: row.item_links[2]?.href || "",
+            isExternal: Boolean(row.item_links[2]?.isExternal),
+            name: {
+              en: row.item_links[2]?.name_en || "",
+              ga: row.item_links[2]?.name_ga || "",
+            },
+          },
+        ];
 
-    return {
-      id: category.id,
-      name: {
-        en: category.en_name,
-        ga: category.ga_name,
-      },
-      subcategories: subcategories.map((row) => ({
-        id: row.id,
-        text: {
-          en: row.text_en,
-          ga: row.text_ga,
-        },
-        title: {
-          en: row.title_en,
-          ga: row.title_ga,
-        },
-        items: subcategoryItemsTable
-          .filter((item) => item.subcategory_id === row.id)
-          .map((item) => {
-            const links: [Link, Link, Link] = [null, null, null];
-            if (item.link_1_href) {
-              links[0] = {
-                href: item.link_1_href,
-                isExternal: item.link_1_is_external,
-                name: { en: item.link_1_name_en, ga: item.link_1_name_ga },
-              };
-            }
-            if (item.link_2_href) {
-              links[1] = {
-                href: item.link_2_href,
-                isExternal: item.link_2_is_external,
-                name: { en: item.link_2_name_en, ga: item.link_2_name_ga },
-              };
-            }
-            if (item.link_3_href) {
-              links[2] = {
-                href: item.link_3_href,
-                isExternal: item.link_3_is_external,
-                name: { en: item.link_3_name_en, ga: item.link_3_name_ga },
-              };
-            }
+        const items = [
+          {
+            id: row.item_id,
+            links,
+            text: {
+              en: row.item_text_en,
+              ga: row.item_text_ga,
+            },
+            title: {
+              en: row.item_title_en,
+              ga: row.item_title_ga,
+            },
+          },
+        ];
+        if (!subcategoryModel) {
+          subcategoryModel = {
+            id: row.sub_id,
+            items,
+            title: {
+              en: row.sub_title_en,
+              ga: row.sub_title_ga,
+            },
+            text: {
+              en: row.sub_text_en,
+              ga: row.sub_text_ga,
+            },
+          };
+        } else {
+          subcategoryModel.items.push(...items);
+        }
+      }
 
-            return {
-              id: item.id,
-              links: links,
-              title: {
-                en: item.title_en,
-                ga: item.title_ga,
-              },
-              text: {
-                en: item.text_en,
-                ga: item.text_ga,
-              },
-            };
-          }),
-      })),
-    };
+      if (!subcategoryModel) {
+        throw new Error("not_found");
+      }
+
+      return subcategoryModel;
+    },
+    async update(subcategory: SubcategoryUpdateModel): Promise<void> {
+      try {
+        await lifeEventsPool.query(
+          `
+                update subcategories
+                set 
+                    title_en = $2,
+                    title_ga = $3,
+                    text_en = $4,
+                    text_ga = $5
+                where id=$1
+                `,
+          [
+            subcategory.id,
+            subcategory.title.en,
+            subcategory.title.ga,
+            subcategory.text.en,
+            subcategory.text.ga,
+          ],
+        );
+      } catch (err) {
+        console.log(err);
+        throw new Error("update_fail");
+      }
+    },
+  },
+  subcategoryItem: {
+    async update(item: SubcategoryItemModel): Promise<void> {
+      try {
+        await lifeEventsPool.query(
+          `
+                update subcategory_items
+                set
+                    title_en = $2,
+                    title_ga = $3,
+                    text_en = $4,
+                    text_ga  = $5,
+                    links = $6
+                where id = $1
+                `,
+          [
+            item.id,
+            item.title.en,
+            item.title.ga,
+            item.text.en,
+            item.text.ga,
+            JSON.stringify(
+              item.links.map((link) => ({
+                href: link.href,
+                isExternal: link.isExternal,
+                name_en: link.name.en,
+                name_ga: link.name.ga,
+              })),
+            ),
+          ],
+        );
+      } catch (err) {
+        console.log(err);
+        throw new Error("update_fail");
+      }
+    },
   },
 };

@@ -1,17 +1,25 @@
 {
   "Home": {
     "gaeilgeMenuLabel": "Gaeilge",
-    "englishMenuLabel": "English"
+    "englishMenuLabel": "English",
+    "category": "Category",
+    "subcategory": "Subcategory",
+    "edit": "Edit"
   },
-  "Category": {
-    "en": "Engilsh",
+  "Subcategory": {
+    "en": "English",
     "ga": "Irish",
     "subcategoriesHeading": "Subcategories",
     "title": "Title",
     "text": "Text",
     "save": "Save",
     "links": "Links",
-    "isExternal": "Is external",
-    "href": "href"
+    "isExternal": "External link",
+    "href": "Url",
+    "emptyDisclaimer": "If fields are empty, it will not show up for clients",
+    "left": "Left link",
+    "middle": "Middle link",
+    "right": "Right link",
+    "back": "Back"
   }
 }
