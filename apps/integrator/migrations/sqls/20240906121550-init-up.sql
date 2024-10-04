@@ -30,6 +30,20 @@ BEGIN
         destination_step_id UUID REFERENCES journey_steps(id) ON DELETE CASCADE -- Foreign key to the specific step in the journey
     );
 
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'run_status') THEN
+        CREATE TYPE step_status AS ENUM ('pending', 'completed', 'failed');
+    END IF;
+
+    -- Table to track individual run by users through a journey
+    CREATE TABLE IF NOT EXISTS runs ( 
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),             -- Unique identifier for the run
+        user_id VARCHAR(12) NOT NULL,                              -- Identifier for the user executing the run (assumes a user system exists)
+        journey_id UUID REFERENCES journeys(id) ON DELETE CASCADE, -- Foreign key to the associated journey
+        status run_status NOT NULL DEFAULT 'pending',              -- Status of the run (pending, completed, failed)
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,            -- Timestamp when the run was started
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP             -- Timestamp when the run was last updated
+    );
+
     -- Table to track individual submissions by users through a journey
     CREATE TABLE IF NOT EXISTS submissions ( 
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),  -- Unique identifier for the submission
