@@ -709,5 +709,1049 @@ paths:
                   - detail
                   - requestId
                   - name
+  /api/v1/journey_step_connections/{connectionId}:
+    get:
+      tags: &a2
+        - StepConnections
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: connectionId
+          required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      sourceStepId:
+                        type: string
+                      destinationStepId:
+                        type: string
+                    required:
+                      - id
+                      - sourceStepId
+                      - destinationStepId
+                  metadata:
+                    type: object
+                    properties:
+                      links:
+                        type: object
+                        properties:
+                          self:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          next:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          prev:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          first:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          last:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          pages:
+                            type: object
+                            additionalProperties:
+                              type: object
+                              properties:
+                                href:
+                                  type: string
+                        required:
+                          - self
+                          - first
+                          - last
+                          - pages
+                      totalCount:
+                        type: number
+                required:
+                  - data
+        "401":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  requestId:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - requestId
+                  - name
+        "404":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  requestId:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - requestId
+                  - name
+    delete:
+      tags: *a2
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: connectionId
+          required: true
+      responses:
+        "204":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties: {}
+                  metadata:
+                    type: object
+                    properties:
+                      links:
+                        type: object
+                        properties:
+                          self:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          next:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          prev:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          first:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          last:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          pages:
+                            type: object
+                            additionalProperties:
+                              type: object
+                              properties:
+                                href:
+                                  type: string
+                        required:
+                          - self
+                          - first
+                          - last
+                          - pages
+                      totalCount:
+                        type: number
+        "401":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  requestId:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - requestId
+                  - name
+        "500":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  requestId:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - requestId
+                  - name
+  /api/v1/journey_step_connections/:
+    post:
+      tags: *a2
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                sourceStepId:
+                  type: string
+                destinationStepId:
+                  type: string
+                journeyId:
+                  type: string
+              required:
+                - sourceStepId
+                - destinationStepId
+                - journeyId
+        required: true
+      responses:
+        "201":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      sourceStepId:
+                        type: string
+                      destinationStepId:
+                        type: string
+                    required:
+                      - id
+                      - sourceStepId
+                      - destinationStepId
+                  metadata:
+                    type: object
+                    properties:
+                      links:
+                        type: object
+                        properties:
+                          self:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          next:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          prev:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          first:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          last:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          pages:
+                            type: object
+                            additionalProperties:
+                              type: object
+                              properties:
+                                href:
+                                  type: string
+                        required:
+                          - self
+                          - first
+                          - last
+                          - pages
+                      totalCount:
+                        type: number
+                required:
+                  - data
+        "401":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  requestId:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - requestId
+                  - name
+        "500":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  requestId:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - requestId
+                  - name
+  /api/v1/journey_steps/{stepId}:
+    get:
+      tags: &a3
+        - Steps
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: stepId
+          required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      journeyId:
+                        type: string
+                      stepType:
+                        anyOf:
+                          - type: string
+                            enum:
+                              - form
+                          - type: string
+                            enum:
+                              - payment
+                          - type: string
+                            enum:
+                              - messaging
+                      stepData:
+                        anyOf:
+                          - type: object
+                            properties:
+                              url:
+                                type: string
+                              title:
+                                type: string
+                            required:
+                              - url
+                              - title
+                          - type: object
+                            properties:
+                              url:
+                                type: string
+                              title:
+                                type: string
+                            required:
+                              - url
+                              - title
+                          - type: object
+                            properties: {}
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - journeyId
+                      - stepType
+                      - stepData
+                      - createdAt
+                      - updatedAt
+                  metadata:
+                    type: object
+                    properties:
+                      links:
+                        type: object
+                        properties:
+                          self:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          next:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          prev:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          first:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          last:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          pages:
+                            type: object
+                            additionalProperties:
+                              type: object
+                              properties:
+                                href:
+                                  type: string
+                        required:
+                          - self
+                          - first
+                          - last
+                          - pages
+                      totalCount:
+                        type: number
+                required:
+                  - data
+        "401":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  requestId:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - requestId
+                  - name
+        "404":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  requestId:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - requestId
+                  - name
+    delete:
+      tags: *a3
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: stepId
+          required: true
+      responses:
+        "204":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties: {}
+                  metadata:
+                    type: object
+                    properties:
+                      links:
+                        type: object
+                        properties:
+                          self:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          next:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          prev:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          first:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          last:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          pages:
+                            type: object
+                            additionalProperties:
+                              type: object
+                              properties:
+                                href:
+                                  type: string
+                        required:
+                          - self
+                          - first
+                          - last
+                          - pages
+                      totalCount:
+                        type: number
+        "401":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  requestId:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - requestId
+                  - name
+        "500":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  requestId:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - requestId
+                  - name
+    put:
+      tags: *a3
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                stepType:
+                  anyOf:
+                    - type: string
+                      enum:
+                        - form
+                    - type: string
+                      enum:
+                        - payment
+                    - type: string
+                      enum:
+                        - messaging
+                stepData:
+                  anyOf:
+                    - type: object
+                      properties:
+                        url:
+                          type: string
+                        title:
+                          type: string
+                      required:
+                        - url
+                        - title
+                    - type: object
+                      properties:
+                        url:
+                          type: string
+                        title:
+                          type: string
+                      required:
+                        - url
+                        - title
+                    - type: object
+                      properties: {}
+              required:
+                - stepType
+                - stepData
+        required: true
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: stepId
+          required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      journeyId:
+                        type: string
+                      stepType:
+                        anyOf:
+                          - type: string
+                            enum:
+                              - form
+                          - type: string
+                            enum:
+                              - payment
+                          - type: string
+                            enum:
+                              - messaging
+                      stepData:
+                        anyOf:
+                          - type: object
+                            properties:
+                              url:
+                                type: string
+                              title:
+                                type: string
+                            required:
+                              - url
+                              - title
+                          - type: object
+                            properties:
+                              url:
+                                type: string
+                              title:
+                                type: string
+                            required:
+                              - url
+                              - title
+                          - type: object
+                            properties: {}
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - journeyId
+                      - stepType
+                      - stepData
+                      - createdAt
+                      - updatedAt
+                  metadata:
+                    type: object
+                    properties:
+                      links:
+                        type: object
+                        properties:
+                          self:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          next:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          prev:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          first:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          last:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          pages:
+                            type: object
+                            additionalProperties:
+                              type: object
+                              properties:
+                                href:
+                                  type: string
+                        required:
+                          - self
+                          - first
+                          - last
+                          - pages
+                      totalCount:
+                        type: number
+                required:
+                  - data
+        "401":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  requestId:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - requestId
+                  - name
+        "500":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  requestId:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - requestId
+                  - name
+  /api/v1/journey_steps/:
+    post:
+      tags: *a3
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                journeyId:
+                  type: string
+                stepType:
+                  anyOf:
+                    - type: string
+                      enum:
+                        - form
+                    - type: string
+                      enum:
+                        - payment
+                    - type: string
+                      enum:
+                        - messaging
+                stepData:
+                  anyOf:
+                    - type: object
+                      properties:
+                        url:
+                          type: string
+                        title:
+                          type: string
+                      required:
+                        - url
+                        - title
+                    - type: object
+                      properties:
+                        url:
+                          type: string
+                        title:
+                          type: string
+                      required:
+                        - url
+                        - title
+                    - type: object
+                      properties: {}
+              required:
+                - journeyId
+                - stepType
+                - stepData
+        required: true
+      responses:
+        "201":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      journeyId:
+                        type: string
+                      stepType:
+                        anyOf:
+                          - type: string
+                            enum:
+                              - form
+                          - type: string
+                            enum:
+                              - payment
+                          - type: string
+                            enum:
+                              - messaging
+                      stepData:
+                        anyOf:
+                          - type: object
+                            properties:
+                              url:
+                                type: string
+                              title:
+                                type: string
+                            required:
+                              - url
+                              - title
+                          - type: object
+                            properties:
+                              url:
+                                type: string
+                              title:
+                                type: string
+                            required:
+                              - url
+                              - title
+                          - type: object
+                            properties: {}
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - journeyId
+                      - stepType
+                      - stepData
+                      - createdAt
+                      - updatedAt
+                  metadata:
+                    type: object
+                    properties:
+                      links:
+                        type: object
+                        properties:
+                          self:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          next:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          prev:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          first:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          last:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          pages:
+                            type: object
+                            additionalProperties:
+                              type: object
+                              properties:
+                                href:
+                                  type: string
+                        required:
+                          - self
+                          - first
+                          - last
+                          - pages
+                      totalCount:
+                        type: number
+                required:
+                  - data
+        "401":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  requestId:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - requestId
+                  - name
+        "500":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  requestId:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - requestId
+                  - name
 tags:
   - name: Integrator

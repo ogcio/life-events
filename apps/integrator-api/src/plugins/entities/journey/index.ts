@@ -6,11 +6,11 @@ import {
 } from "fastify";
 import fp from "fastify-plugin";
 import { JourneyRepo } from "./repo";
-import { CreateJourneyBodyDO, Id } from "../../../routes/schemas";
+import { Id } from "../../../routes/schemas";
 import {
+  CreateJourneyBodyDO,
   JourneyDetailsDO,
   JourneyPublicDetailsDO,
-  JourneysDO,
   JourneyStatusType,
 } from "./types";
 
@@ -18,7 +18,7 @@ export type JourneyPlugin = Awaited<ReturnType<typeof buildPlugin>>;
 
 const buildGetJourneys =
   (repo: JourneyRepo, log: FastifyBaseLogger) =>
-  async (organizationId: string): Promise<JourneysDO> => {
+  async (organizationId: string): Promise<JourneyPublicDetailsDO[]> => {
     let result;
 
     try {

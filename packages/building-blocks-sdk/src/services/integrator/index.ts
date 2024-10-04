@@ -30,6 +30,104 @@ export class Integrator {
   }
 
   /**
+   * JOURNEY STEP CONNECTIONS
+   */
+  async getConnectionById(
+    connectionId: paths["/api/v1/journey_step_connections/{connectionId}"]["get"]["parameters"]["path"]["connectionId"],
+  ) {
+    return formatQueryResult(
+      this.client.GET("/api/v1/journey_step_connections/{connectionId}", {
+        params: {
+          path: {
+            connectionId,
+          },
+        },
+      }),
+    );
+  }
+
+  async createConnection(
+    data: paths["/api/v1/journey_step_connections/"]["post"]["requestBody"]["content"]["application/json"],
+  ) {
+    return formatQueryResult(
+      this.client.POST("/api/v1/journey_step_connections/", {
+        body: data,
+      }),
+    );
+  }
+
+  async deleteConnection(
+    connectionId: paths["/api/v1/journey_step_connections/{connectionId}"]["delete"]["parameters"]["path"]["connectionId"],
+  ) {
+    return formatQueryResult(
+      this.client.DELETE("/api/v1/journey_step_connections/{connectionId}", {
+        params: {
+          path: {
+            connectionId,
+          },
+        },
+      }),
+    );
+  }
+
+  /**
+   * JOURNEY STEPs
+   */
+  async getStepById(
+    stepId: paths["/api/v1/journey_steps/{stepId}"]["get"]["parameters"]["path"]["stepId"],
+  ) {
+    return formatQueryResult(
+      this.client.GET("/api/v1/journey_steps/{stepId}", {
+        params: {
+          path: {
+            stepId,
+          },
+        },
+      }),
+    );
+  }
+
+  async createStep(
+    data: paths["/api/v1/journey_steps/"]["post"]["requestBody"]["content"]["application/json"],
+  ) {
+    return formatQueryResult(
+      this.client.POST("/api/v1/journey_steps/", {
+        body: data,
+      }),
+    );
+  }
+
+  async deleteStep(
+    stepId: paths["/api/v1/journey_steps/{stepId}"]["delete"]["parameters"]["path"]["stepId"],
+  ) {
+    return formatQueryResult(
+      this.client.DELETE("/api/v1/journey_steps/{stepId}", {
+        params: {
+          path: {
+            stepId,
+          },
+        },
+      }),
+    );
+  }
+
+  async updateStep(
+    stepId: paths["/api/v1/journey_steps/{stepId}"]["put"]["parameters"]["path"]["stepId"],
+    data: paths["/api/v1/journey_steps/{stepId}"]["put"]["requestBody"]["content"]["application/json"],
+  ) {
+    return formatQueryResult(
+      this.client.PUT("/api/v1/journey_steps/{stepId}", {
+        params: {
+          path: {
+            stepId,
+          },
+        },
+        body: data,
+      }),
+    );
+  }
+
+  /**
    * JOURNEYS
    */
   async getJourneyPublicInfo(
