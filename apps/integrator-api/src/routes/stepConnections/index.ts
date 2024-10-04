@@ -5,13 +5,13 @@ import {
   EmptyBody,
   GenericResponse,
   JourneyStepConnection,
+  ParamsWithJourneyStepConnectionIdDO,
 } from "../schemas";
 import { formatAPIResponse } from "../../utils/responseFormatter";
 import { authPermissions } from "../../types/authPermissions";
 import {
   CreateJourneyStepConnectionDO,
   JourneyStepConnectionDO,
-  ParamsWithJourneyStepConnectionIdDO,
 } from "../../plugins/entities/journeyStepConnections/types";
 
 const TAGS = ["StepConnections"];

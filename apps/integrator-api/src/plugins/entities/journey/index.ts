@@ -11,7 +11,6 @@ import {
   CreateJourneyBodyDO,
   JourneyDetailsDO,
   JourneyPublicDetailsDO,
-  JourneysDO,
   JourneyStatusType,
 } from "./types";
 
@@ -19,7 +18,7 @@ export type JourneyPlugin = Awaited<ReturnType<typeof buildPlugin>>;
 
 const buildGetJourneys =
   (repo: JourneyRepo, log: FastifyBaseLogger) =>
-  async (organizationId: string): Promise<JourneysDO[]> => {
+  async (organizationId: string): Promise<JourneyPublicDetailsDO[]> => {
     let result;
 
     try {

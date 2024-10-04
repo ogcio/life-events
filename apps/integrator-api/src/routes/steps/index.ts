@@ -5,6 +5,7 @@ import {
   EmptyBody,
   GenericResponse,
   JourneyStep,
+  ParamsWithJourneyStepIdDO,
   UpdateJourneyStep,
 } from "../schemas";
 import { formatAPIResponse } from "../../utils/responseFormatter";
@@ -12,7 +13,6 @@ import { authPermissions } from "../../types/authPermissions";
 import {
   CreateJourneyStepDO,
   JourneyStepDO,
-  ParamsWithJourneyStepIdDO,
 } from "../../plugins/entities/journeySteps/types";
 
 const TAGS = ["Steps"];

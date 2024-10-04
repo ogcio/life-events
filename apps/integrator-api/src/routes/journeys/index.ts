@@ -7,6 +7,7 @@ import {
   Id,
   JourneyPublicDetails,
   Journeys,
+  ParamsWithJourneyId,
   UpdateJourneyBody,
 } from "../schemas";
 import { formatAPIResponse } from "../../utils/responseFormatter";
@@ -15,8 +16,6 @@ import {
   CreateJourneyBodyDO,
   FullJourneyDO,
   JourneyPublicDetailsDO,
-  JourneysDO,
-  ParamsWithJourneyId,
   UpdateJourneyBodyDO,
 } from "../../plugins/entities/journey/types";
 
@@ -24,7 +23,7 @@ const TAGS = ["Journeys"];
 
 export default async function journeys(app: FastifyInstance) {
   app.get<{
-    Reply: GenericResponse<JourneysDO[]> | Error;
+    Reply: GenericResponse<JourneyPublicDetailsDO[]> | Error;
   }>(
     "/",
     {

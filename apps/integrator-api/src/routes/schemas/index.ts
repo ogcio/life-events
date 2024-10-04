@@ -57,6 +57,9 @@ export const CreateJourneyStepConnection = Type.Composite([
 export const ParamsWithJourneyStepConnectionId = Type.Object({
   connectionId: Type.String(),
 });
+export type ParamsWithJourneyStepConnectionIdDO = Static<
+  typeof ParamsWithJourneyStepConnectionId
+>;
 
 /**
  * Journey Steps
@@ -108,6 +111,7 @@ export const UpdateJourneyStep = Type.Pick(JourneyStep, [
 export const ParamsWithJourneyStepId = Type.Object({
   stepId: Type.String(),
 });
+export type ParamsWithJourneyStepIdDO = Static<typeof ParamsWithJourneyStepId>;
 
 /**
  * Journey
@@ -115,6 +119,7 @@ export const ParamsWithJourneyStepId = Type.Object({
 export const ParamsWithJourneyId = Type.Object({
   journeyId: Type.String(),
 });
+export type ParamsWithJourneyId = Static<typeof ParamsWithJourneyId>;
 
 export const JourneyStatus = Type.Union([
   Type.Literal("active"),

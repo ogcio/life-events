@@ -5,7 +5,6 @@ import {
   CreateJourneyBodyDO,
   JourneyDetailsDO,
   JourneyPublicDetailsDO,
-  JourneysDO,
   JourneyStatusEnum,
   JourneyStatusType,
 } from "./types";
@@ -17,7 +16,9 @@ export class JourneyRepo {
     this.pg = pg;
   }
 
-  getJourneys(organizationId: string): Promise<QueryResult<JourneysDO>> {
+  getJourneys(
+    organizationId: string,
+  ): Promise<QueryResult<JourneyPublicDetailsDO>> {
     return this.pg.query(
       `SELECT
         id,

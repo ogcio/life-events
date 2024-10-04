@@ -5,7 +5,6 @@ import {
   JourneyStep,
   JourneyStepTypes,
   MessagingStepData,
-  ParamsWithJourneyStepId,
   PaymentStepData,
   StepData,
   UpdateJourneyStep,
@@ -15,7 +14,6 @@ export type JourneyStepTypesDO = Static<typeof JourneyStepTypes>;
 export type JourneyStepDO = Static<typeof JourneyStep>;
 export type CreateJourneyStepDO = Static<typeof CreateJourneyStep>;
 export type UpdateJourneyStepDO = Static<typeof UpdateJourneyStep>;
-export type ParamsWithJourneyStepIdDO = Static<typeof ParamsWithJourneyStepId>;
 
 export type FormStepDataDO = Static<typeof FormStepData>;
 export type PaymentStepDataDO = Static<typeof PaymentStepData>;
