@@ -13,7 +13,7 @@ import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import sensible from "@fastify/sensible";
 import schemaValidators from "./src/routes/schemas/validations";
-import apiAuthPlugin from "api-auth";
+import apiAuthPlugin, { verifyJWT } from "api-auth";
 import { initializeErrorHandler } from "error-handler";
 import { initializeLoggingHooks } from "logging-wrapper";
 import healthCheck from "./src/routes/healthcheck";
@@ -86,6 +86,38 @@ export async function build(opts?: FastifyServerOptions) {
   app.register(healthCheck);
 
   app.register(routes, { prefix: "/api/v1" });
+
+  // Test callback route to test communication between systems
+  app.get("/callback", async (request, reply) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { token } = request.query as any;
+
+    if (!token) {
+      return reply.code(400).send({ error: "Token not provided" });
+    }
+
+    // We need to store this somehow in an env variable
+    const jwksRegistry = {
+      payments: "http://localhost:8001/.well-known/jwks.json",
+    };
+
+    try {
+      // How to understand what jwks to use? - Most probably by looking at the step id
+      const jwksUrl = jwksRegistry.payments;
+      const payload = await verifyJWT(token, {
+        jwksUrl,
+        issuer: "payments-api",
+        audience: "integrator-api",
+      });
+
+      // Send back the payload if the JWT verification is successful
+      return reply.code(200).send({ status: "success", payload });
+    } catch (err) {
+      return reply
+        .code(401)
+        .send({ status: "error", message: "Invalid token" });
+    }
+  });
 
   app.register(sensible);
 
