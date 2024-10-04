@@ -80,11 +80,14 @@ export default async function journeys(app: FastifyInstance) {
         organizationId,
       );
 
-      // TODO: call steps apis to retrieve steps and connections
+      const steps = await app.journeySteps.getJourneySteps(journeyId);
+      const connections =
+        await app.journeyStepConnections.getJourneyStepConnections(journeyId);
+
       const fullJourney = {
         ...journeyDetails,
-        steps: [],
-        connections: [],
+        steps,
+        connections,
       };
 
       reply.send(formatAPIResponse(fullJourney));

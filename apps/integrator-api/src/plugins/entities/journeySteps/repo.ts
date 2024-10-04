@@ -28,6 +28,21 @@ export class JourneyStepsRepo {
     );
   }
 
+  getStepsByJourneyId(journeyId: string): Promise<QueryResult<JourneyStepDO>> {
+    return this.pg.query(
+      `SELECT
+          id,
+          journey_id as "journeyId",
+          step_type as "stepType",
+          step_data as "stepData",
+          created_at as "createdAt",
+          updated_at as "updatedAt"
+        FROM journey_steps
+        WHERE journey_id = $1`,
+      [journeyId],
+    );
+  }
+
   createStep(step: CreateJourneyStepDO): Promise<QueryResult<JourneyStepDO>> {
     return this.pg.query(
       `INSERT INTO journey_steps (
