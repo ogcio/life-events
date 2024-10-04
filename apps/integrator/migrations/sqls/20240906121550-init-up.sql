@@ -44,6 +44,17 @@ BEGIN
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP             -- Timestamp when the run was last updated
     );
 
+    -- Table to track progress of each step in a run
+    CREATE TABLE IF NOT EXISTS run_steps (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),   -- Unique identifier for the run step
+        run_id UUID REFERENCES runs(id) ON DELETE CASCADE, -- Foreign key to the run
+        step_id UUID REFERENCES journey_steps(id) ON DELETE CASCADE, -- Foreign key to the specific step in the journey
+        data JSONB,                                      -- The data collected or processed for this step, stored in JSONB format
+        status step_status NOT NULL DEFAULT 'pending',   -- Status of the step (pending, in_progress, completed, failed)
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  -- Timestamp when the step was created
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP   -- Timestamp of the last time the step was updated
+    );
+
     -- Table to track individual submissions by users through a journey
     CREATE TABLE IF NOT EXISTS submissions ( 
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),  -- Unique identifier for the submission

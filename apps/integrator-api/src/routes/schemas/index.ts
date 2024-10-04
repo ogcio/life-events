@@ -114,7 +114,7 @@ export const ParamsWithJourneyStepId = Type.Object({
 export type ParamsWithJourneyStepIdDO = Static<typeof ParamsWithJourneyStepId>;
 
 /**
- * Journey
+ * Journeys
  */
 export const ParamsWithJourneyId = Type.Object({
   journeyId: Type.String(),
@@ -169,7 +169,27 @@ export const UpdateJourneyBody = Type.Pick(FullJourney, [
 export type UpdateJourneyBodyDO = Static<typeof UpdateJourneyBody>;
 
 /**
- * Run
+ * Run Steps
+ */
+export const StepStatus = Type.Union([
+  Type.Literal("pending"),
+  Type.Literal("in_progress"),
+  Type.Literal("failed"),
+  Type.Literal("completed"),
+]);
+
+export const RunStep = Type.Object({
+  id: Type.String(),
+  runId: Type.String(),
+  stepId: Type.String(),
+  status: StepStatus,
+  data: Type.Any(),
+  createdAt: Type.String(),
+  updatedAt: Type.String(),
+});
+
+/**
+ * Runs
  */
 export const RunStatus = Type.Union([
   Type.Literal("pending"),
@@ -177,13 +197,29 @@ export const RunStatus = Type.Union([
   Type.Literal("completed"),
 ]);
 
-export const Run = Type.Object({
+export const FullRun = Type.Object({
   id: Type.String(),
   userId: Type.String(),
   journeyId: Type.String(),
   status: RunStatus,
   createdAt: Type.String(),
   updatedAt: Type.String(),
+  steps: Type.Array(RunStep),
 });
+export type FullRunDO = Static<typeof FullRun>;
 
-export const Runs = Type.Array(Run);
+export const RunDetails = Type.Pick(FullRun, [
+  "id",
+  "userId",
+  "journeyId",
+  "status",
+  "createdAt",
+  "updatedAt",
+]);
+
+export const Runs = Type.Array(RunDetails);
+
+export const ParamsWithRunId = Type.Object({
+  runId: Type.String(),
+});
+export type ParamsWithRunIdDO = Static<typeof ParamsWithRunId>;

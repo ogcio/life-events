@@ -1,7 +1,9 @@
 import { Static } from "@sinclair/typebox";
-import { Run } from "../../../routes/schemas";
+import { RunDetails, RunStep } from "../../../routes/schemas";
 
-export type RunDO = Static<typeof Run>;
+export type RunDetailsDO = Static<typeof RunDetails>;
+
+export type RunStepDO = Static<typeof RunStep>;
 
 export enum RunStatusEnum {
   PENDING = "pending",

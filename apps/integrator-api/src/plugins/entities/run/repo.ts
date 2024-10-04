@@ -1,6 +1,6 @@
 import { PostgresDb } from "@fastify/postgres";
 import { QueryResult } from "pg";
-import { RunDO } from "./types";
+import { RunDetailsDO } from "./types";
 
 export class RunRepo {
   pg: PostgresDb;
@@ -9,7 +9,7 @@ export class RunRepo {
     this.pg = pg;
   }
 
-  getRuns(userId: string): Promise<QueryResult<RunDO>> {
+  getUserRuns(userId: string): Promise<QueryResult<RunDetailsDO>> {
     return this.pg.query(
       `SELECT
         id,
@@ -22,6 +22,41 @@ export class RunRepo {
       WHERE user_id = $1
       ORDER BY created_at DESC`,
       [userId],
+    );
+  }
+
+  getUserRunById(
+    runId: string,
+    userId: string,
+  ): Promise<QueryResult<RunDetailsDO>> {
+    return this.pg.query(
+      `SELECT
+              id,
+              title,
+              user_id as "userId",
+              journey_id as "journeyId",
+              status,
+              created_at as "createdAt",
+              updated_at as "updatedAt",
+            FROM runs
+            WHERE id = $1 AND user_id = $2`,
+      [runId, userId],
+    );
+  }
+
+  getRunStepsByRunId(runId: string): Promise<QueryResult<any>> {
+    return this.pg.query(
+      `SELECT
+                id,
+                run_id as "runId",
+                step_id as "stepId",
+                status,
+                data,
+                created_at as "createdAt",
+                updated_at as "updatedAt",
+              FROM run_steps
+              WHERE run_id = $1`,
+      [runId],
     );
   }
 }
