@@ -32,6 +32,20 @@ const buildGetStepById =
     return result?.rows[0];
   };
 
+const buildGetJourneySteps =
+  (repo: JourneyStepsRepo, log: FastifyBaseLogger) =>
+  async (journeyId: string): Promise<JourneyStepDO[]> => {
+    let result;
+
+    try {
+      result = await repo.getStepsByJourneyId(journeyId);
+    } catch (err) {
+      log.error((err as Error).message);
+    }
+
+    return result?.rows ?? [];
+  };
+
 const buildCreateStep =
   (repo: JourneyStepsRepo, log: FastifyBaseLogger, httpErrors: HttpErrors) =>
   async (step: CreateJourneyStepDO): Promise<JourneyStepDO> => {
@@ -99,6 +113,7 @@ const buildPlugin = (
 ) => {
   return {
     getStepById: buildGetStepById(repo, log, httpErrors),
+    getJourneySteps: buildGetJourneySteps(repo, log),
     createStep: buildCreateStep(repo, log, httpErrors),
     deleteStep: buildDeleteStep(repo, log, httpErrors),
     updateStep: buildUpdateStep(repo, log, httpErrors),
