@@ -33,6 +33,7 @@ interface GetAllMessages {
     Static<typeof IdParamsSchema> & {
       status?: "scheduled" | "delivered";
       isSeen?: boolean;
+      search?: string;
     };
 }
 
@@ -60,6 +61,7 @@ export default async function messages(app: FastifyInstance) {
             Type.Object({
               status: Type.Optional(Type.Literal("delivered")),
               isSeen: Type.Optional(TypeboxBooleanEnum()),
+              search: Type.Optional(Type.String()),
             }),
             IdParamsSchema,
             PaginationParamsSchema,
@@ -179,6 +181,7 @@ export default async function messages(app: FastifyInstance) {
               WHERE
                   CASE WHEN $1::text IS NOT NULL THEN organisation_id = $1 ELSE true END
                   AND CASE WHEN $5 > 0 THEN user_id = ANY ($2) ELSE true END
+                  AND subject ilike $7
           )
           SELECT 
               messages.id,
@@ -196,6 +199,7 @@ export default async function messages(app: FastifyInstance) {
               CASE WHEN $1::text IS NOT NULL THEN organisation_id = $1 ELSE true END
               AND CASE WHEN $5 > 0 THEN user_id = ANY ($2) ELSE true END
               AND CASE WHEN $6::boolean IS NOT NULL THEN messages.is_seen = $6::boolean ELSE true END
+              AND subject ilike $7
           GROUP BY 
               messages.id, 
               messages.subject, 
@@ -214,6 +218,7 @@ export default async function messages(app: FastifyInstance) {
             offset,
             userIdsRepresentingUser.length,
             request.query.isSeen === undefined ? null : request.query.isSeen,
+            request.query.search ? `%${request.query.search}%` : "%%",
           ],
         );
       } catch (error) {

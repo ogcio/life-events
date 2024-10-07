@@ -18,7 +18,9 @@ import dayjs from "dayjs";
 import { allUrl, baseUrl, unreadUrl } from "./utils";
 import React from "react";
 
-export default async (props: { searchParams?: { tab?: string } }) => {
+export default async (props: {
+  searchParams?: { tab?: string; search_query?: string };
+}) => {
   const tHome = await getTranslations("Home");
 
   const messagingSdk = await AuthenticationFactory.getMessagingClient();
@@ -30,13 +32,14 @@ export default async (props: { searchParams?: { tab?: string } }) => {
     offset: 0,
     limit: 100,
     isSeen: shouldGetAllMessages ? undefined : false,
+    search: props.searchParams?.search_query,
   });
 
   return (
     <>
       <Heading>{tHome("header")}</Heading>
 
-      <Tabs>
+      <Tabs id="">
         <TabItem
           value="unread"
           checked={Boolean(!shouldGetAllMessages)}
