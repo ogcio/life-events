@@ -8,9 +8,9 @@ import {
   JWTVerifyOptions,
   JWTPayload,
   JWK,
+  importJWK,
 } from "jose";
 import { createPublicKey, generateKeyPairSync } from "crypto";
-import fs from "fs/promises";
 
 const defaultAlgorithm = "RS256";
 
@@ -85,6 +85,8 @@ async function createSignedJWT(
     issuer,
   } = options;
 
+  const pk = await importJWK(privateKey, algorithm);
+
   const jwt = new SignJWT(payload)
     .setProtectedHeader({ alg: algorithm })
     .setIssuedAt()
@@ -97,7 +99,7 @@ async function createSignedJWT(
   if (issuer) {
     jwt.setIssuer(issuer);
   }
-  return jwt.sign(privateKey);
+  return jwt.sign(pk);
 }
 
 /**

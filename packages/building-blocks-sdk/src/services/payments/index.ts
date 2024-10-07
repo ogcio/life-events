@@ -314,4 +314,18 @@ export class Payments {
   async getAuditLogEventTypes() {
     return formatQueryResult(this.client.GET("/api/v1/auditLogs/event-types"));
   }
+
+  async getRedirectToken(
+    transactionId: paths["/api/v1/redirectToken/{transactionId}"]["get"]["parameters"]["path"]["transactionId"],
+  ) {
+    return formatQueryResult(
+      this.client.GET("/api/v1/redirectToken/{transactionId}", {
+        params: {
+          path: {
+            transactionId,
+          },
+        },
+      }),
+    );
+  }
 }
