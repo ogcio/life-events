@@ -24,6 +24,38 @@ const buildGetUserRuns =
     return result?.rows ?? [];
   };
 
+const buildGetRunsByJourneyId =
+  (repo: RunRepo, log: FastifyBaseLogger) =>
+  async (journeyId: string): Promise<RunDetailsDO[]> => {
+    let result;
+
+    try {
+      result = await repo.getRunsByJourney(journeyId);
+    } catch (err) {
+      log.error((err as Error).message);
+    }
+
+    return result?.rows ?? [];
+  };
+
+const buildGetRunById =
+  (repo: RunRepo, log: FastifyBaseLogger, httpErrors: HttpErrors) =>
+  async (runId: string): Promise<RunDetailsDO> => {
+    let result;
+
+    try {
+      result = await repo.getRunById(runId);
+    } catch (err) {
+      log.error((err as Error).message);
+    }
+
+    if (!result?.rowCount) {
+      throw httpErrors.notFound("The requested run was not found");
+    }
+
+    return result?.rows[0];
+  };
+
 const buildGetUserRunById =
   (repo: RunRepo, log: FastifyBaseLogger, httpErrors: HttpErrors) =>
   async (runId: string, userId: string): Promise<RunDetailsDO> => {
@@ -64,6 +96,8 @@ const buildPlugin = (
   return {
     getUserRuns: buildGetUserRuns(repo, log),
     getUserRunById: buildGetUserRunById(repo, log, httpErrors),
+    getRunsByJourneyId: buildGetRunsByJourneyId(repo, log),
+    getRunById: buildGetRunById(repo, log, httpErrors),
     getRunStepsByRunId: buildGetRunStepsByRunId(repo, log, httpErrors),
   };
 };

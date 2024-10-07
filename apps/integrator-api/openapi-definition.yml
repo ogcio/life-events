@@ -2048,5 +2048,305 @@ paths:
                   - detail
                   - requestId
                   - name
+  /api/v1/executor/runs/journeys/{journeyId}:
+    get:
+      tags: *a4
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: journeyId
+          required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        userId:
+                          type: string
+                        journeyId:
+                          type: string
+                        status:
+                          anyOf:
+                            - type: string
+                              enum:
+                                - pending
+                            - type: string
+                              enum:
+                                - failed
+                            - type: string
+                              enum:
+                                - completed
+                        createdAt:
+                          type: string
+                        updatedAt:
+                          type: string
+                      required:
+                        - id
+                        - userId
+                        - journeyId
+                        - status
+                        - createdAt
+                        - updatedAt
+                  metadata:
+                    type: object
+                    properties:
+                      links:
+                        type: object
+                        properties:
+                          self:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          next:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          prev:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          first:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          last:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          pages:
+                            type: object
+                            additionalProperties:
+                              type: object
+                              properties:
+                                href:
+                                  type: string
+                        required:
+                          - self
+                          - first
+                          - last
+                          - pages
+                      totalCount:
+                        type: number
+                required:
+                  - data
+        "401":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  requestId:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - requestId
+                  - name
+  /api/v1/executor/runs/{runId}:
+    get:
+      tags: *a4
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: runId
+          required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      userId:
+                        type: string
+                      journeyId:
+                        type: string
+                      status:
+                        anyOf:
+                          - type: string
+                            enum:
+                              - pending
+                          - type: string
+                            enum:
+                              - failed
+                          - type: string
+                            enum:
+                              - completed
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                      steps:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            runId:
+                              type: string
+                            stepId:
+                              type: string
+                            status:
+                              anyOf:
+                                - type: string
+                                  enum:
+                                    - pending
+                                - type: string
+                                  enum:
+                                    - in_progress
+                                - type: string
+                                  enum:
+                                    - failed
+                                - type: string
+                                  enum:
+                                    - completed
+                            data: {}
+                            createdAt:
+                              type: string
+                            updatedAt:
+                              type: string
+                          required:
+                            - id
+                            - runId
+                            - stepId
+                            - status
+                            - data
+                            - createdAt
+                            - updatedAt
+                    required:
+                      - id
+                      - userId
+                      - journeyId
+                      - status
+                      - createdAt
+                      - updatedAt
+                      - steps
+                  metadata:
+                    type: object
+                    properties:
+                      links:
+                        type: object
+                        properties:
+                          self:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          next:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          prev:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          first:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          last:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          pages:
+                            type: object
+                            additionalProperties:
+                              type: object
+                              properties:
+                                href:
+                                  type: string
+                        required:
+                          - self
+                          - first
+                          - last
+                          - pages
+                      totalCount:
+                        type: number
+                required:
+                  - data
+        "401":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  requestId:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - requestId
+                  - name
+        "404":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  requestId:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - requestId
+                  - name
 tags:
   - name: Integrator
