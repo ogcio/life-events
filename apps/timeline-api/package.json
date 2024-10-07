@@ -9,6 +9,7 @@
     "test:e2e" : "cd ./e2e && bru run --env local",
     "test:smoke:e2e": "cd ./e2e && mkdir -p test-results && bru run --env dev --output ./test-results/results.xml --format junit",
     "test:regression:e2e": "cd ./e2e && mkdir -p test-results && bru run --env dev --output ./test-results/results.xml --format junit",
+    "test:perf": "echo \"Error: no test specified\" && exit 0",
     "start": "node dist/index.js",
     "dev": "nodemon | pino-pretty",
     "lint": "eslint . --ext .ts",

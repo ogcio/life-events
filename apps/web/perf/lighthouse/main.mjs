@@ -13,11 +13,11 @@ const eventPage = loginURL + '/en/events'
 const consentPage = loginURL + '/en/welcome'
 const beforeYouStart = loginURL + '/en/digital-wallet/get-digital-wallet/before-you-start'
 const governmentDetails = loginURL + '/en/digital-wallet/get-digital-wallet/government-details'
-const deviceSelection = loginURL + '/en/digital-wallet//get-digital-wallet/device-selection'
-const deviceDetails = loginURL + '/en/digital-wallet//get-digital-wallet/your-device'
-const checkDetails = loginURL + '/en/digital-wallet//get-digital-wallet/check-details'
-const changeDetails = loginURL + '/en/digital-wallet//get-digital-wallet/change-details'
-const applicationSuccess = loginURL + '/en/digital-wallet//get-digital-wallet/application-success'
+const deviceSelection = loginURL + '/en/digital-wallet/get-digital-wallet/device-selection'
+const deviceDetails = loginURL + '/en/digital-wallet/get-digital-wallet/your-device'
+const checkDetails = loginURL + '/en/digital-wallet/get-digital-wallet/check-details'
+const changeDetails = loginURL + '/en/digital-wallet/get-digital-wallet/change-details'
+const applicationSuccess = loginURL + '/en/digital-wallet/get-digital-wallet/application-success'
 const adminPage = loginURL + '/en/admin/submissions'
 
 
@@ -159,7 +159,8 @@ const opts = {
 
   await page.waitForNavigation()
 
-  await page.goto(loginURL, { waitUntil: 'networkidle0' })
+  // Disable Admin check as admin removed
+  /*await page.goto(loginURL, { waitUntil: 'networkidle0' })
     await page.evaluate(() => {
     document.querySelector('#login-form > div:nth-child(1) > label:nth-child(1) > input[type=checkbox]').click()
   })
@@ -172,7 +173,7 @@ const opts = {
 
   await runLighthouseForURL(adminPage, opts, 'admin-submissions').then(results => {
     return results
-  })
+  })*/
   
   await browser.disconnect()
   await chrome.kill()

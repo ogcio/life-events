@@ -10,7 +10,7 @@
     "test:e2e": "playwright test",
     "test:smoke:e2e": "echo \"Error: no test specified\" && exit 0",
     "test:regression:e2e": "echo \"Error: no test specified\" && exit 0",
-    "test:lighthouse": "node performance-tests/lighthouse/main.mjs",
+    "test:perf": "node perf/lighthouse/main.mjs",
     "migrate": "db-migrate up"
   },
   "nodemonConfig": {
@@ -53,8 +53,8 @@
     "@types/react": "18.2.45",
     "chrome-launcher": "^1.1.2",
     "fs": "0.0.1-security",
-    "lighthouse": "^12.1.0",
-    "puppeteer": "^22.12.1",
+    "lighthouse": "^12.2.1",
+    "puppeteer": "^23.5.0",
     "request": "^2.88.2",
     "typescript": "5.3.3"
   }

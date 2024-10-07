@@ -14,6 +14,7 @@
     "test:smoke:e2e": "echo \"Error: no test specified\" && exit 0",
     "test:regression:e2e": "playwright test --grep @regression",
     "test:generate:report": "npx allure serve allure-results",
+    "test:perf": "echo \"Error: no test specified\" && exit 0",
     "migrate": "db-migrate up",
     "seed": "node --import tsx ./migrations/seeding/index.ts",
     "lint": "next lint"

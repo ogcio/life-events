@@ -11,7 +11,7 @@
     "test:headless:e2e": "playwright test",
     "test:smoke:e2e": "echo \"Error: no test specified\" && exit 0",
     "test:regression:e2e": "echo \"Error: no test specified\" && exit 0",
-    "test:lighthouse": "node performance-tests/lighthouse/main.mjs",
+    "test:perf": "echo \"Error: no test specified\" && exit 0",
     "test:debug:e2e": "playwright test --ui",
     "migrate": "db-migrate up"
   },
