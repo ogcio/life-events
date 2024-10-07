@@ -222,7 +222,7 @@ export class Integrator {
     );
   }
 
-  async getRun(
+  async getRunById(
     runId: paths["/api/v1/executor/runs/{runId}"]["get"]["parameters"]["path"]["runId"],
   ) {
     return formatQueryResult(

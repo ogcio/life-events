@@ -2247,6 +2247,8 @@ paths:
                             - data
                             - createdAt
                             - updatedAt
+                      organizationId:
+                        type: string
                     required:
                       - id
                       - userId
@@ -2255,6 +2257,7 @@ paths:
                       - createdAt
                       - updatedAt
                       - steps
+                      - organizationId
                   metadata:
                     type: object
                     properties:

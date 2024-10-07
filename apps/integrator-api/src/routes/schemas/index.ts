@@ -197,7 +197,7 @@ export const RunStatus = Type.Union([
   Type.Literal("completed"),
 ]);
 
-export const FullRun = Type.Object({
+export const UserFullRun = Type.Object({
   id: Type.String(),
   userId: Type.String(),
   journeyId: Type.String(),
@@ -206,9 +206,17 @@ export const FullRun = Type.Object({
   updatedAt: Type.String(),
   steps: Type.Array(RunStep),
 });
-export type FullRunDO = Static<typeof FullRun>;
+export type UserFullRunDO = Static<typeof UserFullRun>;
 
-export const RunDetails = Type.Pick(FullRun, [
+export const PublicServantFullRun = Type.Composite([
+  UserFullRun,
+  Type.Object({
+    organizationId: Type.String(),
+  }),
+]);
+export type PublicServantFullRunDO = Static<typeof PublicServantFullRun>;
+
+export const UserRunDetails = Type.Pick(UserFullRun, [
   "id",
   "userId",
   "journeyId",
@@ -217,7 +225,16 @@ export const RunDetails = Type.Pick(FullRun, [
   "updatedAt",
 ]);
 
-export const Runs = Type.Array(RunDetails);
+export const UserRuns = Type.Array(UserRunDetails);
+
+export const PublicServantRunDetails = Type.Composite([
+  UserRunDetails,
+  Type.Object({
+    organizationId: Type.String(),
+  }),
+]);
+
+export const PublicServantRuns = Type.Array(UserRunDetails);
 
 export const ParamsWithRunId = Type.Object({
   runId: Type.String(),

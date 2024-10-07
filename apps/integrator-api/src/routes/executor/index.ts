@@ -1,22 +1,28 @@
 import { FastifyInstance } from "fastify";
 import { HttpError } from "../../types/httpErrors";
 import {
-  FullRun,
-  FullRunDO,
+  UserFullRun,
+  UserFullRunDO,
   GenericResponse,
   ParamsWithJourneyId,
   ParamsWithRunIdDO,
-  Runs,
+  UserRuns,
+  PublicServantRuns,
+  PublicServantFullRunDO,
+  PublicServantFullRun,
 } from "../schemas";
 import { formatAPIResponse } from "../../utils/responseFormatter";
 import { authPermissions } from "../../types/authPermissions";
-import { RunDetailsDO } from "../../plugins/entities/run/types";
+import {
+  UserRunDetailsDO,
+  PSRunDetailsDO,
+} from "../../plugins/entities/run/types";
 
 const TAGS = ["Executor"];
 
 export default async function executor(app: FastifyInstance) {
   app.get<{
-    Reply: GenericResponse<RunDetailsDO[]> | Error;
+    Reply: GenericResponse<UserRunDetailsDO[]> | Error;
   }>(
     "/runs/self",
     {
@@ -25,7 +31,7 @@ export default async function executor(app: FastifyInstance) {
       schema: {
         tags: TAGS,
         response: {
-          200: GenericResponse(Runs),
+          200: GenericResponse(UserRuns),
           401: HttpError,
         },
       },
@@ -44,7 +50,7 @@ export default async function executor(app: FastifyInstance) {
   );
 
   app.get<{
-    Reply: GenericResponse<FullRunDO> | Error;
+    Reply: GenericResponse<UserFullRunDO> | Error;
     Params: ParamsWithRunIdDO;
   }>(
     "/runs/self/:runId",
@@ -54,7 +60,7 @@ export default async function executor(app: FastifyInstance) {
       schema: {
         tags: TAGS,
         response: {
-          200: GenericResponse(FullRun),
+          200: GenericResponse(UserFullRun),
           401: HttpError,
           404: HttpError,
         },
@@ -83,7 +89,7 @@ export default async function executor(app: FastifyInstance) {
   );
 
   app.get<{
-    Reply: GenericResponse<RunDetailsDO[]> | Error;
+    Reply: GenericResponse<PSRunDetailsDO[]> | Error;
     Params: ParamsWithJourneyId;
   }>(
     "/runs/journeys/:journeyId",
@@ -93,7 +99,7 @@ export default async function executor(app: FastifyInstance) {
       schema: {
         tags: TAGS,
         response: {
-          200: GenericResponse(Runs),
+          200: GenericResponse(PublicServantRuns),
           401: HttpError,
         },
       },
@@ -113,7 +119,7 @@ export default async function executor(app: FastifyInstance) {
   );
 
   app.get<{
-    Reply: GenericResponse<FullRunDO> | Error;
+    Reply: GenericResponse<PublicServantFullRunDO> | Error;
     Params: ParamsWithRunIdDO;
   }>(
     "/runs/:runId",
@@ -123,7 +129,7 @@ export default async function executor(app: FastifyInstance) {
       schema: {
         tags: TAGS,
         response: {
-          200: GenericResponse(FullRun),
+          200: GenericResponse(PublicServantFullRun),
           401: HttpError,
           404: HttpError,
         },

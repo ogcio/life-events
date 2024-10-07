@@ -1175,6 +1175,7 @@ export interface paths {
                   createdAt: string;
                   updatedAt: string;
                 }[];
+                organizationId: string;
               };
               metadata?: {
                 links?: {

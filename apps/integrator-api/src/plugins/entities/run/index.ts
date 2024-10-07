@@ -6,13 +6,13 @@ import {
 } from "fastify";
 import fp from "fastify-plugin";
 import { RunRepo } from "./repo";
-import { RunDetailsDO, RunStepDO } from "./types";
+import { UserRunDetailsDO, RunStepDO, PSRunDetailsDO } from "./types";
 
 export type RunPlugin = Awaited<ReturnType<typeof buildPlugin>>;
 
 const buildGetUserRuns =
   (repo: RunRepo, log: FastifyBaseLogger) =>
-  async (userId: string): Promise<RunDetailsDO[]> => {
+  async (userId: string): Promise<UserRunDetailsDO[]> => {
     let result;
 
     try {
@@ -25,29 +25,35 @@ const buildGetUserRuns =
   };
 
 const buildGetRunsByJourneyId =
-  (repo: RunRepo, log: FastifyBaseLogger) =>
+  (repo: RunRepo, log: FastifyBaseLogger, httpErrors: HttpErrors) =>
   async (
     journeyId: string,
     organizationId: string,
-  ): Promise<RunDetailsDO[]> => {
+  ): Promise<PSRunDetailsDO[]> => {
     let result;
 
     try {
-      result = await repo.getRunsByJourney(journeyId, organizationId);
+      result = await repo.getRunsByJourney(journeyId);
     } catch (err) {
       log.error((err as Error).message);
     }
 
-    return result?.rows ?? [];
+    if (!result?.rows) return [];
+
+    if (result.rows[0].organizationId !== organizationId) {
+      throw httpErrors.unauthorized("Unauthorized!");
+    }
+
+    return result?.rows;
   };
 
 const buildGetRunById =
   (repo: RunRepo, log: FastifyBaseLogger, httpErrors: HttpErrors) =>
-  async (runId: string, organizationId: string): Promise<RunDetailsDO> => {
+  async (runId: string, organizationId: string): Promise<PSRunDetailsDO> => {
     let result;
 
     try {
-      result = await repo.getRunById(runId, organizationId);
+      result = await repo.getRunById(runId);
     } catch (err) {
       log.error((err as Error).message);
     }
@@ -56,12 +62,16 @@ const buildGetRunById =
       throw httpErrors.notFound("The requested run was not found");
     }
 
-    return result?.rows[0];
+    if (result.rows[0].organizationId !== organizationId) {
+      throw httpErrors.unauthorized("Unauthorized!");
+    }
+
+    return result!.rows[0];
   };
 
 const buildGetUserRunById =
   (repo: RunRepo, log: FastifyBaseLogger, httpErrors: HttpErrors) =>
-  async (runId: string, userId: string): Promise<RunDetailsDO> => {
+  async (runId: string, userId: string): Promise<UserRunDetailsDO> => {
     let result;
 
     try {
@@ -78,7 +88,7 @@ const buildGetUserRunById =
   };
 
 const buildGetRunStepsByRunId =
-  (repo: RunRepo, log: FastifyBaseLogger, httpErrors: HttpErrors) =>
+  (repo: RunRepo, log: FastifyBaseLogger) =>
   async (runId: string): Promise<RunStepDO[]> => {
     let result;
 
@@ -99,9 +109,9 @@ const buildPlugin = (
   return {
     getUserRuns: buildGetUserRuns(repo, log),
     getUserRunById: buildGetUserRunById(repo, log, httpErrors),
-    getRunsByJourneyId: buildGetRunsByJourneyId(repo, log),
+    getRunsByJourneyId: buildGetRunsByJourneyId(repo, log, httpErrors),
     getRunById: buildGetRunById(repo, log, httpErrors),
-    getRunStepsByRunId: buildGetRunStepsByRunId(repo, log, httpErrors),
+    getRunStepsByRunId: buildGetRunStepsByRunId(repo, log),
   };
 };
 

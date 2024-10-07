@@ -1,7 +1,12 @@
 import { Static } from "@sinclair/typebox";
-import { RunDetails, RunStep } from "../../../routes/schemas";
+import {
+  UserRunDetails,
+  RunStep,
+  PublicServantRunDetails,
+} from "../../../routes/schemas";
 
-export type RunDetailsDO = Static<typeof RunDetails>;
+export type UserRunDetailsDO = Static<typeof UserRunDetails>;
+export type PSRunDetailsDO = Static<typeof PublicServantRunDetails>;
 
 export type RunStepDO = Static<typeof RunStep>;
 
