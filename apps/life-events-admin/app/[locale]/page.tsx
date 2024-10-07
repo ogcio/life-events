@@ -41,7 +41,7 @@ export default async (props: { params: { locale: string } }) => {
               </td>
               <td className="govie-table__cell govie-body-s">
                 <a
-                  className="govie-link"
+                  className="govie-link govie-link--no-visited-state"
                   href={`/${props.params.locale}/subcategories/${row.subcategoryId}`}
                 >
                   {tHome("edit")}

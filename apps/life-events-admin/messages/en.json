@@ -22,6 +22,12 @@
     "link3": "Link 3",
     "back": "Back",
     "newItem": "New Item",
-    "addNewItem": "Add new item"
+    "addNewItem": "Add new item",
+    "delete": "Delete",
+    "deleteConfirm": "Delete",
+    "modalCancel": "Cancel",
+    "modalDeleteP1": "You are about to delete the subcategory",
+    "modalDeleteP2": "Confirm by clicking the delete button",
+    "confirmDeletionTitle": "Confirm deletion"
   }
 }

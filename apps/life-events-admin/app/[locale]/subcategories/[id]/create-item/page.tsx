@@ -73,6 +73,12 @@ export default async function CreateItem(props: {
   }
   return (
     <>
+      <a
+        className="govie-back-link"
+        href={`/${props.params.locale}/subcategories/${props.params.id}`}
+      >
+        {tSubcat("back")}
+      </a>
       <Heading>{tSubcat("newItem")}</Heading>
       <form action={createItemAction}>
         <fieldset

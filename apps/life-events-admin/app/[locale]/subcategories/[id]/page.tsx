@@ -1,12 +1,22 @@
 import React from "react";
-import { Heading, TextInput, Label, LabelSize } from "@govie-ds/react";
+import {
+  Heading,
+  TextInput,
+  Label,
+  LabelSize,
+  Paragraph,
+} from "@govie-ds/react";
 import { data } from "../../../../data/data";
 import { translate } from "../../../../utils/locale";
 import { getTranslations } from "next-intl/server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 
-export default async (props: { params: { locale: string; id: string } }) => {
+export default async (props: {
+  params: { locale: string; id: string };
+  searchParams: { did: string };
+}) => {
   const tSubcat = await getTranslations("Subcategory");
   let formData: Awaited<ReturnType<typeof data.subcategory.formData>>;
   try {
@@ -112,27 +122,110 @@ export default async (props: { params: { locale: string; id: string } }) => {
     );
   }
 
+  async function deleteItemAction(formData: FormData) {
+    "use server";
+
+    const itemId = formData.get("id")?.toString();
+    if (!itemId) {
+      return;
+    }
+
+    await data.subcategoryItem.delete(itemId);
+
+    redirect(`/${props.params.locale}/subcategories/${props.params.id}`);
+  }
+
+  const itemToBeDeleted = formData.items.find(
+    (item) => item.id === props.searchParams.did,
+  );
+
   return (
     <>
+      {itemToBeDeleted && (
+        <div className="govie-modal">
+          <div className="govie-modal--overlay"></div>
+          <div
+            className="govie-modal--content"
+            style={{ position: "fixed", top: "20%" }}
+          >
+            <div
+              className="govie-modal--close-button-container"
+              style={{ padding: "10px" }}
+            >
+              <a
+                href={`/${props.params.locale}/subcategories/${props.params.id}`}
+              >
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 14 14"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M14 1.41L12.59 0L7 5.59L1.41 0L0 1.41L5.59 7L0 12.59L1.41 14L7 8.41L12.59 14L14 12.59L8.41 7L14 1.41Z"
+                    fill="#505A5F"
+                  ></path>
+                </svg>
+                <span className="govie-visually-hidden">
+                  {tSubcat("close")}
+                </span>
+              </a>
+              <span className="govie-tooltip govie-tooltip--undefined">
+                {tSubcat("close")}
+              </span>
+            </div>
+            <h1 className="govie-heading-s">
+              {tSubcat("confirmDeletionTitle")}
+            </h1>
+            <p className="govie-body">
+              {tSubcat("modalDeleteP1")}&nbsp;
+              <b>{translate(itemToBeDeleted.title, props.params.locale)}</b>
+            </p>
+            <p className="govie-body">{tSubcat("modalDeleteP2")}</p>
+            <div className="govie-modal--buttons">
+              <a
+                style={{ width: "fit-content" }}
+                href={`/${props.params.locale}/subcategories/${props.params.id}`}
+                className="govie-button govie-button--medium govie-button--outlined"
+              >
+                {tSubcat("modalCancel")}
+              </a>
+              <form action={deleteItemAction} style={{ minWidth: "45%" }}>
+                <input
+                  name="id"
+                  defaultValue={itemToBeDeleted.id}
+                  type="hidden"
+                ></input>
+                <button className="govie-button govie-button--medium ">
+                  {tSubcat("deleteConfirm")}
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
       <a className="govie-back-link" href="/">
         {tSubcat("back")}
       </a>
       <ul className="govie-list">
         {formData.items.map((item) => (
           <li key={`scrollList_${item.id}`}>
-            <a className="govie-link" href={`#${item.id}`}>
+            <a
+              className="govie-link govie-link--no-visited-state"
+              href={`#${item.id}`}
+            >
               {translate(item.title, props.params.locale)}
             </a>
           </li>
         ))}
       </ul>
-      <Heading>{translate(formData.title, props.params.locale)}</Heading>
       <form action={newItemAction}>
         <button className="govie-button govie-button" type="submit">
           {tSubcat("addNewItem")}
         </button>
       </form>
-
+      <Heading>{translate(formData.title, props.params.locale)}</Heading>
       <form action={subcategoryFormAction}>
         <fieldset
           style={{
@@ -199,7 +292,6 @@ export default async (props: { params: { locale: string; id: string } }) => {
           </button>
         </fieldset>
       </form>
-
       {formData.items.map((item) => {
         return (
           <React.Fragment key={item.id}>
@@ -207,73 +299,35 @@ export default async (props: { params: { locale: string; id: string } }) => {
               id={item.id}
               className="govie-section-break govie-section-break--visible"
             ></hr>
-            <br />
-            <Heading as="h2">
-              {translate(item.title, props.params.locale)}
-            </Heading>
 
-            <form action={itemFormAction}>
-              <input name="id" type="hidden" readOnly value={item.id}></input>
-              <fieldset
+            <details name="bror" style={{ padding: "10px" }}>
+              <summary
+                id="1"
                 style={{
-                  padding: "10px",
-                  border: "1px solid gray",
-                  borderRadius: "2px",
-                  margin: "0px 0px 50px 0px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
                 }}
               >
-                <legend style={{ fontSize: "18px", fontWeight: 600 }}>
-                  {tSubcat("title")}
-                </legend>
-                {Object.keys(formData.title).map((langKey) => (
-                  <TextInput
-                    key={`${item.id}_title_${langKey}`}
-                    defaultValue={translate(item.title, langKey)}
-                    label={{ text: tSubcat(langKey) }}
-                    name={`title_${langKey}`}
-                  ></TextInput>
-                ))}
-                <button
+                <Paragraph style={{ margin: "unset" }}>
+                  {translate(item.title, props.params.locale)}
+                </Paragraph>
+
+                {/* <form action={openDeleteModalAction}> */}
+                <input type="hidden" name="id" defaultValue={item.id} />
+                <Link
+                  href={`/${props.params.locale}/subcategories/${props.params.id}?did=${item.id}`}
                   style={{ margin: "unset" }}
-                  className="govie-button govie-button--medium"
-                  type="submit"
+                  //   className="govie-button govie-button--medium"
+                  className="govie-link"
                 >
-                  {tSubcat("save")}
-                </button>
-              </fieldset>
-
-              <fieldset
-                style={{
-                  padding: "10px",
-                  border: "1px solid gray",
-                  borderRadius: "2px",
-                  margin: "0px 0px 50px 0px",
-                }}
-              >
-                <legend style={{ fontSize: "18px", fontWeight: 600 }}>
-                  {tSubcat("text")}
-                </legend>
-                {Object.keys(formData.text).map((langKey) => (
-                  <TextInput
-                    key={`${item.id}_text_${langKey}`}
-                    defaultValue={translate(item.text, langKey)}
-                    label={{ text: tSubcat(langKey) }}
-                    name={`text_${langKey}`}
-                  ></TextInput>
-                ))}
-
-                <button
-                  style={{ margin: "unset" }}
-                  className="govie-button govie-button--medium"
-                  type="submit"
-                >
-                  {tSubcat("save")}
-                </button>
-              </fieldset>
-
-              {item.links.map((link, i) => (
+                  {tSubcat("delete")}
+                </Link>
+                {/* </form> */}
+              </summary>
+              <form action={itemFormAction}>
+                <input name="id" type="hidden" readOnly value={item.id}></input>
                 <fieldset
-                  key={`${item.id}_link_${i}}`}
                   style={{
                     padding: "10px",
                     border: "1px solid gray",
@@ -282,43 +336,44 @@ export default async (props: { params: { locale: string; id: string } }) => {
                   }}
                 >
                   <legend style={{ fontSize: "18px", fontWeight: 600 }}>
-                    {tSubcat(i === 0 ? "link1" : i === 1 ? "link2" : "link3")}
+                    {tSubcat("title")}
                   </legend>
-                  {Object.keys(link.name).map((langKey) => (
+                  {Object.keys(formData.title).map((langKey) => (
                     <TextInput
-                      key={`link_${langKey}`}
-                      defaultValue={translate(link.name, langKey)}
+                      key={`${item.id}_title_${langKey}`}
+                      defaultValue={translate(item.title, langKey)}
                       label={{ text: tSubcat(langKey) }}
-                      name={`${i}_link_name_${langKey}`}
+                      name={`title_${langKey}`}
                     ></TextInput>
                   ))}
-                  <TextInput
-                    defaultValue={link.href}
-                    label={{ text: tSubcat("href") }}
-                    name={`${i}_link_href`}
-                  ></TextInput>
-                  <div className="govie-form-group">
-                    <fieldset className="govie-fieldset">
-                      <div className="govie-checkboxes govie-checkboxes--small">
-                        <div className="govie-checkboxes__item">
-                          <input
-                            className="govie-checkboxes__input"
-                            id={`${i}_${item.id}`}
-                            name={`${i}_link_isExternal`}
-                            type="checkbox"
-                            defaultChecked={link.isExternal}
-                            value="ext"
-                          />
-                          <label
-                            htmlFor={`${i}_${item.id}`}
-                            className="govie-label govie-checkboxes__label"
-                          >
-                            {tSubcat("isExternal")}
-                          </label>
-                        </div>
-                      </div>
-                    </fieldset>
-                  </div>
+                  <button
+                    style={{ margin: "unset" }}
+                    className="govie-button govie-button--medium"
+                    type="submit"
+                  >
+                    {tSubcat("save")}
+                  </button>
+                </fieldset>
+
+                <fieldset
+                  style={{
+                    padding: "10px",
+                    border: "1px solid gray",
+                    borderRadius: "2px",
+                    margin: "0px 0px 50px 0px",
+                  }}
+                >
+                  <legend style={{ fontSize: "18px", fontWeight: 600 }}>
+                    {tSubcat("text")}
+                  </legend>
+                  {Object.keys(formData.text).map((langKey) => (
+                    <TextInput
+                      key={`${item.id}_text_${langKey}`}
+                      defaultValue={translate(item.text, langKey)}
+                      label={{ text: tSubcat(langKey) }}
+                      name={`text_${langKey}`}
+                    ></TextInput>
+                  ))}
 
                   <button
                     style={{ margin: "unset" }}
@@ -328,8 +383,67 @@ export default async (props: { params: { locale: string; id: string } }) => {
                     {tSubcat("save")}
                   </button>
                 </fieldset>
-              ))}
-            </form>
+
+                {item.links.map((link, i) => (
+                  <fieldset
+                    key={`${item.id}_link_${i}}`}
+                    style={{
+                      padding: "10px",
+                      border: "1px solid gray",
+                      borderRadius: "2px",
+                      margin: "0px 0px 50px 0px",
+                    }}
+                  >
+                    <legend style={{ fontSize: "18px", fontWeight: 600 }}>
+                      {tSubcat(i === 0 ? "link1" : i === 1 ? "link2" : "link3")}
+                    </legend>
+                    {Object.keys(link.name).map((langKey) => (
+                      <TextInput
+                        key={`link_${langKey}`}
+                        defaultValue={translate(link.name, langKey)}
+                        label={{ text: tSubcat(langKey) }}
+                        name={`${i}_link_name_${langKey}`}
+                      ></TextInput>
+                    ))}
+                    <TextInput
+                      defaultValue={link.href}
+                      label={{ text: tSubcat("href") }}
+                      name={`${i}_link_href`}
+                    ></TextInput>
+                    <div className="govie-form-group">
+                      <fieldset className="govie-fieldset">
+                        <div className="govie-checkboxes govie-checkboxes--small">
+                          <div className="govie-checkboxes__item">
+                            <input
+                              className="govie-checkboxes__input"
+                              id={`${i}_${item.id}`}
+                              name={`${i}_link_isExternal`}
+                              type="checkbox"
+                              defaultChecked={link.isExternal}
+                              value="ext"
+                            />
+                            <label
+                              htmlFor={`${i}_${item.id}`}
+                              className="govie-label govie-checkboxes__label"
+                            >
+                              {tSubcat("isExternal")}
+                            </label>
+                          </div>
+                        </div>
+                      </fieldset>
+                    </div>
+
+                    <button
+                      style={{ margin: "unset" }}
+                      className="govie-button govie-button--medium"
+                      type="submit"
+                    >
+                      {tSubcat("save")}
+                    </button>
+                  </fieldset>
+                ))}
+              </form>
+            </details>
           </React.Fragment>
         );
       })}

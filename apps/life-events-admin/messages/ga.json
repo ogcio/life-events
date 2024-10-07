@@ -22,6 +22,12 @@
     "link3": "Link 3",
     "back": "Ar ais",
     "newItem": "Mír nua",
-    "addNewItem": "Cuir mír nua leis"
+    "addNewItem": "Cuir mír nua leis",
+    "delete": "Scrios",
+    "deleteConfirm": "Scrios",
+    "modalCancel": "Ceal",
+    "modalDeleteP1": "Tá tú ar tí an fochatagóir a scriosadh",
+    "modalDeleteP2": "Deimhnigh trí chliceáil ar an gcnaipe Scrios",
+    "confirmDeletionTitle": "Deimhnigh scriosadh"
   }
 }

@@ -433,5 +433,19 @@ export const data = {
         throw new Error("create_fail");
       }
     },
+    async delete(itemId: string): Promise<void> {
+      try {
+        await lifeEventsPool.query(
+          `
+            delete from subcategory_items
+            where id = $1
+            `,
+          [itemId],
+        );
+      } catch (err) {
+        console.log(err);
+        throw new Error("delete_fail");
+      }
+    },
   },
 };
