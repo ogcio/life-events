@@ -36,7 +36,7 @@ export const postSignoutRedirect = process.env.HOST_URL;
 export const integratorPublicServantScopes = [
   "integrator:journey:*",
   "integrator:step:*",
-  "integrator:submission:read",
+  "integrator:run:read",
 ];
 
 export const getSignInConfiguration = () => ({

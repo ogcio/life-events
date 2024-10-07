@@ -5,4 +5,8 @@ export enum authPermissions {
 
   JOURNEY_STEP_READ = "integrator:step:read",
   JOURNEY_STEP_WRITE = "integrator:step:write",
+
+  RUN_READ = "integrator:run:read",
+  RUN_SELF_READ = "integrator:run.self:read",
+  RUN_WRITE = "integrator:run:write",
 }

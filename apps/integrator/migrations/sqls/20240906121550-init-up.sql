@@ -30,6 +30,35 @@ BEGIN
         destination_step_id UUID REFERENCES journey_steps(id) ON DELETE CASCADE -- Foreign key to the specific step in the journey
     );
 
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'run_status') THEN
+        CREATE TYPE run_status AS ENUM ('pending', 'completed', 'failed');
+    END IF;
+
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'step_status') THEN
+        CREATE TYPE step_status AS ENUM ('pending', 'in_progress', 'completed', 'failed');
+    END IF;
+
+    -- Table to track individual run by users through a journey
+    CREATE TABLE IF NOT EXISTS runs ( 
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),             -- Unique identifier for the run
+        user_id VARCHAR(12) NOT NULL,                              -- Identifier for the user executing the run (assumes a user system exists)
+        journey_id UUID REFERENCES journeys(id) ON DELETE CASCADE, -- Foreign key to the associated journey
+        status run_status NOT NULL DEFAULT 'pending',              -- Status of the run (pending, completed, failed)
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,            -- Timestamp when the run was started
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP             -- Timestamp when the run was last updated
+    );
+
+    -- Table to track progress of each step in a run
+    CREATE TABLE IF NOT EXISTS run_steps (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),   -- Unique identifier for the run step
+        run_id UUID REFERENCES runs(id) ON DELETE CASCADE, -- Foreign key to the run
+        step_id UUID REFERENCES journey_steps(id) ON DELETE CASCADE, -- Foreign key to the specific step in the journey
+        data JSONB,                                      -- The data collected or processed for this step, stored in JSONB format
+        status run_status NOT NULL DEFAULT 'pending',   -- Status of the step (pending, in_progress, completed, failed)
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  -- Timestamp when the step was created
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP   -- Timestamp of the last time the step was updated
+    );
+
     -- Table to track individual submissions by users through a journey
     CREATE TABLE IF NOT EXISTS submissions ( 
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),  -- Unique identifier for the submission
@@ -38,10 +67,6 @@ BEGIN
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  -- Timestamp when the submission was started
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP   -- Timestamp when the submission was last updated
     );
-
-    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'step_status') THEN
-        CREATE TYPE step_status AS ENUM ('pending', 'in_progress', 'completed', 'failed');
-    END IF;
 
     -- Table to track progress of each step in a submission
     CREATE TABLE IF NOT EXISTS submission_steps (

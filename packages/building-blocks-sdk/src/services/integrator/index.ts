@@ -185,4 +185,54 @@ export class Integrator {
       }),
     );
   }
+
+  /**
+   * RUNS
+   */
+
+  async getUserRunById(
+    runId: paths["/api/v1/executor/runs/self/{runId}"]["get"]["parameters"]["path"]["runId"],
+  ) {
+    return formatQueryResult(
+      this.client.GET("/api/v1/executor/runs/self/{runId}", {
+        params: {
+          path: {
+            runId,
+          },
+        },
+      }),
+    );
+  }
+
+  async getUserRuns() {
+    return formatQueryResult(this.client.GET("/api/v1/executor/runs/self", {}));
+  }
+
+  async getRunsByJourneyId(
+    journeyId: paths["/api/v1/executor/runs/journeys/{journeyId}"]["get"]["parameters"]["path"]["journeyId"],
+  ) {
+    return formatQueryResult(
+      this.client.GET("/api/v1/executor/runs/journeys/{journeyId}", {
+        params: {
+          path: {
+            journeyId,
+          },
+        },
+      }),
+    );
+  }
+
+  async getRunById(
+    runId: paths["/api/v1/executor/runs/{runId}"]["get"]["parameters"]["path"]["runId"],
+  ) {
+    return formatQueryResult(
+      this.client.GET("/api/v1/executor/runs/{runId}", {
+        params: {
+          path: {
+            runId,
+          },
+        },
+      }),
+    );
+  }
 }
