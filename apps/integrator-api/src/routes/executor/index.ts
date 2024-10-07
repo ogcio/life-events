@@ -68,9 +68,10 @@ export default async function executor(app: FastifyInstance) {
         throw app.httpErrors.unauthorized("Unauthorized!");
       }
 
-      const runDetails = await app.run.getUserRunById(runId, userId);
-
-      const steps = await app.run.getRunStepsByRunId(runId);
+      const [runDetails, steps] = await Promise.all([
+        app.run.getUserRunById(runId, userId),
+        app.run.getRunStepsByRunId(runId),
+      ]);
 
       const fullRun = {
         ...runDetails,
@@ -105,7 +106,7 @@ export default async function executor(app: FastifyInstance) {
         throw app.httpErrors.unauthorized("Unauthorized!");
       }
 
-      const runs = await app.run.getRunsByJourneyId(journeyId);
+      const runs = await app.run.getRunsByJourneyId(journeyId, organizationId);
 
       reply.send(formatAPIResponse(runs));
     },
@@ -136,9 +137,10 @@ export default async function executor(app: FastifyInstance) {
         throw app.httpErrors.unauthorized("Unauthorized!");
       }
 
-      const runDetails = await app.run.getRunById(runId);
-
-      const steps = await app.run.getRunStepsByRunId(runId);
+      const [runDetails, steps] = await Promise.all([
+        app.run.getRunById(runId, organizationId),
+        app.run.getRunStepsByRunId(runId),
+      ]);
 
       const fullRun = {
         ...runDetails,

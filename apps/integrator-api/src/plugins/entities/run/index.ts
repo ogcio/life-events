@@ -26,11 +26,14 @@ const buildGetUserRuns =
 
 const buildGetRunsByJourneyId =
   (repo: RunRepo, log: FastifyBaseLogger) =>
-  async (journeyId: string): Promise<RunDetailsDO[]> => {
+  async (
+    journeyId: string,
+    organizationId: string,
+  ): Promise<RunDetailsDO[]> => {
     let result;
 
     try {
-      result = await repo.getRunsByJourney(journeyId);
+      result = await repo.getRunsByJourney(journeyId, organizationId);
     } catch (err) {
       log.error((err as Error).message);
     }
@@ -40,11 +43,11 @@ const buildGetRunsByJourneyId =
 
 const buildGetRunById =
   (repo: RunRepo, log: FastifyBaseLogger, httpErrors: HttpErrors) =>
-  async (runId: string): Promise<RunDetailsDO> => {
+  async (runId: string, organizationId: string): Promise<RunDetailsDO> => {
     let result;
 
     try {
-      result = await repo.getRunById(runId);
+      result = await repo.getRunById(runId, organizationId);
     } catch (err) {
       log.error((err as Error).message);
     }
