@@ -391,5 +391,47 @@ export const data = {
         throw new Error("update_fail");
       }
     },
+    async create(
+      subcategoryId: string,
+      item: Omit<SubcategoryItemModel, "id">,
+    ): Promise<string> {
+      try {
+        const createQueryResult = await lifeEventsPool.query<{ id: string }>(
+          `
+            insert into subcategory_items(
+                subcategory_id,
+                title_en,
+                title_ga,
+                text_en,
+                text_ga,
+                links
+            ) values (
+                $1,$2,$3,$4,$5,$6
+            )
+            returning id
+          `,
+          [
+            subcategoryId,
+            item.title.en,
+            item.title.ga || "",
+            item.text.en,
+            item.text.ga || "",
+            JSON.stringify(
+              item.links.map((item) => ({
+                href: item.href,
+                isExternal: item.isExternal,
+                name_en: item.name.en,
+                name_ga: item.name.ga || "",
+              })),
+            ),
+          ],
+        );
+
+        return createQueryResult.rows.at(0)!.id;
+      } catch (err) {
+        console.log(err);
+        throw new Error("create_fail");
+      }
+    },
   },
 };

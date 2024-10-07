@@ -1,11 +1,10 @@
 import React from "react";
-import ds from "design-system";
 import { Heading, TextInput, Label, LabelSize } from "@govie-ds/react";
 import { data } from "../../../../data/data";
 import { translate } from "../../../../utils/locale";
 import { getTranslations } from "next-intl/server";
-import Link from "next/link";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
 export default async (props: { params: { locale: string; id: string } }) => {
   const tSubcat = await getTranslations("Subcategory");
@@ -105,12 +104,34 @@ export default async (props: { params: { locale: string; id: string } }) => {
     });
   }
 
+  async function newItemAction() {
+    "use server";
+
+    redirect(
+      `/${props.params.locale}/subcategories/${props.params.id}/create-item`,
+    );
+  }
+
   return (
     <>
       <a className="govie-back-link" href="/">
         {tSubcat("back")}
       </a>
+      <ul className="govie-list">
+        {formData.items.map((item) => (
+          <li key={`scrollList_${item.id}`}>
+            <a className="govie-link" href={`#${item.id}`}>
+              {translate(item.title, props.params.locale)}
+            </a>
+          </li>
+        ))}
+      </ul>
       <Heading>{translate(formData.title, props.params.locale)}</Heading>
+      <form action={newItemAction}>
+        <button className="govie-button govie-button" type="submit">
+          {tSubcat("addNewItem")}
+        </button>
+      </form>
 
       <form action={subcategoryFormAction}>
         <fieldset
@@ -182,7 +203,10 @@ export default async (props: { params: { locale: string; id: string } }) => {
       {formData.items.map((item) => {
         return (
           <React.Fragment key={item.id}>
-            <hr className="govie-section-break govie-section-break--visible"></hr>
+            <hr
+              id={item.id}
+              className="govie-section-break govie-section-break--visible"
+            ></hr>
             <br />
             <Heading as="h2">
               {translate(item.title, props.params.locale)}
@@ -258,7 +282,7 @@ export default async (props: { params: { locale: string; id: string } }) => {
                   }}
                 >
                   <legend style={{ fontSize: "18px", fontWeight: 600 }}>
-                    {tSubcat(i === 0 ? "left" : i === 1 ? "middle" : "right")}
+                    {tSubcat(i === 0 ? "link1" : i === 1 ? "link2" : "link3")}
                   </legend>
                   {Object.keys(link.name).map((langKey) => (
                     <TextInput

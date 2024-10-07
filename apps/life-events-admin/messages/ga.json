@@ -17,9 +17,11 @@
     "isExternal": "Seachtrach link",
     "href": "Url",
     "emptyLinkDisclaimer": "Ní thaispeánfar mura líontar url",
-    "left": "Chlé link",
-    "middle": "Meán link",
-    "right": "Ceart link",
-    "back": "Ar ais"
+    "link1": "Link 1",
+    "link2": "Link 2",
+    "link3": "Link 3",
+    "back": "Ar ais",
+    "newItem": "Mír nua",
+    "addNewItem": "Cuir mír nua leis"
   }
 }
