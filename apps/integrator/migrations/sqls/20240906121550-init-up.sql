@@ -31,7 +31,7 @@ BEGIN
     );
 
     IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'run_status') THEN
-        CREATE TYPE step_status AS ENUM ('pending', 'completed', 'failed');
+        CREATE TYPE run_status AS ENUM ('pending', 'completed', 'failed');
     END IF;
 
     -- Table to track individual run by users through a journey
