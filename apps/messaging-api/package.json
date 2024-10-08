@@ -31,7 +31,7 @@
     "@fastify/under-pressure": "^8.5.1",
     "@ogcio/fastify-error-handler": "^4.0.1",
     "@ogcio/fastify-logging-wrapper": "^4.0.1",
-    "@sinclair/typebox": "^0.33.0",
+    "@sinclair/typebox": "^0.33.15",
     "api-auth": "*",
     "auth": "*",
     "building-blocks-sdk": "*",
