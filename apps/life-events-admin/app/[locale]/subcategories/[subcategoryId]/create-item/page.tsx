@@ -3,11 +3,16 @@ import { Heading, TextInput } from "@govie-ds/react";
 import { getTranslations } from "next-intl/server";
 import { data, SubcategoryItemModel } from "../../../../../data/data";
 import { redirect } from "next/navigation";
+import { translate } from "../../../../../utils/locale";
 
 export default async function CreateItem(props: {
-  params: { locale: string; id: string };
+  params: { locale: string; subcategoryId: string };
 }) {
   const tSubcat = await getTranslations("Subcategory");
+  const breadcrumbs = await data.subcategory.breadcrumbs(
+    props.params.subcategoryId,
+  );
+
   async function createItemAction(formData: FormData) {
     "use server";
 
@@ -64,21 +69,49 @@ export default async function CreateItem(props: {
     };
 
     try {
-      await data.subcategoryItem.create(props.params.id, item);
+      await data.subcategoryItem.create(props.params.subcategoryId, item);
     } catch (err) {
       console.log(err);
       return;
     }
-    redirect(`/${props.params.locale}/subcategories/${props.params.id}`);
+    redirect(
+      `/${props.params.locale}/subcategories/${props.params.subcategoryId}`,
+    );
   }
   return (
     <>
       <a
         className="govie-back-link"
-        href={`/${props.params.locale}/subcategories/${props.params.id}`}
+        href={`/${props.params.locale}/subcategories/${props.params.subcategoryId}`}
       >
         {tSubcat("back")}
       </a>
+      <div className="govie-breadcrumbs">
+        <ol className="govie-breadcrumbs__list">
+          {breadcrumbs?.map((bc, i) => (
+            <li key={`bc_${i}`} className="govie-breadcrumbs__list-item">
+              {translate(bc, props.params.locale, "href") ? (
+                <a
+                  className="govie-breadcrumbs__link"
+                  href={translate(bc, props.params.locale, "href")}
+                >
+                  {translate(bc, props.params.locale, "label")}
+                </a>
+              ) : (
+                <span className="govie-breadcrumbs">
+                  {translate(bc, props.params.locale, "label")}
+                </span>
+              )}
+            </li>
+          ))}
+          <li className="govie-breadcrumbs__list-item">
+            <span className="govie-breadcrumbs">
+              {tSubcat("newItemBreadcrumb")}
+            </span>
+          </li>
+        </ol>
+      </div>
+
       <Heading>{tSubcat("newItem")}</Heading>
       <form action={createItemAction}>
         <fieldset

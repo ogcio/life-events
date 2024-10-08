@@ -1,14 +1,19 @@
 {
   "Home": {
     "gaeilgeMenuLabel": "Gaeilge",
-    "englishMenuLabel": "English",
+    "englishMenuLabel": "English"
+  },
+  "Table": {
+    "actions": "Gnímh",
     "category": "Chatagóir",
     "subcategory": "Fochatagóir",
-    "edit": "Cuir in eagar"
+    "editAction": "Eagar",
+    "deleteAction": "Scrios"
   },
   "Subcategory": {
     "en": "Béarla",
     "ga": "Gaeilge",
+    "newSubcatHeading": "Cruthaigh fochatagóir nua",
     "subcategoriesHeading": "Fochatagóirí",
     "title": "Teideal",
     "text": "Téacs",
@@ -21,13 +26,14 @@
     "link2": "Link 2",
     "link3": "Link 3",
     "back": "Ar ais",
-    "newItem": "Mír nua",
-    "addNewItem": "Cuir mír nua leis",
+    "newItem": "Cruthaigh mír nua",
+    "addNewItem": "Mír nua",
     "delete": "Scrios",
     "deleteConfirm": "Scrios",
     "modalCancel": "Ceal",
     "modalDeleteP1": "Tá tú ar tí an fochatagóir a scriosadh",
     "modalDeleteP2": "Deimhnigh trí chliceáil ar an gcnaipe Scrios",
-    "confirmDeletionTitle": "Deimhnigh scriosadh"
+    "confirmDeletionTitle": "Deimhnigh scriosadh",
+    "newItemBreadcrumb": "Mír nua"
   }
 }

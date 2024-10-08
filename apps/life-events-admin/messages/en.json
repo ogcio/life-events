@@ -1,14 +1,19 @@
 {
   "Home": {
     "gaeilgeMenuLabel": "Gaeilge",
-    "englishMenuLabel": "English",
+    "englishMenuLabel": "English"
+  },
+  "Table": {
+    "actions": "Actions",
     "category": "Category",
     "subcategory": "Subcategory",
-    "edit": "Edit"
+    "editAction": "Edit",
+    "deleteAction": "Delete"
   },
   "Subcategory": {
     "en": "English",
     "ga": "Irish",
+    "newSubcatHeading": "Create a new subcategory",
     "subcategoriesHeading": "Subcategories",
     "title": "Title",
     "text": "Text",
@@ -21,13 +26,14 @@
     "link2": "Link 2",
     "link3": "Link 3",
     "back": "Back",
-    "newItem": "New Item",
-    "addNewItem": "Add new item",
+    "newItem": "Create a new Item",
+    "addNewItem": "New item",
     "delete": "Delete",
     "deleteConfirm": "Delete",
     "modalCancel": "Cancel",
     "modalDeleteP1": "You are about to delete the subcategory",
     "modalDeleteP2": "Confirm by clicking the delete button",
-    "confirmDeletionTitle": "Confirm deletion"
+    "confirmDeletionTitle": "Confirm deletion",
+    "newItemBreadcrumb": "New item"
   }
 }
