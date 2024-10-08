@@ -430,6 +430,7 @@
     "markAsUnread": "Mark as unread",
     "englishMenuLabel": "English",
     "gaeilgeMenuLabel": "Gaeilge",
-    "messagingNavLabel": "Life Events Messages"
+    "messagingNavLabel": "Life Events Messages",
+    "messagingTitle": "Messaging"
   }
 }
