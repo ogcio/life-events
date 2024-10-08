@@ -18,6 +18,18 @@ export function stringToAmount(amount: string) {
   return Math.round(parseFloat(amount) * 100);
 }
 
+export function validateURLAmount(amount) {
+  if (isNaN(amount)) {
+    return false;
+  }
+
+  if (amount < 1 || amount > 1000000) {
+    return false;
+  }
+
+  return true;
+}
+
 // Generating the amount to pay based on the business rules of the application
 export const getRealAmount = ({
   amount,

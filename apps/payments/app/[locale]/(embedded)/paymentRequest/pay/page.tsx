@@ -6,6 +6,7 @@ import {
   formatCurrency,
   getRealAmount,
   stringToAmount,
+  validateURLAmount,
 } from "../../../../utils";
 import { notFound, redirect } from "next/navigation";
 import SelectPaymentMethod from "./SelectPaymentMethod";
@@ -81,12 +82,23 @@ export default async function Page(props: Props) {
 
   const allowCustomAmount = details.allowCustomAmount;
 
-  const urlAmount = props.searchParams.amount
+  let urlAmount = props.searchParams.amount
     ? parseFloat(props.searchParams.amount)
     : undefined;
-  const customAmount = props.searchParams.customAmount
+  let customAmount = props.searchParams.customAmount
     ? parseFloat(props.searchParams.customAmount)
     : undefined;
+
+  let customAmountError = false;
+  if (urlAmount && !validateURLAmount(urlAmount)) {
+    urlAmount = 0;
+    customAmountError = true;
+  }
+
+  if (customAmount && !validateURLAmount(customAmount)) {
+    customAmount = 0;
+    customAmountError = true;
+  }
 
   const realAmount = getRealAmount({
     amount: details.amount,
@@ -130,13 +142,21 @@ export default async function Page(props: Props) {
             {t("toPay")}: {formatCurrency(realAmount)}
           </h2>
           {allowCustomAmount && (
-            <div className="govie-form-group">
+            <div
+              className={`govie-form-group ${customAmountError && "govie-form-group--error"}`}
+            >
               <label htmlFor="customAmount" className="govie-label--s">
                 {t("selectCustomAmount")}
               </label>
 
               <form style={{ maxWidth: "500px" }} action={selectAmountAction}>
                 <div style={{ margin: "1em 0px" }}>
+                  {customAmountError && (
+                    <p id="input-field-error" className="govie-error-message">
+                      <span className="govie-visually-hidden">Error:</span>
+                      {t("invalidCustomAmount")}
+                    </p>
+                  )}
                   <div className="govie-input__wrapper">
                     <div aria-hidden="true" className="govie-input__prefix">
                       {tCommon("currencySymbol")}
