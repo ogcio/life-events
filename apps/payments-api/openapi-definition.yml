@@ -6,6 +6,16 @@ info:
 components:
   schemas: {}
 paths:
+  /.well-known/jwks.json:
+    get:
+      responses:
+        "200":
+          description: Default Response
+  /call-integrator:
+    get:
+      responses:
+        "200":
+          description: Default Response
   /health:
     get:
       responses:
