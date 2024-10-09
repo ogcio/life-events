@@ -3,6 +3,7 @@ import {
   CreateTransactionBody,
   FullTransaction,
   Transaction,
+  TransactionData,
   TransactionDetails,
   TransactionStatuses,
   UpdateTransactionBody,
@@ -34,3 +35,5 @@ export type TransactionEntry = {
   };
   userId: string;
 };
+
+export type TransactionDataDO = Static<typeof TransactionData>;
