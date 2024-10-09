@@ -11,3 +11,4 @@ bearer-*-report.html
 allure-results
 !.env.sample
 .env.*
+.DS_Store

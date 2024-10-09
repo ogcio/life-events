@@ -71,7 +71,7 @@ export default async function CreateItem(props: {
         </ol>
       </div>
 
-      <a className="govie-back-link" href={`/${props.params.locale}`}>
+      <a className="govie-back-link" href={`/categories`}>
         {tSubcat("back")}
       </a>
       <Heading>{tSubcat("newSubcatHeading")}</Heading>

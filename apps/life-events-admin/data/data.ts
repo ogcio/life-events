@@ -335,8 +335,8 @@ export const data = {
 
         const breadcrumbs: Lang<Breadcrumb>[] = [
           {
-            en: { href: "/en", label: "Home" },
-            ga: { href: "/ga", label: "Abhaile" },
+            en: { href: "/en/categories", label: "Home" },
+            ga: { href: "/ga/categories", label: "Abhaile" },
           },
         ];
 
@@ -518,8 +518,8 @@ export const data = {
 
         const breadcrumbs: Lang<Breadcrumb>[] = [
           {
-            en: { href: "/en", label: "Home" },
-            ga: { href: "/ga", label: "Abhaile" },
+            en: { href: "/en/categories", label: "Home" },
+            ga: { href: "/ga/categories", label: "Abhaile" },
           },
         ];
 

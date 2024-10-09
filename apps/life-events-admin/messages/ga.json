@@ -8,6 +8,7 @@
     "actions": "Gnímh",
     "category": "Chatagóir",
     "subcategory": "Fochatagóir",
+    "journeyItem": "Mír turais",
     "editAction": "Eagar",
     "deleteAction": "Scrios",
     "noRows": "Uimh míreanna"
@@ -22,13 +23,13 @@
     "link1": "Link 1",
     "link2": "Link 2",
     "link3": "Link 3",
-    "isExternal": "Seachtrach link"
+    "isExternal": "Seachtrach link",
+    "links": "Links",
+    "href": "Url"
   },
   "Subcategory": {
     "newSubcatHeading": "Cruthaigh fochatagóir nua",
     "subcategoriesHeading": "Fochatagóirí",
-    "links": "Links",
-    "href": "Url",
     "emptyLinkDisclaimer": "Ní thaispeánfar mura líontar url",
     "back": "Ar ais",
     "newItem": "Cruthaigh mír nua",

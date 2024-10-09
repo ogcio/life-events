@@ -158,11 +158,11 @@ export default async (props: {
           }}
         >
           <legend style={{ fontSize: "18px", fontWeight: 600 }}>
-            {tSubcat("text")}
+            {tForm("text")}
           </legend>
           {!formData.text.en && (
             <Label
-              text={tSubcat("emptyDisclaimer")}
+              text={tForm("emptyDisclaimer")}
               size={LabelSize.sm}
             ></Label>
           )}
@@ -171,7 +171,7 @@ export default async (props: {
             <TextInput
               key={`desc_${langKey}`}
               defaultValue={translate(formData.text, langKey)}
-              label={{ text: tSubcat(langKey) }}
+              label={{ text: tForm(langKey) }}
               name={`text_${langKey}`}
             ></TextInput>
           ))}
@@ -181,7 +181,7 @@ export default async (props: {
             className="govie-button govie-button--medium"
             type="submit"
           >
-            {tSubcat("save")}
+            {tForm("save")}
           </button>
         </fieldset>
 

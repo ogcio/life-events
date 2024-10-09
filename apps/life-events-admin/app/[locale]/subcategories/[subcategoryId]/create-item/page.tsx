@@ -8,7 +8,10 @@ import { translate } from "../../../../../utils/locale";
 export default async function CreateItem(props: {
   params: { locale: string; subcategoryId: string };
 }) {
-  const tSubcat = await getTranslations("Subcategory");
+  const [tSubcat, tForm] = await Promise.all([
+    getTranslations("Subcategory"),
+    getTranslations("Form"),
+  ]);
   const breadcrumbs = await data.subcategory.breadcrumbs(
     props.params.subcategoryId,
   );
@@ -80,12 +83,6 @@ export default async function CreateItem(props: {
   }
   return (
     <>
-      <a
-        className="govie-back-link"
-        href={`/${props.params.locale}/subcategories/${props.params.subcategoryId}`}
-      >
-        {tSubcat("back")}
-      </a>
       <div className="govie-breadcrumbs">
         <ol className="govie-breadcrumbs__list">
           {breadcrumbs?.map((bc, i) => (
@@ -112,6 +109,13 @@ export default async function CreateItem(props: {
         </ol>
       </div>
 
+      <a
+        className="govie-back-link"
+        href={`/${props.params.locale}/subcategories/${props.params.subcategoryId}`}
+      >
+        {tSubcat("back")}
+      </a>
+
       <Heading>{tSubcat("newItem")}</Heading>
       <form action={createItemAction}>
         <fieldset
@@ -123,15 +127,15 @@ export default async function CreateItem(props: {
           }}
         >
           <legend style={{ fontSize: "18px", fontWeight: 600 }}>
-            {tSubcat("title")}
+            {tForm("title")}
           </legend>
           <TextInput
-            label={{ text: tSubcat("en") }}
+            label={{ text: tForm("en") }}
             name="title_en"
             required
           ></TextInput>
           <TextInput
-            label={{ text: tSubcat("ga") }}
+            label={{ text: tForm("ga") }}
             name="title_ga"
             required
           ></TextInput>
@@ -146,11 +150,11 @@ export default async function CreateItem(props: {
           }}
         >
           <legend style={{ fontSize: "18px", fontWeight: 600 }}>
-            {tSubcat("text")}
+            {tForm("text")}
           </legend>
 
-          <TextInput label={{ text: tSubcat("en") }} name="text_en"></TextInput>
-          <TextInput label={{ text: tSubcat("ga") }} name="text_ga"></TextInput>
+          <TextInput label={{ text: tForm("en") }} name="text_en"></TextInput>
+          <TextInput label={{ text: tForm("ga") }} name="text_ga"></TextInput>
         </fieldset>
         <fieldset
           style={{
@@ -161,18 +165,18 @@ export default async function CreateItem(props: {
           }}
         >
           <legend style={{ fontSize: "18px", fontWeight: 600 }}>
-            {tSubcat("link1")}
+            {tForm("link1")}
           </legend>
           <TextInput
-            label={{ text: tSubcat("en") }}
+            label={{ text: tForm("en") }}
             name="0_link_name_en"
           ></TextInput>
           <TextInput
-            label={{ text: tSubcat("ga") }}
+            label={{ text: tForm("ga") }}
             name="0_link_name_ga"
           ></TextInput>
           <TextInput
-            label={{ text: tSubcat("href") }}
+            label={{ text: tForm("href") }}
             name="0_link_href"
           ></TextInput>
           <div className="govie-form-group">
@@ -190,7 +194,7 @@ export default async function CreateItem(props: {
                     htmlFor="0_link_isExternal"
                     className="govie-label govie-checkboxes__label"
                   >
-                    {tSubcat("isExternal")}
+                    {tForm("isExternal")}
                   </label>
                 </div>
               </div>
@@ -207,18 +211,18 @@ export default async function CreateItem(props: {
           }}
         >
           <legend style={{ fontSize: "18px", fontWeight: 600 }}>
-            {tSubcat("link2")}
+            {tForm("link2")}
           </legend>
           <TextInput
-            label={{ text: tSubcat("en") }}
+            label={{ text: tForm("en") }}
             name="1_link_name_en"
           ></TextInput>
           <TextInput
-            label={{ text: tSubcat("ga") }}
+            label={{ text: tForm("ga") }}
             name="1_link_name_ga"
           ></TextInput>
           <TextInput
-            label={{ text: tSubcat("href") }}
+            label={{ text: tForm("href") }}
             name="1_link_href"
           ></TextInput>
           <div className="govie-form-group">
@@ -236,7 +240,7 @@ export default async function CreateItem(props: {
                     htmlFor="1_link_isExternal"
                     className="govie-label govie-checkboxes__label"
                   >
-                    {tSubcat("isExternal")}
+                    {tForm("isExternal")}
                   </label>
                 </div>
               </div>
@@ -253,18 +257,18 @@ export default async function CreateItem(props: {
           }}
         >
           <legend style={{ fontSize: "18px", fontWeight: 600 }}>
-            {tSubcat("link3")}
+            {tForm("link3")}
           </legend>
           <TextInput
-            label={{ text: tSubcat("en") }}
+            label={{ text: tForm("en") }}
             name="2_link_name_en"
           ></TextInput>
           <TextInput
-            label={{ text: tSubcat("ga") }}
+            label={{ text: tForm("ga") }}
             name="2_link_name_ga"
           ></TextInput>
           <TextInput
-            label={{ text: tSubcat("href") }}
+            label={{ text: tForm("href") }}
             name="2_link_href"
           ></TextInput>
           <div className="govie-form-group">
@@ -282,7 +286,7 @@ export default async function CreateItem(props: {
                     htmlFor="2_link_isExternal"
                     className="govie-label govie-checkboxes__label"
                   >
-                    {tSubcat("isExternal")}
+                    {tForm("isExternal")}
                   </label>
                 </div>
               </div>
@@ -290,7 +294,7 @@ export default async function CreateItem(props: {
           </div>
         </fieldset>
         <button className="govie-button govie-button" type="submit">
-          {tSubcat("addNewItem")}
+          {tForm("create")}
         </button>
       </form>
     </>

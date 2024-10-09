@@ -168,7 +168,7 @@ export default async (props: {
         </ol>
       </div>
 
-      <a className="govie-back-link" href="/">
+      <a className="govie-back-link" href={"/categories"}>
         {tSubcat("back")}
       </a>
 
@@ -265,23 +265,28 @@ export default async (props: {
           </a>
         </TableHeading>
         <div style={{ padding: "24px" }}>
-          <table className="govie-table">
-            <thead className="govie-table__head">
-              <tr className="govie-table__row">
-                <th scope="col" className="govie-table__header">
-                  {tTable("subcategory")}
-                </th>
-                <th
-                  scope="col"
-                  className="govie-table__header govie-table__header--numeric"
-                >
-                  {tTable("actions")}
-                </th>
-              </tr>
-            </thead>
-            <tbody className="govie-table__body">
-              {formData.items?.length ? (
-                formData.items.map((row) => (
+          {!Boolean(formData.items?.length) && (
+            <Paragraph align="center" style={{ margin: "0 auto" }}>
+              {tTable("noRows")}
+            </Paragraph>
+          )}
+          {Boolean(formData.items.length) && (
+            <table className="govie-table">
+              <thead className="govie-table__head">
+                <tr className="govie-table__row">
+                  <th scope="col" className="govie-table__header">
+                    {tTable("journeyItem")}
+                  </th>
+                  <th
+                    scope="col"
+                    className="govie-table__header govie-table__header--numeric"
+                  >
+                    {tTable("actions")}
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="govie-table__body">
+                {formData.items.map((row) => (
                   <tr key={row.id} className="govie-table__row">
                     <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-m">
                       {translate(row.title, props.params.locale)}
@@ -305,12 +310,10 @@ export default async (props: {
                       </div>
                     </td>
                   </tr>
-                ))
-              ) : (
-                <Paragraph align="center">{tTable("empty")}</Paragraph>
-              )}
-            </tbody>
-          </table>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
       </TableSection>
     </>

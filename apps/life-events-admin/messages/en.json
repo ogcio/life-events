@@ -8,6 +8,7 @@
     "actions": "Actions",
     "category": "Category",
     "subcategory": "Subcategory",
+    "journeyItem": "Mír turais",
     "editAction": "Edit",
     "deleteAction": "Delete",
     "noRows": "No items"
@@ -22,17 +23,17 @@
     "link1": "Link 1",
     "link2": "Link 2",
     "link3": "Link 3",
-    "isExternal": "External link"
+    "isExternal": "External link",
+    "links": "Links",
+    "href": "Url"
   },
   "Subcategory": {
     "newSubcatHeading": "Create a new subcategory",
     "subcategoriesHeading": "Subcategories",
-    "links": "Links",
-    "href": "Url",
+    "addNewItem": "New item",
     "emptyDisclaimer": "If fields are empty, it will not show up for clients",
     "back": "Back",
     "newItem": "Create a new Item",
-    "addNewItem": "New item",
     "delete": "Delete",
     "deleteConfirm": "Delete",
     "modalCancel": "Cancel",
