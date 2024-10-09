@@ -11,5 +11,5 @@ export default async () => {
 
   const isPublicServant = await instance.isPublicServant();
 
-  redirect(isPublicServant ? "/admin" : "/messages", RedirectType.replace);
+  redirect(isPublicServant ? "/admin" : "/home", RedirectType.replace);
 };

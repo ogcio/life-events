@@ -360,6 +360,7 @@
     "confirm": "Confirm method",
     "title": "Pay your fee",
     "errorNotReady": "This payment form is not enabled yet to recieve any payments.",
+    "invalidCustomAmount": "Invalid amount entered.",
     "toPay": "Total to pay",
     "payBy": {
       "openbanking": {

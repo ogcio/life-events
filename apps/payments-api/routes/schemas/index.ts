@@ -235,7 +235,7 @@ export const FullTransaction = Type.Object({
   extPaymentId: Type.String(),
   status: TransactionStatuses,
   integrationReference: Type.String(),
-  amount: Type.Number(),
+  amount: Type.Number({ minimum: 1, maximum: 1000000 }),
   paymentProviderId: Type.String(),
   createdAt: Type.String(),
   updatedAt: Type.String(),
