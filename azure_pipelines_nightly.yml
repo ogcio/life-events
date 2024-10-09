@@ -31,7 +31,7 @@ stages:
         displayName: start
         steps:
           - task: CmdLine@2
-            displayName: 'Run performance tests for ${{ parameters.serviceName }}'
+            displayName: Start 
             inputs:
               script: "echo \"Starting test run\" && exit 0"
   - ${{ each serviceName in split(replace(variables.services, ' ', ''), ',') }}:
