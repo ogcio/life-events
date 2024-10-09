@@ -23,6 +23,7 @@ resources:
       endpoint: ogcio
 
 stages:
+  - ${{ each serviceName in split(replace(variables.services, ' ', ''), ',') }}:
     - stage: Regression_Tests_${{ replace(serviceName, '-', '_') }}
       displayName: Run regression tests - ${{ serviceName }}
       pool: 'Openshift'
