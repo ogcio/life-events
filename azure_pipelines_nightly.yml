@@ -14,6 +14,10 @@ parameters:
     type: object
     default: ["dev"]
 
+  - name: vmImage
+    type: string
+    default: "ubuntu-22.04"
+
 resources:
   repositories:
     - repository: pipeline-templates
