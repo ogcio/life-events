@@ -25,7 +25,7 @@ resources:
 stages:
   - stage: Start_Tests
     displayName: Start Tests
-    pool: "ubuntu-latest"
+    pool: 'Openshift''
     jobs:
       - job: start
         displayName: start
