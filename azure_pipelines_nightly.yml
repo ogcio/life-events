@@ -14,10 +14,6 @@ parameters:
     type: object
     default: ["dev"]
 
-  - name: vmImage
-    type: string
-    default: "ubuntu-22.04"
-
 resources:
   repositories:
     - repository: pipeline-templates
@@ -27,11 +23,21 @@ resources:
       endpoint: ogcio
 
 stages:
+  - stage: Start Tests
+    displayName: Start Tests
+    pool: "ubuntu-latest"
+    jobs:
+      - job: start
+        displayName: start
+        steps:
+          - task: CmdLine@2
+            displayName: 'Run performance tests for ${{ parameters.serviceName }}'
+            inputs:
+              script: "echo \"Starting test run\" && exit 0"
   - ${{ each serviceName in split(replace(variables.services, ' ', ''), ',') }}:
     - stage: Regression_Tests_${{ replace(serviceName, '-', '_') }}
       displayName: Run regression tests - ${{ serviceName }}
-      pool: 
-        vmImage: 'Openshift'
+      pool: 'Openshift'
       jobs:
         - template: test/regression_test.yml@pipeline-templates
           parameters:
@@ -39,8 +45,7 @@ stages:
             testPath: './apps/'
     - stage: Performance_Tests_${{ replace(serviceName, '-', '_') }}
       displayName: Run performance tests - ${{ serviceName }}
-      pool: 
-        vmImage: 'Openshift'
+      pool: 'Openshift'
       dependsOn: Regression_Tests_${{ replace(serviceName, '-', '_') }}
       jobs:
         - template: test/performance_test.yml@pipeline-templates
