@@ -4,6 +4,11 @@
     "englishMenuLabel": "English",
     "newSubcategoryLink": "Fochatagóir nua"
   },
+  "Navigation": {
+    "back": "Ar ais",
+    "home": "Abhaile",
+    "createPathBreadcrumb": "Cosán nua"
+  },
   "Table": {
     "actions": "Gnímh",
     "category": "Chatagóir",

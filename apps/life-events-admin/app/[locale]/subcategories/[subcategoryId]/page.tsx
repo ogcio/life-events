@@ -14,6 +14,7 @@ import { redirect } from "next/navigation";
 import TableSection from "../../../TableSection";
 import TableHeading from "../../../TableHeading";
 import TableHeader from "../../../TableHeader";
+import TableNewButtonLink from "../../../TableNewButtonLink";
 
 export default async (props: {
   params: { locale: string; subcategoryId: string };
@@ -239,30 +240,11 @@ export default async (props: {
           <TableHeader>
             {translate(formData.title, props.params.locale)}
           </TableHeader>
-          <a
+          <TableNewButtonLink
             href={`/${props.params.locale}/subcategories/${props.params.subcategoryId}/create-item`}
-            style={{
-              margin: "unset",
-              display: "flex",
-              padding: "0 5px",
-            }}
-            className="govie-button  govie-button--icon govie-button--flat "
           >
-            <svg
-              className="govie-button__icon-left"
-              width="14"
-              height="14"
-              viewBox="0 0 14 14"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M14 8.5H8V14.5H6V8.5H0V6.5H6V0.5H8V6.5H14V8.5Z"
-                fill="white"
-              ></path>
-            </svg>
             {tSubcat("addNewItem")}
-          </a>
+          </TableNewButtonLink>
         </TableHeading>
         <div style={{ padding: "24px" }}>
           {!Boolean(formData.items?.length) && (

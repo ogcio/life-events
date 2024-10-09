@@ -1,3 +1,4 @@
+import RecommendedPaths from "../app/[locale]/recommended-paths/page";
 import { lifeEventsPool } from "./postgres";
 
 type Lang<T> = {
@@ -524,7 +525,7 @@ export const data = {
         ];
 
         const row = queryResult.rows.at(0);
-        console.log(row);
+
         if (row) {
           const cat: Lang<Breadcrumb> = {
             en: {
@@ -725,5 +726,81 @@ export const data = {
         throw new Error("delete_fail");
       }
     },
+  },
+  RecommendedPaths: {
+    // async breadcrumbs(): Promise<Lang<Breadcrumb>[]> {
+    //   try {
+    //     // const queryResult =
+    //     // await lifeEventsPool.query<SubcategoryItemBreadcrumbQueryRow>(
+    //     //   `
+    //     //     select
+    //     //       i.id as item_id,
+    //     //       i.title_en as item_name_en,
+    //     //       i.title_ga as item_name_ga,
+    //     //       c.id as category_id,
+    //     //       c.name_en as category_name_en,
+    //     //       c.name_ga as category_name_ga,
+    //     //       s.id as sub_id,
+    //     //       s.title_en as sub_name_en,
+    //     //       s.title_ga as sub_name_ga
+    //     //     from subcategory_items i
+    //     //     join subcategories s on s.id = i.subcategory_id
+    //     //     join categories c on c.id = s.category_id
+    //     //     where i.id = $1
+    //     //   `,
+    //     //   [itemId],
+    //     // );
+
+    //     const breadcrumbs: Lang<Breadcrumb>[] = [
+    //       {
+    //         en: { href: "/en/categories", label: "Home" },
+    //         ga: { href: "/ga/categories", label: "Abhaile" },
+    //       },
+    //     ];
+
+    //     const row = queryResult.rows.at(0);
+
+    //     if (row) {
+    //       const cat: Lang<Breadcrumb> = {
+    //         en: {
+    //           href: "", //`/en/categories/${row.category_id}`,
+    //           label: row.category_name_en,
+    //         },
+    //         ga: {
+    //           href: "", // `/ga/categories/${row.category_id}`,
+    //           label: row.category_name_ga,
+    //         },
+    //       };
+    //       const subcat: Lang<Breadcrumb> = {
+    //         en: {
+    //           href: `/en/subcategories/${row.sub_id}`,
+    //           label: row.sub_name_en,
+    //         },
+    //         ga: {
+    //           href: `/ga/subcategories/${row.sub_id}`,
+    //           label: row.sub_name_ga,
+    //         },
+    //       };
+    //       const item: Lang<Breadcrumb> = {
+    //         en: {
+    //           href: `/en/subcategory-item/${row.item_id}`,
+    //           label: row.item_name_en,
+    //         },
+    //         ga: {
+    //           href: `/ga/subcategories/${row.item_id}`,
+    //           label: row.item_name_ga,
+    //         },
+    //       };
+    //       breadcrumbs.push(cat, subcat, item);
+    //     }
+
+    //     return breadcrumbs;
+
+    //     return [];
+    //   } catch (err) {
+    //     console.log(err);
+    //     throw new Error("breadcrumbs_failed");
+    //   }
+    // },
   },
 };

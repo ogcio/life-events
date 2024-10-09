@@ -4,6 +4,11 @@
     "englishMenuLabel": "English",
     "newSubcategoryLink": "New subcategory"
   },
+  "Navigation": {
+    "back": "Back",
+    "home": "Home",
+    "createPathBreadcrumb": "New path"
+  },
   "Table": {
     "actions": "Actions",
     "category": "Category",
