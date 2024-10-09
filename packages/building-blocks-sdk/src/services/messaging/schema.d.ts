@@ -17,6 +17,7 @@ export interface paths {
         query?: {
           status?: "delivered";
           isSeen?: "true" | "false" | "0" | "1";
+          search?: string;
           /** @description Either recipientUserId and organisationId are mandatory */
           recipientUserId?: string;
           /** @description Either recipientUserId and organisationId are mandatory */

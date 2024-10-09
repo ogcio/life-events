@@ -13,8 +13,8 @@ import { dirname, join } from "path";
 import healthCheck from "./routes/healthcheck.js";
 import sensible from "@fastify/sensible";
 import postgres from "@fastify/postgres";
-import { initializeLoggingHooks } from "logging-wrapper";
-import { initializeErrorHandler } from "error-handler";
+import { initializeLoggingHooks } from "@ogcio/fastify-logging-wrapper";
+import { initializeErrorHandler } from "@ogcio/fastify-error-handler";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);

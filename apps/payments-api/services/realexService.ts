@@ -1,4 +1,7 @@
-import { RealexHppResponseDO } from "../plugins/entities/providers/types";
+import {
+  RealexHppResponseDO,
+  RealexStatusUpdateDO,
+} from "../plugins/entities/providers/types";
 import CryptographyService from "./cryptographyService";
 
 interface IRealexService {
@@ -35,9 +38,10 @@ export class RealexService implements IRealexService {
     return `${dateFormatted}${timeFormatted}`;
   }
 
-  generateHash(text: any) {
+  generateHash(text: any, algorithm?: string) {
     return this.cryptographyService.hash(
-      this.cryptographyService.hash(text) + "." + this.secret,
+      this.cryptographyService.hash(text, algorithm) + "." + this.secret,
+      algorithm,
     );
   }
 
@@ -56,6 +60,23 @@ export class RealexService implements IRealexService {
     const validHash = this.generateHash(toHash);
 
     return validHash === response.SHA256HASH;
+  }
+
+  verifyStatusUpdateHash(response: RealexStatusUpdateDO): boolean {
+    const {
+      timestamp,
+      merchantid,
+      orderid,
+      result,
+      message,
+      pasref,
+      paymentmethod,
+    } = response;
+
+    const toHash = `${timestamp}.${merchantid}.${orderid}.${result}.${message}.${pasref}.${paymentmethod}`;
+    const validHash = this.generateHash(toHash, "sha1");
+
+    return validHash === response.sha1hash;
   }
 
   generateHTMLResponse(response: RealexHppResponseDO): string {
