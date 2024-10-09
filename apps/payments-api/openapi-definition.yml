@@ -2137,6 +2137,147 @@ paths:
                   - detail
                   - requestId
                   - name
+  /api/v1/transactions/schema/{transactionId}:
+    get:
+      tags: *a3
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: transactionId
+          required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      userId:
+                        type: string
+                      transactionId:
+                        type: string
+                      paymentRequestId:
+                        type: string
+                      paymentRequestTitle:
+                        type: string
+                      amount:
+                        minimum: 1
+                        maximum: 1000000
+                        type: number
+                      extReferenceCode:
+                        type: string
+                      paymentMethod:
+                        type: string
+                      paymentProviderName:
+                        type: string
+                      status:
+                        anyOf:
+                          - type: string
+                            enum:
+                              - initiated
+                          - type: string
+                            enum:
+                              - pending
+                          - type: string
+                            enum:
+                              - succeeded
+                          - type: string
+                            enum:
+                              - cancelled
+                          - type: string
+                            enum:
+                              - failed
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - userId
+                      - transactionId
+                      - paymentRequestId
+                      - paymentRequestTitle
+                      - amount
+                      - extReferenceCode
+                      - paymentMethod
+                      - paymentProviderName
+                      - status
+                      - createdAt
+                      - updatedAt
+                  metadata:
+                    type: object
+                    properties:
+                      links:
+                        type: object
+                        properties:
+                          self:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          next:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          prev:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          first:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          last:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          pages:
+                            type: object
+                            additionalProperties:
+                              type: object
+                              properties:
+                                href:
+                                  type: string
+                        required:
+                          - self
+                          - first
+                          - last
+                          - pages
+                      totalCount:
+                        type: number
+                required:
+                  - data
+        "404":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  requestId:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - requestId
+                  - name
   /api/v1/citizen/transactions:
     get:
       tags:

@@ -9,6 +9,7 @@ import { TransactionsRepo } from "./repo";
 import { PaginationParams } from "../../../types/pagination";
 import {
   CreateTransactionBodyDO,
+  TransactionDataDO,
   TransactionDetailsDO,
   TransactionEntry,
 } from "./types";
@@ -22,6 +23,13 @@ export enum TransactionStatusesEnum {
   Cancelled = "cancelled",
   Failed = "failed",
 }
+
+const paymentMethodMap: Record<string, string> = {
+  banktransfer: "Manual bank transfer",
+  openbanking: "Open Banking",
+  stripe: "Stripe",
+  realex: "Realex",
+};
 
 const buildGetTransactionById =
   (repo: TransactionsRepo, log: FastifyBaseLogger, httpErrors: HttpErrors) =>
@@ -233,6 +241,28 @@ const buildGetPaymentRequestIdFromTransaction =
     return result?.rows[0];
   };
 
+const buildGetTransactionData =
+  (repo: TransactionsRepo, log: FastifyBaseLogger, httpErrors: HttpErrors) =>
+  async (transactionId: string): Promise<TransactionDataDO> => {
+    let result;
+
+    try {
+      result = await repo.getTransactionData(transactionId);
+    } catch (err) {
+      log.error((err as Error).message);
+    }
+
+    if (!result?.rowCount) {
+      throw httpErrors.notFound("The requested transaction was not found");
+    }
+
+    const transactionData = {
+      ...result?.rows[0],
+      paymentMethod: paymentMethodMap[result?.rows[0].paymentMethod],
+    };
+    return transactionData;
+  };
+
 const buildPlugin = (
   repo: TransactionsRepo,
   log: FastifyBaseLogger,
@@ -273,6 +303,7 @@ const buildPlugin = (
       log,
       httpErrors,
     ),
+    getTransactionData: buildGetTransactionData(repo, log, httpErrors),
   };
 };
 

@@ -3,6 +3,7 @@ import { QueryResult } from "pg";
 import {
   CreateTransactionBodyDO,
   FullTransactionDO,
+  TransactionDataDO,
   TransactionDetailsDO,
   TransactionEntry,
 } from "./types";
@@ -215,6 +216,30 @@ export class TransactionsRepo {
       `SELECT
         t.payment_request_id as "paymentRequestId"
       FROM payment_transactions t
+      WHERE t.transaction_id = $1`,
+      [transactionId],
+    );
+  }
+
+  getTransactionData(
+    transactionId: string,
+  ): Promise<QueryResult<TransactionDataDO>> {
+    return this.pg.query(
+      `SELECT
+        t.user_id as "userId",
+        t.transaction_id as "transactionId",
+        pr.payment_request_id as "paymentRequestId",
+        pr.title as "paymentRequestTitle",
+        t.amount,
+        t.ext_payment_id as "extReferenceCode",
+        pp.provider_type as "paymentMethod",
+        pp.provider_name as "paymentProviderName",
+        t.status,
+        t.created_at as "createdAt",
+        t.updated_at as "updatedAt"
+      FROM payment_transactions t
+      LEFT JOIN payment_requests pr ON pr.payment_request_id = t.payment_request_id
+      LEFT JOIN payment_providers pp ON t.payment_provider_id = pp.provider_id
       WHERE t.transaction_id = $1`,
       [transactionId],
     );

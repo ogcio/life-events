@@ -5,5 +5,6 @@ export enum authPermissions {
   PAYMENT_REQUEST_ALL = "payments:payment_request:*",
   TRANSACTION_SELF_WRITE = "payments:transaction.self:write",
   TRANSACTION_SELF_READ = "payments:transaction.self:read",
+  TRANSACTION_READ = "payments:transaction:read",
   TRANSACTION_ALL = "payments:transaction:*",
 }
