@@ -178,7 +178,8 @@ export const data = {
             s.title_en as subcategory_name_en,
             s.title_ga as subcategory_name_ga
         from categories c
-        left join subcategories s on s.category_id = c.id        
+        left join subcategories s on s.category_id = c.id      
+        order by c.sort_order  
         `);
 
       const categoryTableModels: CategoryTableModel[] = [];

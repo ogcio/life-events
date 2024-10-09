@@ -3,6 +3,7 @@ create table categories(
 	icon text,
 	name_en text not null,
 	name_ga text not null,
+	sport_order int,
 	created_at timestamptz not null default now()
 );
 
@@ -14,6 +15,7 @@ create table subcategories(
 	title_ga text not null,
 	text_en text,
 	text_ga text,
+	sport_order int,
 	created_at timestamptz not null default now()
 );
 
@@ -25,6 +27,7 @@ create table subcategory_items(
 	text_en text,
 	text_ga text,
 	links jsonb, -- []{href:text, isExternal:bool, name_ga: text, name_en:text}
+	sport_order int,
 	created_at timestamptz not null default now()
 );
 

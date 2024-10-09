@@ -8,7 +8,10 @@ import { translate } from "../../../../../utils/locale";
 export default async function CreateItem(props: {
   params: { locale: string; categoryId: string };
 }) {
-  const tSubcat = await getTranslations("Subcategory");
+  const [tSubcat, tForm] = await Promise.all([
+    getTranslations("Subcategory"),
+    getTranslations("Form"),
+  ]);
 
   const breadcrumbs = await data.category.breadcrumbs(props.params.categoryId);
 
@@ -75,22 +78,22 @@ export default async function CreateItem(props: {
       <form action={createItemAction}>
         <fieldset
           style={{
-            padding: "10px",
+            padding: "12px",
             border: "1px solid gray",
             borderRadius: "2px",
             margin: "0px 0px 50px 0px",
           }}
         >
           <legend style={{ fontSize: "18px", fontWeight: 600 }}>
-            {tSubcat("title")}
+            {tForm("title")}
           </legend>
           <TextInput
-            label={{ text: tSubcat("en") }}
+            label={{ text: tForm("en") }}
             name="title_en"
             required
           ></TextInput>
           <TextInput
-            label={{ text: tSubcat("ga") }}
+            label={{ text: tForm("ga") }}
             name="title_ga"
             required
           ></TextInput>
@@ -98,22 +101,22 @@ export default async function CreateItem(props: {
 
         <fieldset
           style={{
-            padding: "10px",
+            padding: "12px",
             border: "1px solid gray",
             borderRadius: "2px",
             margin: "0px 0px 50px 0px",
           }}
         >
           <legend style={{ fontSize: "18px", fontWeight: 600 }}>
-            {tSubcat("text")}
+            {tForm("text")}
           </legend>
 
-          <TextInput label={{ text: tSubcat("en") }} name="text_en"></TextInput>
-          <TextInput label={{ text: tSubcat("ga") }} name="text_ga"></TextInput>
+          <TextInput label={{ text: tForm("en") }} name="text_en"></TextInput>
+          <TextInput label={{ text: tForm("ga") }} name="text_ga"></TextInput>
         </fieldset>
 
         <button className="govie-button govie-button" type="submit">
-          {tSubcat("create")}
+          {tForm("create")}
         </button>
       </form>
     </>

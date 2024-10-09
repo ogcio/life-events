@@ -11,15 +11,18 @@ import { translate } from "../../../../utils/locale";
 import { getTranslations } from "next-intl/server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import Link from "next/link";
+import TableSection from "../../../TableSection";
+import TableHeading from "../../../TableHeading";
+import TableHeader from "../../../TableHeader";
 
 export default async (props: {
   params: { locale: string; subcategoryId: string };
   searchParams: { did: string };
 }) => {
-  const [tSubcat, tTable] = await Promise.all([
+  const [tSubcat, tTable, tForm] = await Promise.all([
     getTranslations("Subcategory"),
     getTranslations("Table"),
+    getTranslations("Form"),
   ]);
   let formData: Awaited<ReturnType<typeof data.subcategory.formData>>;
   try {
@@ -55,80 +58,6 @@ export default async (props: {
     revalidatePath("/");
   }
 
-  async function itemFormAction(formData: FormData) {
-    "use server";
-
-    const itemId = formData.get("id")?.toString() || "";
-    if (!itemId) {
-      return;
-    }
-
-    const titleEn = formData.get("title_en")?.toString() || "";
-    const titleGa = formData.get("title_ga")?.toString() || "";
-    const textEn = formData.get("text_en")?.toString() || "";
-    const textGa = formData.get("text_ga")?.toString() || "";
-    const link1nameEn = formData.get("0_link_name_en")?.toString() || "";
-    const link1nameGa = formData.get("0_link_name_ga")?.toString() || "";
-    const link1href = formData.get("0_link_href")?.toString() || "";
-    const link1external = Boolean(formData.get("0_link_isExternal"));
-
-    const link2nameEn = formData.get("1_link_name_en")?.toString() || "";
-    const link2nameGa = formData.get("1_link_name_ga")?.toString() || "";
-    const link2href = formData.get("1_link_href")?.toString() || "";
-    const link2external = Boolean(formData.get("1_link_isExternal"));
-
-    const link3nameEn = formData.get("2_link_name_en")?.toString() || "";
-    const link3nameGa = formData.get("2_link_name_ga")?.toString() || "";
-    const link3href = formData.get("2_link_href")?.toString() || "";
-    const link3external = Boolean(formData.get("2_link_isExternal"));
-
-    await data.subcategoryItem.update({
-      id: itemId,
-      links: [
-        {
-          href: link1href,
-          isExternal: link1external,
-          name: {
-            en: link1nameEn,
-            ga: link1nameGa,
-          },
-        },
-        {
-          href: link2href,
-          isExternal: link2external,
-          name: {
-            en: link2nameEn,
-            ga: link2nameGa,
-          },
-        },
-        {
-          href: link3href,
-          isExternal: link3external,
-          name: {
-            en: link3nameEn,
-            ga: link3nameGa,
-          },
-        },
-      ],
-      text: {
-        en: textEn,
-        ga: textGa,
-      },
-      title: {
-        en: titleEn,
-        ga: titleGa,
-      },
-    });
-  }
-
-  async function newItemAction() {
-    "use server";
-
-    redirect(
-      `/${props.params.locale}/subcategories/${props.params.subcategoryId}/create-item`,
-    );
-  }
-
   async function deleteItemAction(formData: FormData) {
     "use server";
 
@@ -159,7 +88,7 @@ export default async (props: {
           >
             <div
               className="govie-modal--close-button-container"
-              style={{ padding: "10px" }}
+              style={{ padding: "15px" }}
             >
               <a
                 href={`/${props.params.locale}/subcategories/${props.params.subcategoryId}`}
@@ -206,7 +135,10 @@ export default async (props: {
                   defaultValue={itemToBeDeleted.id}
                   type="hidden"
                 ></input>
-                <button className="govie-button govie-button--medium ">
+                <button
+                  className="govie-button govie-button--medium "
+                  style={{ width: "100%" }}
+                >
                   {tSubcat("deleteConfirm")}
                 </button>
               </form>
@@ -244,21 +176,21 @@ export default async (props: {
       <form action={subcategoryFormAction}>
         <fieldset
           style={{
-            padding: "10px",
+            padding: "12px",
             border: "1px solid gray",
             borderRadius: "2px",
             marginBottom: "50px",
           }}
         >
           <legend style={{ fontSize: "18px", fontWeight: 600 }}>
-            {tSubcat("title")}
+            {tForm("title")}
           </legend>
 
           {Object.keys(formData.title).map((langKey) => (
             <TextInput
               key={`title_${langKey}`}
               defaultValue={translate(formData.title, langKey)}
-              label={{ text: tSubcat(langKey) }}
+              label={{ text: tForm(langKey) }}
               name={`title_${langKey}`}
             ></TextInput>
           ))}
@@ -267,33 +199,27 @@ export default async (props: {
             className="govie-button govie-button--medium"
             type="submit"
           >
-            {tSubcat("save")}
+            {tForm("save")}
           </button>
         </fieldset>
 
         <fieldset
           style={{
-            padding: "10px",
+            padding: "12px",
             border: "1px solid gray",
             borderRadius: "2px",
             marginBottom: "50px",
           }}
         >
           <legend style={{ fontSize: "18px", fontWeight: 600 }}>
-            {tSubcat("text")}
+            {tForm("text")}
           </legend>
-          {!formData.text.en && (
-            <Label
-              text={tSubcat("emptyDisclaimer")}
-              size={LabelSize.sm}
-            ></Label>
-          )}
 
           {Object.keys(formData.title).map((langKey) => (
             <TextInput
               key={`desc_${langKey}`}
               defaultValue={translate(formData.text, langKey)}
-              label={{ text: tSubcat(langKey) }}
+              label={{ text: tForm(langKey) }}
               name={`text_${langKey}`}
             ></TextInput>
           ))}
@@ -303,61 +229,90 @@ export default async (props: {
             className="govie-button govie-button--medium"
             type="submit"
           >
-            {tSubcat("save")}
+            {tForm("save")}
           </button>
         </fieldset>
       </form>
 
-      <a
-        className="govie-link govie-link--no-visited-state"
-        href={`/${props.params.locale}/subcategories/${props.params.subcategoryId}/create-item`}
-      >
-        {tSubcat("addNewItem")}
-      </a>
-      <table className="govie-table">
-        <caption>{translate(formData.title, props.params.locale)}</caption>
-        <thead className="govie-table__head">
-          <tr className="govie-table__row">
-            <th scope="col" className="govie-table__header">
-              {tTable("subcategory")}
-            </th>
-            <th scope="col" className="govie-table__header">
-              {tTable("actions")}
-            </th>
-          </tr>
-        </thead>
-        <tbody className="govie-table__body">
-          {formData.items?.length ? (
-            formData.items.map((row) => (
-              <tr key={row.id} className="govie-table__row">
-                <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-                  {translate(row.title, props.params.locale)}
-                </td>
-                <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-                  <div>
-                    <div>
-                      <a
-                        className="govie-link govie-link--no-visited-state govie-!-margin-right-3"
-                        href={`/${props.params.locale}/subcategory-items/${row.id}`}
-                      >
-                        {tTable("editAction")}
-                      </a>
-                      <a
-                        className="govie-link govie-link--no-visited-state govie-!-margin-right-3"
-                        href={`/${props.params.locale}/subcategor/${row.id}`}
-                      >
-                        {tTable("deleteAction")}
-                      </a>
-                    </div>
-                  </div>
-                </td>
+      <TableSection>
+        <TableHeading>
+          <TableHeader>
+            {translate(formData.title, props.params.locale)}
+          </TableHeader>
+          <a
+            href={`/${props.params.locale}/subcategories/${props.params.subcategoryId}/create-item`}
+            style={{
+              margin: "unset",
+              display: "flex",
+              padding: "0 5px",
+            }}
+            className="govie-button  govie-button--icon govie-button--flat "
+          >
+            <svg
+              className="govie-button__icon-left"
+              width="14"
+              height="14"
+              viewBox="0 0 14 14"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M14 8.5H8V14.5H6V8.5H0V6.5H6V0.5H8V6.5H14V8.5Z"
+                fill="white"
+              ></path>
+            </svg>
+            {tSubcat("addNewItem")}
+          </a>
+        </TableHeading>
+        <div style={{ padding: "24px" }}>
+          <table className="govie-table">
+            <thead className="govie-table__head">
+              <tr className="govie-table__row">
+                <th scope="col" className="govie-table__header">
+                  {tTable("subcategory")}
+                </th>
+                <th
+                  scope="col"
+                  className="govie-table__header govie-table__header--numeric"
+                >
+                  {tTable("actions")}
+                </th>
               </tr>
-            ))
-          ) : (
-            <Paragraph align="center">{tTable("empty")}</Paragraph>
-          )}
-        </tbody>
-      </table>
+            </thead>
+            <tbody className="govie-table__body">
+              {formData.items?.length ? (
+                formData.items.map((row) => (
+                  <tr key={row.id} className="govie-table__row">
+                    <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-m">
+                      {translate(row.title, props.params.locale)}
+                    </td>
+                    <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s govie-table__cell--numeric">
+                      <div>
+                        <div>
+                          <a
+                            className="govie-link govie-link--no-visited-state govie-!-margin-right-3"
+                            href={`/${props.params.locale}/subcategory-items/${row.id}`}
+                          >
+                            {tTable("editAction")}
+                          </a>
+                          <a
+                            className="govie-link govie-link--no-visited-state govie-!-margin-right-0"
+                            href={`?did=${row.id}`}
+                          >
+                            {tTable("deleteAction")}
+                          </a>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <Paragraph align="center">{tTable("empty")}</Paragraph>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </TableSection>
     </>
   );
 };

@@ -116,7 +116,7 @@ export default async function CreateItem(props: {
       <form action={createItemAction}>
         <fieldset
           style={{
-            padding: "10px",
+            padding: "12px",
             border: "1px solid gray",
             borderRadius: "2px",
             margin: "0px 0px 50px 0px",
@@ -139,7 +139,7 @@ export default async function CreateItem(props: {
 
         <fieldset
           style={{
-            padding: "10px",
+            padding: "12px",
             border: "1px solid gray",
             borderRadius: "2px",
             margin: "0px 0px 50px 0px",
@@ -154,7 +154,7 @@ export default async function CreateItem(props: {
         </fieldset>
         <fieldset
           style={{
-            padding: "10px",
+            padding: "12px",
             border: "1px solid gray",
             borderRadius: "2px",
             margin: "0px 0px 50px 0px",
@@ -200,7 +200,7 @@ export default async function CreateItem(props: {
 
         <fieldset
           style={{
-            padding: "10px",
+            padding: "12px",
             border: "1px solid gray",
             borderRadius: "2px",
             margin: "0px 0px 50px 0px",
@@ -246,7 +246,7 @@ export default async function CreateItem(props: {
 
         <fieldset
           style={{
-            padding: "10px",
+            padding: "12px",
             border: "1px solid gray",
             borderRadius: "2px",
             margin: "0px 0px 50px 0px",

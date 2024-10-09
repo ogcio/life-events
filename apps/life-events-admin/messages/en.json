@@ -1,30 +1,35 @@
 {
   "Home": {
     "gaeilgeMenuLabel": "Gaeilge",
-    "englishMenuLabel": "English"
+    "englishMenuLabel": "English",
+    "newSubcategoryLink": "New subcategory"
   },
   "Table": {
     "actions": "Actions",
     "category": "Category",
     "subcategory": "Subcategory",
     "editAction": "Edit",
-    "deleteAction": "Delete"
+    "deleteAction": "Delete",
+    "noRows": "No items"
   },
-  "Subcategory": {
+  "Form": {
     "en": "English",
     "ga": "Irish",
-    "newSubcatHeading": "Create a new subcategory",
-    "subcategoriesHeading": "Subcategories",
+    "create": "Create",
     "title": "Title",
     "text": "Text",
     "save": "Save",
-    "links": "Links",
-    "isExternal": "External link",
-    "href": "Url",
-    "emptyDisclaimer": "If fields are empty, it will not show up for clients",
     "link1": "Link 1",
     "link2": "Link 2",
     "link3": "Link 3",
+    "isExternal": "External link"
+  },
+  "Subcategory": {
+    "newSubcatHeading": "Create a new subcategory",
+    "subcategoriesHeading": "Subcategories",
+    "links": "Links",
+    "href": "Url",
+    "emptyDisclaimer": "If fields are empty, it will not show up for clients",
     "back": "Back",
     "newItem": "Create a new Item",
     "addNewItem": "New item",

@@ -1,30 +1,35 @@
 {
   "Home": {
     "gaeilgeMenuLabel": "Gaeilge",
-    "englishMenuLabel": "English"
+    "englishMenuLabel": "English",
+    "newSubcategoryLink": "Fochatagóir nua"
   },
   "Table": {
     "actions": "Gnímh",
     "category": "Chatagóir",
     "subcategory": "Fochatagóir",
     "editAction": "Eagar",
-    "deleteAction": "Scrios"
+    "deleteAction": "Scrios",
+    "noRows": "Uimh míreanna"
   },
-  "Subcategory": {
+  "Form": {
     "en": "Béarla",
     "ga": "Gaeilge",
-    "newSubcatHeading": "Cruthaigh fochatagóir nua",
-    "subcategoriesHeading": "Fochatagóirí",
+    "create": "Chruthú",
     "title": "Teideal",
     "text": "Téacs",
     "save": "Sábháil",
-    "links": "Links",
-    "isExternal": "Seachtrach link",
-    "href": "Url",
-    "emptyLinkDisclaimer": "Ní thaispeánfar mura líontar url",
     "link1": "Link 1",
     "link2": "Link 2",
     "link3": "Link 3",
+    "isExternal": "Seachtrach link"
+  },
+  "Subcategory": {
+    "newSubcatHeading": "Cruthaigh fochatagóir nua",
+    "subcategoriesHeading": "Fochatagóirí",
+    "links": "Links",
+    "href": "Url",
+    "emptyLinkDisclaimer": "Ní thaispeánfar mura líontar url",
     "back": "Ar ais",
     "newItem": "Cruthaigh mír nua",
     "addNewItem": "Mír nua",

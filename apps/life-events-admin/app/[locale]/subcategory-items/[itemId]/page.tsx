@@ -1,23 +1,18 @@
 import React from "react";
-import {
-  Heading,
-  TextInput,
-  Label,
-  LabelSize,
-  Paragraph,
-} from "@govie-ds/react";
+import { Heading, TextInput, Label, LabelSize } from "@govie-ds/react";
 import { data } from "../../../../data/data";
 import { translate } from "../../../../utils/locale";
 import { getTranslations } from "next-intl/server";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
-import Link from "next/link";
 
 export default async (props: {
   params: { locale: string; itemId: string };
   searchParams: { did: string };
 }) => {
-  const tSubcat = await getTranslations("Subcategory");
+  const [tSubcat, tForm] = await Promise.all([
+    getTranslations("Subcategory"),
+    getTranslations("Form"),
+  ]);
   let formData: Awaited<ReturnType<typeof data.subcategoryItem.formData>>;
   try {
     formData = await data.subcategoryItem.formData(props.params.itemId);
@@ -30,35 +25,8 @@ export default async (props: {
     props.params.itemId,
   );
 
-  async function subcategoryFormAction(formData: FormData) {
-    "use server";
-
-    const textEn = formData.get("text_en")?.toString() || "";
-    const textGa = formData.get("text_ga")?.toString() || "";
-    const titleEn = formData.get("title_en")?.toString() || "";
-    const titleGa = formData.get("title_ga")?.toString() || "";
-
-    await data.subcategory.update({
-      id: props.params.itemId,
-      text: {
-        en: textEn,
-        ga: textGa,
-      },
-      title: {
-        en: titleEn,
-        ga: titleGa,
-      },
-    });
-    revalidatePath("/");
-  }
-
   async function itemFormAction(formData: FormData) {
     "use server";
-
-    const itemId = formData.get("id")?.toString() || "";
-    if (!itemId) {
-      return;
-    }
 
     const titleEn = formData.get("title_en")?.toString() || "";
     const titleGa = formData.get("title_ga")?.toString() || "";
@@ -80,7 +48,7 @@ export default async (props: {
     const link3external = Boolean(formData.get("2_link_isExternal"));
 
     await data.subcategoryItem.update({
-      id: itemId,
+      id: props.params.itemId,
       links: [
         {
           href: link1href,
@@ -116,6 +84,8 @@ export default async (props: {
         ga: titleGa,
       },
     });
+
+    revalidatePath("/");
   }
 
   return (
@@ -149,24 +119,24 @@ export default async (props: {
       </a>
 
       <Heading>{translate(formData.title, props.params.locale)}</Heading>
-      <form action={subcategoryFormAction}>
+      <form action={itemFormAction}>
         <fieldset
           style={{
-            padding: "10px",
+            padding: "12px",
             border: "1px solid gray",
             borderRadius: "2px",
             marginBottom: "50px",
           }}
         >
           <legend style={{ fontSize: "18px", fontWeight: 600 }}>
-            {tSubcat("title")}
+            {tForm("title")}
           </legend>
 
           {Object.keys(formData.title).map((langKey) => (
             <TextInput
               key={`title_${langKey}`}
               defaultValue={translate(formData.title, langKey)}
-              label={{ text: tSubcat(langKey) }}
+              label={{ text: tForm(langKey) }}
               name={`title_${langKey}`}
             ></TextInput>
           ))}
@@ -175,13 +145,13 @@ export default async (props: {
             className="govie-button govie-button--medium"
             type="submit"
           >
-            {tSubcat("save")}
+            {tForm("save")}
           </button>
         </fieldset>
 
         <fieldset
           style={{
-            padding: "10px",
+            padding: "12px",
             border: "1px solid gray",
             borderRadius: "2px",
             marginBottom: "50px",
@@ -219,26 +189,26 @@ export default async (props: {
           <fieldset
             key={`${formData.id}_link_${i}}`}
             style={{
-              padding: "10px",
+              padding: "12px",
               border: "1px solid gray",
               borderRadius: "2px",
               margin: "0px 0px 50px 0px",
             }}
           >
             <legend style={{ fontSize: "18px", fontWeight: 600 }}>
-              {tSubcat(i === 0 ? "link1" : i === 1 ? "link2" : "link3")}
+              {tForm(i === 0 ? "link1" : i === 1 ? "link2" : "link3")}
             </legend>
             {Object.keys(link.name).map((langKey) => (
               <TextInput
                 key={`link_${langKey}`}
                 defaultValue={translate(link.name, langKey)}
-                label={{ text: tSubcat(langKey) }}
+                label={{ text: tForm(langKey) }}
                 name={`${i}_link_name_${langKey}`}
               ></TextInput>
             ))}
             <TextInput
               defaultValue={link.href}
-              label={{ text: tSubcat("href") }}
+              label={{ text: tForm("href") }}
               name={`${i}_link_href`}
             ></TextInput>
             <div className="govie-form-group">
@@ -257,7 +227,7 @@ export default async (props: {
                       htmlFor={`${i}_${formData.id}`}
                       className="govie-label govie-checkboxes__label"
                     >
-                      {tSubcat("isExternal")}
+                      {tForm("isExternal")}
                     </label>
                   </div>
                 </div>
@@ -269,7 +239,7 @@ export default async (props: {
               className="govie-button govie-button--medium"
               type="submit"
             >
-              {tSubcat("save")}
+              {tForm("save")}
             </button>
           </fieldset>
         ))}
