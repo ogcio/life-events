@@ -1,0 +1,44 @@
+trigger: none
+pr: none
+
+schedules: 
+- cron: '0 20 * * 0'   # 8 pm daily test run
+  branches: 
+    include: 
+    - dev
+
+# Services object is now defined per environment. 
+# Check the variables file for the desired environment!
+parameters:
+  - name: buildBranches
+    type: object
+    default: ["dev"]
+
+resources:
+  repositories:
+    - repository: pipeline-templates
+      type: github
+      name: ogcio/building-blocks-pipelines
+      ref: perfTests
+      endpoint: ogcio
+
+stages:
+    - stage: Regression_Tests_${{ replace(serviceName, '-', '_') }}
+      displayName: Run regression tests - ${{ serviceName }}
+      pool: 'Openshift'
+      dependsOn: Deploy_${{ replace(serviceName, '-', '_') }}
+      jobs:
+        - template: test/regression_test.yml@pipeline-templates
+          parameters:
+            serviceName: ${{ serviceName }}
+            testPath: './apps/'
+    - stage: Performance_Tests_${{ replace(serviceName, '-', '_') }}
+      displayName: Run performance tests - ${{ serviceName }}
+      pool: 'Openshift'
+      dependsOn: Regression_${{ replace(serviceName, '-', '_') }}
+      jobs:
+        - template: test/performance_test.yml@pipeline-templates
+          parameters:
+            serviceName: ${{ serviceName }}
+            testPath: './apps/'
+
