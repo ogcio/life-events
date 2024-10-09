@@ -9,10 +9,8 @@ schedules:
 
 # Services object is now defined per environment. 
 # Check the variables file for the desired environment!
-parameters:
-  - name: buildBranches
-    type: object
-    default: ["dev"]
+variables:
+  - template: pipeline-variables/dev.yml
 
 resources:
   repositories:
