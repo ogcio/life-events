@@ -23,7 +23,7 @@ resources:
       endpoint: ogcio
 
 stages:
-  - stage: Start Tests
+  - stage: Start_Tests
     displayName: Start Tests
     pool: "ubuntu-latest"
     jobs:
