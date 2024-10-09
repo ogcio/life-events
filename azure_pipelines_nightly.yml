@@ -27,7 +27,6 @@ stages:
     - stage: Regression_Tests_${{ replace(serviceName, '-', '_') }}
       displayName: Run regression tests - ${{ serviceName }}
       pool: 'Openshift'
-      dependsOn: Deploy_${{ replace(serviceName, '-', '_') }}
       jobs:
         - template: test/regression_test.yml@pipeline-templates
           parameters:
