@@ -969,6 +969,62 @@ export interface paths {
       };
     };
   };
+  "/api/v1/transactions/schema": {
+    get: {
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              data: {
+                userId: string;
+                transactionId: string;
+                paymentRequestId: string;
+                paymentRequestTitle: string;
+                amount: number;
+                extReferenceCode: string;
+                paymentMethod: string;
+                paymentProviderName: string;
+                status:
+                  | "initiated"
+                  | "pending"
+                  | "succeeded"
+                  | "cancelled"
+                  | "failed";
+                createdAt: string;
+                updatedAt: string;
+              };
+              metadata?: {
+                links?: {
+                  self: {
+                    href?: string;
+                  };
+                  next?: {
+                    href?: string;
+                  };
+                  prev?: {
+                    href?: string;
+                  };
+                  first: {
+                    href?: string;
+                  };
+                  last: {
+                    href?: string;
+                  };
+                  pages: {
+                    [key: string]: {
+                      href?: string;
+                    };
+                  };
+                };
+                totalCount?: number;
+              };
+            };
+          };
+        };
+      };
+    };
+  };
   "/api/v1/transactions/generatePaymentIntentId": {
     get: {
       responses: {

@@ -246,6 +246,36 @@ export const FullTransaction = Type.Object({
   }),
 });
 
+export const TransactionData = Type.Object({
+  userId: Type.String(),
+  transactionId: Type.String(),
+  paymentRequestId: Type.String(),
+  paymentRequestTitle: Type.String(),
+  amount: Type.Number({ minimum: 1, maximum: 1000000 }),
+  extReferenceCode: Type.String(),
+  paymentMethod: Type.String(),
+  paymentProviderName: Type.String(),
+  status: TransactionStatuses,
+  createdAt: Type.String(),
+  updatedAt: Type.String(),
+});
+
+export const transactionDataJsonSchema = Type.Strict(TransactionData);
+
+export type TransactionDataSchema = {
+  userId: string;
+  transactionId: string;
+  paymentRequestId: string;
+  paymentRequestTitle: string;
+  amount: number;
+  extReferenceCode: string;
+  paymentMethod: string;
+  paymentProviderName: string;
+  status: "initiated" | "pending" | "succeeded" | "cancelled" | "failed"; // Ensure this matches the literals
+  createdAt: string;
+  updatedAt: string;
+};
+
 export const Transaction = Type.Composite([
   Type.Pick(FullTransaction, [
     "transactionId",
