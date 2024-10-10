@@ -9,6 +9,7 @@
     "dist"
   ],
   "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 0",
     "build": "rm -rf dist && rollup -c"
   },
   "author": "",
@@ -32,5 +33,8 @@
     "rollup-plugin-scss": "^4.0.0",
     "sass": "^1.70.0",
     "typescript": "^5.3.3"
+  },
+  "optionalDependencies": {
+    "@rollup/rollup-linux-x64-gnu": "4.9.6"
   }
 }

@@ -56,14 +56,14 @@ export default async (props: {
       case "email": {
         const url = new URL(
           `${props.params.locale}/${providerRoutes.url}/email`,
-          process.env.HOST_URL,
+          process.env.NEXT_PUBLIC_MESSAGING_SERVICE_ENTRY_POINT,
         );
         redirect(url.href);
       }
       case "sms": {
         const url = new URL(
           `${props.params.locale}/${providerRoutes.url}/sms`,
-          process.env.HOST_URL,
+          process.env.NEXT_PUBLIC_MESSAGING_SERVICE_ENTRY_POINT,
         );
         redirect(url.href);
       }
@@ -94,7 +94,7 @@ export default async (props: {
     "use server";
     const url = new URL(
       `${props.params.locale}/${providerRoutes.url}`,
-      process.env.HOST_URL,
+      process.env.NEXT_PUBLIC_MESSAGING_SERVICE_ENTRY_POINT,
     );
     url.searchParams.append(
       searchKeyProvider,
@@ -138,7 +138,7 @@ export default async (props: {
 
     const url = new URL(
       `${props.params.locale}/${providerRoutes.url}`,
-      process.env.HOST_URL,
+      process.env.NEXT_PUBLIC_MESSAGING_SERVICE_ENTRY_POINT,
     );
     url.searchParams.append("provider", providerSearchValue);
     redirect(url.href);
@@ -174,7 +174,7 @@ export default async (props: {
             href={(() => {
               const url = new URL(
                 `${props.params.locale}/${providerRoutes.url}`,
-                process.env.HOST_URL,
+                process.env.NEXT_PUBLIC_MESSAGING_SERVICE_ENTRY_POINT,
               );
               url.searchParams.append(searchKeyProvider, searchValueEmail);
               return url.href;
@@ -189,7 +189,7 @@ export default async (props: {
             href={(() => {
               const url = new URL(
                 `${props.params.locale}/${providerRoutes.url}`,
-                process.env.HOST_URL,
+                process.env.NEXT_PUBLIC_MESSAGING_SERVICE_ENTRY_POINT,
               );
               url.searchParams.append(searchKeyProvider, searchValueSms);
               return url.href;

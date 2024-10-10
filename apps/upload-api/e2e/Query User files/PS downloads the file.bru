@@ -1,0 +1,23 @@
+meta {
+  name: PS downloads the file
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{baseUrl}}/api/v1/files/:fileId
+  body: none
+  auth: none
+}
+
+params:path {
+  fileId: {{fileId}}
+}
+
+headers {
+  Authorization: Bearer {{accessToken}}
+}
+
+assert {
+  res.status: eq 200
+}

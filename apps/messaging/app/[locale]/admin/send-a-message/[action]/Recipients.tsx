@@ -25,7 +25,10 @@ const TO_ADD_IDS_KEY = "recipientToAddIds";
 const TO_REMOVE_ID_KEY = "recipientToRemoveId";
 
 const getBaseUrl = (): URL =>
-  new URL(`${sendAMessage.url}/recipients`, process.env.HOST_URL);
+  new URL(
+    `${sendAMessage.url}/recipients`,
+    process.env.NEXT_PUBLIC_MESSAGING_SERVICE_ENTRY_POINT,
+  );
 
 // Why are not using SDKs?
 // To avoid to transport thousand of users through REST APIs every time
@@ -163,7 +166,6 @@ export default async (props: MessageCreateProps) => {
   const messaging = await AuthenticationFactory.getMessagingClient();
   const response = await messaging.getUsers({
     ...queryParams,
-    organisationId: organization.id,
     transports: props.state.transportations.join(","),
     activeOnly: true,
   });
@@ -234,7 +236,7 @@ export default async (props: MessageCreateProps) => {
           </thead>
           <tbody className="govie-table__body">
             {users?.map((foundUser) => (
-              <tr className="govie-table__row" key={foundUser.userId}>
+              <tr className="govie-table__row" key={foundUser.id}>
                 <th className="govie-table__header govie-table__header--vertical-centralized govie-body-s">
                   {foundUser.firstName} {foundUser.lastName}
                 </th>
@@ -249,7 +251,7 @@ export default async (props: MessageCreateProps) => {
                     <input
                       type="hidden"
                       name="recipient"
-                      value={foundUser.userId}
+                      value={foundUser.id}
                     />
 
                     <div style={{ display: "flex", alignItems: "center" }}>

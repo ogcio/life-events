@@ -3,12 +3,15 @@ import { HttpError } from "../../types/httpErrors";
 import {
   RealexPaymentObject,
   RealexPaymentObjectQueryParams,
+  RealexStatusUpdateQueryParams,
 } from "../schemas";
 import { Type } from "@sinclair/typebox";
 import { authPermissions } from "../../types/authPermissions";
 import {
   RealexHppResponseDO,
   RealexPaymentObjectDO,
+  RealexStatusEnum,
+  RealexStatusUpdateDO,
 } from "../../plugins/entities/providers/types";
 
 const TAGS = ["Transactions"];
@@ -70,13 +73,58 @@ export default async function realex(app: FastifyInstance) {
         body.ORDER_ID,
       );
       const providerId = transaction.paymentProviderId;
+
       const result = await app.providers.services.realex.verifyPaymentResponse(
         body,
         providerId,
       );
 
+      const transactionStatus =
+        app.providers.services.realex.getTransactionStatus(
+          body.RESULT as RealexStatusEnum,
+        );
+      await app.transactions.updateTransactionStatus(
+        transaction.transactionId.toString(),
+        transactionStatus,
+      );
+
       reply.header("Content-Type", "text/html");
       reply.send(result);
+    },
+  );
+
+  app.get<{
+    Reply: any;
+    Querystring: RealexStatusUpdateDO;
+  }>(
+    "/statusUpdate",
+    {
+      schema: {
+        tags: TAGS,
+        querystring: RealexStatusUpdateQueryParams,
+      },
+    },
+    async (request, reply) => {
+      const { result, orderid } = request.query;
+
+      const transaction =
+        await app.transactions.getTransactionByExtPaymentId(orderid);
+      const providerId = transaction.paymentProviderId;
+      await app.providers.services.realex.verifyPaymentStatusUpdate(
+        request.query,
+        providerId,
+      );
+
+      const transactionStatus =
+        app.providers.services.realex.getTransactionStatus(
+          result as RealexStatusEnum,
+        );
+      await app.transactions.updateTransactionStatus(
+        transaction.transactionId.toString(),
+        transactionStatus,
+      );
+
+      reply.send();
     },
   );
 }

@@ -1,11 +1,14 @@
-import { RealexHppResponse } from "../routes/schemas";
+import {
+  RealexHppResponseDO,
+  RealexStatusUpdateDO,
+} from "../plugins/entities/providers/types";
 import CryptographyService from "./cryptographyService";
 
 interface IRealexService {
   generateTimestamp(timestamp?: Date): string;
   generateHash(text: string): string;
-  verifyHash(hppDataResponse: RealexHppResponse): boolean;
-  generateHTMLResponse(response: RealexHppResponse): string;
+  verifyHash(hppDataResponse: RealexHppResponseDO): boolean;
+  generateHTMLResponse(response: RealexHppResponseDO): string;
 }
 export class RealexService implements IRealexService {
   private cryptographyService: CryptographyService;
@@ -35,13 +38,14 @@ export class RealexService implements IRealexService {
     return `${dateFormatted}${timeFormatted}`;
   }
 
-  generateHash(text: any) {
+  generateHash(text: any, algorithm?: string) {
     return this.cryptographyService.hash(
-      this.cryptographyService.hash(text) + "." + this.secret,
+      this.cryptographyService.hash(text, algorithm) + "." + this.secret,
+      algorithm,
     );
   }
 
-  verifyHash(response: RealexHppResponse): boolean {
+  verifyHash(response: RealexHppResponseDO): boolean {
     const {
       TIMESTAMP,
       MERCHANT_ID,
@@ -58,11 +62,28 @@ export class RealexService implements IRealexService {
     return validHash === response.SHA256HASH;
   }
 
-  generateHTMLResponse(response: RealexHppResponse): string {
+  verifyStatusUpdateHash(response: RealexStatusUpdateDO): boolean {
+    const {
+      timestamp,
+      merchantid,
+      orderid,
+      result,
+      message,
+      pasref,
+      paymentmethod,
+    } = response;
+
+    const toHash = `${timestamp}.${merchantid}.${orderid}.${result}.${message}.${pasref}.${paymentmethod}`;
+    const validHash = this.generateHash(toHash, "sha1");
+
+    return validHash === response.sha1hash;
+  }
+
+  generateHTMLResponse(response: RealexHppResponseDO): string {
     const errorQueryParam =
       response.RESULT !== "00" ? `&error=${response.RESULT}` : "";
     const url = new URL(
-      `/${response.HPP_LANG}/paymentRequest/complete?payment_id=${response.ORDER_ID}${errorQueryParam}`,
+      `/${response.HPP_LANG}/paymentRequest/complete?order_id=${response.ORDER_ID}${errorQueryParam}`,
       process.env.PAYMENTS_HOST_URL,
     );
 

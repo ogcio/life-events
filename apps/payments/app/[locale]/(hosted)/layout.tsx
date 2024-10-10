@@ -16,41 +16,31 @@ export default async function RootLayout({
   const t = await getTranslations("FeedbackBanner");
 
   return (
-    <html lang={locale}>
-      <body
-        style={{
-          margin: "unset",
-          minHeight: "100vh",
-          position: "relative",
-          display: "flex",
-          flexDirection: "column",
-        }}
-      >
-        {/* workaround to allow Logto to cache the access token */}
-        <LogtoTokenRefresher />
-        <img
-          src={`${process.env.NEXT_PUBLIC_PAYMENTS_SERVICE_ENTRY_POINT}/api/token?${new Date().getTime()}`}
-          style={{ display: "none" }}
+    <>
+      {/* workaround to allow Logto to cache the access token */}
+      <LogtoTokenRefresher />
+      <img
+        src={`${process.env.NEXT_PUBLIC_PAYMENTS_SERVICE_ENTRY_POINT}/api/token?${new Date().getTime()}`}
+        style={{ display: "none" }}
+      />
+      <Header locale={locale} />
+      <div className="width-container">
+        <Banner
+          tag={t("tag")}
+          text={t.rich("bannerText", {
+            mail: (chunks) => (
+              <a
+                className="govie-link"
+                href="mailto:tiago.ramos@nearform.com?subject=Feedback"
+              >
+                {chunks}
+              </a>
+            ),
+          })}
         />
-        <Header locale={locale} />
-        <div className="width-container">
-          <Banner
-            tag={t("tag")}
-            text={t.rich("bannerText", {
-              mail: (chunks) => (
-                <a
-                  className="govie-link"
-                  href="mailto:tiago.ramos@nearform.com?subject=Feedback"
-                >
-                  {chunks}
-                </a>
-              ),
-            })}
-          />
-          <div className="page-container">{children}</div>
-        </div>
-        <Footer />
-      </body>
-    </html>
+        <div className="page-container">{children}</div>
+      </div>
+      <Footer />
+    </>
   );
 }

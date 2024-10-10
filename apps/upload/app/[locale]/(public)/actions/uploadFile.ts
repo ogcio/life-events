@@ -1,4 +1,4 @@
-import { getCommonLogger } from "nextjs-logging-wrapper";
+import { getServerLogger } from "nextjs-logging-wrapper";
 import authenticatedAction from "../../../utils/authenticatedAction";
 import { AuthenticationFactory } from "../../../utils/authentication-factory";
 import { revalidatePath } from "next/cache";
@@ -13,6 +13,13 @@ export const ERRORS = {
 const uploadFile = async (prevState, formData: FormData) => {
   "use server";
   const file_ = formData.get("file-upload");
+  const expireDate_ = formData.get("expire-date");
+
+  let expireDateString = expireDate_?.toString();
+  let utcDateString: string | undefined;
+  if (expireDateString) {
+    utcDateString = new Date(expireDateString).toISOString();
+  }
 
   if (!file_) {
     return { error: ERRORS.NO_FILE };
@@ -28,9 +35,9 @@ const uploadFile = async (prevState, formData: FormData) => {
 
   const uploadClient = await AuthenticationFactory.getUploadClient();
   try {
-    const { error } = await uploadClient.uploadFile(file);
+    const { error } = await uploadClient.uploadFile(file, utcDateString);
     if (error) {
-      getCommonLogger().error(error);
+      getServerLogger().error(error);
 
       if (error.detail === "File is infected") {
         return {
@@ -40,7 +47,7 @@ const uploadFile = async (prevState, formData: FormData) => {
       return { error: ERRORS.UPLOAD_ERROR };
     }
   } catch (err) {
-    getCommonLogger().error(err);
+    getServerLogger().error(err);
     return { error: ERRORS.UPLOAD_ERROR };
   }
 

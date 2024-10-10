@@ -1,0 +1,25 @@
+meta {
+  name: Get deleted provider
+  type: http
+  seq: 9
+}
+
+get {
+  url: {{baseUrl}}/api/v1/providers/{{smsProviderId}}?type=sms
+  body: none
+  auth: bearer
+}
+
+query {
+  type: sms
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+assert {
+  res.status: eq 404
+  res.body.code: eq NOT_FOUND_ERROR
+  res.body.requestId: isDefined
+}

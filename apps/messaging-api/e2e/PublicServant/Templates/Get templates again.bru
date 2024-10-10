@@ -1,0 +1,30 @@
+meta {
+  name: Get templates again
+  type: http
+  seq: 12
+}
+
+get {
+  url: {{baseUrl}}/api/v1/templates
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+assert {
+  res.status: eq 200
+  res.body.data: isDefined
+  res.body.metadata.totalCount: gte 0
+  res.body.metadata.links: isDefined
+}
+
+tests {
+  test("should not contain deleted id", function(){
+    const body = res.getBody()
+    const deletedItem = body.data.find(item => item.id === bru.getEnvVar("templateId"))
+    expect(deletedItem).equals(undefined)
+  })
+}

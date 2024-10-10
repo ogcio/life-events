@@ -74,7 +74,7 @@ paths:
                     type: string
                   detail:
                     type: string
-                  request_id:
+                  requestId:
                     type: string
                   name:
                     type: string
@@ -84,7 +84,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
         "422":
           description: Default Response
@@ -97,7 +97,7 @@ paths:
                     type: string
                   detail:
                     type: string
-                  request_id:
+                  requestId:
                     type: string
                   name:
                     type: string
@@ -107,7 +107,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
         "500":
           description: Default Response
@@ -120,7 +120,7 @@ paths:
                     type: string
                   detail:
                     type: string
-                  request_id:
+                  requestId:
                     type: string
                   name:
                     type: string
@@ -130,7 +130,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
     get:
       tags: *a1
@@ -191,6 +191,8 @@ paths:
                               type: string
                             liveSecretKey:
                               type: string
+                            webhookSigningKey:
+                              type: string
                           required:
                             - livePublishableKey
                             - liveSecretKey
@@ -237,7 +239,7 @@ paths:
                     type: string
                   detail:
                     type: string
-                  request_id:
+                  requestId:
                     type: string
                   name:
                     type: string
@@ -247,7 +249,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
   /api/v1/providers/{providerId}:
     get:
@@ -313,6 +315,8 @@ paths:
                             type: string
                           liveSecretKey:
                             type: string
+                          webhookSigningKey:
+                            type: string
                         required:
                           - livePublishableKey
                           - liveSecretKey
@@ -359,7 +363,7 @@ paths:
                     type: string
                   detail:
                     type: string
-                  request_id:
+                  requestId:
                     type: string
                   name:
                     type: string
@@ -369,7 +373,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
         "404":
           description: Default Response
@@ -382,7 +386,7 @@ paths:
                     type: string
                   detail:
                     type: string
-                  request_id:
+                  requestId:
                     type: string
                   name:
                     type: string
@@ -392,7 +396,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
     put:
       tags: *a1
@@ -470,7 +474,7 @@ paths:
                     type: string
                   detail:
                     type: string
-                  request_id:
+                  requestId:
                     type: string
                   name:
                     type: string
@@ -480,7 +484,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
         "404":
           description: Default Response
@@ -493,7 +497,7 @@ paths:
                     type: string
                   detail:
                     type: string
-                  request_id:
+                  requestId:
                     type: string
                   name:
                     type: string
@@ -503,7 +507,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
         "422":
           description: Default Response
@@ -516,7 +520,7 @@ paths:
                     type: string
                   detail:
                     type: string
-                  request_id:
+                  requestId:
                     type: string
                   name:
                     type: string
@@ -526,7 +530,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
   /api/v1/requests/:
     get:
@@ -634,6 +638,8 @@ paths:
                                         type: string
                                       liveSecretKey:
                                         type: string
+                                      webhookSigningKey:
+                                        type: string
                                     required:
                                       - livePublishableKey
                                       - liveSecretKey
@@ -673,12 +679,12 @@ paths:
                             - type: string
                               enum:
                                 - inactive
+                            - type: string
+                              enum:
+                                - draft
                       required:
                         - paymentRequestId
                         - title
-                        - description
-                        - amount
-                        - reference
                         - providers
                         - status
                   metadata:
@@ -740,17 +746,47 @@ paths:
                   validator: RequiredValidator
                   type: string
                 description:
-                  type: string
+                  validator:
+                    name: OptionalRequiredValidator
+                    options:
+                      field: status
+                      operation: notEqual
+                      value: draft
+                  anyOf:
+                    - type: string
+                    - type: "null"
                 reference:
-                  validator: RequiredValidator
-                  type: string
+                  validator:
+                    name: OptionalRequiredValidator
+                    options:
+                      field: status
+                      operation: notEqual
+                      value: draft
+                  anyOf:
+                    - type: string
+                    - type: "null"
                 amount:
-                  minimum: 1
-                  maximum: 10000
-                  type: number
+                  validator:
+                    name: OptionalRequiredValidator
+                    options:
+                      field: status
+                      operation: notEqual
+                      value: draft
+                  anyOf:
+                    - minimum: 1
+                      maximum: 1000000
+                      type: number
+                    - type: "null"
                 redirectUrl:
-                  validator: RequiredValidator
-                  type: string
+                  validator:
+                    name: OptionalRequiredValidator
+                    options:
+                      field: status
+                      operation: notEqual
+                      value: draft
+                  anyOf:
+                    - type: string
+                    - type: "null"
                 allowAmountOverride:
                   type: boolean
                 allowCustomAmount:
@@ -767,6 +803,9 @@ paths:
                     - type: string
                       enum:
                         - inactive
+                    - type: string
+                      enum:
+                        - draft
                   validator: PaymentRequestStatusValidator
               required:
                 - title
@@ -803,17 +842,47 @@ paths:
                   validator: RequiredValidator
                   type: string
                 description:
-                  type: string
+                  validator:
+                    name: OptionalRequiredValidator
+                    options:
+                      field: status
+                      operation: notEqual
+                      value: draft
+                  anyOf:
+                    - type: string
+                    - type: "null"
                 reference:
-                  validator: RequiredValidator
-                  type: string
+                  validator:
+                    name: OptionalRequiredValidator
+                    options:
+                      field: status
+                      operation: notEqual
+                      value: draft
+                  anyOf:
+                    - type: string
+                    - type: "null"
                 amount:
-                  minimum: 1
-                  maximum: 10000
-                  type: number
+                  validator:
+                    name: OptionalRequiredValidator
+                    options:
+                      field: status
+                      operation: notEqual
+                      value: draft
+                  anyOf:
+                    - minimum: 1
+                      maximum: 1000000
+                      type: number
+                    - type: "null"
                 redirectUrl:
-                  validator: RequiredValidator
-                  type: string
+                  validator:
+                    name: OptionalRequiredValidator
+                    options:
+                      field: status
+                      operation: notEqual
+                      value: draft
+                  anyOf:
+                    - type: string
+                    - type: "null"
                 allowAmountOverride:
                   type: boolean
                 allowCustomAmount:
@@ -830,6 +899,9 @@ paths:
                     - type: string
                       enum:
                         - inactive
+                    - type: string
+                      enum:
+                        - draft
                   validator: PaymentRequestStatusValidator
                 paymentRequestId:
                   type: string
@@ -961,6 +1033,8 @@ paths:
                                   type: string
                                 liveSecretKey:
                                   type: string
+                                webhookSigningKey:
+                                  type: string
                               required:
                                 - livePublishableKey
                                 - liveSecretKey
@@ -1000,6 +1074,9 @@ paths:
                       - type: string
                         enum:
                           - inactive
+                      - type: string
+                        enum:
+                          - draft
                   redirectUrl:
                     type: string
                   allowAmountOverride:
@@ -1009,12 +1086,8 @@ paths:
                 required:
                   - paymentRequestId
                   - title
-                  - description
-                  - amount
-                  - reference
                   - providers
                   - status
-                  - redirectUrl
                   - allowAmountOverride
                   - allowCustomAmount
         "404":
@@ -1028,7 +1101,7 @@ paths:
                     type: string
                   detail:
                     type: string
-                  request_id:
+                  requestId:
                     type: string
                   name:
                     type: string
@@ -1038,7 +1111,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
     delete:
       tags: *a2
@@ -1067,7 +1140,7 @@ paths:
                     type: string
                   detail:
                     type: string
-                  request_id:
+                  requestId:
                     type: string
                   name:
                     type: string
@@ -1077,7 +1150,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
         "500":
           description: Default Response
@@ -1090,7 +1163,7 @@ paths:
                     type: string
                   detail:
                     type: string
-                  request_id:
+                  requestId:
                     type: string
                   name:
                     type: string
@@ -1100,7 +1173,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
   /api/v1/requests/{requestId}/public-info:
     get:
@@ -1191,6 +1264,8 @@ paths:
                                   type: string
                                 liveSecretKey:
                                   type: string
+                                webhookSigningKey:
+                                  type: string
                               required:
                                 - livePublishableKey
                                 - liveSecretKey
@@ -1230,6 +1305,9 @@ paths:
                       - type: string
                         enum:
                           - inactive
+                      - type: string
+                        enum:
+                          - draft
                   redirectUrl:
                     type: string
                   allowAmountOverride:
@@ -1258,7 +1336,7 @@ paths:
                     type: string
                   detail:
                     type: string
-                  request_id:
+                  requestId:
                     type: string
                   name:
                     type: string
@@ -1268,7 +1346,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
   /api/v1/requests/{requestId}/transactions:
     get:
@@ -1329,7 +1407,13 @@ paths:
                               enum:
                                 - failed
                         amount:
+                          minimum: 1
+                          maximum: 1000000
                           type: number
+                        extPaymentId:
+                          type: string
+                        paymentProviderId:
+                          type: string
                         updatedAt:
                           type: string
                         title:
@@ -1338,6 +1422,8 @@ paths:
                         - transactionId
                         - status
                         - amount
+                        - extPaymentId
+                        - paymentProviderId
                         - updatedAt
                         - title
                   metadata:
@@ -1428,12 +1514,18 @@ paths:
                             enum:
                               - failed
                       amount:
+                        minimum: 1
+                        maximum: 1000000
                         type: number
+                      extPaymentId:
+                        allOf:
+                          - type: string
+                          - type: string
+                      paymentProviderId:
+                        type: string
                       updatedAt:
                         type: string
                       title:
-                        type: string
-                      extPaymentId:
                         type: string
                       userId:
                         type: string
@@ -1447,6 +1539,8 @@ paths:
                         required:
                           - name
                           - email
+                      description:
+                        type: string
                       providerName:
                         type: string
                       providerType:
@@ -1457,11 +1551,13 @@ paths:
                       - transactionId
                       - status
                       - amount
+                      - extPaymentId
+                      - paymentProviderId
                       - updatedAt
                       - title
-                      - extPaymentId
                       - userId
                       - userData
+                      - description
                       - providerName
                       - providerType
                       - paymentRequestId
@@ -1523,7 +1619,7 @@ paths:
                     type: string
                   detail:
                     type: string
-                  request_id:
+                  requestId:
                     type: string
                   name:
                     type: string
@@ -1533,7 +1629,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
     patch:
       tags: *a3
@@ -1588,7 +1684,7 @@ paths:
                     type: string
                   detail:
                     type: string
-                  request_id:
+                  requestId:
                     type: string
                   name:
                     type: string
@@ -1598,7 +1694,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
   /api/v1/transactions/:
     get:
@@ -1653,12 +1749,18 @@ paths:
                               enum:
                                 - failed
                         amount:
+                          minimum: 1
+                          maximum: 1000000
                           type: number
+                        extPaymentId:
+                          allOf:
+                            - type: string
+                            - type: string
+                        paymentProviderId:
+                          type: string
                         updatedAt:
                           type: string
                         title:
-                          type: string
-                        extPaymentId:
                           type: string
                         userId:
                           type: string
@@ -1672,6 +1774,8 @@ paths:
                           required:
                             - name
                             - email
+                        description:
+                          type: string
                         providerName:
                           type: string
                         providerType:
@@ -1682,11 +1786,13 @@ paths:
                         - transactionId
                         - status
                         - amount
+                        - extPaymentId
+                        - paymentProviderId
                         - updatedAt
                         - title
-                        - extPaymentId
                         - userId
                         - userData
+                        - description
                         - providerName
                         - providerType
                         - paymentRequestId
@@ -1748,7 +1854,7 @@ paths:
                     type: string
                   detail:
                     type: string
-                  request_id:
+                  requestId:
                     type: string
                   name:
                     type: string
@@ -1758,7 +1864,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
         "404":
           description: Default Response
@@ -1771,7 +1877,7 @@ paths:
                     type: string
                   detail:
                     type: string
-                  request_id:
+                  requestId:
                     type: string
                   name:
                     type: string
@@ -1781,7 +1887,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
         "500":
           description: Default Response
@@ -1794,7 +1900,7 @@ paths:
                     type: string
                   detail:
                     type: string
-                  request_id:
+                  requestId:
                     type: string
                   name:
                     type: string
@@ -1804,7 +1910,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
     post:
       tags: *a3
@@ -1821,6 +1927,8 @@ paths:
                 integrationReference:
                   type: string
                 amount:
+                  minimum: 1
+                  maximum: 1000000
                   type: number
                 paymentProviderId:
                   type: string
@@ -1915,7 +2023,7 @@ paths:
                     type: string
                   detail:
                     type: string
-                  request_id:
+                  requestId:
                     type: string
                   name:
                     type: string
@@ -1925,7 +2033,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
         "500":
           description: Default Response
@@ -1938,7 +2046,7 @@ paths:
                     type: string
                   detail:
                     type: string
-                  request_id:
+                  requestId:
                     type: string
                   name:
                     type: string
@@ -1948,7 +2056,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
   /api/v1/transactions/generatePaymentIntentId:
     get:
@@ -2026,7 +2134,7 @@ paths:
                     type: string
                   detail:
                     type: string
-                  request_id:
+                  requestId:
                     type: string
                   name:
                     type: string
@@ -2036,7 +2144,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
   /api/v1/citizen/transactions:
     get:
@@ -2095,13 +2203,18 @@ paths:
                           type: string
                         updatedAt:
                           type: string
+                        extPaymentId:
+                          type: string
                         amount:
+                          minimum: 1
+                          maximum: 1000000
                           type: number
                       required:
                         - transactionId
                         - status
                         - title
                         - updatedAt
+                        - extPaymentId
                         - amount
                   metadata:
                     type: object
@@ -2161,7 +2274,7 @@ paths:
                     type: string
                   detail:
                     type: string
-                  request_id:
+                  requestId:
                     type: string
                   name:
                     type: string
@@ -2171,7 +2284,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
         "404":
           description: Default Response
@@ -2184,7 +2297,7 @@ paths:
                     type: string
                   detail:
                     type: string
-                  request_id:
+                  requestId:
                     type: string
                   name:
                     type: string
@@ -2194,7 +2307,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
         "500":
           description: Default Response
@@ -2207,7 +2320,7 @@ paths:
                     type: string
                   detail:
                     type: string
-                  request_id:
+                  requestId:
                     type: string
                   name:
                     type: string
@@ -2217,7 +2330,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
   /api/v1/citizen/transactions/{transactionId}:
     get:
@@ -2260,12 +2373,18 @@ paths:
                             enum:
                               - failed
                       amount:
+                        minimum: 1
+                        maximum: 1000000
                         type: number
+                      extPaymentId:
+                        allOf:
+                          - type: string
+                          - type: string
+                      paymentProviderId:
+                        type: string
                       updatedAt:
                         type: string
                       title:
-                        type: string
-                      extPaymentId:
                         type: string
                       userId:
                         type: string
@@ -2279,6 +2398,8 @@ paths:
                         required:
                           - name
                           - email
+                      description:
+                        type: string
                       providerName:
                         type: string
                       providerType:
@@ -2289,11 +2410,13 @@ paths:
                       - transactionId
                       - status
                       - amount
+                      - extPaymentId
+                      - paymentProviderId
                       - updatedAt
                       - title
-                      - extPaymentId
                       - userId
                       - userData
+                      - description
                       - providerName
                       - providerType
                       - paymentRequestId
@@ -2355,7 +2478,7 @@ paths:
                     type: string
                   detail:
                     type: string
-                  request_id:
+                  requestId:
                     type: string
                   name:
                     type: string
@@ -2365,7 +2488,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
   /api/v1/realex/paymentObject:
     get:
@@ -2431,7 +2554,7 @@ paths:
                     type: string
                   detail:
                     type: string
-                  request_id:
+                  requestId:
                     type: string
                   name:
                     type: string
@@ -2441,7 +2564,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
         "422":
           description: Default Response
@@ -2454,7 +2577,7 @@ paths:
                     type: string
                   detail:
                     type: string
-                  request_id:
+                  requestId:
                     type: string
                   name:
                     type: string
@@ -2464,7 +2587,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
   /api/v1/realex/verifyPaymentResponse:
     post:
@@ -2493,7 +2616,7 @@ paths:
                     type: string
                   detail:
                     type: string
-                  request_id:
+                  requestId:
                     type: string
                   name:
                     type: string
@@ -2503,7 +2626,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
         "422":
           description: Default Response
@@ -2516,7 +2639,7 @@ paths:
                     type: string
                   detail:
                     type: string
-                  request_id:
+                  requestId:
                     type: string
                   name:
                     type: string
@@ -2526,8 +2649,110 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
+  /api/v1/realex/statusUpdate:
+    get:
+      tags: *a4
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: sha1hash
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: timestamp
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: merchantid
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: orderid
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: result
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: message
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: pasref
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: paymentmethod
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: waitfornotification
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: fundstatus
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: paymentpurpose
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: acountholdername
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: country
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: accountnumber
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: iban
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: bic
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: bankname
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: bankcode
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: redirectoptional
+          required: true
+      responses:
+        "200":
+          description: Default Response
   /api/v1/test/citizen:
     get:
       responses:
@@ -2538,5 +2763,446 @@ paths:
       responses:
         "200":
           description: Default Response
+  /api/v1/auditLogs/:
+    get:
+      tags: &a5
+        - AuditLogs
+      parameters:
+        - schema:
+            default: 0
+            minimum: 0
+            type: number
+          in: query
+          name: offset
+          required: false
+        - schema:
+            default: 10
+            minimum: 5
+            maximum: 50
+            multipleOf: 5
+            type: number
+          in: query
+          name: limit
+          required: false
+        - schema:
+            type: string
+          in: query
+          name: resource
+          required: false
+        - schema:
+            type: string
+          in: query
+          name: action
+          required: false
+        - schema:
+            type: string
+          in: query
+          name: user
+          required: false
+        - schema:
+            type: string
+          in: query
+          name: from
+          required: false
+        - schema:
+            type: string
+          in: query
+          name: to
+          required: false
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        auditLogId:
+                          type: string
+                        createdAt:
+                          type: string
+                        eventType:
+                          type: string
+                        title:
+                          type: string
+                        userId:
+                          type: string
+                        organizationId:
+                          type: string
+                        resourceId:
+                          type: string
+                      required:
+                        - auditLogId
+                        - createdAt
+                        - eventType
+                        - title
+                  metadata:
+                    type: object
+                    properties:
+                      links:
+                        type: object
+                        properties:
+                          self:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          next:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          prev:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          first:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          last:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          pages:
+                            type: object
+                            additionalProperties:
+                              type: object
+                              properties:
+                                href:
+                                  type: string
+                        required:
+                          - self
+                          - first
+                          - last
+                          - pages
+                      totalCount:
+                        type: number
+                required:
+                  - data
+        "401":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  requestId:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - requestId
+                  - name
+        "500":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  requestId:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - requestId
+                  - name
+  /api/v1/auditLogs/event-types:
+    get:
+      tags: *a5
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    additionalProperties:
+                      type: string
+                  metadata:
+                    type: object
+                    properties:
+                      links:
+                        type: object
+                        properties:
+                          self:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          next:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          prev:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          first:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          last:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          pages:
+                            type: object
+                            additionalProperties:
+                              type: object
+                              properties:
+                                href:
+                                  type: string
+                        required:
+                          - self
+                          - first
+                          - last
+                          - pages
+                      totalCount:
+                        type: number
+                required:
+                  - data
+        "401":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  requestId:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - requestId
+                  - name
+        "500":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  requestId:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - requestId
+                  - name
+  /api/v1/auditLogs/{auditLogId}:
+    get:
+      tags: *a5
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: auditLogId
+          required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      auditLogId:
+                        type: string
+                      createdAt:
+                        type: string
+                      eventType:
+                        type: string
+                      title:
+                        type: string
+                      userId:
+                        type: string
+                      organizationId:
+                        type: string
+                      metadata:
+                        type: object
+                        additionalProperties: {}
+                    required:
+                      - auditLogId
+                      - createdAt
+                      - eventType
+                      - title
+                      - metadata
+                  metadata:
+                    type: object
+                    properties:
+                      links:
+                        type: object
+                        properties:
+                          self:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          next:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          prev:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          first:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          last:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          pages:
+                            type: object
+                            additionalProperties:
+                              type: object
+                              properties:
+                                href:
+                                  type: string
+                        required:
+                          - self
+                          - first
+                          - last
+                          - pages
+                      totalCount:
+                        type: number
+                required:
+                  - data
+        "401":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  requestId:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - requestId
+                  - name
+        "500":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  requestId:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - requestId
+                  - name
+  /api/v1/stripe/webhook:
+    post:
+      tags:
+        - Stripe
+      responses:
+        "404":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  requestId:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - requestId
+                  - name
 tags:
   - name: Providers

@@ -1,0 +1,21 @@
+meta {
+  name: Update does not exist
+  type: http
+  seq: 8
+}
+
+put {
+  url: {{baseUrl}}/api/v1/messages/09569127-7cb2-4716-9783-0865a778a1b2
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+assert {
+  res.status: eq 404
+  res.body.requestId: isDefined
+  res.body.detail: eq Route not found
+}

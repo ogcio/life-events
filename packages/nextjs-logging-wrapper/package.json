@@ -11,6 +11,7 @@
   "scripts": {
     "dev": "rm -rf dist && tsc -w -p tsconfig.prod.json",
     "build": "rm -rf dist && tsc -p tsconfig.prod.json",
+    "test": "echo \"Error: no test specified\" && exit 0",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix"
   },
@@ -31,6 +32,6 @@
   "dependencies": {
     "next": "^14.2.4",
     "pino": "^9.2.0",
-    "shared-errors": "*"
+    "@ogcio/shared-errors": "^1.0.0"
   }
 }

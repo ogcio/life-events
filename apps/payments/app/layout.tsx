@@ -1,6 +1,7 @@
 import "./styles/globals.scss";
 import { Metadata } from "next";
 import favicon from "../public/favicon.ico";
+import AnalyticsTracker from "analytics/components/AnalyticsTracker";
 
 export const metadata: Metadata = {
   title: "Payments",
@@ -28,6 +29,9 @@ export default function RootLayout({
           flexDirection: "column",
         }}
       >
+        {/* MATOMO ANALYTICS TRACKER */}
+        <AnalyticsTracker></AnalyticsTracker>
+
         {children}
       </body>
     </html>

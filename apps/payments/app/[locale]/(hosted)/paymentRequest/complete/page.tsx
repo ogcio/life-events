@@ -1,15 +1,16 @@
 import { pgpool } from "../../../../dbConnection";
 import { RedirectType, notFound, redirect } from "next/navigation";
-import { getInternalStatus } from "../../../../integration/stripe";
 import { TransactionStatuses } from "../../../../../types/TransactionStatuses";
-import { errorHandler } from "../../../../utils";
+import { errorHandler, getInternalStatus } from "../../../../utils";
 import { AuthenticationFactory } from "../../../../../libraries/authentication-factory";
+import { getTrueLayerPaymentDetails } from "../../../../integration/trueLayer";
 
 type Props = {
   searchParams: {
     error?: string | undefined;
     payment_id?: string;
     payment_intent?: string;
+    order_id?: string;
     redirect_status?: string;
   };
 };
@@ -40,6 +41,29 @@ async function updateTransaction(extPaymentId: string, status: string) {
   return rows[0];
 }
 
+async function getTransactionDetails(extPaymentId: string) {
+  "use server";
+
+  const { rows } = await pgpool.query<{
+    transaction_id: number;
+    payment_request_id: string;
+    integration_reference: string;
+  }>(
+    `
+    SELECT transaction_id, payment_request_id, integration_reference
+    FROM payment_transactions
+    where ext_payment_id = $1
+    `,
+    [extPaymentId],
+  );
+
+  if (!rows.length) {
+    throw new Error("Transaction not found");
+  }
+
+  return rows[0];
+}
+
 async function getRequestDetails(requestId: string) {
   const paymentsApi = await AuthenticationFactory.getPaymentsClient();
   const { data: details, error } =
@@ -53,22 +77,32 @@ async function getRequestDetails(requestId: string) {
 }
 
 export default async function Page(props: Props) {
-  const { payment_id, payment_intent, redirect_status, error } =
+  const { payment_id, payment_intent, redirect_status, order_id, error } =
     props.searchParams;
   let extPaymentId = payment_id ?? "";
+  let updateStatus = true;
   let status = TransactionStatuses.Succeeded;
 
-  if (error) {
-    status = TransactionStatuses.Failed;
+  if (payment_id) {
+    // It's a TrueLayer transaction
+    const paymentDetails = await getTrueLayerPaymentDetails(payment_id);
+    status = getInternalStatus(paymentDetails.status);
   }
 
   if (!extPaymentId) {
-    if (payment_intent && redirect_status) {
+    if (order_id) {
+      // It's a Realex transaction
+      updateStatus = false;
+      extPaymentId = order_id;
+      status = TransactionStatuses.Succeeded;
+    } else if (payment_intent && redirect_status) {
+      // It's a Stripe transaction
+      updateStatus = false;
       extPaymentId = payment_intent;
 
       const mappedStatus = getInternalStatus(redirect_status);
       if (!mappedStatus) {
-        throw new Error("Invalid payment intent status recieved!");
+        throw new Error("Invalid payment intent status received!");
       }
 
       status = mappedStatus;
@@ -77,7 +111,26 @@ export default async function Page(props: Props) {
     }
   }
 
-  const transactionDetail = await updateTransaction(extPaymentId, status);
+  if (error) {
+    status = TransactionStatuses.Failed;
+  }
+
+  let transactionDetail;
+
+  if (updateStatus) {
+    transactionDetail = await updateTransaction(extPaymentId, status);
+  } else {
+    transactionDetail = await getTransactionDetails(extPaymentId);
+  }
+
+  if (status === TransactionStatuses.Failed) {
+    return (
+      <h3 style={{ textAlign: "center", marginTop: "5rem" }}>
+        There was an error processing your payment.
+      </h3>
+    );
+  }
+
   const requestDetail = await getRequestDetails(
     transactionDetail.payment_request_id,
   );

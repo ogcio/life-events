@@ -15,12 +15,8 @@ import {
 } from "./types";
 import { redirect } from "next/navigation";
 import { LogtoNextConfig, UserScope } from "@logto/next";
-import { BadRequestError } from "shared-errors";
-import { decodeJwt } from "jose";
 import { getCommonLogger } from "nextjs-logging-wrapper";
 import { cookies } from "next/headers";
-
-const PROCESS_ERROR = "PARSE_LOGTO_CONTEXT";
 
 const INACTIVE_PUBLIC_SERVANT_ORG_ROLE =
   "inactive-ps-org:Inactive Public Servant";
@@ -158,26 +154,9 @@ const getUserInfo = (
     organizationData,
   };
 };
-// waiting for https://github.com/logto-io/js/issues/758
-// to be resolved
-type WithOrgDataUserInfo =
-  | (
-      | (LogtoContext["userInfo"] & {
-          organization_data?: {
-            id: string;
-            name: string;
-            description: string;
-          }[];
-        })
-      | undefined
-    )
-  | undefined;
-type WithOrgDataContext = Omit<LogtoContext, "userInfo"> & {
-  userInfo?: WithOrgDataUserInfo;
-};
 
 const getOrganizationInfo = (
-  context: WithOrgDataContext,
+  context: LogtoContext,
   getContextParameters: GetSessionContextParameters | undefined,
   organizationRoles: string[] | null,
 ): AuthSessionOrganizationInfo | undefined => {

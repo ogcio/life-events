@@ -10,8 +10,15 @@ paths:
     post:
       tags:
         - Files
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              anyOf:
+                - {}
+                - {}
       responses:
-        "200":
+        "201":
           description: Default Response
           content:
             application/json:
@@ -21,10 +28,10 @@ paths:
                   data:
                     type: object
                     properties:
-                      message:
+                      id:
                         type: string
                     required:
-                      - message
+                      - id
                 required:
                   - data
         4XX:
@@ -38,7 +45,7 @@ paths:
                     type: string
                   detail:
                     type: string
-                  request_id:
+                  requestId:
                     type: string
                   name:
                     type: string
@@ -48,7 +55,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
         5XX:
           description: Default Response
@@ -61,7 +68,7 @@ paths:
                     type: string
                   detail:
                     type: string
-                  request_id:
+                  requestId:
                     type: string
                   name:
                     type: string
@@ -71,11 +78,86 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
+  /api/v1/files/{id}:
     get:
       tags:
         - Files
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: id
+          required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: string
+        4XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  requestId:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - requestId
+                  - name
+        5XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  requestId:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - requestId
+                  - name
+  /api/v1/metadata/:
+    get:
+      tags:
+        - Metadata
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: userId
+          required: false
+        - schema:
+            type: string
+          in: query
+          name: organizationId
+          required: false
       responses:
         "200":
           description: Default Response
@@ -89,16 +171,42 @@ paths:
                     items:
                       type: object
                       properties:
-                        url:
+                        fileName:
+                          type: string
+                        id:
                           type: string
                         key:
                           type: string
-                        size:
+                        ownerId:
+                          type: string
+                        fileSize:
                           type: number
+                        mimeType:
+                          type: string
+                        createdAt:
+                          type: string
+                        lastScan:
+                          type: string
+                        deleted:
+                          default: false
+                          type: boolean
+                        infected:
+                          type: boolean
+                        infectionDescription:
+                          type: string
+                        antivirusDbVersion:
+                          type: string
+                        expiresAt:
+                          type: string
                       required:
-                        - url
+                        - fileName
                         - key
-                        - size
+                        - ownerId
+                        - fileSize
+                        - mimeType
+                        - createdAt
+                        - lastScan
+                        - infected
                 required:
                   - data
         4XX:
@@ -112,7 +220,7 @@ paths:
                     type: string
                   detail:
                     type: string
-                  request_id:
+                  requestId:
                     type: string
                   name:
                     type: string
@@ -122,7 +230,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
         5XX:
           description: Default Response
@@ -135,7 +243,7 @@ paths:
                     type: string
                   detail:
                     type: string
-                  request_id:
+                  requestId:
                     type: string
                   name:
                     type: string
@@ -145,17 +253,94 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
-  /api/v1/files/{key}:
     delete:
       tags:
-        - Files
+        - Metadata
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                fileId:
+                  type: string
+              required:
+                - fileId
+        required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                    required:
+                      - id
+                required:
+                  - data
+        4XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  requestId:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - requestId
+                  - name
+        5XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  requestId:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - requestId
+                  - name
+  /api/v1/metadata/{id}:
+    get:
+      tags:
+        - Metadata
       parameters:
         - schema:
             type: string
           in: path
-          name: key
+          name: id
           required: true
       responses:
         "200":
@@ -168,10 +353,42 @@ paths:
                   data:
                     type: object
                     properties:
-                      message:
+                      fileName:
+                        type: string
+                      id:
+                        type: string
+                      key:
+                        type: string
+                      ownerId:
+                        type: string
+                      fileSize:
+                        type: number
+                      mimeType:
+                        type: string
+                      createdAt:
+                        type: string
+                      lastScan:
+                        type: string
+                      deleted:
+                        default: false
+                        type: boolean
+                      infected:
+                        type: boolean
+                      infectionDescription:
+                        type: string
+                      antivirusDbVersion:
+                        type: string
+                      expiresAt:
                         type: string
                     required:
-                      - message
+                      - fileName
+                      - key
+                      - ownerId
+                      - fileSize
+                      - mimeType
+                      - createdAt
+                      - lastScan
+                      - infected
                 required:
                   - data
         4XX:
@@ -185,7 +402,7 @@ paths:
                     type: string
                   detail:
                     type: string
-                  request_id:
+                  requestId:
                     type: string
                   name:
                     type: string
@@ -195,7 +412,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
         5XX:
           description: Default Response
@@ -208,7 +425,7 @@ paths:
                     type: string
                   detail:
                     type: string
-                  request_id:
+                  requestId:
                     type: string
                   name:
                     type: string
@@ -218,48 +435,46 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
-    get:
+  /api/v1/permissions/:
+    post:
       tags:
-        - Files
-      parameters:
-        - schema:
-            type: string
-          in: path
-          name: key
-          required: true
+        - Permissions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                fileId:
+                  type: string
+                userId:
+                  type: string
+              required:
+                - fileId
+                - userId
+        required: true
       responses:
-        "200":
-          description: Default Response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties: {}
-        "500":
+        "201":
           description: Default Response
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  code:
-                    type: string
-                  detail:
-                    type: string
-                  request_id:
-                    type: string
-                  name:
-                    type: string
-                  validation: {}
-                  validationContext:
-                    type: string
+                  data:
+                    type: object
+                    properties:
+                      fileId:
+                        type: string
+                      userId:
+                        type: string
+                    required:
+                      - fileId
+                      - userId
                 required:
-                  - code
-                  - detail
-                  - request_id
-                  - name
+                  - data
         4XX:
           description: Default Response
           content:
@@ -271,7 +486,7 @@ paths:
                     type: string
                   detail:
                     type: string
-                  request_id:
+                  requestId:
                     type: string
                   name:
                     type: string
@@ -281,7 +496,7 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
         5XX:
           description: Default Response
@@ -294,7 +509,7 @@ paths:
                     type: string
                   detail:
                     type: string
-                  request_id:
+                  requestId:
                     type: string
                   name:
                     type: string
@@ -304,12 +519,127 @@ paths:
                 required:
                   - code
                   - detail
-                  - request_id
+                  - requestId
                   - name
-  /api/v1/health:
-    get:
+    delete:
+      tags:
+        - Permissions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                fileId:
+                  type: string
+                userId:
+                  type: string
+              required:
+                - fileId
+                - userId
+        required: true
       responses:
-        "200":
+        4XX:
           description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  requestId:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - requestId
+                  - name
+        5XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  requestId:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - requestId
+                  - name
+    get:
+      tags:
+        - Permissions
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: fileId
+          required: true
+      responses:
+        4XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  requestId:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - requestId
+                  - name
+        5XX:
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  requestId:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - requestId
+                  - name
 tags:
   - name: FileUploadApi

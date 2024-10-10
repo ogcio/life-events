@@ -49,6 +49,24 @@ const buildGetTransactionById =
     return result?.rows[0];
   };
 
+const buildGetTransactionByExtId =
+  (repo: TransactionsRepo, log: FastifyBaseLogger, httpErrors: HttpErrors) =>
+  async (extId: string): Promise<TransactionDetailsDO> => {
+    let result;
+
+    try {
+      result = await repo.getTransactionByExtId(extId);
+    } catch (err) {
+      log.error((err as Error).message);
+    }
+
+    if (!result?.rowCount) {
+      throw httpErrors.notFound("The requested transaction was not found");
+    }
+
+    return result?.rows[0];
+  };
+
 const buildGetTransactions =
   (repo: TransactionsRepo, log: FastifyBaseLogger) =>
   async (
@@ -91,7 +109,7 @@ const buildUpdateTransactionStatus =
   async (
     transactionId: string,
     status: TransactionStatusesEnum,
-  ): Promise<{ transactionId: string }> => {
+  ): Promise<{ transactionId: string; extPaymentId: string }> => {
     let result;
 
     try {
@@ -112,7 +130,7 @@ const buildCreateTransaction =
   async (
     userId: string,
     transaction: CreateTransactionBodyDO,
-  ): Promise<{ transactionId: string }> => {
+  ): Promise<{ transactionId: string; extPaymentId: string }> => {
     let result;
 
     try {
@@ -215,6 +233,24 @@ const buildGetTransactionByExtPaymentId =
     return result.rows[0];
   };
 
+const buildGetPaymentRequestIdFromTransaction =
+  (repo: TransactionsRepo, log: FastifyBaseLogger, httpErrors: HttpErrors) =>
+  async (transactionId: string): Promise<{ paymentRequestId: string }> => {
+    let result;
+
+    try {
+      result = await repo.getPaymentRequestIdFromTransaction(transactionId);
+    } catch (err) {
+      log.error((err as Error).message);
+    }
+
+    if (!result?.rowCount) {
+      throw httpErrors.notFound("The requested transaction was not found");
+    }
+
+    return result?.rows[0];
+  };
+
 const buildPlugin = (
   repo: TransactionsRepo,
   log: FastifyBaseLogger,
@@ -222,6 +258,7 @@ const buildPlugin = (
 ) => {
   return {
     getTransactionById: buildGetTransactionById(repo, log, httpErrors),
+    getTransactionByExtId: buildGetTransactionByExtId(repo, log, httpErrors),
     updateTransactionStatus: buildUpdateTransactionStatus(
       repo,
       log,
@@ -246,6 +283,11 @@ const buildPlugin = (
     getPaymentRequestTransactionsTotalCount:
       buildGetPaymentRequestTransactionsTotalCount(repo, log, httpErrors),
     getTransactionByExtPaymentId: buildGetTransactionByExtPaymentId(
+      repo,
+      log,
+      httpErrors,
+    ),
+    getPaymentRequestIdFromTransaction: buildGetPaymentRequestIdFromTransaction(
       repo,
       log,
       httpErrors,

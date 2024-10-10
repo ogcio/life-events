@@ -10,6 +10,19 @@ export const envSchema = {
     "LOGTO_OIDC_ENDPOINT",
     "LOGTO_API_RESOURCE_INDICATOR",
     "HOST",
+    "POSTGRES_USER",
+    "POSTGRES_PASSWORD",
+    "POSTGRES_HOST",
+    "POSTGRES_PORT",
+    "POSTGRES_DB_NAME",
+    "LOGTO_M2M_PROFILE_APP_SECRET",
+    "LOGTO_M2M_PROFILE_APP_ID",
+    "PROFILE_BACKEND_URL",
+    "LOGTO_M2M_SCHEDULER_APP_SECRET",
+    "LOGTO_M2M_SCHEDULER_APP_ID",
+    "SCHEDULER_BACKEND_URL",
+    "SCHEDULED_JOBS_HOURS_INTERVAL",
+    "ORGANIZATION_ID",
   ],
   properties: {
     CLAMAV_HOST: { type: "string" },
@@ -23,5 +36,44 @@ export const envSchema = {
     LOGTO_OIDC_ENDPOINT: { type: "string" },
     LOGTO_API_RESOURCE_INDICATOR: { type: "string" },
     HOST: { type: "string" },
+    POSTGRES_USER: {
+      type: "string",
+    },
+    POSTGRES_PASSWORD: {
+      type: "string",
+    },
+    POSTGRES_HOST: {
+      type: "string",
+    },
+    POSTGRES_PORT: {
+      type: "number",
+    },
+    POSTGRES_DB_NAME: {
+      type: "string",
+    },
+    LOGTO_M2M_PROFILE_APP_SECRET: {
+      type: "string",
+    },
+    LOGTO_M2M_PROFILE_APP_ID: {
+      type: "string",
+    },
+    PROFILE_BACKEND_URL: {
+      type: "string",
+    },
+    LOGTO_M2M_SCHEDULER_APP_SECRET: {
+      type: "string",
+    },
+    LOGTO_M2M_SCHEDULER_APP_ID: {
+      type: "string",
+    },
+    SCHEDULER_BACKEND_URL: {
+      type: "string",
+    },
+    SCHEDULED_JOBS_HOURS_INTERVAL: {
+      type: "number",
+    },
+    ORGANIZATION_ID: {
+      type: "string",
+    },
   },
 };

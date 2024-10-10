@@ -1,6 +1,6 @@
 import { BaseAuthenticationContext } from "auth/base-authentication-context";
 import { getAuthenticationContextConfig } from "./logto-config";
-import { Upload } from "building-blocks-sdk";
+import { Upload, Profile } from "building-blocks-sdk";
 import { headers } from "next/headers";
 
 export class AuthenticationFactory {
@@ -22,6 +22,13 @@ export class AuthenticationFactory {
 
   static async getUploadClient(): Promise<Upload> {
     const token = await this.getToken();
+
     return new Upload(token);
+  }
+
+  static async getProfileClient(): Promise<Profile> {
+    const token = await this.getToken();
+
+    return new Profile(token);
   }
 }

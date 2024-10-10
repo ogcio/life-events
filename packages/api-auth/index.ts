@@ -2,15 +2,13 @@ import { createRemoteJWKSet, jwtVerify } from "jose";
 import { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
 import fp from "fastify-plugin";
 import { getMapFromScope, validatePermission } from "./utils.js";
-import {
-  AuthenticationError,
-  AuthorizationError,
-  getErrorMessage,
-} from "shared-errors";
+import { getErrorMessage } from "@ogcio/shared-errors";
+import { httpErrors } from "@fastify/sensible";
 
 type ExtractedUserData = {
   userId: string;
   organizationId?: string;
+  isM2MApplication: boolean;
   accessToken: string;
 };
 
@@ -22,13 +20,10 @@ declare module "fastify" {
   }
 }
 
-const ERROR_PROCESS = "CHECK_PERMISSIONS";
-
 const extractBearerToken = (authHeader: string) => {
   const [type, token] = authHeader.split(" ");
   if (type !== "Bearer") {
-    throw new AuthenticationError(
-      ERROR_PROCESS,
+    throw httpErrors.unauthorized(
       "Invalid Authorization header type, 'Bearer' expected",
     );
   }
@@ -54,7 +49,7 @@ const decodeLogtoToken = async (
 export const ensureUserCanAccessUser = (
   loggedUserData: ExtractedUserData | undefined,
   requestedUserId: string,
-  errorProcess: string,
+  errorProcess?: string,
 ): ExtractedUserData => {
   if (loggedUserData && requestedUserId === loggedUserData.userId) {
     return loggedUserData;
@@ -64,10 +59,7 @@ export const ensureUserCanAccessUser = (
     return loggedUserData;
   }
 
-  throw new AuthorizationError(
-    errorProcess,
-    "You can't access this user's data",
-  );
+  throw httpErrors.forbidden("You can't access this user's data");
 };
 
 export const checkPermissions = async (
@@ -82,10 +74,16 @@ export const checkPermissions = async (
 ): Promise<ExtractedUserData> => {
   const token = extractBearerToken(authHeader);
   const payload = await decodeLogtoToken(token, config);
-  const { scope, sub, aud } = payload as {
+  const {
+    scope,
+    sub,
+    aud,
+    client_id: clientId,
+  } = payload as {
     scope: string;
     sub: string;
     aud: string;
+    client_id: string;
   };
   const scopesMap = getMapFromScope(scope);
 
@@ -95,16 +93,18 @@ export const checkPermissions = async (
       : requiredPermissions.some((p) => validatePermission(p, scopesMap));
 
   if (!grantAccess) {
-    throw new AuthorizationError(ERROR_PROCESS);
+    throw httpErrors.forbidden();
   }
 
   const organizationId = aud.includes("urn:logto:organization:")
     ? aud.split("urn:logto:organization:")[1]
     : undefined;
+
   return {
     userId: sub,
     organizationId: organizationId,
     accessToken: token,
+    isM2MApplication: sub === clientId,
   };
 };
 
@@ -128,7 +128,7 @@ export const checkPermissionsPlugin = async (
     ) => {
       const authHeader = req.headers.authorization;
       if (!authHeader) {
-        throw new AuthenticationError(ERROR_PROCESS);
+        throw httpErrors.unauthorized();
       }
       try {
         const userData = await checkPermissions(
@@ -139,7 +139,7 @@ export const checkPermissionsPlugin = async (
         );
         req.userData = userData;
       } catch (e) {
-        throw new AuthorizationError(ERROR_PROCESS, getErrorMessage(e), e);
+        throw httpErrors.createError(403, getErrorMessage(e), { parent: e });
       }
     },
   );

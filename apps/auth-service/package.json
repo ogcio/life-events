@@ -4,11 +4,14 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "test": "TAP_RCFILE=tap.yml tap",
+    "test": "TAP_RCFILE=tap.yml tap --reporter junit --reporter-file results.xml",
+    "test:local": "TAP_RCFILE=tap.yml tap",
+    "test:smoke:e2e": "echo \"Error: no test specified\" && exit 0",
+    "test:regression:e2e": "echo \"Error: no test specified\" && exit 0",
     "start": "node dist/index.js",
     "dev": "nodemon | pino-pretty",
     "lint": "eslint . --ext .ts",
-    "generate-ts-client": "npx openapi-typescript ./openapi-definition.yml -o ../../packages/building-blocks-sdk/services/auth-service/schema.d.ts",
+    "generate-ts-client": "npx openapi-typescript ./openapi-definition.yml -o ../../packages/building-blocks-sdk/src/services/auth-service/schema.d.ts",
     "build": "rm -rf dist && tsc -p tsconfig.prod.json && cp src/logo.png dist/ && cp -r src/routes/static dist/routes/static"
   },
   "nodemonConfig": {
@@ -38,6 +41,8 @@
     "@fastify/swagger-ui": "^3.0.0",
     "@fastify/type-provider-typebox": "^4.0.0",
     "@fastify/under-pressure": "^8.3.0",
+    "@ogcio/fastify-error-handler": "^4.0.1",
+    "@ogcio/fastify-logging-wrapper": "^4.0.1",
     "@sinclair/typebox": "^0.32.16",
     "auth": "*",
     "fastify": "^4.26.2",

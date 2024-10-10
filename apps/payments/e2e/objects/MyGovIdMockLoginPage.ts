@@ -8,9 +8,15 @@ export class MyGovIdMockLoginPage {
     this.pwInput = this.page.getByRole("textbox");
   }
 
-  async selectPublicServantUser(publicServantUser: string) {
-    const [name, surname] = publicServantUser.split(" ");
-    const email = `${name.toLocaleLowerCase()}.${surname.toLocaleLowerCase()}@${myGovIdMockSettings.publicServantEmailDomain}`;
+  async selectUser(userName: string, role: string) {
+    const [name, surname] = userName.split(" ");
+    let emailDomain = myGovIdMockSettings.publicServantEmailDomain;
+
+    if (role === "citizen") {
+      emailDomain = myGovIdMockSettings.citizenEmailDomain;
+    }
+
+    const email = `${name.toLocaleLowerCase()}.${surname.toLocaleLowerCase()}@${emailDomain}`;
     await this.page.getByLabel("Select user").selectOption(email);
   }
 
@@ -25,6 +31,22 @@ export class MyGovIdMockLoginPage {
   async expectPaymentSetupPage() {
     const heading = await this.page.getByRole("heading", {
       name: "Payments",
+      exact: true,
+    });
+    await expect(heading).toBeVisible();
+  }
+
+  async expectCitizenPaymentsPage() {
+    const heading = await this.page.getByRole("heading", {
+      name: "My Payments",
+      exact: true,
+    });
+    await expect(heading).toBeVisible();
+  }
+
+  async expectInactivePaymentSetupPage() {
+    const heading = await this.page.getByRole("heading", {
+      name: "Your account is under review",
       exact: true,
     });
     await expect(heading).toBeVisible();

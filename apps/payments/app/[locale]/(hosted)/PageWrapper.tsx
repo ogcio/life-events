@@ -75,7 +75,11 @@ export const PageWrapper = async ({
         </section>
       </div>
 
-      <div>
+      <div
+        style={{
+          width: "100%",
+        }}
+      >
         <section
           className="main-content"
           style={{

@@ -1,12 +1,7 @@
 import Link from "next/link";
-import dynamic from "next/dynamic";
 import { useTranslations } from "next-intl";
 import ds from "design-system";
 import styles from "./PaymentsMenu.module.scss";
-import { OrganizationData } from "auth/types";
-import { AuthenticationFactory } from "../../../../libraries/authentication-factory";
-import { redirect, RedirectType } from "next/navigation";
-import { Suspense } from "react";
 
 const Icon = ds.Icon;
 
@@ -24,7 +19,7 @@ export default ({ locale }: Props) => {
           <ol className={`govie-list govie-list--spaced ${styles.container}`}>
             <li tabIndex={0}>
               <Link
-                className="govie-button govie-button--icon govie-button--flat govie-button--icon govie-!-font-size-16"
+                className="govie-button govie-button--icon govie-button--flat govie-!-font-size-16"
                 href={`/${locale}/paymentSetup`}
                 style={{
                   margin: "unset",
@@ -44,7 +39,7 @@ export default ({ locale }: Props) => {
             </li>
             <li tabIndex={0}>
               <Link
-                className="govie-button govie-button--icon govie-button--flat govie-button--icon govie-!-font-size-16"
+                className="govie-button govie-button--icon govie-button--flat govie-!-font-size-16"
                 href={`/${locale}/paymentSetup/requests`}
                 style={{
                   margin: "unset",
@@ -64,7 +59,7 @@ export default ({ locale }: Props) => {
             </li>
             <li tabIndex={1}>
               <Link
-                className="govie-button govie-button--icon govie-button--flat govie-button--icon govie-!-font-size-16"
+                className="govie-button govie-button--icon govie-button--flat govie-!-font-size-16"
                 href={`/${locale}/paymentSetup/providers`}
                 style={{
                   margin: "unset",
@@ -80,6 +75,22 @@ export default ({ locale }: Props) => {
                   color={ds.colours.ogcio.darkGreen}
                 />
                 {t("providers")}
+              </Link>
+            </li>
+            <li tabIndex={1}>
+              <Link
+                className="govie-button govie-button--flat govie-!-font-size-16"
+                href={`/${locale}/auditLogs`}
+                style={{
+                  margin: "unset",
+                  paddingLeft: "12px",
+                  width: "100%",
+                  display: "flex",
+                  justifyContent: "flex-start",
+                  alignItems: "center",
+                }}
+              >
+                {t("auditLogs")}
               </Link>
             </li>
           </ol>

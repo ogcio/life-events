@@ -1,0 +1,24 @@
+meta {
+  name: Get other user's message
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{baseUrl}}/api/v1/messages/{{sentMessageId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{citizenAccessToken}}
+}
+
+assert {
+  res.status: eq 404
+  res.body.name: eq NOT_FOUND_ERROR
+}
+
+docs {
+  The `sentMessageId` var is set by `PublicServant/Messages/Send Message to user with consent/Create Message`
+}

@@ -3,7 +3,6 @@ import { HttpError } from "../../types/httpErrors";
 import {
   CreateUser,
   CreateUserSchema,
-  DEFAULT_LANGUAGE,
   FindUserParams,
   FindUserParamsSchema,
   FoundUser,
@@ -20,14 +19,12 @@ import {
 import { Type } from "@sinclair/typebox";
 import { findUser, getUser } from "../../services/users/find-user";
 import { createUser } from "../../services/users/create-user";
-import { NotFoundError, ServerError } from "shared-errors";
-import { getErrorMessage } from "../../utils/error-utils";
+import { getErrorMessage } from "@ogcio/shared-errors";
 import { isNativeError } from "util/types";
 import { Permissions } from "../../types/permissions";
 import { ensureUserCanAccessUser } from "api-auth";
 
 const USER_TAGS = ["Users"];
-const ERROR_PROCESS = "USER_PROFILE_DETAILS";
 
 export default async function users(app: FastifyInstance) {
   app.get<{ Reply: UserDetails | Error; Params: ParamsWithUserId }>(
@@ -50,53 +47,13 @@ export default async function users(app: FastifyInstance) {
         },
       },
     },
-    async (request, reply) => {
-      ensureUserCanAccessUser(
-        request.userData,
-        request.params.userId,
-        ERROR_PROCESS,
-      );
+    async (request) => {
+      ensureUserCanAccessUser(request.userData, request.params.userId);
 
-      /**  NOTE: the defaults below are for demo purposes only given we don't have access to real user data yet */
-      const defaultData = {
-        firstname: "Name",
-        lastname: "Surname",
-        email: "test@email.com",
-        title: "Mr",
-        date_of_birth: String(new Date("1990-01-01T00:00:00Z")),
-        ppsn: "9876543W",
-        ppsn_visible: false,
-        gender: "male",
-        phone: "01234567891",
-        consent_to_prefill_data: false,
-        preferred_language: DEFAULT_LANGUAGE,
-      };
-
-      const data = await getUser({
+      return getUser({
         pool: app.pg.pool,
         id: request.params.userId,
       });
-
-      const dataWithDefaults = {
-        firstName: data.firstName || defaultData.firstname,
-        lastName: data.lastName || defaultData.lastname,
-        email: data.email || defaultData.email,
-        title: data.title || defaultData.title,
-        dateOfBirth: data.dateOfBirth || defaultData.date_of_birth,
-        ppsn: data.ppsn || defaultData.ppsn,
-        ppsnVisible:
-          data.ppsnVisible !== undefined
-            ? data.ppsnVisible
-            : defaultData.ppsn_visible,
-        gender: data.gender || defaultData.gender,
-        phone: data.phone || defaultData.phone,
-        consentToPrefillData:
-          data.consentToPrefillData || defaultData.consent_to_prefill_data,
-        preferredLanguage:
-          data.preferredLanguage || defaultData.preferred_language,
-      };
-
-      reply.send(dataWithDefaults);
     },
   );
 
@@ -132,7 +89,7 @@ export default async function users(app: FastifyInstance) {
           }),
         );
       } catch (error) {
-        throw new ServerError(ERROR_PROCESS, getErrorMessage(error));
+        throw app.httpErrors.internalServerError(getErrorMessage(error));
       }
     },
   );
@@ -161,11 +118,7 @@ export default async function users(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
-      ensureUserCanAccessUser(
-        request.userData,
-        request.params.userId,
-        ERROR_PROCESS,
-      );
+      ensureUserCanAccessUser(request.userData, request.params.userId);
       let result;
 
       const columnsMapping: Record<keyof UpdateUser, string> = {
@@ -201,11 +154,11 @@ export default async function users(app: FastifyInstance) {
           values,
         );
       } catch (error) {
-        throw new ServerError(ERROR_PROCESS, getErrorMessage(error));
+        throw app.httpErrors.internalServerError(getErrorMessage(error));
       }
 
       if (!result?.rows.length) {
-        throw new NotFoundError(ERROR_PROCESS, "User not found");
+        throw app.httpErrors.notFound("User not found");
       }
 
       reply.send({ id: result.rows[0].id });
@@ -235,11 +188,7 @@ export default async function users(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
-      ensureUserCanAccessUser(
-        request.userData,
-        request.params.userId,
-        ERROR_PROCESS,
-      );
+      ensureUserCanAccessUser(request.userData, request.params.userId);
       let result;
 
       const columnsMapping: Record<keyof PatchUser, string> = {
@@ -267,11 +216,11 @@ export default async function users(app: FastifyInstance) {
           values,
         );
       } catch (error) {
-        throw new ServerError(ERROR_PROCESS, getErrorMessage(error));
+        throw app.httpErrors.internalServerError(getErrorMessage(error));
       }
 
       if (!result?.rows.length) {
-        throw new NotFoundError(ERROR_PROCESS, "User not found");
+        throw app.httpErrors.notFound("User not found");
       }
 
       reply.send({ id: result.rows[0].id });
@@ -306,7 +255,7 @@ export default async function users(app: FastifyInstance) {
         return;
       }
 
-      throw new NotFoundError(ERROR_PROCESS, "User not found");
+      throw app.httpErrors.notFound("User not found");
     },
   );
 
@@ -340,6 +289,7 @@ export default async function users(app: FastifyInstance) {
                 ppsn: Type.String(),
                 email: Type.Optional(Type.String({ format: "email" })),
                 phone: Type.Optional(Type.String()),
+                preferredLanguage: Type.String(),
               }),
             ),
           }),
@@ -368,7 +318,8 @@ export default async function users(app: FastifyInstance) {
           lastname as "lastName", 
           ppsn,
           phone,
-          email
+          email,
+          preferred_language as "preferredLanguage"
         from user_details
         where user_id::text = any ($1)
       `,
@@ -377,14 +328,13 @@ export default async function users(app: FastifyInstance) {
 
         users.push(...usersQueryResult.rows);
       } catch (err) {
-        throw new ServerError(
-          ERROR_PROCESS,
+        throw app.httpErrors.internalServerError(
           isNativeError(err) ? err.message : "failed to select users",
         );
       }
 
       if (!users.length) {
-        throw new NotFoundError(ERROR_PROCESS, "User not found");
+        throw app.httpErrors.notFound("User not found");
       }
 
       return { data: users };

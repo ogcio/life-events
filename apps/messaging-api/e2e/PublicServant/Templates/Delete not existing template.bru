@@ -1,0 +1,22 @@
+meta {
+  name: Delete not existing template
+  type: http
+  seq: 10
+}
+
+delete {
+  url: {{baseUrl}}/api/v1/templates/09569127-7cb2-4716-9783-0865a778a1b2
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+assert {
+  res.status: eq 404
+  res.body.code: eq NOT_FOUND_ERROR
+  res.body.detail: eq no template found
+  res.body.requestId: isDefined 
+}

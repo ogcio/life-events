@@ -3,21 +3,31 @@ import fastifySwagger from "@fastify/swagger";
 import fastifySwaggerUi from "@fastify/swagger-ui";
 import { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import fastifyEnv from "@fastify/env";
-import sensible from "@fastify/sensible";
-// import postgres from "@fastify/postgres";
+import sensible, { httpErrors } from "@fastify/sensible";
+import postgres from "@fastify/postgres";
 import multipart from "@fastify/multipart";
 import autoload from "@fastify/autoload";
+import v8 from "v8";
+
 import fs from "fs";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 
-import { initializeLoggingHooks } from "logging-wrapper";
-import { initializeErrorHandler } from "error-handler";
+import { initializeLoggingHooks } from "@ogcio/fastify-logging-wrapper";
+import { initializeErrorHandler } from "@ogcio/fastify-error-handler";
 import apiAuthPlugin from "api-auth";
 
 import routes from "./routes/index.js";
 import { envSchema } from "./config.js";
 import healthCheck from "./routes/healthcheck.js";
+import fastifyUnderPressure from "@fastify/under-pressure";
+import {
+  CONFIG_TYPE,
+  SCHEDULER_TOKEN,
+  storeConfig,
+} from "./utils/storeConfig.js";
+import { randomUUID } from "crypto";
+import scheduleCleanupTask from "./utils/scheduleCleanupTask.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -33,9 +43,9 @@ export async function build(opts?: FastifyServerOptions) {
   });
 
   app.register(apiAuthPlugin, {
-    jwkEndpoint: process.env.LOGTO_JWK_ENDPOINT as string,
-    oidcEndpoint: process.env.LOGTO_OIDC_ENDPOINT as string,
-    currentApiResourceIndicator: process.env
+    jwkEndpoint: app.config.LOGTO_JWK_ENDPOINT as string,
+    oidcEndpoint: app.config.LOGTO_OIDC_ENDPOINT as string,
+    currentApiResourceIndicator: app.config
       .LOGTO_API_RESOURCE_INDICATOR as string,
   });
 
@@ -71,13 +81,25 @@ export async function build(opts?: FastifyServerOptions) {
     },
   });
 
-  // app.register(postgres, {
-  //   host: app.config.POSTGRES_HOST,
-  //   port: Number(app.config.POSTGRES_PORT),
-  //   user: app.config.POSTGRES_USER,
-  //   password: app.config.POSTGRES_PASSWORD,
-  //   database: app.config.POSTGRES_DB_NAME_SHARED,
-  // });
+  app.register(fastifyUnderPressure, {
+    maxEventLoopDelay: 1000,
+    maxHeapUsedBytes: v8.getHeapStatistics().heap_size_limit,
+    maxRssBytes: v8.getHeapStatistics().total_available_size,
+    maxEventLoopUtilization: 0.98,
+    pressureHandler: (_req, _rep, type, value) => {
+      throw httpErrors.serviceUnavailable(
+        `System is under pressure. Pressure type: ${type}. Pressure value: ${value}`,
+      );
+    },
+  });
+
+  app.register(postgres, {
+    host: app.config.POSTGRES_HOST as string,
+    port: Number(app.config.POSTGRES_PORT),
+    user: app.config.POSTGRES_USER as string,
+    password: app.config.POSTGRES_PASSWORD as string,
+    database: app.config.POSTGRES_DB_NAME as string,
+  });
 
   app.register(import("@fastify/cookie"), {
     hook: "onRequest", // set to false to disable cookie autoparsing or set autoparsing on any of the following hooks: 'onRequest', 'preParsing', 'preHandler', 'preValidation'. default: 'onRequest'
@@ -94,6 +116,16 @@ export async function build(opts?: FastifyServerOptions) {
   app.register(routes, { prefix: "/api/v1" });
 
   app.register(sensible);
+
+  await storeConfig(
+    app.pg.pool,
+    SCHEDULER_TOKEN,
+    randomUUID(),
+    "token to allow scheduler jobs to access the API",
+    CONFIG_TYPE.STRING,
+  );
+
+  await scheduleCleanupTask(app);
 
   return app;
 }

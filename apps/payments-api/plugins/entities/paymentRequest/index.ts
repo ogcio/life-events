@@ -13,6 +13,7 @@ import {
   EditPaymentRequestDO,
   PaymentRequestDetailsDO,
   PaymentRequestDO,
+  PaymentRequestPublicInfoDO,
 } from "./types";
 
 export type PaymentRequestPlugin = Awaited<ReturnType<typeof buildPlugin>>;
@@ -77,7 +78,7 @@ const buildGetPaymentRequestById =
 
 const buildGetPaymentRequestPublicInfo =
   (repo: PaymentRequestRepo, log: FastifyBaseLogger, httpErrors: HttpErrors) =>
-  async (requestId: string): Promise<PaymentRequestDetailsDO> => {
+  async (requestId: string): Promise<PaymentRequestPublicInfoDO> => {
     let result;
 
     try {
@@ -205,6 +206,24 @@ const buildDeletePaymentRequest =
     }
   };
 
+const buildGetOrganizationIdFromPaymentRequest =
+  (repo: PaymentRequestRepo, log: FastifyBaseLogger, httpErrors: HttpErrors) =>
+  async (paymentRequestId: string): Promise<{ organizationId: string }> => {
+    let result;
+
+    try {
+      result = await repo.getOrganizationIdFromPaymentRequest(paymentRequestId);
+    } catch (err) {
+      log.error((err as Error).message);
+    }
+
+    if (!result?.rowCount) {
+      throw httpErrors.notFound("The requested payment request was not found");
+    }
+
+    return result.rows[0];
+  };
+
 const buildPlugin = (
   repo: PaymentRequestRepo,
   log: FastifyBaseLogger,
@@ -226,6 +245,8 @@ const buildPlugin = (
     createPaymentRequest: buildCreatePaymentRequest(repo, httpErrors),
     updatePaymentRequest: buildUpdatePaymentRequest(repo, httpErrors),
     deletePaymentRequest: buildDeletePaymentRequest(repo, httpErrors),
+    getOrganizationIdFromPaymentRequest:
+      buildGetOrganizationIdFromPaymentRequest(repo, log, httpErrors),
   };
 };
 

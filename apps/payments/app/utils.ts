@@ -1,8 +1,13 @@
 import { redirect, RedirectType } from "next/navigation";
 import { TransactionStatuses } from "../types/TransactionStatuses";
 import { ProviderType } from "./[locale]/(hosted)/paymentSetup/providers/types";
+import { validationFormatters } from "./validationMaps";
 
-export function formatCurrency(amount: number) {
+export function formatCurrency(amount?: number) {
+  if (amount === undefined) {
+    return "";
+  }
+
   return new Intl.NumberFormat("en-IE", {
     style: "currency",
     currency: "EUR",
@@ -11,6 +16,18 @@ export function formatCurrency(amount: number) {
 
 export function stringToAmount(amount: string) {
   return Math.round(parseFloat(amount) * 100);
+}
+
+export function validateURLAmount(amount) {
+  if (isNaN(amount)) {
+    return false;
+  }
+
+  if (amount < 1 || amount > 1000000) {
+    return false;
+  }
+
+  return true;
 }
 
 // Generating the amount to pay based on the business rules of the application
@@ -48,6 +65,7 @@ export type ValidationFieldMap = Record<
   {
     field: string;
     errorMessage: { [key in ValidationErrorTypes]?: string };
+    formatter?: Record<string, string>;
   }
 >;
 
@@ -58,6 +76,12 @@ export const getValidationErrors = (
   return validations.reduce((errors, validation) => {
     const errorField = validation.additionalInfo.field ?? validation.fieldName;
     const field = fieldMap[errorField]?.field ?? errorField;
+
+    // The first validation message is the most relevant
+    if (errors[field]) {
+      return errors;
+    }
+
     const message =
       fieldMap[errorField]?.errorMessage[validation.validationRule] ??
       validation.message;
@@ -70,7 +94,17 @@ export const getValidationErrors = (
       if (!validation.additionalInfo[variableName]) {
         return match;
       }
-      return validation.additionalInfo[variableName];
+
+      const value = validation.additionalInfo[variableName];
+      const formatterFn = fieldMap[errorField]?.formatter?.[variableName] ?? "";
+
+      if (validationFormatters[formatterFn]) {
+        return validationFormatters[formatterFn](
+          value,
+          validation.validationRule,
+        );
+      }
+      return value;
     });
 
     errors[field] = processedMessage;
@@ -216,4 +250,21 @@ export const buildPaginationLinks = (
     ...buildLinks(paginationLinks),
     pages: buildLinks(pagesLinks),
   } as PaginationLinks;
+};
+
+export const getInternalStatus = (status: string) => {
+  switch (status) {
+    case "processing":
+      return TransactionStatuses.Pending;
+    case "succeeded":
+      return TransactionStatuses.Succeeded;
+    case "payment_failed":
+      return TransactionStatuses.Failed;
+    case "executed":
+      return TransactionStatuses.Succeeded;
+    case "failed":
+      return TransactionStatuses.Failed;
+    default:
+      return TransactionStatuses.Succeeded;
+  }
 };

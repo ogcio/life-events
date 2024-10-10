@@ -1,5 +1,4 @@
 import s from "stripe";
-import { TransactionStatuses } from "../../types/TransactionStatuses";
 import { PaymentRequest } from "../../types/common";
 import { StripeData } from "../[locale]/(hosted)/paymentSetup/providers/types";
 import { errorHandler } from "../utils";
@@ -52,16 +51,5 @@ export async function createPaymentIntent(paymentRequest: PaymentRequest) {
       paymentRequest.amount,
     );
     return { paymentIntent, providerKeysValid: false };
-  }
-}
-
-export function getInternalStatus(status: string) {
-  switch (status) {
-    case "processing":
-      return TransactionStatuses.Pending;
-    case "succeeded":
-      return TransactionStatuses.Succeeded;
-    case "payment_failed":
-      return TransactionStatuses.Failed;
   }
 }

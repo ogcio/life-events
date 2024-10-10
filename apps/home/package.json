@@ -5,7 +5,11 @@
     "dev": "nodemon",
     "build": "next build",
     "start": "next start -p 3004",
+    "test": "echo \"Error: no test specified\" && exit 0",
+    "test:local": "echo \"Error: no test specified\" && exit 0",
     "test:e2e": "playwright test e2e",
+    "test:smoke:e2e": "echo \"Error: no test specified\" && exit 0",
+    "test:regression:e2e": "echo \"Error: no test specified\" && exit 0",
     "test:visual": "playwright test --ui",
     "lint": "next lint"
   },
@@ -21,8 +25,8 @@
     "auth": "*",
     "design-system": "*",
     "dotenv": "^16.4.5",
-    "next": "14.2.2",
-    "next-intl": "^3.7.0",
+    "next": "14.2.5",
+    "next-intl": "^3.17.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },

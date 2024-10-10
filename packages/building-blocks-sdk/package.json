@@ -3,9 +3,15 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "test": "TAP_RCFILE=tap.yml tap"
+    "test": "TAP_RCFILE=tap.yml tap --reporter junit --reporter-file results.xml",
+    "build": "rm -rf dist && tsc -p tsconfig.prod.json"
+  },
+  "exports": {
+    ".": "./dist/index.js",
+    "./*": "./dist/*.js"
   },
   "dependencies": {
+    "is-in-ci": "^0.1.0",
     "openapi-fetch": "^0.9.7"
   },
   "devDependencies": {
@@ -14,5 +20,5 @@
     "typescript": "5.4.5"
   },
   "type": "module",
-  "main": "./index.ts"
+  "main": "./src/index.ts"
 }

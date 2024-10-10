@@ -1,0 +1,44 @@
+parameters:
+  - name: dependencies
+    type: object
+    default:
+      - design-system
+      - nextjs-logging-wrapper
+      - api-auth
+      - building-blocks-sdk
+      - auth
+      - feature-flags
+      - messages
+      - shared-components
+      - analytics
+
+
+jobs:
+  - job: Run_dependencies_tests
+    displayName: Run unit tests for dependencies
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - task: NodeTool@0
+      inputs:
+        versionSpec: '20.x'
+    - task: Npm@1
+      displayName: 'npm install'
+      inputs:
+        command: install
+    - task: CmdLine@2
+      displayName: 'Set local env files for build'
+      inputs:
+        script: node scripts/init-env.mjs
+    - ${{ each dependency in parameters.dependencies }}:
+      - task: CmdLine@2
+        displayName: 'Run test for ${{ dependency }}'
+        inputs:
+          script: npm run build  --prefix packages/${{ dependency }} && npm run test  --prefix packages/${{ dependency }}
+        condition: succeededOrFailed()
+    - ${{ each dependency in parameters.dependencies }}:
+      - task: PublishTestResults@2
+        inputs:
+          testResultsFiles: 'packages/${{ dependency }}/results.xml'
+          testRunTitle: 'Unit test results for ${{ dependency }}:$(Build.BuildId)'
+        condition: succeededOrFailed()

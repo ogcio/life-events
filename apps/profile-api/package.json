@@ -4,13 +4,16 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "TAP_RCFILE=tap.yml tap",
+    "test": "TAP_RCFILE=tap.yml tap --reporter junit --reporter-file results.xml",
+    "test:local": "TAP_RCFILE=tap.yml tap",
     "test:e2e": "cd ./e2e && bru run --env local",
-    "test:dev": "cd ./e2e && bru run --env dev",
+    "test:smoke:e2e": "cd ./e2e && mkdir -p test-results && bru run --env dev --output ./test-results/results.xml --format junit",
+    "test:regression:e2e": "cd ./e2e && mkdir -p test-results && bru run --env dev --output ./test-results/results.xml --format junit",
     "start": "node --import tsx index.ts",
     "dev": "nodemon | pino-pretty",
     "lint": "eslint . --ext .ts",
-    "generate-ts-client": "npx openapi-typescript ./openapi-definition.yml -o ../../packages/building-blocks-sdk/services/profile/schema.d.ts"
+    "generate-ts-client": "npx openapi-typescript ./openapi-definition.yml -o ../../packages/building-blocks-sdk/src/services/profile/schema.d.ts",
+    "build": "echo \"Error: no test specified\" && exit 0"
   },
   "nodemonConfig": {
     "watch": [
@@ -38,16 +41,15 @@
     "@fastify/swagger-ui": "^3.0.0",
     "@fastify/type-provider-typebox": "^4.0.0",
     "@fastify/under-pressure": "^8.3.0",
+    "@ogcio/fastify-error-handler": "^4.0.1",
+    "@ogcio/fastify-logging-wrapper": "^4.0.1",
     "@sinclair/typebox": "^0.32.16",
     "api-auth": "*",
     "auth": "*",
     "dotenv": "^16.4.5",
-    "error-handler": "*",
-    "shared-errors": "*",
     "fastify": "^4.26.2",
     "fastify-plugin": "^4.5.1",
     "fastify-raw-body": "^4.3.0",
-    "logging-wrapper": "*",
     "pg": "^8.11.3"
   },
   "devDependencies": {

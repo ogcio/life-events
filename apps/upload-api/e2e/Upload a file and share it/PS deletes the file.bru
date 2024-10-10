@@ -1,0 +1,23 @@
+meta {
+  name: PS deletes the file
+  type: http
+  seq: 12
+}
+
+delete {
+  url: {{baseUrl}}/api/v1/metadata
+  body: formUrlEncoded
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{accessToken}}
+}
+
+body:form-urlencoded {
+  fileId: {{fileId}}
+}
+
+assert {
+  res.status: eq 200
+}

@@ -1,0 +1,27 @@
+meta {
+  name: Get deleted template
+  type: http
+  seq: 13
+}
+
+get {
+  url: {{baseUrl}}/api/v1/templates/{{templateId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+assert {
+  res.status: eq 404
+  res.body.code: eq NOT_FOUND_ERROR
+  res.body.requestId: isDefined
+}
+
+script:pre-request {
+  const baseUrl = bru.getEnvVar("baseUrl")
+  const templateId = bru.getEnvVar("templateId")
+  req.setUrl(`${baseUrl}/api/v1/templates/${templateId}`)
+}

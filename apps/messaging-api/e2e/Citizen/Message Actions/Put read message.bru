@@ -1,0 +1,26 @@
+meta {
+  name: Put read message
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{baseUrl}}/api/v1/message-actions/{{messageAId}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{citizenAccessToken}}
+}
+
+body:json {
+  {
+    "messageId":"{{messageAId}}",
+    "isSeen":true
+  }
+}
+
+assert {
+  res.status: eq 200
+}

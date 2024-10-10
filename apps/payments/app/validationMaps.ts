@@ -102,6 +102,12 @@ export const paymentRequestValidationMap = (t): ValidationFieldMap => {
         [ValidationErrorTypes.REQUIRED]: t("titleRequired"),
       },
     },
+    description: {
+      field: "description",
+      errorMessage: {
+        [ValidationErrorTypes.REQUIRED]: t("descriptionRequired"),
+      },
+    },
     reference: {
       field: "reference",
       errorMessage: {
@@ -111,8 +117,12 @@ export const paymentRequestValidationMap = (t): ValidationFieldMap => {
     amount: {
       field: "amount",
       errorMessage: {
-        [ValidationErrorTypes.MINIMUM]: t("amountRequired"),
+        [ValidationErrorTypes.REQUIRED]: t("amountRequired"),
+        [ValidationErrorTypes.MINIMUM]: t("amountMinimumValidation"),
         [ValidationErrorTypes.MAXIMUM]: t("amountMaximumValidation"),
+      },
+      formatter: {
+        limit: "formatLimitValue",
       },
     },
     redirectUrl: {
@@ -128,4 +138,17 @@ export const paymentRequestValidationMap = (t): ValidationFieldMap => {
       },
     },
   };
+};
+
+export const validationFormatters = {
+  formatLimitValue: (value, rule) => {
+    if (
+      rule === ValidationErrorTypes.MINIMUM ||
+      rule === ValidationErrorTypes.REQUIRED
+    ) {
+      return value;
+    }
+
+    return value / 100;
+  },
 };

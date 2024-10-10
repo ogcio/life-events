@@ -1,0 +1,27 @@
+meta {
+  name: Get wrong provider type for sms
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{baseUrl}}/api/v1/providers/{{smsProviderId}}?type=email
+  body: none
+  auth: bearer
+}
+
+query {
+  type: email
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+assert {
+  res.status: eq 404
+  res.body.code: eq NOT_FOUND_ERROR
+  res.body.detail: eq failed to find email provider
+  res.body.requestId: isDefined
+  res.body.name: isDefined
+}

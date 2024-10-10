@@ -66,6 +66,13 @@ export const isPublicServantAuthenticated = async (
   return publicServantContext.isPublicServant;
 };
 
+export const isAuthenticated = async (params: {
+  appId: string;
+  baseUrl: string;
+}): Promise<boolean> => {
+  return AuthSession.isAuthenticated({ ...getBaseLogtoConfig(), ...params });
+};
+
 export const isCitizenAuthenticated = async (
   params: CitizenParameters,
 ): Promise<boolean> => {

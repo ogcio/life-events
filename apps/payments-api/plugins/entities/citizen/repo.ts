@@ -20,6 +20,7 @@ export class CitizenRepo {
           t.status,
           pr.title,
           t.amount,
+          t.ext_payment_id as "extPaymentId",
           t.updated_at as "updatedAt"
         FROM payment_transactions t
         INNER JOIN payment_requests pr ON pr.payment_request_id = t.payment_request_id

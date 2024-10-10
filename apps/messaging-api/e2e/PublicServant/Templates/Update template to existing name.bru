@@ -1,0 +1,105 @@
+meta {
+  name: Update template to existing name
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{baseUrl}}/api/v1/templates/{{templateId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+assert {
+  res.body.code: eq VALIDATION_ERROR
+  res.body.validation[0].fieldName: eq templateName
+  res.body.validation[0].message: eq alreadyInUse
+  res.status: eq 422
+  res.body.requestId: isDefined
+}
+
+script:pre-request {
+  const uuid = require("uuid")
+  const axios = require('axios')
+  const anotherString = uuid.v4()
+  try{
+    await axios({
+          method: 'POST',
+          url: `${bru.getEnvVar("baseUrl")}/api/v1/templates`,
+          headers: {
+              'Content-Type': 'application/json',
+              'Authorization':`Bearer ${bru.getVar("accessToken")}`
+          },
+          data: {
+            "contents": [
+                {
+                  "templateName": `A ${anotherString}`,
+                  "language": "en",
+                  "subject": "subj A {{var1}}",
+                  "excerpt": "expt A {{var2en}}",
+                  "plainText": "pt A",
+                  "richText": "rt A"
+                },
+                {
+                  "templateName": `B ${anotherString}`,
+                  "language": "ga",
+                  "subject": "subj B {{var1}}",
+                  "excerpt": "expt B {{var2ga}}",
+                  "plainText": "pt B",
+                  "richText": "rt B"
+                }
+              ],
+            "variables": [
+              {
+                "name": "var1"
+              },
+              {
+                "name": "var2en"
+              },
+              {
+                "name": "var2ga"
+              }
+            ]
+          }
+      })
+    } catch(err){
+      throw err
+    }
+    
+  req.setBody({
+    "id": bru.getVar("templateId"),
+    "contents": [
+      {
+        "templateName": `A ${anotherString}`,
+        "language": "en",
+        "subject": "subj A {{var1}}",
+        "excerpt": "expt A {{var2en}}",
+        "plainText": "pt A",
+        "richText": "rt A"
+      },
+      {
+        "templateName": `B ${anotherString}`,
+        "language": "ga",
+        "subject": "subj B {{var1}}",
+        "excerpt": "expt B {{var2ga}}",
+        "plainText": "pt B",
+        "richText": "rt B"
+      }
+    ],
+    "variables": [
+      {
+        "name": "var1"
+      },
+      {
+        "name": "var2en"
+      },
+      {
+        "name": "var2ga"
+      }
+    ]
+  })
+}

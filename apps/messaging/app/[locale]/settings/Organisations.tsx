@@ -29,13 +29,9 @@ export default async () => {
       </thead>
       <tbody className="govie-table__body">
         {data?.map((organisationSetting) => (
-          <tr
-            className="govie-table__row"
-            key={organisationSetting.organisationSettingId}
-          >
+          <tr className="govie-table__row" key={organisationSetting.id}>
             <th className="govie-table__header govie-table__header--vertical-centralized govie-body-s">
-              {/* {invitation.organisationId} At the moment we want to show "Life Events" as fixed value*/}
-              Life Events
+              {organisationSetting.organisationId}
             </th>
             <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
               {organisationSetting.organisationInvitationStatus}
@@ -49,8 +45,8 @@ export default async () => {
                   className="govie-link govie-!-margin-right-3"
                   href={(() => {
                     const url = new URL(
-                      `${userOrganisationsRoutes.url}/${organisationSetting.organisationSettingId}`,
-                      process.env.HOST_URL,
+                      `${userOrganisationsRoutes.url}/${organisationSetting.id}`,
+                      process.env.NEXT_PUBLIC_MESSAGING_SERVICE_ENTRY_POINT,
                     );
                     return url.href;
                   })()}

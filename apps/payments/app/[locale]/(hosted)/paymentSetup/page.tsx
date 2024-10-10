@@ -25,6 +25,7 @@ export default async function ({
   searchParams: { page?: string; limit?: string };
 }) {
   const t = await getTranslations("PaymentSetup.Payments");
+  const tStatus = await getTranslations("PaymentSetup.paymentStatus");
   const currentPage = page ? parseInt(page) : PAGINATION_PAGE_DEFAULT;
   const pageLimit = limit ? parseInt(limit) : PAGINATION_LIMIT_DEFAULT;
 
@@ -93,13 +94,17 @@ export default async function ({
               </thead>
               <tbody className="govie-table__body">
                 {transactionsResponse?.data.map((trx) => (
-                  <tr className="govie-table__row" key={trx.transactionId}>
+                  <tr
+                    className="govie-table__row"
+                    key={trx.transactionId}
+                    data-reference-code={trx.extPaymentId}
+                  >
                     <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
                       <strong
                         className={`govie-tag ${mapTransactionStatusColorClassName(trx.status)} govie-body-s`}
                         style={{ marginBottom: "0px" }}
                       >
-                        {trx.status}
+                        {tStatus(trx.status)}
                       </strong>
                     </td>
                     <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">

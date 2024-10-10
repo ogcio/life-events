@@ -10,6 +10,7 @@ import {
   ParamsWithPaymentRequestId,
   PaymentRequest,
   PaymentRequestDetails,
+  PaymentRequestPublicInfo,
   Transaction,
 } from "../schemas";
 import {
@@ -28,7 +29,9 @@ import {
   ParamsWithPaymentRequestIdDO,
   PaymentRequestDetailsDO,
   PaymentRequestDO,
+  PaymentRequestPublicInfoDO,
 } from "../../plugins/entities/paymentRequest/types";
+import { AuditLogEventType } from "../../plugins/auditLog/auditLogEvents";
 
 const TAGS = ["PaymentRequests"];
 
@@ -65,7 +68,7 @@ export default async function paymentRequests(app: FastifyInstance) {
           limit,
         },
       );
-      console.log(JSON.stringify(result, undefined, 2));
+
       const totalCount =
         await app.paymentRequest.getPaymentRequestsTotalCount(organizationId);
       const url = request.url.split("?")[0];
@@ -116,7 +119,7 @@ export default async function paymentRequests(app: FastifyInstance) {
   );
 
   app.get<{
-    Reply: PaymentRequestDetailsDO | Error;
+    Reply: PaymentRequestPublicInfoDO | Error;
     Params: ParamsWithPaymentRequestIdDO;
   }>(
     "/:requestId/public-info",
@@ -129,7 +132,7 @@ export default async function paymentRequests(app: FastifyInstance) {
         tags: TAGS,
         params: ParamsWithPaymentRequestId,
         response: {
-          200: PaymentRequestDetails,
+          200: PaymentRequestPublicInfo,
           404: HttpError,
         },
       },
@@ -168,6 +171,19 @@ export default async function paymentRequests(app: FastifyInstance) {
         userId,
         organizationId,
       );
+
+      app.auditLog.createEvent({
+        eventType: AuditLogEventType.PAYMENT_REQUEST_CREATE,
+        userId,
+        organizationId,
+        metadata: {
+          resource: {
+            type: "payment_request",
+            id: requestId.id,
+          },
+        },
+      });
+
       reply.send(requestId);
     },
   );
@@ -184,6 +200,7 @@ export default async function paymentRequests(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
+      const userId = request.userData?.userId;
       const organizationId = request.userData?.organizationId;
 
       if (!organizationId) {
@@ -194,6 +211,19 @@ export default async function paymentRequests(app: FastifyInstance) {
         request.body,
         organizationId,
       );
+
+      app.auditLog.createEvent({
+        eventType: AuditLogEventType.PAYMENT_REQUEST_UPDATE,
+        userId,
+        organizationId,
+        metadata: {
+          resource: {
+            type: "payment_request",
+            id: requestId.id,
+          },
+        },
+      });
+
       reply.send(requestId);
     },
   );
@@ -216,6 +246,7 @@ export default async function paymentRequests(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
+      const userId = request.userData?.userId;
       const organizationId = request.userData?.organizationId;
       const { requestId } = request.params;
 
@@ -236,6 +267,18 @@ export default async function paymentRequests(app: FastifyInstance) {
       }
 
       await app.paymentRequest.deletePaymentRequest(requestId, organizationId);
+
+      app.auditLog.createEvent({
+        eventType: AuditLogEventType.PAYMENT_REQUEST_DELETE,
+        userId,
+        organizationId,
+        metadata: {
+          resource: {
+            type: "payment_request",
+            id: requestId,
+          },
+        },
+      });
 
       reply.send();
     },

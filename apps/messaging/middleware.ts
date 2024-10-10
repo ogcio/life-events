@@ -1,6 +1,6 @@
 import createMiddleware from "next-intl/middleware";
 import type { NextRequest } from "next/server";
-import { AuthenticationFactory } from "./app/utils/authentication-factory";
+import { ProfileAuthenticationFactory } from "./app/utils/profile-authentication-factory";
 import { cookies } from "next/headers";
 const locales = ["en", "ga"];
 const DEFAULT_LOCALE = "en";
@@ -18,6 +18,7 @@ export default async function (request: NextRequest) {
   })(request);
 
   nextResponse.headers.append("x-pathname", request.nextUrl.pathname);
+  nextResponse.headers.append("x-search", request.nextUrl.search);
   return nextResponse;
 }
 
@@ -28,12 +29,12 @@ export const config = {
 const getPreferredLanguage = async (
   fallbackLanguage: string,
 ): Promise<string> => {
-  const authenticationContext = AuthenticationFactory.getInstance();
+  const authenticationContext = ProfileAuthenticationFactory.getInstance();
   if (!(await authenticationContext.isAuthenticated())) {
     return fallbackLanguage;
   }
 
-  const userProfile = await AuthenticationFactory.getProfileClient();
+  const userProfile = await ProfileAuthenticationFactory.getProfileClient();
   const contextUser = await authenticationContext.getUser();
   const user = await userProfile.getUser(contextUser.id);
 

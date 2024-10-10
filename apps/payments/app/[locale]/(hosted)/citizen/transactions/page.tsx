@@ -25,6 +25,7 @@ type Props = {
 
 export default async function (props: Props) {
   const t = await getTranslations("MyPayments");
+  const tStatus = await getTranslations("PaymentSetup.paymentStatus");
   const paymentsApi = await AuthenticationFactory.getPaymentsClient();
 
   const currentPage = props.searchParams.page
@@ -98,13 +99,17 @@ export default async function (props: Props) {
               </thead>
               <tbody className="govie-table__body">
                 {transactions?.map((trx) => (
-                  <tr className="govie-table__row" key={trx.transactionId}>
+                  <tr
+                    className="govie-table__row"
+                    key={trx.transactionId}
+                    data-reference-code={trx.extPaymentId}
+                  >
                     <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
                       <strong
                         className={`govie-tag ${mapTransactionStatusColorClassName(trx.status)} govie-body-s`}
                         style={{ marginBottom: "0px" }}
                       >
-                        {trx.status}
+                        {tStatus(trx.status)}
                       </strong>
                     </td>
                     <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">

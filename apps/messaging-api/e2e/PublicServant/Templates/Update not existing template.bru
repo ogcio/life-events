@@ -1,0 +1,60 @@
+meta {
+  name: Update not existing template
+  type: http
+  seq: 9
+}
+
+put {
+  url: {{baseUrl}}/api/v1/templates/09569127-7cb2-4716-9783-0865a778a1b2
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "id": "09569127-7cb2-4716-9783-0865a778a1b2",
+    "contents": [
+      {
+        "templateName": "A {{randomTemplateName}}",
+        "language": "en",
+        "subject": "update subj A {{var1}}",
+        "excerpt": "update expt A {{var2en}} {{var2en2}}",
+        "plainText": "update pt A",
+        "richText": "update rt A"
+      },
+      {
+        "templateName": "B {{randomTemplateName}}",
+        "language": "ga",
+        "subject": "update subj B {{var1}}",
+        "excerpt": "update expt B {{var2ga}}",
+        "plainText": "update pt B",
+        "richText": "update rt B"
+      }
+    ],
+    "variables": [
+      {
+        "name": "var1"
+      },
+      {
+        "name": "var2en"
+      },
+      {
+        "name": "var2ga"
+      },
+      {
+        "name":"var2en2"
+      }
+    ]
+  }
+}
+
+assert {
+  res.status: eq 404
+  res.body.code: eq NOT_FOUND_ERROR
+  res.body.detail: eq no template found
+  res.body.requestId: isDefined 
+}

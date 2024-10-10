@@ -184,7 +184,7 @@ const ContentForm = async (props: {
 
     for (const key of langContents.langs) {
       contents.push({
-        lang: key,
+        language: key,
         excerpt: langContents[key].excerpt,
         plainText: langContents[key].plainText,
         richText: langContents[key].plainText,
@@ -196,11 +196,8 @@ const ContentForm = async (props: {
     const templateId = props.templateId;
     if (templateId) {
       const { error } = await sdkClient.updateTemplate(templateId, {
-        contents: contents.map((content) => ({
-          ...content,
-          id: templateId,
-        })),
-        variables: [],
+        id: templateId,
+        contents,
       });
 
       if (error) {
@@ -221,7 +218,6 @@ const ContentForm = async (props: {
     } else {
       const { error } = await sdkClient.createTemplate({
         contents,
-        variables: [],
       });
 
       if (error) {
@@ -450,10 +446,11 @@ export default async (props: {
 
   if (props.searchParams.id) {
     const { data, error } = await client.getTemplate(props.searchParams.id);
+
     if (data?.contents) {
       for (const item of data.contents) {
-        contents[item.lang] = item;
-        contents.langs.push(item.lang);
+        contents[item.language] = item;
+        contents.langs.push(item.language);
       }
     }
 

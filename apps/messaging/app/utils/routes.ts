@@ -63,7 +63,10 @@ export function urlWithSearchParams(
   dir: string,
   ...searchParams: { key: string; value?: string }[]
 ): URL {
-  const url = new URL(dir, process.env.HOST_URL);
+  const url = new URL(
+    dir,
+    process.env.NEXT_PUBLIC_MESSAGING_SERVICE_ENTRY_POINT,
+  );
   for (const param of searchParams) {
     if (param.value) {
       url.searchParams.append(param.key, param.value);

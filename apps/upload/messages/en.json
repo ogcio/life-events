@@ -1,15 +1,65 @@
 {
+  "title": "File Explorer",
   "Upload": {
+    "title": "welcome to file explorer",
+    "noFiles": "No files uploaded",
+    "table": {
+      "caption": "Files",
+      "header": {
+        "file": "File",
+        "fileSize": "File size",
+        "uploadedBy": "Uploaded by",
+        "fileTTL": "Delete after",
+        "action": "action"
+      },
+      "data": {
+        "infected": "The file is infected"
+      }
+    },
     "Errors": {
       "noFile": "The file must be present",
       "tooBig": "The file must be smaller than 100MB",
       "uploadError": "There was an error trying to upload the file",
       "deleteError": "There was an error trying to delete the file",
       "fileInfected": "The file is infected",
-      "noKey": "No file specified for deletion"
+      "noKey": "No file specified for deletion",
+      "retrievalError": "There was an error retrieving files"
     },
     "buttonLabel": "Upload a file",
-    "uploadButton": "Upload"
+    "uploadButton": "Upload",
+    "dateLabel": "Delete after"
+  },
+  "File": {
+    "title": "File details",
+    "Errors": {
+      "retrievalError": "There was an error retrieving file",
+      "share-error": "There was an error trying to share the file",
+      "remove-share-error": "There was an error trying to remove file sharing"
+    },
+    "shareFileCaption": "Share file",
+    "table": {
+      "searchResultsCaption": "Search results",
+      "searchUsersButton": "Search users",
+      "fullNameHeader": "Full name",
+      "actionsHeader": "Action",
+      "shareButton": "Share",
+      "removeButton": "Remove",
+
+      "selectedUsersCaption": "Users accessing this file",
+      "emailHeader": "Email",
+      "phoneHeader": "Phone",
+      "removeSharingButton": "Remove"
+    },
+
+    "details": {
+      "name": "Name",
+      "fileSize": "File size",
+      "createdAt": "Created at",
+      "expiresAt": "Expires at",
+      "fileType": "File type",
+      "uploadedBy": "Uploaded by"
+    },
+    "backLink": "Back"
   },
   "NotFound": {
     "title": "Not Found",

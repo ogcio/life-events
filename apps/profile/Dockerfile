@@ -9,7 +9,6 @@ COPY ./packages/feature-flags/package*.json /app/packages/feature-flags/
 COPY ./packages/auth/package*.json /app/packages/auth/
 COPY ./packages/building-blocks-sdk/package*.json /app/packages/building-blocks-sdk/
 COPY ./packages/shared-components/package*.json /app/packages/shared-components/
-COPY ./packages/shared-errors/package*.json /app/packages/shared-errors/
 COPY ./packages/nextjs-logging-wrapper/package*.json /app/packages/nextjs-logging-wrapper/
 
 RUN npm ci
@@ -20,7 +19,6 @@ COPY ./packages/feature-flags/ /app/packages/feature-flags/
 COPY ./packages/auth/ /app/packages/auth/
 COPY ./packages/building-blocks-sdk/ /app/packages/building-blocks-sdk/
 COPY ./packages/shared-components/ /app/packages/shared-components/
-COPY ./packages/shared-errors/ /app/packages/shared-errors/
 COPY ./packages/nextjs-logging-wrapper/ /app/packages/nextjs-logging-wrapper/
 
 FROM deps AS builder
@@ -32,9 +30,9 @@ ENV NODE_ENV=production
 ENV LOG_LEVEL=trace
 ENV NEXT_PUBLIC_PROFILE_SERVICE_ENTRY_POINT=$NEXT_PUBLIC_PROFILE_SERVICE_ENTRY_POINT
 
-RUN npm run build --workspace=packages/shared-errors
-RUN npm run build --workspace=packages/nextjs-logging-wrapper
-RUN npm run build --workspace=apps/profile
+RUN npm run build --workspace=packages/nextjs-logging-wrapper && \
+    npm run build --workspace=packages/building-blocks-sdk && \
+    npm run build --workspace=apps/profile
 
 FROM base-deps AS runner
 

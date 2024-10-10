@@ -107,6 +107,20 @@ export async function messageStatus(type: string, status: string) {
           </strong>
         );
     }
+  } else if (type === "message_option_seen") {
+    switch (status) {
+      case "successful":
+        return (
+          <strong className="govie-tag govie-tag--green">{t("seen")}</strong>
+        );
+    }
+  } else if (type === "message_option_unseen") {
+    switch (status) {
+      case "successful":
+        return (
+          <strong className="govie-tag govie-tag--green">{t("unseen")}</strong>
+        );
+    }
   }
 
   return null;
@@ -198,7 +212,7 @@ export default async (props: {
               eventStatus,
               eventType,
               messageId,
-              eventId,
+              id,
               scheduledAt,
               receiverFullName,
               subject,
@@ -219,8 +233,8 @@ export default async (props: {
                     <Link
                       href={
                         new URL(
-                          `/en/admin/message-events/${eventId}`,
-                          process.env.HOST_URL,
+                          `/en/admin/message-events/${id}`,
+                          process.env.NEXT_PUBLIC_MESSAGING_SERVICE_ENTRY_POINT,
                         ).href
                       }
                     >

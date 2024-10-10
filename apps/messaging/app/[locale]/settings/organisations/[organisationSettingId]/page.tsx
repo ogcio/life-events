@@ -33,7 +33,10 @@ export default async (props: { params: { organisationSettingId: string } }) => {
     const authenticationContext = await AuthenticationFactory.getInstance();
     const submitUser = await authenticationContext.getUser();
     const submitTrans = await getTranslations("userSettings.Organisation");
-    const url = new URL(usersSettingsRoutes.url, process.env.HOST_URL);
+    const url = new URL(
+      usersSettingsRoutes.url,
+      process.env.NEXT_PUBLIC_MESSAGING_SERVICE_ENTRY_POINT,
+    );
     url.searchParams.append(searchKeySettingType, searchValueOrganisation);
     const orgId = formData.get("organisationSettingId")?.toString();
     if (!orgId) {
@@ -42,7 +45,7 @@ export default async (props: { params: { organisationSettingId: string } }) => {
 
     const status =
       formData.get("invitationStatus") ?? AVAILABLE_STATUSES.ACCEPTED;
-    let preferredTransports: string[] = [];
+    let preferredTransports: ("email" | "sms")[] = [];
     for (const transport of Object.values(AVAILABLE_TRANSPORTS)) {
       if (Boolean(formData.get(transport))) {
         preferredTransports.push(transport);
@@ -119,10 +122,7 @@ export default async (props: { params: { organisationSettingId: string } }) => {
       <h1>
         <span className="govie-heading-l">{t("title")}</span>
       </h1>
-      <p className="govie-body">
-        {/* {organisationId} At the moment we want "Life Events" as fixed value */}
-        Life Events
-      </p>
+      <p className="govie-body">{configurations.data?.organisationId}</p>
       <form action={submitAction}>
         <input
           name="organisationSettingId"

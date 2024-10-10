@@ -1,0 +1,37 @@
+meta {
+  name: Update mismatching url param id vs body id
+  type: http
+  seq: 1
+}
+
+put {
+  url: {{baseUrl}}/api/v1/providers/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "id": "baaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+    "type":"email",
+    "isPrimary":false,
+    "smtpHost": "update {{randomStringEmail}}",
+    "smtpPort":12345,
+    "username":"update user",
+    "password":"update password",
+    "providerName": "update {{randomStringEmail}}",
+    "fromAddress": "update {{randomStringEmail}}",
+    "ssl":false
+  }
+}
+
+assert {
+  res.status: eq 400
+  res.body.code: eq REQUEST_ERROR
+  res.body.requestId: isDefined
+  res.body.detail: eq provider id from body and url param are not identical
+}

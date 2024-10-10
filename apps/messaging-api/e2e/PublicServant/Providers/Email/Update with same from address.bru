@@ -1,0 +1,65 @@
+meta {
+  name: Update with same from address
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{baseUrl}}/api/v1/providers/{{emailProviderId}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+assert {
+  res.body.code: eq VALIDATION_ERROR
+  res.body.validation[0].fieldName: eq fromAddress
+  res.body.validation[0].message: eq alreadyInUse
+  res.status: eq 422
+  res.body.requestId: isDefined
+}
+
+script:pre-request {
+  const uuid = require("uuid")
+  const axios = require('axios')
+  const anotherString = uuid.v4()
+  try{
+    await axios({
+          method: 'POST',
+          url: `${bru.getEnvVar("baseUrl")}/api/v1/providers`,
+          headers: {
+              'Content-Type': 'application/json',
+              'Authorization':`Bearer ${bru.getVar("accessToken")}`
+          },
+          data: {
+            "type":"email",
+            "isPrimary":false,
+            "smtpHost": anotherString,
+            "smtpPort":1234,
+            "username":"user",
+            "password":"password",
+            "providerName": anotherString,
+            "fromAddress": anotherString,
+            "ssl":true
+          }
+      })
+    } catch(err){
+      throw err
+    }
+    
+    req.setBody({
+      "id": "{{emailProviderId}}",
+      "type":"email",
+      "isPrimary":false,
+      "smtpHost": "update {{randomStringEmail}}",
+      "smtpPort":12345,
+      "username":"update user",
+      "password":"update password",
+      "providerName": "update {{randomStringEmail}}",
+      "fromAddress": anotherString,
+      "ssl":false
+  })
+}
