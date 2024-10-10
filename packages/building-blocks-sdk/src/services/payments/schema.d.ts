@@ -978,6 +978,61 @@ export interface paths {
       };
     };
   };
+  "/api/v1/transactions/schema": {
+    get: {
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              type?: string;
+              properties?: {
+                userId?: {
+                  type?: string;
+                };
+                transactionId?: {
+                  type?: string;
+                };
+                paymentRequestId?: {
+                  type?: string;
+                };
+                paymentRequestTitle?: {
+                  type?: string;
+                };
+                amount?: {
+                  minimum?: number;
+                  maximum?: number;
+                  type?: string;
+                };
+                extReferenceCode?: {
+                  type?: string;
+                };
+                paymentMethod?: {
+                  type?: string;
+                };
+                paymentProviderName?: {
+                  type?: string;
+                };
+                status?: {
+                  anyOf?: {
+                    const?: string;
+                    type?: string;
+                  }[];
+                };
+                createdAt?: {
+                  type?: string;
+                };
+                updatedAt?: {
+                  type?: string;
+                };
+              };
+              required?: string[];
+            };
+          };
+        };
+      };
+    };
+  };
   "/api/v1/transactions/generatePaymentIntentId": {
     get: {
       responses: {

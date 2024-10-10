@@ -2086,6 +2086,92 @@ paths:
                   - detail
                   - requestId
                   - name
+  /api/v1/transactions/schema:
+    get:
+      tags: *a3
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  properties:
+                    type: object
+                    properties:
+                      userId:
+                        type: object
+                        properties:
+                          type:
+                            type: string
+                      transactionId:
+                        type: object
+                        properties:
+                          type:
+                            type: string
+                      paymentRequestId:
+                        type: object
+                        properties:
+                          type:
+                            type: string
+                      paymentRequestTitle:
+                        type: object
+                        properties:
+                          type:
+                            type: string
+                      amount:
+                        type: object
+                        properties:
+                          minimum:
+                            type: integer
+                          maximum:
+                            type: integer
+                          type:
+                            type: string
+                      extReferenceCode:
+                        type: object
+                        properties:
+                          type:
+                            type: string
+                      paymentMethod:
+                        type: object
+                        properties:
+                          type:
+                            type: string
+                      paymentProviderName:
+                        type: object
+                        properties:
+                          type:
+                            type: string
+                      status:
+                        type: object
+                        properties:
+                          anyOf:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                const:
+                                  type: string
+                                type:
+                                  type: string
+                      createdAt:
+                        type: object
+                        properties:
+                          type:
+                            type: string
+                      updatedAt:
+                        type: object
+                        properties:
+                          type:
+                            type: string
+                  required:
+                    type: array
+                    items:
+                      type: string
   /api/v1/transactions/generatePaymentIntentId:
     get:
       tags: *a3

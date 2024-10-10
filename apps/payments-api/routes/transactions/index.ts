@@ -7,6 +7,8 @@ import {
   PaginationParams,
   ParamsWithTransactionId,
   PaymentIntentId,
+  transactionDataJsonSchema,
+  transactionDataSchema,
   TransactionData,
   TransactionDetails,
   Transactions,
@@ -114,6 +116,21 @@ export default async function transactions(app: FastifyInstance) {
       };
 
       reply.send(formatAPIResponse(transactions, paginationDetails));
+    },
+  );
+
+  app.get(
+    "/schema",
+    {
+      schema: {
+        tags: TAGS,
+        response: {
+          200: transactionDataJsonSchema,
+        },
+      },
+    },
+    async (_, reply) => {
+      reply.send(transactionDataSchema);
     },
   );
 

@@ -1,4 +1,5 @@
 import { Static, TSchema, Type } from "@sinclair/typebox";
+import toJsonSchema from "to-json-schema";
 import {
   PAGINATION_LIMIT_DEFAULT,
   PAGINATION_OFFSET_DEFAULT,
@@ -248,6 +249,23 @@ export const FullTransaction = Type.Object({
     journeyTitle: Type.Optional(Type.String()),
   }),
 });
+
+export const TransactionData = Type.Object({
+  userId: Type.String(),
+  transactionId: Type.String(),
+  paymentRequestId: Type.String(),
+  paymentRequestTitle: Type.String(),
+  amount: Type.Number({ minimum: 1, maximum: 1000000 }),
+  extReferenceCode: Type.String(),
+  paymentMethod: Type.String(),
+  paymentProviderName: Type.String(),
+  status: TransactionStatuses,
+  createdAt: Type.String(),
+  updatedAt: Type.String(),
+});
+
+export const transactionDataSchema = Type.Strict(TransactionData);
+export const transactionDataJsonSchema = toJsonSchema(transactionDataSchema);
 
 export const Transaction = Type.Composite([
   Type.Pick(FullTransaction, [
@@ -500,18 +518,3 @@ export const AuditLogEventsFiltersQueryString = Type.Composite([
 export type AuditLogEventsFiltersQueryString = Static<
   typeof AuditLogEventsFiltersQueryString
 >;
-
-// Integrator integration
-export const TransactionData = Type.Object({
-  userId: Type.String(),
-  transactionId: Type.String(),
-  paymentRequestId: Type.String(),
-  paymentRequestTitle: Type.String(),
-  amount: Type.Number({ minimum: 1, maximum: 1000000 }),
-  extReferenceCode: Type.String(),
-  paymentMethod: Type.String(),
-  paymentProviderName: Type.String(),
-  status: TransactionStatuses,
-  createdAt: Type.String(),
-  updatedAt: Type.String(),
-});
