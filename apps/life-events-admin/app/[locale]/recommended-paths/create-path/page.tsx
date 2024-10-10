@@ -45,7 +45,7 @@ export default async function CreatePath(props: {
     console.log(":(");
   }
 
-  async function asd(formData: FormData) {
+  async function journeyPathSelectionAction(formData: FormData) {
     "use server";
 
     const toSubcategoryItemId =
@@ -87,7 +87,7 @@ export default async function CreatePath(props: {
 
       <Heading>Create new journey link</Heading>
       <SelectionForm
-        formAction={asd}
+        formAction={journeyPathSelectionAction}
         lang={props.params.locale}
         from={{
           category: {

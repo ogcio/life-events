@@ -56,7 +56,7 @@ export default async function CreatePath(props: {
     console.log(":(");
   }
 
-  async function asd(formData: FormData) {
+  async function journeyPathSelectionAction(formData: FormData) {
     "use server";
 
     const pathId = formData.get("pathId")?.toString() || "";
@@ -99,10 +99,10 @@ export default async function CreatePath(props: {
         {tNav("back")}
       </a>
 
-      <Heading>Edit a journey link</Heading>
+      <Heading>Update a journey link</Heading>
       <JourneySelections
         pathId={props.params.pathId}
-        formAction={asd}
+        formAction={journeyPathSelectionAction}
         lang={props.params.locale}
         from={{
           category: {
