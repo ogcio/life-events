@@ -1,4 +1,5 @@
 import { Static, TSchema, Type } from "@sinclair/typebox";
+import toJsonSchema from "to-json-schema";
 import {
   PAGINATION_LIMIT_DEFAULT,
   PAGINATION_OFFSET_DEFAULT,
@@ -260,21 +261,8 @@ export const TransactionData = Type.Object({
   updatedAt: Type.String(),
 });
 
-export const transactionDataJsonSchema = Type.Strict(TransactionData);
-
-export type TransactionDataSchema = {
-  userId: string;
-  transactionId: string;
-  paymentRequestId: string;
-  paymentRequestTitle: string;
-  amount: number;
-  extReferenceCode: string;
-  paymentMethod: string;
-  paymentProviderName: string;
-  status: "initiated" | "pending" | "succeeded" | "cancelled" | "failed"; // Ensure this matches the literals
-  createdAt: string;
-  updatedAt: string;
-};
+export const transactionDataSchema = Type.Strict(TransactionData);
+export const transactionDataJsonSchema = toJsonSchema(transactionDataSchema);
 
 export const Transaction = Type.Composite([
   Type.Pick(FullTransaction, [

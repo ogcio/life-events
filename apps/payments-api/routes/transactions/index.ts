@@ -8,6 +8,7 @@ import {
   ParamsWithTransactionId,
   PaymentIntentId,
   transactionDataJsonSchema,
+  transactionDataSchema,
   TransactionDetails,
   Transactions,
   UpdateTransactionBody,
@@ -115,20 +116,18 @@ export default async function transactions(app: FastifyInstance) {
     },
   );
 
-  app.get<{
-    Reply: GenericResponseType<transactionDataJsonSchema>;
-  }>(
+  app.get(
     "/schema",
     {
       schema: {
         tags: TAGS,
         response: {
-          200: GenericResponse(transactionDataJsonSchema),
+          200: transactionDataJsonSchema,
         },
       },
     },
-    async (request, reply) => {
-      reply.send(formatAPIResponse(transactionDataJsonSchema));
+    async (_, reply) => {
+      reply.send(transactionDataSchema);
     },
   );
 

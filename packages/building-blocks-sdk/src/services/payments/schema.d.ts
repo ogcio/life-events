@@ -976,49 +976,48 @@ export interface paths {
         200: {
           content: {
             "application/json": {
-              data: {
-                userId: string;
-                transactionId: string;
-                paymentRequestId: string;
-                paymentRequestTitle: string;
-                amount: number;
-                extReferenceCode: string;
-                paymentMethod: string;
-                paymentProviderName: string;
-                status:
-                  | "initiated"
-                  | "pending"
-                  | "succeeded"
-                  | "cancelled"
-                  | "failed";
-                createdAt: string;
-                updatedAt: string;
-              };
-              metadata?: {
-                links?: {
-                  self: {
-                    href?: string;
-                  };
-                  next?: {
-                    href?: string;
-                  };
-                  prev?: {
-                    href?: string;
-                  };
-                  first: {
-                    href?: string;
-                  };
-                  last: {
-                    href?: string;
-                  };
-                  pages: {
-                    [key: string]: {
-                      href?: string;
-                    };
-                  };
+              type?: string;
+              properties?: {
+                userId?: {
+                  type?: string;
                 };
-                totalCount?: number;
+                transactionId?: {
+                  type?: string;
+                };
+                paymentRequestId?: {
+                  type?: string;
+                };
+                paymentRequestTitle?: {
+                  type?: string;
+                };
+                amount?: {
+                  minimum?: number;
+                  maximum?: number;
+                  type?: string;
+                };
+                extReferenceCode?: {
+                  type?: string;
+                };
+                paymentMethod?: {
+                  type?: string;
+                };
+                paymentProviderName?: {
+                  type?: string;
+                };
+                status?: {
+                  anyOf?: {
+                    const?: string;
+                    type?: string;
+                  }[];
+                };
+                createdAt?: {
+                  type?: string;
+                };
+                updatedAt?: {
+                  type?: string;
+                };
               };
+              required?: string[];
             };
           };
         };
