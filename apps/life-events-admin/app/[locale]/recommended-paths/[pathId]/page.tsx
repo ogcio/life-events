@@ -2,14 +2,23 @@ import React from "react";
 import { getTranslations } from "next-intl/server";
 import { Heading } from "@govie-ds/react";
 import { data } from "../../../../data/data";
-import SelectionForm from "../JourneySelectionsClient";
+import JourneySelections from "../JourneySelectionsClient";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 export default async function CreatePath(props: {
-  params: { locale: string };
+  params: { locale: string; pathId: string };
 }) {
   const tNav = await getTranslations("Navigation");
+
+  let pathData:
+    | Awaited<ReturnType<typeof data.recommendedPaths.one>>
+    | undefined;
+  try {
+    pathData = await data.recommendedPaths.one(props.params.pathId);
+  } catch (err) {
+    console.log(":(");
+  }
 
   let fromOptions:
     | Awaited<ReturnType<typeof data.recommendedPaths.options>>
@@ -20,13 +29,15 @@ export default async function CreatePath(props: {
 
   const search = new URLSearchParams(headers().get("x-search") || "");
 
-  const fromCategoryId = search.get("fcid") || undefined;
-  const fromSubcategoryId = search.get("fsid") || undefined;
-  const fromSubcategoryItemId = search.get("fiid") || undefined;
+  const fromCategoryId = search.get("fcid") || pathData?.fromCategoryId;
+  const fromSubcategoryId = search.get("fsid") || pathData?.fromSubcategoryId;
+  const fromSubcategoryItemId =
+    search.get("fiid") || pathData?.fromSubcategoryItemId;
 
-  const toCategoryId = search.get("tcid") || undefined;
-  const toSubcategoryId = search.get("tsid") || undefined;
-  const toSubcategoryItemId = search.get("tiid") || undefined;
+  const toCategoryId = search.get("tcid") || pathData?.toCategoryId;
+  const toSubcategoryId = search.get("tsid") || pathData?.toSubcategoryId;
+  const toSubcategoryItemId =
+    search.get("tiid") || pathData?.toSubcategoryItemId;
 
   try {
     [fromOptions, toOptions] = await Promise.all([
@@ -48,12 +59,15 @@ export default async function CreatePath(props: {
   async function asd(formData: FormData) {
     "use server";
 
+    const pathId = formData.get("pathId")?.toString() || "";
+
     const toSubcategoryItemId =
       formData.get("toSubcategoryItemId")?.toString() || "";
     const fromSubcategoryItemId =
       formData.get("fromSubcategoryItemId")?.toString() || "";
 
-    await data.recommendedPaths.create(
+    await data.recommendedPaths.update(
+      pathId,
       toSubcategoryItemId,
       fromSubcategoryItemId,
     );
@@ -72,7 +86,7 @@ export default async function CreatePath(props: {
           </li>
           <li className="govie-breadcrumbs__list-item">
             <span className="govie-breadcrumbs">
-              {tNav("createPathBreadcrumb")}
+              {tNav("updatePathBreadcrumb")}
             </span>
           </li>
         </ol>
@@ -85,8 +99,9 @@ export default async function CreatePath(props: {
         {tNav("back")}
       </a>
 
-      <Heading>Create new journey link</Heading>
-      <SelectionForm
+      <Heading>Edit a journey link</Heading>
+      <JourneySelections
+        pathId={props.params.pathId}
         formAction={asd}
         lang={props.params.locale}
         from={{

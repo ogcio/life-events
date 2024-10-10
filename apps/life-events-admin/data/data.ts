@@ -125,6 +125,110 @@ type SubcategoryItemBreadcrumbQueryRow = SubcategoryBreadcrumbQueryRow & {
   item_name_ga: string;
 };
 
+type PathNode = {
+  id: string;
+  title: Lang<string>;
+};
+
+type PathTreeModel = (PathNode & {
+  subcategories: (PathNode & {
+    items: PathNode[];
+  })[];
+})[];
+
+type PathTreeQueryRow = {
+  category_id: string;
+  category_title_en: string;
+  category_title_ga: string;
+  subcategory_id: string;
+  subcategory_title_en: string;
+  subcategory_title_ga: string;
+  subcategoryitem_id: string;
+  subcategoryitem_title_en: string;
+  subcategoryitem_title_ga: string;
+};
+
+type PathOptionsQueryRow = {
+  cat_id: string;
+  cat_title: string;
+  sub_id: string;
+  sub_title: string;
+  item_id: string;
+  item_title: string;
+};
+
+type PathOptionModel = {
+  categories: { id: string; title: string }[];
+  subcategories: { id: string; title: string }[];
+  subcategoryItems: { id: string; title: string }[];
+};
+
+type PathTableRowModel = {
+  id: string;
+  fromCategoryTitle: Lang<string>;
+  fromSubcategoryTitle: Lang<string>;
+  fromSubcategoryItemTitle: Lang<string>;
+  toCategoryTitle: Lang<string>;
+  toSubcategoryTitle: Lang<string>;
+  toSubcategoryItemTitle: Lang<string>;
+};
+
+type PathTableQueryRow = {
+  path_id: string;
+  from_cat_title_en: string;
+  from_cat_title_ga: string;
+  from_sub_title_en: string;
+  from_sub_title_ga: string;
+  from_item_title_en: string;
+  from_item_title_ga: string;
+  to_cat_title_en: string;
+  to_cat_title_ga: string;
+  to_sub_title_en: string;
+  to_sub_title_ga: string;
+  to_item_title_en: string;
+  to_item_title_ga: string;
+};
+
+type PathDataModel = {
+  fromCategoryId: string;
+  fromCategoryTitle: Lang<string>;
+  fromSubcategoryId: string;
+  fromSubcategoryTitle: Lang<string>;
+  fromSubcategoryItemId: string;
+  fromSubcategoryItemTitle: Lang<string>;
+  toCategoryId: string;
+  toCategoryTitle: Lang<string>;
+  toSubcategoryId: string;
+  toSubcategoryTitle: Lang<string>;
+  toSubcategoryItemId: string;
+  toSubcategoryItemTitle: Lang<string>;
+};
+type PathDataQueryRow = {
+  from_cat_id: string;
+  from_cat_title_en: string;
+  from_cat_title_ga: string;
+
+  from_sub_id: string;
+  from_sub_title_en: string;
+  from_sub_title_ga: string;
+
+  from_item_id: string;
+  from_item_title_en: string;
+  from_item_title_ga: string;
+
+  to_cat_id: string;
+  to_cat_title_en: string;
+  to_cat_title_ga: string;
+
+  to_sub_id: string;
+  to_sub_title_en: string;
+  to_sub_title_ga: string;
+
+  to_item_id: string;
+  to_item_title_en: string;
+  to_item_title_ga: string;
+};
+
 export const data = {
   category: {
     async breadcrumbs(categoryId: string): Promise<Lang<Breadcrumb>[]> {
@@ -202,7 +306,6 @@ export const data = {
 
       return categoryTableModels;
     },
-
     async one(id: string): Promise<CategoryModel> {
       const queryResult = await lifeEventsPool.query<FullCategoryQueryRow>(
         `
@@ -727,80 +830,283 @@ export const data = {
       }
     },
   },
-  RecommendedPaths: {
-    // async breadcrumbs(): Promise<Lang<Breadcrumb>[]> {
-    //   try {
-    //     // const queryResult =
-    //     // await lifeEventsPool.query<SubcategoryItemBreadcrumbQueryRow>(
-    //     //   `
-    //     //     select
-    //     //       i.id as item_id,
-    //     //       i.title_en as item_name_en,
-    //     //       i.title_ga as item_name_ga,
-    //     //       c.id as category_id,
-    //     //       c.name_en as category_name_en,
-    //     //       c.name_ga as category_name_ga,
-    //     //       s.id as sub_id,
-    //     //       s.title_en as sub_name_en,
-    //     //       s.title_ga as sub_name_ga
-    //     //     from subcategory_items i
-    //     //     join subcategories s on s.id = i.subcategory_id
-    //     //     join categories c on c.id = s.category_id
-    //     //     where i.id = $1
-    //     //   `,
-    //     //   [itemId],
-    //     // );
+  recommendedPaths: {
+    async options(
+      lang: string,
+      categoryId?: string,
+      subcategoryId?: string,
+    ): Promise<PathOptionModel> {
+      try {
+        const queryResult = await lifeEventsPool.query<PathOptionsQueryRow>(
+          `
+          with cats as (
+            select 
+              c.id::text as cat_id,   
+              case when $1 = 'ga' then c.name_ga else c.name_en end as cat_title,   
+              null as sub_id,
+              null as sub_title,
+              null as item_id,
+              null as item_title
+            from categories c
+          ), subs as (
+            select
+              null as cat_id, 
+              null as cat_title,
+              s.id::text as sub_id,
+              case when $1 = 'ga' then s.title_ga else s.title_en end as sub_title,              
+              null as item_id,
+              null as item_title
+              from subcategories s
+            where category_id::text = $2
+          )
+          select * from cats 
+          union all 
+          select * from subs
+          union all 
+          select 
+            null as cat_id,
+            null as cat_title,
+            null as sub_id,
+            null as sub_title,
+            id::text as item_id,
+            case when $1 = 'ga' then title_ga else title_en end as item_title
+          from subcategory_items
+          where subcategory_id::text = $3
+          `,
+          [lang, categoryId || "", subcategoryId || ""],
+        );
+        // Vi vill alltid skicka alla kategorier!
+        const categories: { id: string; title: string }[] = [];
+        const subcategories: { id: string; title: string }[] = [];
+        const subcategoryItems: { id: string; title: string }[] = [];
 
-    //     const breadcrumbs: Lang<Breadcrumb>[] = [
-    //       {
-    //         en: { href: "/en/categories", label: "Home" },
-    //         ga: { href: "/ga/categories", label: "Abhaile" },
-    //       },
-    //     ];
+        for (const row of queryResult.rows) {
+          if (!categories.some((c) => c.id === row.cat_id)) {
+            categories.push({ id: row.cat_id, title: row.cat_title });
+          }
 
-    //     const row = queryResult.rows.at(0);
+          if (row.sub_id && !subcategories.some((s) => s.id === row.sub_id)) {
+            subcategories.push({ id: row.sub_id, title: row.sub_title });
+          }
 
-    //     if (row) {
-    //       const cat: Lang<Breadcrumb> = {
-    //         en: {
-    //           href: "", //`/en/categories/${row.category_id}`,
-    //           label: row.category_name_en,
-    //         },
-    //         ga: {
-    //           href: "", // `/ga/categories/${row.category_id}`,
-    //           label: row.category_name_ga,
-    //         },
-    //       };
-    //       const subcat: Lang<Breadcrumb> = {
-    //         en: {
-    //           href: `/en/subcategories/${row.sub_id}`,
-    //           label: row.sub_name_en,
-    //         },
-    //         ga: {
-    //           href: `/ga/subcategories/${row.sub_id}`,
-    //           label: row.sub_name_ga,
-    //         },
-    //       };
-    //       const item: Lang<Breadcrumb> = {
-    //         en: {
-    //           href: `/en/subcategory-item/${row.item_id}`,
-    //           label: row.item_name_en,
-    //         },
-    //         ga: {
-    //           href: `/ga/subcategories/${row.item_id}`,
-    //           label: row.item_name_ga,
-    //         },
-    //       };
-    //       breadcrumbs.push(cat, subcat, item);
-    //     }
+          if (
+            !subcategoryItems.some((i) => i.id === row.item_id) &&
+            row.item_id
+          ) {
+            subcategoryItems.push({ id: row.item_id, title: row.item_title });
+          }
+        }
 
-    //     return breadcrumbs;
+        return {
+          categories,
+          subcategories,
+          subcategoryItems,
+        };
+      } catch (err) {
+        console.log(err);
+        throw new Error("options_fail");
+      }
+    },
+    async create(
+      toSubcategoryItemId: string,
+      fromSubcategoryItemId: string,
+    ): Promise<void> {
+      try {
+        await lifeEventsPool.query<{ id: string }>(
+          `
+            insert into recommended_paths(
+            from_subcategory_item_id, to_subcategory_item_id)
+            values($1, $2)
+          `,
+          [fromSubcategoryItemId, toSubcategoryItemId],
+        );
+      } catch (err) {
+        console.log(err);
+        throw new Error("pathcreate_fail");
+      }
+    },
+    async table(): Promise<PathTableRowModel[]> {
+      try {
+        const queryResult = await lifeEventsPool.query<PathTableQueryRow>(`
+          select
+              p.id as path_id,
+              from_cat.name_en as from_cat_title_en,
+              from_cat.name_en as from_cat_title_ga,
+              from_sub.title_en as from_sub_title_en,
+              from_sub.title_ga as from_sub_title_ga,
+              from_item.title_en as from_item_title_en,
+              from_item.title_ga as from_item_title_ga,
+              to_cat.name_en as to_cat_title_en,
+              to_cat.name_ga as to_cat_title_ga,
+              to_sub.title_en as to_sub_title_en,
+              to_sub.title_en as to_sub_title_ga,
+              to_item.title_en as to_item_title_en,
+              to_item.title_en as to_item_title_ga
+          from recommended_paths p 
+          -- from
+          join subcategory_items from_item on p.from_subcategory_item_id = from_item.id
+          join subcategories from_sub on from_sub.id = from_item.subcategory_id
+          join categories from_cat on from_cat.id = from_sub.category_id
 
-    //     return [];
-    //   } catch (err) {
-    //     console.log(err);
-    //     throw new Error("breadcrumbs_failed");
-    //   }
-    // },
+          -- to
+          join subcategory_items to_item on p.to_subcategory_item_id = to_item.id
+          join subcategories to_sub on to_sub.id = to_item.subcategory_id
+          join categories to_cat on to_cat.id = to_sub.category_id
+          order by p.created_at desc;
+            `);
+
+        const tableRows: PathTableRowModel[] = [];
+        for (const row of queryResult.rows) {
+          tableRows.push({
+            id: row.path_id,
+            fromCategoryTitle: {
+              en: row.from_cat_title_en,
+              ga: row.from_cat_title_ga,
+            },
+            fromSubcategoryTitle: {
+              en: row.from_sub_title_en,
+              ga: row.from_sub_title_ga,
+            },
+            fromSubcategoryItemTitle: {
+              en: row.from_item_title_en,
+              ga: row.from_item_title_ga,
+            },
+            toCategoryTitle: {
+              en: row.to_cat_title_en,
+              ga: row.to_cat_title_ga,
+            },
+            toSubcategoryTitle: {
+              en: row.to_sub_title_en,
+              ga: row.to_sub_title_ga,
+            },
+            toSubcategoryItemTitle: {
+              en: row.to_item_title_en,
+              ga: row.to_item_title_ga,
+            },
+          });
+        }
+        return tableRows;
+      } catch (err) {
+        console.log(err);
+        throw new Error("pathtable_fail");
+      }
+    },
+    async one(pathId: string): Promise<PathDataModel> {
+      try {
+        const queryResult = await lifeEventsPool.query<PathDataQueryRow>(
+          `
+            select
+              p.id as path_id,
+              from_cat.id as from_cat_id,
+              from_cat.name_en as from_cat_title_en,
+              from_cat.name_en as from_cat_title_ga,
+              from_sub.id as from_sub_id,
+              from_sub.title_en as from_sub_title_en,
+              from_sub.title_ga as from_sub_title_ga,
+              from_item.id as from_item_id,
+              from_item.title_en as from_item_title_en,
+              from_item.title_ga as from_item_title_ga,
+              to_cat.id as to_cat_id,
+              to_cat.name_en as to_cat_title_en,
+              to_cat.name_ga as to_cat_title_ga,
+              to_sub.id as to_sub_id,
+              to_sub.title_en as to_sub_title_en,
+              to_sub.title_en as to_sub_title_ga,
+              to_item.id as to_item_id,
+              to_item.title_en as to_item_title_en,
+              to_item.title_en as to_item_title_ga
+          from recommended_paths p 
+          -- from
+          join subcategory_items from_item on p.from_subcategory_item_id = from_item.id
+          join subcategories from_sub on from_sub.id = from_item.subcategory_id
+          join categories from_cat on from_cat.id = from_sub.category_id
+
+          -- to
+          join subcategory_items to_item on p.to_subcategory_item_id = to_item.id
+          join subcategories to_sub on to_sub.id = to_item.subcategory_id
+          join categories to_cat on to_cat.id = to_sub.category_id
+          where p.id = $1`,
+          [pathId],
+        );
+
+        const row = queryResult.rows.at(0);
+        if (!row) {
+          throw new Error();
+        }
+
+        return {
+          fromCategoryId: row.from_cat_id,
+          fromCategoryTitle: {
+            en: row.from_cat_title_en,
+            ga: row.from_cat_title_ga,
+          },
+          fromSubcategoryId: row.from_sub_id,
+          fromSubcategoryTitle: {
+            en: row.from_sub_title_en,
+            ga: row.from_sub_title_ga,
+          },
+          fromSubcategoryItemId: row.from_item_id,
+          fromSubcategoryItemTitle: {
+            en: row.from_item_title_en,
+            ga: row.from_item_title_ga,
+          },
+          toCategoryId: row.to_cat_id,
+          toCategoryTitle: {
+            en: row.to_cat_title_en,
+            ga: row.to_cat_title_ga,
+          },
+          toSubcategoryId: row.to_sub_id,
+          toSubcategoryItemId: row.to_item_id,
+          toSubcategoryTitle: {
+            en: row.to_sub_title_en,
+            ga: row.to_sub_title_ga,
+          },
+          toSubcategoryItemTitle: {
+            en: row.to_item_title_en,
+            ga: row.to_item_title_ga,
+          },
+        };
+      } catch (err) {
+        console.log(err);
+        throw new Error("one_failed");
+      }
+    },
+    async update(
+      pathId: string,
+      toSubcategoryItemId: string,
+      fromSubcategoryItemId: string,
+    ): Promise<void> {
+      try {
+        await lifeEventsPool.query(
+          `
+          update recommended_paths
+            set  
+              from_subcategory_item_id = $1,
+              to_subcategory_item_id = $2
+          where id=$3
+
+          `,
+          [fromSubcategoryItemId, toSubcategoryItemId, pathId],
+        );
+      } catch (err) {
+        console.log(err);
+        throw new Error("update_fail");
+      }
+    },
+    async delete(pathId: string): Promise<void> {
+      try {
+        await lifeEventsPool.query(
+          `
+          delete from recommended_paths
+          where id=$1
+
+          `,
+          [pathId],
+        );
+      } catch (err) {
+        console.log(err);
+        throw new Error("delete_fail");
+      }
+    },
   },
 };

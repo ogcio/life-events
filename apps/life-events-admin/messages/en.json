@@ -7,7 +7,10 @@
   "Navigation": {
     "back": "Back",
     "home": "Home",
-    "createPathBreadcrumb": "New path"
+    "recommendedPathsBreadcrumb": "Recommended paths",
+    "categoriesBreadcrumb": "Categoies",
+    "createPathBreadcrumb": "New path",
+    "updatePathBreadcrumb": "Update path"
   },
   "Table": {
     "actions": "Actions",
@@ -16,7 +19,9 @@
     "journeyItem": "Mír turais",
     "editAction": "Edit",
     "deleteAction": "Delete",
-    "noRows": "No items"
+    "noRows": "No items",
+    "from": "From",
+    "to": "To"
   },
   "Form": {
     "en": "English",
@@ -31,6 +36,13 @@
     "isExternal": "External link",
     "links": "Links",
     "href": "Url"
+  },
+  "Modal": {
+    "deleteP1Generic": "You are about to permanently delete the chosen item",
+    "deleteP2Generic": "Confirm by clicking the delete button",
+    "confirmDeletionTitleGeneric": "Confirm deletion",
+    "confirmDelete": "Delete",
+    "confirmCancel": "Cancel"
   },
   "Subcategory": {
     "newSubcatHeading": "Create a new subcategory",

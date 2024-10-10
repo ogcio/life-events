@@ -7,7 +7,10 @@
   "Navigation": {
     "back": "Ar ais",
     "home": "Abhaile",
-    "createPathBreadcrumb": "Cosán nua"
+    "recommendedPathsBreadcrumb": "Cosáin molta",
+    "categoriesBreadcrumb": "Catagóirí",
+    "createPathBreadcrumb": "Cosán nua",
+    "updatePathBreadcrumb": "Nuashonraigh cosán"
   },
   "Table": {
     "actions": "Gnímh",
@@ -16,7 +19,9 @@
     "journeyItem": "Mír turais",
     "editAction": "Eagar",
     "deleteAction": "Scrios",
-    "noRows": "Uimh míreanna"
+    "noRows": "Uimh míreanna",
+    "from": "FROM",
+    "to": "TO"
   },
   "Form": {
     "en": "Béarla",
@@ -31,6 +36,13 @@
     "isExternal": "Seachtrach link",
     "links": "Links",
     "href": "Url"
+  },
+  "Modal": {
+    "modalDeleteP1Generic": "Tá tú ar tí an mhír roghnaithe a scriosadh go buan",
+    "modalDeleteP2Generic": "Deimhnigh trí chliceáil ar an gcnaipe Scrios",
+    "confirmDeletionTitleGeneric": "Deimhnigh scriosadh",
+    "confirmDelete": "Deimhnigh scriosadh",
+    "confirmCancel": "Ceal"
   },
   "Subcategory": {
     "newSubcatHeading": "Cruthaigh fochatagóir nua",
