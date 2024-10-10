@@ -58,6 +58,8 @@ export default async function CardWithRealex(props: {
         paymentId: string;
         integrationRef: string;
         amount?: string;
+        submissionId?: string;
+        journeyId?: string;
       }
     | undefined;
 }) {
@@ -104,7 +106,12 @@ export default async function CardWithRealex(props: {
       integrationReference: props.searchParams.integrationRef,
       amount,
       paymentProviderId: providerId,
-      userData: { email: user?.email ?? "", name: user?.name ?? "" },
+      metadata: {
+        email: user?.email ?? "",
+        name: user?.name ?? "",
+        submissionId: props.searchParams.submissionId ?? "",
+        journeyId: props.searchParams.journeyId ?? "",
+      },
     },
   );
 

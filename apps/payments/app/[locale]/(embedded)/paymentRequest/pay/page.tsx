@@ -28,6 +28,8 @@ type Props = {
         amount?: string;
         customAmount?: string;
         embed?: string;
+        submissionId?: string;
+        journeyId?: string;
       }
     | undefined;
 };
@@ -195,6 +197,8 @@ export default async function Page(props: Props) {
               providers={details.providers}
               paymentId={props.searchParams.paymentId}
               referenceId={props.searchParams.id}
+              submissionId={props.searchParams.submissionId}
+              journeyId={props.searchParams.journeyId}
               isPublicServant={isPublicServant}
               urlAmount={urlAmount}
               customAmount={customAmount}

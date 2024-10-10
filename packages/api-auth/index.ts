@@ -150,3 +150,4 @@ export default fp(checkPermissionsPlugin, {
 });
 
 export * from "./logto-client/index.js";
+export * from "./jwtService.js";

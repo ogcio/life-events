@@ -1,0 +1,86 @@
+{
+  "title": "Integrator",
+  "InactivePublicServant": {
+    "title": "Your account is under review",
+    "description": "Thanks for creating an account in the Building Blocks Ecosystem. Your account as a public servant has now been created."
+  },
+  "Footer": {
+    "license": "All content is available under the <link>Open Government Licence v3.0</link>, except where otherwise stated"
+  },
+  "Journeys": {
+    "title": "Journeys",
+    "createJourney": "Create a new journey",
+    "createJourneyDescription": "Combine building blocks to form a journey",
+    "listJourneys": "List of existing journeys",
+    "listJourneysDescription": "View and choose existing journey",
+    "tutorialVideo": "Tutorial video",
+    "create": {
+      "title": "What would you like to call this journey?",
+      "description": "Example: 'Request a replacement Driving Licence'"
+    },
+    "addSteps": {
+      "title": "Add steps",
+      "add": "Add to journey",
+      "submit": "Generate link and Save"
+    },
+    "widgets": {
+      "titleWidget": {
+        "title": "Edit the name of your journey",
+        "nameLabel": "Journey name"
+      },
+      "formWidget": {
+        "title": "Choose your form",
+        "titleLabel": "Title",
+        "urlLabel": "Form URL"
+      },
+      "paymentWidget": {
+        "title": "Choose your payment",
+        "titleLabel": "Title",
+        "urlLabel": "Payment URL"
+      },
+      "messagingWidget": {
+        "title": "Choose your message",
+        "titleLabel": "Title",
+        "urlLabel": "Message template URL"
+      }
+    },
+    "existingJourneys": {
+      "title": "Existing journeys",
+      "empty": {
+        "title": "There are no journeys yet!",
+        "description": "You have no journeys created."
+      },
+      "tableHeaders": {
+        "name": "Name",
+        "createdBy": "Created by",
+        "created": "Date created",
+        "updated": "Last updated",
+        "actions": "Actions"
+      }
+    },
+    "details": {
+      "status": "Status",
+      "created": "Created",
+      "createdBy": "Created by",
+      "journeyLink": "Journey link",
+      "steps": "Journey steps",
+      "buildingBlock": "Building block",
+      "description": "Description"
+    }
+  },
+  "General": {
+    "back": "Back",
+    "continue": "Continue",
+    "edit": "Edit",
+    "choose": "Choose",
+    "required": "Required",
+    "cancel": "Cancel",
+    "shareLink": "Share link",
+    "copyLink": "Copy link",
+    "journeyStatus": "Journey status",
+    "backToHome": "Back to Homepage",
+    "backToExistingJourneys": "Back to existing journeys",
+    "active": "Active",
+    "draft": "Draft"
+  }
+}

@@ -9,6 +9,7 @@ import {
   PaymentIntentId,
   transactionDataJsonSchema,
   transactionDataSchema,
+  TransactionData,
   TransactionDetails,
   Transactions,
   UpdateTransactionBody,
@@ -24,12 +25,14 @@ import { GenericResponse as GenericResponseType } from "../../types/genericRespo
 import { PaginationParams as PaginationParamsType } from "../../types/pagination";
 import {
   CreateTransactionBodyDO,
+  TransactionDataDO,
   TransactionDetailsDO,
   UpdateTransactionBodyDO,
 } from "../../plugins/entities/transactions/types";
 import { TransactionStatusesEnum } from "../../plugins/entities/transactions";
 import { authPermissions } from "../../types/authPermissions";
 import { AuditLogEventType } from "../../plugins/auditLog/auditLogEvents";
+import { getJourneyDetails } from "../../services/getJourney";
 
 const TAGS = ["Transactions"];
 
@@ -213,14 +216,23 @@ export default async function transactions(app: FastifyInstance) {
         throw app.httpErrors.unauthorized("Unauthorized!");
       }
 
+      const transactionBody = request.body;
+      const journeyId = request.body.metadata.journeyId;
+      if (journeyId) {
+        const journeyDetails = await getJourneyDetails(journeyId);
+        if (!journeyDetails)
+          throw app.httpErrors.notFound("Journey not found!");
+        transactionBody.metadata.journeyTitle = journeyDetails.title;
+      }
+
       const result = await app.transactions.createTransaction(
         userId,
-        request.body,
+        transactionBody,
       );
 
       const orgIdResult =
         await app.paymentRequest.getOrganizationIdFromPaymentRequest(
-          request.body.paymentRequestId,
+          transactionBody.paymentRequestId,
         );
 
       app.auditLog.createEvent({
@@ -263,6 +275,33 @@ export default async function transactions(app: FastifyInstance) {
     async (request, reply) => {
       const result = await app.transactions.generatePaymentIntentId();
       reply.send(formatAPIResponse(result));
+    },
+  );
+
+  // Transaction data for integrator
+  app.get<{
+    Reply: GenericResponseType<TransactionDataDO> | Error;
+    Params: ParamsWithTransactionId;
+  }>(
+    "/data/:transactionId",
+    {
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [authPermissions.TRANSACTION_READ]),
+      schema: {
+        tags: TAGS,
+        response: {
+          200: GenericResponse(TransactionData),
+          404: HttpError,
+        },
+      },
+    },
+    async (request, reply) => {
+      const { transactionId } = request.params;
+
+      const transactionDetails =
+        await app.transactions.getTransactionData(transactionId);
+
+      reply.send(formatAPIResponse(transactionDetails));
     },
   );
 }

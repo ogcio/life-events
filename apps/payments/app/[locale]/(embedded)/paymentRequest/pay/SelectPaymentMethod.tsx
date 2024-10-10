@@ -8,20 +8,23 @@ type Props = {
   providers: ProviderWithUnknownData[];
   paymentId: string;
   referenceId: string;
+  submissionId?: string;
+  journeyId?: string;
   isPublicServant: boolean;
   urlAmount?: number;
   customAmount?: number;
 };
 
-async function redirectToPaymentUrl(
-  settings: {
-    paymentId: string;
-    integrationRef: string;
-    amount?: number;
-    customAmount?: number;
-  },
-  event,
-) {
+type UrlParams = {
+  paymentId: string;
+  submissionId?: string;
+  journeyId?: string;
+  integrationRef: string;
+  amount?: number;
+  customAmount?: number;
+};
+
+async function redirectToPaymentUrl(settings: UrlParams, event) {
   event.preventDefault();
 
   // SelectPaymentMethod is a client component
@@ -36,23 +39,21 @@ async function redirectToPaymentUrl(
 
 async function getPaymentUrl({
   paymentId,
+  submissionId,
+  journeyId,
   type,
   integrationRef,
   amount,
   customAmount,
-}: {
-  paymentId: string;
-  type: string;
-  integrationRef: string;
-  amount?: number;
-  customAmount?: number;
-}) {
+}: UrlParams & { type: string }) {
   const url = new URL(
     `/paymentRequest/${type}`,
     process.env.NEXT_PUBLIC_HOST_URL,
   );
   url.searchParams.set("paymentId", paymentId);
   url.searchParams.set("integrationRef", integrationRef);
+  if (submissionId) url.searchParams.set("submissionId", submissionId);
+  if (journeyId) url.searchParams.set("journeyId", journeyId);
   if (amount) {
     url.searchParams.set("amount", amount.toString());
   }
@@ -66,6 +67,8 @@ export default function ({
   providers,
   paymentId,
   referenceId,
+  submissionId,
+  journeyId,
   isPublicServant,
   urlAmount,
   customAmount,
@@ -101,6 +104,8 @@ export default function ({
 
   const redirectToPayment = redirectToPaymentUrl.bind(this, {
     paymentId,
+    submissionId,
+    journeyId,
     integrationRef: referenceId,
     amount: urlAmount,
     customAmount,
