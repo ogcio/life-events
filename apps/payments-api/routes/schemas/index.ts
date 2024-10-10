@@ -500,3 +500,18 @@ export const AuditLogEventsFiltersQueryString = Type.Composite([
 export type AuditLogEventsFiltersQueryString = Static<
   typeof AuditLogEventsFiltersQueryString
 >;
+
+// Integrator integration
+export const TransactionData = Type.Object({
+  userId: Type.String(),
+  transactionId: Type.String(),
+  paymentRequestId: Type.String(),
+  paymentRequestTitle: Type.String(),
+  amount: Type.Number({ minimum: 1, maximum: 1000000 }),
+  extReferenceCode: Type.String(),
+  paymentMethod: Type.String(),
+  paymentProviderName: Type.String(),
+  status: TransactionStatuses,
+  createdAt: Type.String(),
+  updatedAt: Type.String(),
+});
