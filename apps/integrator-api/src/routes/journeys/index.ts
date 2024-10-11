@@ -8,7 +8,10 @@ import {
   Id,
   JourneyPublicDetails,
   Journeys,
+  JourneySchema,
+  JourneyStepSchema,
   ParamsWithJourneyId,
+  StepData,
   UpdateJourneyBody,
   UpdateJourneyBodyDO,
 } from "../schemas";
@@ -18,6 +21,7 @@ import {
   CreateJourneyBodyDO,
   JourneyPublicDetailsDO,
 } from "../../plugins/entities/journey/types";
+import { getService } from "../../services/serviceProvider";
 
 const TAGS = ["Journeys"];
 
@@ -185,6 +189,63 @@ export default async function journeys(app: FastifyInstance) {
       });
 
       reply.send(formatAPIResponse(res));
+    },
+  );
+
+  app.get<{
+    Reply: GenericResponse<JourneySchema> | Error;
+    Params: ParamsWithJourneyId;
+  }>(
+    "/:journeyId/schema",
+    {
+      schema: {
+        tags: TAGS,
+        response: {
+          200: GenericResponse(JourneySchema),
+          401: HttpError,
+          404: HttpError,
+        },
+      },
+    },
+    async (request, reply) => {
+      const { journeyId } = request.params;
+
+      const journeyDetails = await app.journey.getJourneyPublicInfo(journeyId);
+
+      const steps = await app.journeySteps.getJourneySteps(journeyId);
+
+      const stepsData = steps.map((step) => {
+        return new Promise<JourneyStepSchema>((resolve, reject) => {
+          const service = getService(step.stepType);
+          const resourceId = service.getStepResourceId(step);
+          service
+            .getSchema(resourceId)
+            .then((schema) => {
+              resolve({
+                stepId: step.id,
+                type: step.stepType,
+                resourceId: resourceId,
+                stepSchema: schema,
+              } as JourneyStepSchema);
+            })
+            .catch((reason: any) => {
+              reject(reason);
+            });
+        });
+      });
+      const stepDataResult = await Promise.all(stepsData);
+
+      const connections =
+        await app.journeyStepConnections.getJourneyStepConnections(journeyId);
+
+      const result = {
+        journeyId: journeyDetails.id,
+        jounrneyTitle: journeyDetails.title,
+        steps: stepDataResult,
+        stepConnections: connections,
+      };
+
+      reply.send(formatAPIResponse(result));
     },
   );
 }

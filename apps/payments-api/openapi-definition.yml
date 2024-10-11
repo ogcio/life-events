@@ -2260,7 +2260,7 @@ paths:
                   - detail
                   - requestId
                   - name
-  /api/v1/transactions/schema/{transactionId}:
+  /api/v1/transactions/data/{transactionId}:
     get:
       tags: *a3
       parameters:
