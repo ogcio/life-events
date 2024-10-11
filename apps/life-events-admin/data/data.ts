@@ -125,29 +125,6 @@ type SubcategoryItemBreadcrumbQueryRow = SubcategoryBreadcrumbQueryRow & {
   item_name_ga: string;
 };
 
-type PathNode = {
-  id: string;
-  title: Lang<string>;
-};
-
-type PathTreeModel = (PathNode & {
-  subcategories: (PathNode & {
-    items: PathNode[];
-  })[];
-})[];
-
-type PathTreeQueryRow = {
-  category_id: string;
-  category_title_en: string;
-  category_title_ga: string;
-  subcategory_id: string;
-  subcategory_title_en: string;
-  subcategory_title_ga: string;
-  subcategoryitem_id: string;
-  subcategoryitem_title_en: string;
-  subcategoryitem_title_ga: string;
-};
-
 type PathOptionsQueryRow = {
   cat_id: string;
   cat_title: string;
@@ -253,8 +230,8 @@ export const data = {
 
         const breadcrumbs: Lang<Breadcrumb>[] = [
           {
-            en: { href: "/en", label: "Home" },
-            ga: { href: "/ga", label: "Abhaile" },
+            en: { href: "/en/categories", label: "Categories" },
+            ga: { href: "/ga/categories", label: "Catagóirí" },
           },
           {
             en: { href: "", label: row.name_en },
@@ -439,8 +416,8 @@ export const data = {
 
         const breadcrumbs: Lang<Breadcrumb>[] = [
           {
-            en: { href: "/en/categories", label: "Home" },
-            ga: { href: "/ga/categories", label: "Abhaile" },
+            en: { href: "/en/categories", label: "Categories" },
+            ga: { href: "/ga/categories", label: "Catagóirí" },
           },
         ];
 
@@ -875,13 +852,13 @@ export const data = {
           `,
           [lang, categoryId || "", subcategoryId || ""],
         );
-        // Vi vill alltid skicka alla kategorier!
+
         const categories: { id: string; title: string }[] = [];
         const subcategories: { id: string; title: string }[] = [];
         const subcategoryItems: { id: string; title: string }[] = [];
 
         for (const row of queryResult.rows) {
-          if (!categories.some((c) => c.id === row.cat_id)) {
+          if (row.cat_id && !categories.some((c) => c.id === row.cat_id)) {
             categories.push({ id: row.cat_id, title: row.cat_title });
           }
 
@@ -931,7 +908,7 @@ export const data = {
           select
               p.id as path_id,
               from_cat.name_en as from_cat_title_en,
-              from_cat.name_en as from_cat_title_ga,
+              from_cat.name_ga as from_cat_title_ga,
               from_sub.title_en as from_sub_title_en,
               from_sub.title_ga as from_sub_title_ga,
               from_item.title_en as from_item_title_en,
@@ -939,9 +916,9 @@ export const data = {
               to_cat.name_en as to_cat_title_en,
               to_cat.name_ga as to_cat_title_ga,
               to_sub.title_en as to_sub_title_en,
-              to_sub.title_en as to_sub_title_ga,
+              to_sub.title_ga as to_sub_title_ga,
               to_item.title_en as to_item_title_en,
-              to_item.title_en as to_item_title_ga
+              to_item.title_ga as to_item_title_ga
           from recommended_paths p 
           -- from
           join subcategory_items from_item on p.from_subcategory_item_id = from_item.id

@@ -93,7 +93,7 @@ export default async (props: {
       <div className="govie-breadcrumbs">
         <ol className="govie-breadcrumbs__list">
           {breadcrumbs?.map((bc, i) => (
-            <li key={`bc_i`} className="govie-breadcrumbs__list-item">
+            <li key={`bc_${i}`} className="govie-breadcrumbs__list-item">
               {translate(bc, props.params.locale, "href") ? (
                 <a
                   className="govie-breadcrumbs__link"
@@ -161,10 +161,7 @@ export default async (props: {
             {tForm("text")}
           </legend>
           {!formData.text.en && (
-            <Label
-              text={tForm("emptyDisclaimer")}
-              size={LabelSize.sm}
-            ></Label>
+            <Label text={tForm("emptyDisclaimer")} size={LabelSize.sm}></Label>
           )}
 
           {Object.keys(formData.title).map((langKey) => (

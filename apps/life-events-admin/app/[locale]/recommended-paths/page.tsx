@@ -13,9 +13,10 @@ export default async function RecommendedPaths(props: {
   params: { locale: string };
   searchParams?: { did?: string };
 }) {
-  const [tTable, tModal] = await Promise.all([
+  const [tTable, tModal, tPaths] = await Promise.all([
     getTranslations("Table"),
     getTranslations("Modal"),
+    getTranslations("Paths"),
   ]);
 
   const tableRows = await data.recommendedPaths.table();
@@ -96,15 +97,15 @@ export default async function RecommendedPaths(props: {
           </div>
         </div>
       )}
-      <h1>Recommended paths</h1>
+      <h1>{tPaths("pathsHeader")}</h1>
 
       <TableSection>
         <TableHeading>
-          <TableHeader>Item Journeys</TableHeader>
+          <TableHeader>{tPaths("itemJourneysHeader")}</TableHeader>
           <TableNewButtonLink
             href={`/${props.params.locale}/recommended-paths/create-path`}
           >
-            New path
+            {tPaths("newPathLabel")}
           </TableNewButtonLink>
         </TableHeading>
         <div style={{ padding: "24px" }}>

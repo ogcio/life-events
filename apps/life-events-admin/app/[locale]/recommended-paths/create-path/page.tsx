@@ -1,15 +1,19 @@
 import React from "react";
-import { getTranslations } from "next-intl/server";
+import { getMessages, getTranslations } from "next-intl/server";
 import { Heading } from "@govie-ds/react";
 import { data } from "../../../../data/data";
 import SelectionForm from "../JourneySelectionsClient";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { NextIntlClientProvider } from "next-intl";
 
 export default async function CreatePath(props: {
   params: { locale: string };
 }) {
-  const tNav = await getTranslations("Navigation");
+  const [tNav, tPaths] = await Promise.all([
+    getTranslations("Navigation"),
+    getTranslations("Paths"),
+  ]);
 
   let fromOptions:
     | Awaited<ReturnType<typeof data.recommendedPaths.options>>
@@ -61,6 +65,7 @@ export default async function CreatePath(props: {
     redirect("/recommended-paths");
   }
 
+  const messages = await getMessages();
   return (
     <>
       <div className="govie-breadcrumbs">
@@ -85,63 +90,65 @@ export default async function CreatePath(props: {
         {tNav("back")}
       </a>
 
-      <Heading>Create new journey link</Heading>
-      <SelectionForm
-        formAction={journeyPathSelectionAction}
-        lang={props.params.locale}
-        from={{
-          category: {
-            options:
-              fromOptions?.categories.map((c) => ({
-                label: c.title,
-                value: c.id,
-              })) ?? [],
-            selectedValue: fromCategoryId,
-          },
-          subcategory: {
-            options:
-              fromOptions?.subcategories.map((c) => ({
-                label: c.title,
-                value: c.id,
-              })) ?? [],
-            selectedValue: fromSubcategoryId,
-          },
-          subcategoryItem: {
-            options:
-              fromOptions?.subcategoryItems.map((c) => ({
-                label: c.title,
-                value: c.id,
-              })) ?? [],
-            selectedValue: fromSubcategoryItemId,
-          },
-        }}
-        to={{
-          category: {
-            options:
-              toOptions?.categories.map((c) => ({
-                label: c.title,
-                value: c.id,
-              })) ?? [],
-            selectedValue: toCategoryId,
-          },
-          subcategory: {
-            options:
-              toOptions?.subcategories.map((c) => ({
-                label: c.title,
-                value: c.id,
-              })) ?? [],
-            selectedValue: toSubcategoryId,
-          },
-          subcategoryItem: {
-            options:
-              toOptions?.subcategoryItems.map((c) => ({
-                label: c.title,
-                value: c.id,
-              })) ?? [],
-            selectedValue: toSubcategoryItemId,
-          },
-        }}
-      />
+      <Heading>{tPaths("createJourneyHeader")}</Heading>
+      <NextIntlClientProvider messages={messages}>
+        <SelectionForm
+          formAction={journeyPathSelectionAction}
+          lang={props.params.locale}
+          from={{
+            category: {
+              options:
+                fromOptions?.categories.map((c) => ({
+                  label: c.title,
+                  value: c.id,
+                })) ?? [],
+              selectedValue: fromCategoryId,
+            },
+            subcategory: {
+              options:
+                fromOptions?.subcategories.map((c) => ({
+                  label: c.title,
+                  value: c.id,
+                })) ?? [],
+              selectedValue: fromSubcategoryId,
+            },
+            subcategoryItem: {
+              options:
+                fromOptions?.subcategoryItems.map((c) => ({
+                  label: c.title,
+                  value: c.id,
+                })) ?? [],
+              selectedValue: fromSubcategoryItemId,
+            },
+          }}
+          to={{
+            category: {
+              options:
+                toOptions?.categories.map((c) => ({
+                  label: c.title,
+                  value: c.id,
+                })) ?? [],
+              selectedValue: toCategoryId,
+            },
+            subcategory: {
+              options:
+                toOptions?.subcategories.map((c) => ({
+                  label: c.title,
+                  value: c.id,
+                })) ?? [],
+              selectedValue: toSubcategoryId,
+            },
+            subcategoryItem: {
+              options:
+                toOptions?.subcategoryItems.map((c) => ({
+                  label: c.title,
+                  value: c.id,
+                })) ?? [],
+              selectedValue: toSubcategoryItemId,
+            },
+          }}
+        />
+      </NextIntlClientProvider>
     </>
   );
 }
