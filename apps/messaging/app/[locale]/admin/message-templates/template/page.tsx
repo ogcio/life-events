@@ -183,14 +183,16 @@ const ContentForm = async (props: {
       [];
 
     for (const key of langContents.langs) {
-      contents.push({
-        language: key,
-        excerpt: langContents[key].excerpt,
-        plainText: langContents[key].plainText,
-        richText: langContents[key].plainText,
-        subject: langContents[key].subject,
-        templateName: langContents[key].templateName,
-      });
+      if (key in ["en", "ga"]) {
+        contents.push({
+          language: key as "en" | "ga",
+          excerpt: langContents[key].excerpt,
+          plainText: langContents[key].plainText,
+          richText: langContents[key].plainText,
+          subject: langContents[key].subject,
+          templateName: langContents[key].templateName,
+        });
+      }
     }
 
     const templateId = props.templateId;
