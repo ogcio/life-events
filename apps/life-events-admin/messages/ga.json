@@ -2,7 +2,8 @@
   "Home": {
     "gaeilgeMenuLabel": "Gaeilge",
     "englishMenuLabel": "English",
-    "newSubcategoryLink": "Fochatagóir nua"
+    "newSubcategoryLink": "Fochatagóir nua",
+    "journeyCategoriesHeading": "Catagóirí turais"
   },
   "Navigation": {
     "back": "Ar ais",

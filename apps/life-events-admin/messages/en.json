@@ -2,7 +2,8 @@
   "Home": {
     "gaeilgeMenuLabel": "Gaeilge",
     "englishMenuLabel": "English",
-    "newSubcategoryLink": "New subcategory"
+    "newSubcategoryLink": "New subcategory",
+    "journeyCategoriesHeading": "Journey categories"
   },
   "Navigation": {
     "back": "Back",
@@ -16,7 +17,7 @@
     "actions": "Actions",
     "category": "Category",
     "subcategory": "Subcategory",
-    "journeyItem": "Mír turais",
+    "journeyItem": "Item",
     "editAction": "Edit",
     "deleteAction": "Delete",
     "noRows": "No items",

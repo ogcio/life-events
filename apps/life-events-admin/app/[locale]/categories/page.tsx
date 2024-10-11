@@ -28,7 +28,7 @@ export default async (props: { params: { locale: string } }) => {
 
   return (
     <>
-      <Heading>Journey categories</Heading>
+      <Heading>{tHome("journeyCategoriesHeading")}</Heading>
 
       {Object.keys(categoryGroup).map((categoryId) => {
         return (
