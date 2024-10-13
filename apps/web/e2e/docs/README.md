@@ -11,13 +11,7 @@ This repository contains end-to-end tests for a web application using Playwright
 
 ### Installation
 
-1. Clone the repository:
-    ```sh
-    git clone https://github.com/your-repo/playwright-tests.git
-    cd playwright-tests
-    ```
-
-2. Install dependencies:
+1. Install dependencies:
     ```sh
     npm install
     ```
@@ -29,7 +23,6 @@ To run all tests, use the following command:
 npx playwright test
 
 npx playwright test --grep @critical
-
 
 ## Playwright Configuration
 
@@ -80,7 +73,3 @@ npm run test:single ```
 - [Playwright Official Website](https://playwright.dev)
 - [Playwright Documentation](https://playwright.dev/docs/intro)
 - [TypeScript Documentation](https://www.typescriptlang.org/docs/)
-
-For further details and advanced usage, please refer to the Playwright and TypeScript official documentation.
-
-
