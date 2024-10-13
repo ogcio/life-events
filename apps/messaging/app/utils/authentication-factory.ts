@@ -8,8 +8,6 @@ export class AuthenticationFactory {
   }
 
   static async getMessagingClient() {
-    const token = getSdks();
-
-    return token.messaging;
+    return getSdks().messaging;
   }
 }
