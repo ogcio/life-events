@@ -25,10 +25,15 @@ export type AcceptedQueryBooleanValues = "true" | "false" | "0" | "1";
 
 // Did this to allow boolean-like
 // query parameters
-export const TypeboxBooleanEnum = (
-  defaultValue?: string,
-  description?: string,
-) => TypeboxStringEnum(["true", "false", "0", "1"], defaultValue, description);
+export const TypeboxBooleanEnum = (params?: {
+  defaultValue?: string;
+  description?: string;
+}) =>
+  TypeboxStringEnum(
+    ["true", "false", "0", "1"],
+    params?.defaultValue,
+    params?.description,
+  );
 
 export const TypeboxBooleanEnumParser = Type.Transform(
   Type.Union([
@@ -41,8 +46,16 @@ export const TypeboxBooleanEnumParser = Type.Transform(
   .Decode((stringValue) => Boolean(stringValue))
   .Encode((boolVal) => (boolVal ? "true" : "false"));
 
-export const parseBooleanEnum = (inputValue: AcceptedQueryBooleanValues) =>
-  Value.Decode(TypeboxBooleanEnumParser, inputValue);
+export const parseBooleanEnum = <T extends boolean | undefined | null>(
+  inputValue: AcceptedQueryBooleanValues | undefined,
+  fallback: T,
+): T => {
+  if (inputValue === undefined) {
+    return fallback;
+  }
+
+  return Value.Decode(TypeboxBooleanEnumParser, inputValue) as T;
+};
 
 export const EditableProviderTypesSchema = TypeboxStringEnum(
   ["sms", "email"],

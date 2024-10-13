@@ -148,10 +148,11 @@ export default async function userImports(app: FastifyInstance) {
         querystring: Type.Optional(
           Type.Object({
             includeImportedData: Type.Optional(
-              TypeboxBooleanEnum(
-                "true",
-                "If true, it returns the data of the user sent in the import batch",
-              ),
+              TypeboxBooleanEnum({
+                defaultValue: "true",
+                description:
+                  "If true, it returns the data of the user sent in the import batch",
+              }),
             ),
           }),
         ),
@@ -170,7 +171,8 @@ export default async function userImports(app: FastifyInstance) {
         organisationId: ensureOrganizationIdIsSet(request),
         importId: request.params.importId,
         includeUsersData: parseBooleanEnum(
-          request.query.includeImportedData ?? "true",
+          request.query.includeImportedData,
+          true,
         ),
       }),
     }),

@@ -14,14 +14,16 @@ import { isHttpError } from "http-errors";
 
 export const prefix = "/message-actions";
 
-const MessageActions = Type.Object({
+const MessageActionsBody = Type.Object({
   messageId: Type.String({ format: "uuid" }),
-  isSeen: Type.Boolean(),
+  isSeen: Type.Boolean({
+    description: "If true, the message is set to seen",
+  }),
 });
 
 export default async function messagesActions(app: FastifyInstance) {
   app.put<{
-    Body: Static<typeof MessageActions>;
+    Body: Static<typeof MessageActionsBody>;
     Params: { messageId: string };
   }>(
     "/:messageId",
@@ -30,7 +32,7 @@ export default async function messagesActions(app: FastifyInstance) {
         app.checkPermissions(req, res, [Permissions.MessageSelf.Write]),
       schema: {
         tags: ["Message actions"],
-        body: MessageActions,
+        body: MessageActionsBody,
         response: {
           200: Type.Null(),
           "4xx": HttpError,

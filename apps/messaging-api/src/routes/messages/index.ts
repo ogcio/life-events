@@ -11,6 +11,8 @@ import {
   MessageListItemSchema,
   IdParamsSchema,
   TypeboxBooleanEnum,
+  AcceptedQueryBooleanValues,
+  parseBooleanEnum,
 } from "../../types/schemaDefinitions.js";
 import {
   getMessage,
@@ -32,7 +34,7 @@ interface GetAllMessages {
   Querystring: PaginationParams &
     Static<typeof IdParamsSchema> & {
       status?: "scheduled" | "delivered";
-      isSeen?: boolean;
+      isSeen?: AcceptedQueryBooleanValues;
       search?: string;
     };
 }
@@ -60,7 +62,11 @@ export default async function messages(app: FastifyInstance) {
           Type.Composite([
             Type.Object({
               status: Type.Optional(Type.Literal("delivered")),
-              isSeen: Type.Optional(TypeboxBooleanEnum()),
+              isSeen: Type.Optional(
+                TypeboxBooleanEnum({
+                  description: "If true, the message has been seen",
+                }),
+              ),
               search: Type.Optional(Type.String()),
             }),
             IdParamsSchema,
@@ -217,7 +223,7 @@ export default async function messages(app: FastifyInstance) {
             limit,
             offset,
             userIdsRepresentingUser.length,
-            request.query.isSeen === undefined ? null : request.query.isSeen,
+            parseBooleanEnum(request.query.isSeen, null),
             request.query.search ? `%${request.query.search}%` : "%%",
           ],
         );

@@ -35,6 +35,7 @@ paths:
           in: query
           name: isSeen
           required: false
+          description: If true, the message has been seen
         - schema:
             type: string
           in: query
@@ -4303,8 +4304,12 @@ paths:
           description: If set, the endpoint returns the users whom have imported by that
             specific batch
         - schema:
-            pattern: ^true|false$
             type: string
+            enum:
+              - "true"
+              - "false"
+              - "0"
+              - "1"
           in: query
           name: activeOnly
           required: false
@@ -4690,8 +4695,12 @@ paths:
       description: Returns the requested user
       parameters:
         - schema:
-            pattern: ^true|false$
             type: string
+            enum:
+              - "true"
+              - "false"
+              - "0"
+              - "1"
           in: query
           name: activeOnly
           required: false
@@ -5614,6 +5623,7 @@ paths:
                   format: uuid
                   type: string
                 isSeen:
+                  description: If true, the message is set to seen
                   type: boolean
               required:
                 - messageId

@@ -6,10 +6,13 @@ import {
   UserPerOrganisationSchema,
 } from "../../types/usersSchemaDefinitions.js";
 import {
+  AcceptedQueryBooleanValues,
   GenericResponse,
   PaginationParams,
   PaginationParamsSchema,
+  TypeboxBooleanEnum,
   getGenericResponseSchema,
+  parseBooleanEnum,
 } from "../../types/schemaDefinitions.js";
 import { getUser, getUsers } from "../../services/users/users.js";
 import {
@@ -32,7 +35,7 @@ export default async function users(app: FastifyInstance) {
       search?: string;
       transports?: string;
       importId?: string;
-      activeOnly?: string;
+      activeOnly?: AcceptedQueryBooleanValues;
     } & PaginationParams;
     Response: GenericResponse<UserPerOrganisation[]>;
   }
@@ -42,7 +45,7 @@ export default async function users(app: FastifyInstance) {
       userId: string;
     };
     Querystring: {
-      activeOnly?: string;
+      activeOnly?: AcceptedQueryBooleanValues;
     };
     Response: GenericResponse<UserPerOrganisation>;
   }
@@ -76,10 +79,9 @@ export default async function users(app: FastifyInstance) {
                 }),
               ),
               activeOnly: Type.Optional(
-                Type.String({
+                TypeboxBooleanEnum({
                   description:
                     "If true, the endpoint returns active only users",
-                  pattern: "^true|false$",
                 }),
               ),
             }),
@@ -103,7 +105,7 @@ export default async function users(app: FastifyInstance) {
         pagination,
         importId: query.importId,
         transports: query.transports ? query.transports.trim().split(",") : [],
-        activeOnly: parseActiveOnlyParam(query.activeOnly),
+        activeOnly: parseBooleanEnum(query.activeOnly, undefined),
       };
       const recipientsResponse = await getUsers(params);
 
@@ -125,9 +127,8 @@ export default async function users(app: FastifyInstance) {
         querystring: Type.Optional(
           Type.Object({
             activeOnly: Type.Optional(
-              Type.String({
+              TypeboxBooleanEnum({
                 description: "If true, the endpoint returns active only users",
-                pattern: "^true|false$",
               }),
             ),
           }),
@@ -150,7 +151,7 @@ export default async function users(app: FastifyInstance) {
         pool: app.pg.pool,
         organisationId,
         userId,
-        activeOnly: parseActiveOnlyParam(request.query.activeOnly),
+        activeOnly: parseBooleanEnum(request.query.activeOnly, false),
       });
 
       if (user.userProfileId) {
@@ -182,7 +183,4 @@ export default async function users(app: FastifyInstance) {
       return { data: user };
     },
   );
-
-  const parseActiveOnlyParam = (activeOnly?: string): boolean =>
-    activeOnly !== "false";
 }

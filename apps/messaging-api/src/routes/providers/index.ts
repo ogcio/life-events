@@ -67,10 +67,10 @@ export default async function providers(app: FastifyInstance) {
             [
               Type.Object({
                 primary: Type.Optional(
-                  TypeboxBooleanEnum(
-                    undefined,
-                    "If set, returns only the primary providers if true, otherwise the non-primary ones",
-                  ),
+                  TypeboxBooleanEnum({
+                    description:
+                      "If set, returns only the primary providers if true, otherwise the non-primary ones",
+                  }),
                 ),
                 type: EditableProviderTypesSchema,
               }),
@@ -99,9 +99,7 @@ export default async function providers(app: FastifyInstance) {
       };
       let query: QueryResult<QueryProvider> | undefined;
       let primaryFilter = "";
-      const primaryQuery = request.query.primary
-        ? parseBooleanEnum(request.query.primary)
-        : undefined;
+      const primaryQuery = parseBooleanEnum(request.query.primary, undefined);
       if (primaryQuery === true) {
         primaryFilter = "AND is_primary = true";
       } else if (primaryQuery === false) {
