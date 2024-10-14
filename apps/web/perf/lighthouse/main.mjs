@@ -22,14 +22,13 @@ const adminPage = loginURL + '/en/admin/submissions'
 
 
 const opts = {
-  // chromeFlags: ['--headless'],
   output: 'json',
   disableDeviceEmulation: true,
   defaultViewport: {
     width: 1200,
     height: 900
   },
-  chromeFlags: ['--disable-mobile-emulation'],
+  chromeFlags: ['--headless', '--disable-mobile-emulation'],
 }
 
   // Launch chrome using chrome-launcher
