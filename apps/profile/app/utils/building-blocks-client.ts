@@ -12,10 +12,10 @@ export const getSdks = () => {
 
   buildingBlockSdk = getBuildingBlockSDK({
     services: {
-      payments: { baseUrl: process.env.PAYMENTS_BACKEND_URL },
+      profile: { baseUrl: process.env.HOST_URL },
     },
     getTokenFn: async (serviceName: string) => {
-      if (serviceName === "payments") {
+      if (serviceName === "profile") {
         return invokeTokenApi();
       }
 
