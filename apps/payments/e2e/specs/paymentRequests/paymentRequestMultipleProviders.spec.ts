@@ -74,7 +74,7 @@ test.describe("Payment Request with multiple providers", () => {
     ]);
     await detailsPage.checkAmount(mockAmount);
     await detailsPage.checkRedirectUrl(mockRedirectUrl);
-    await detailsPage.checkAmountOverrideOption(true);
+    await detailsPage.checkDynamicAmountOption(true);
     await detailsPage.checkCustomAmountOption(true);
     await detailsPage.checkEmptyPaymentsList();
 
@@ -148,7 +148,7 @@ test.describe("Payment Request with multiple providers", () => {
     ]);
     await detailsPage.checkAmount(mockAmount);
     await detailsPage.checkRedirectUrl(mockRedirectUrl);
-    await detailsPage.checkAmountOverrideOption(true);
+    await detailsPage.checkDynamicAmountOption(true);
     await detailsPage.checkCustomAmountOption(true);
     await detailsPage.checkEmptyPaymentsList();
 
@@ -418,7 +418,7 @@ test.describe("Payment Request with multiple providers", () => {
     await detailsPage.checkStatus("inactive");
     await detailsPage.checkAmount(mockAmount);
     await detailsPage.checkRedirectUrl(mockRedirectUrl);
-    await detailsPage.checkAmountOverrideOption(true);
+    await detailsPage.checkDynamicAmountOption(true);
     await detailsPage.checkCustomAmountOption(true);
     await detailsPage.checkEmptyPaymentsList();
 

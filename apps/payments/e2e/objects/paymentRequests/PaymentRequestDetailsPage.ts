@@ -112,7 +112,7 @@ export class PaymentRequestDetailsPage {
     await expect(this.page.getByText(url)).toBeVisible();
   }
 
-  async checkAmountOverrideOption(bool: boolean) {
+  async checkDynamicAmountOption(bool: boolean) {
     await expect(this.dynamicAmountLabel).toBeVisible();
     await expect(this.allowDynamicAmount(bool.toString())).toBeVisible();
   }

@@ -117,7 +117,7 @@ export default async function Page(props: Props) {
   const realAmount = getRealAmount({
     amount: details.amount,
     customAmount,
-    amountOverride: urlAmount,
+    dynamicAmount: urlAmount,
     allowDynamicAmount: details.allowAmountOverride,
     allowCustomOverride: details.allowCustomAmount,
   });

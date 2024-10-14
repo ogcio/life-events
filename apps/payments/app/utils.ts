@@ -34,7 +34,7 @@ export function validateURLAmount(amount) {
 export const getRealAmount = ({
   amount,
   customAmount,
-  amountOverride,
+  dynamicAmount,
   allowDynamicAmount,
   allowCustomOverride,
 }: {
@@ -43,11 +43,11 @@ export const getRealAmount = ({
   // Custom amount choosen by the user (if applicable)
   customAmount?: number;
   // Dynamc amount from the URL (if applicable)
-  amountOverride?: number;
+  dynamicAmount?: number;
   allowDynamicAmount: boolean;
   allowCustomOverride: boolean;
 }) => {
-  if (allowDynamicAmount && amountOverride) return amountOverride;
+  if (allowDynamicAmount && dynamicAmount) return dynamicAmount;
   if (allowCustomOverride && customAmount) return customAmount;
 
   return amount;

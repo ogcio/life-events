@@ -32,8 +32,8 @@ async function getPaymentDetails(
   const realAmount = getRealAmount({
     amount: details.amount,
     customAmount,
-    amountOverride: amount,
-    allowAmountOverride: details.allowAmountOverride,
+    dynamicAmount: amount,
+    allowDynamicAmount: details.allowAmountOverride,
     allowCustomOverride: details.allowCustomAmount,
   });
 
