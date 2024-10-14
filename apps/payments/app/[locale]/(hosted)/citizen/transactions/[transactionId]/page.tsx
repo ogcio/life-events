@@ -15,7 +15,7 @@ export default async function ({ params: { transactionId } }) {
     errorHandler(error);
   }
 
-  if (!details?.data) {
+  if (!details) {
     return notFound();
   }
 
@@ -26,54 +26,48 @@ export default async function ({ params: { transactionId } }) {
       <dl className="govie-summary-list">
         <div className="govie-summary-list__row">
           <dt className="govie-summary-list__key">{t("requestTitle")}</dt>
-          <dt className="govie-summary-list__value">{details.data.title}</dt>
+          <dt className="govie-summary-list__value">{details.title}</dt>
         </div>
         <div className="govie-summary-list__row">
           <dt className="govie-summary-list__key">{t("amount")}</dt>
           <dt className="govie-summary-list__value">
-            {formatCurrency(details.data.amount)}
+            {formatCurrency(details.amount)}
           </dt>
         </div>
         <div className="govie-summary-list__row">
           <dt className="govie-summary-list__key">{t("description")}</dt>
           <dt className="govie-summary-list__value">
-            <pre style={{ fontFamily: "inherit" }}>
-              {details.data.description}
-            </pre>
+            <pre style={{ fontFamily: "inherit" }}>{details.description}</pre>
           </dt>
         </div>
         <div className="govie-summary-list__row">
           <dt className="govie-summary-list__key">{t("lastUpdate")}</dt>
           <dt className="govie-summary-list__value">
-            {dayjs(details.data.updatedAt).format("DD/MM/YYYY - HH:mm:ss")}
+            {dayjs(details.updatedAt).format("DD/MM/YYYY - HH:mm:ss")}
           </dt>
         </div>
         <div className="govie-summary-list__row">
           <dt className="govie-summary-list__key">{t("status")}</dt>
-          <dt className="govie-summary-list__value">{details.data.status}</dt>
+          <dt className="govie-summary-list__value">{details.status}</dt>
         </div>
         <div className="govie-summary-list__row">
           <dt className="govie-summary-list__key">{t("providerType")}</dt>
           <dt className="govie-summary-list__value">
-            {t(`providers.${details.data.providerType}`)}
+            {t(`providers.${details.providerType}`)}
           </dt>
         </div>
         <div className="govie-summary-list__row">
           <dt className="govie-summary-list__key">{t("referenceCode")}</dt>
-          <dt className="govie-summary-list__value">
-            {details.data.extPaymentId}
-          </dt>
+          <dt className="govie-summary-list__value">{details.extPaymentId}</dt>
         </div>
         <div className="govie-summary-list__row">
           <dt className="govie-summary-list__key">{t("payerName")}</dt>
-          <dt className="govie-summary-list__value">
-            {details.data.userData.name}
-          </dt>
+          <dt className="govie-summary-list__value">{details.userData.name}</dt>
         </div>
         <div className="govie-summary-list__row">
           <dt className="govie-summary-list__key">{t("payerEmail")}</dt>
           <dt className="govie-summary-list__value">
-            {details.data.userData.email}
+            {details.userData.email}
           </dt>
         </div>
       </dl>

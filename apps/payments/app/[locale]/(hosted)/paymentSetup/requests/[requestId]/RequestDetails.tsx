@@ -46,7 +46,7 @@ async function hasTransactions(requestId: string) {
     errorHandler(error);
   }
 
-  return transactions?.data && transactions.data.length > 0;
+  return transactions && transactions.length > 0;
 }
 
 export const RequestDetails = async ({

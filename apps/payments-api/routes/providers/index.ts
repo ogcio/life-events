@@ -8,6 +8,7 @@ import {
   ProviderReply,
   OkResponse,
   Id,
+  IdSchema,
 } from "../schemas";
 import {
   CreateProviderDO,
@@ -32,7 +33,7 @@ export default async function providers(app: FastifyInstance) {
         tags: TAGS,
         body: CreateProvider,
         response: {
-          200: GenericResponseSchema(Id),
+          200: GenericResponseSchema(IdSchema),
           401: HttpError,
           422: HttpError,
           500: HttpError,

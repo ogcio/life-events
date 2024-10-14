@@ -35,8 +35,11 @@ export default async function ({
   };
 
   const paymentsApi = await AuthenticationFactory.getPaymentsClient();
-  const { data: transactionsResponse, error } =
-    await paymentsApi.getTransactions(pagination);
+  const {
+    data: transactionsResponse,
+    error,
+    metadata,
+  } = await paymentsApi.getTransactions(pagination);
 
   const errors = errorHandler(error);
 
@@ -45,16 +48,13 @@ export default async function ({
   }
 
   const url = `/${locale}/${routeDefinitions.paymentSetup.path()}`;
-  const links = buildPaginationLinks(
-    url,
-    transactionsResponse?.metadata?.links,
-  );
+  const links = buildPaginationLinks(url, metadata?.links);
 
   return (
     <PageWrapper locale={locale}>
       <div className="table-container">
         <h1 className="govie-heading-m">{t("title")}</h1>
-        {transactionsResponse?.data.length === 0 ? (
+        {transactionsResponse?.length === 0 ? (
           <EmptyStatus
             title={t("emptyPaymentsList.title")}
             description={t("emptyPaymentsList.description")}
@@ -93,7 +93,7 @@ export default async function ({
                 </tr>
               </thead>
               <tbody className="govie-table__body">
-                {transactionsResponse?.data.map((trx) => (
+                {transactionsResponse?.map((trx) => (
                   <tr
                     className="govie-table__row"
                     key={trx.transactionId}

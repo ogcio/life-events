@@ -80,8 +80,11 @@ export default async function ({
     to,
   };
 
-  const { data: auditLogsResponse, error } =
-    await paymentsApi.getAuditLogEvents(params);
+  const {
+    data: auditLogsResponse,
+    error,
+    metadata,
+  } = await paymentsApi.getAuditLogEvents(params);
 
   const errors = errorHandler(error);
 
@@ -91,12 +94,11 @@ export default async function ({
 
   const { data: eventTypesResponse } =
     await paymentsApi.getAuditLogEventTypes();
-  const eventTypes = eventTypesResponse?.data ?? {};
 
-  const { resources, actions } = getResourcesAndActions(eventTypes);
+  const { resources, actions } = getResourcesAndActions(eventTypesResponse);
 
   const url = `/${locale}/${routeDefinitions.auditLogs.path()}`;
-  const links = buildPaginationLinks(url, auditLogsResponse?.metadata?.links);
+  const links = buildPaginationLinks(url, metadata?.links);
 
   const setFilterParam = async (formData: FormData) => {
     "use server";
@@ -216,7 +218,7 @@ export default async function ({
             </button>
           </form>
 
-          {auditLogsResponse?.data.length === 0 ? (
+          {auditLogsResponse?.length === 0 ? (
             <EmptyStatus
               title={t("emptyListTitle")}
               description={t("emptyListDescription")}
@@ -241,7 +243,7 @@ export default async function ({
                   </tr>
                 </thead>
                 <tbody className="govie-table__body">
-                  {auditLogsResponse?.data.map((event) => (
+                  {auditLogsResponse?.map((event) => (
                     <tr
                       className="govie-table__row"
                       key={event.auditLogId}

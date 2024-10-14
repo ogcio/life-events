@@ -4,10 +4,10 @@ import {
   PAGINATION_OFFSET_DEFAULT,
 } from "../../utils/pagination";
 
-export const Id = Type.Object({
+export const IdSchema = Type.Object({
   id: Type.String(),
 });
-export type Id = Static<typeof Id>;
+export type Id = Static<typeof IdSchema>;
 
 export const OkResponse = Type.Object({
   ok: Type.Boolean(),

@@ -1,15 +1,8 @@
 import { redirect } from "next/navigation";
-import EditProviderForm from "./EditProviderForm";
-import type { WorldpayData, WorldpayProvider } from "../types";
+import type { WorldpayProvider } from "../types";
 import { getTranslations } from "next-intl/server";
-import WorldpayFields from "../add-worldpay/WorldpayFields";
 import getRequestConfig from "../../../../../../i18n";
-import {
-  errorHandler,
-  getValidationErrors,
-  ValidationErrorTypes,
-} from "../../../../../utils";
-import { AbstractIntlMessages, NextIntlClientProvider } from "next-intl";
+import { errorHandler, getValidationErrors } from "../../../../../utils";
 import { AuthenticationFactory } from "../../../../../../libraries/authentication-factory";
 
 type Props = {
@@ -85,7 +78,7 @@ export default async ({ provider, locale }: Props) => {
 
     if (error?.validation) {
       validation.errors = getValidationErrors(
-        error.validation,
+        error.validation as any,
         errorFieldMapping,
       );
     }

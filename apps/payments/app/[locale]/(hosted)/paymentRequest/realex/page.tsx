@@ -42,13 +42,13 @@ async function generatePaymentIntentId(): Promise<string> {
     errorHandler(error);
   }
 
-  if (!result?.data.intentId) {
+  if (!result?.intentId) {
     // Handle edge case when intentId was not possible to generate
     console.error("Payment intentId was not possible to generate.");
     redirect("error", RedirectType.replace);
   }
 
-  return result.data.intentId;
+  return result.intentId;
 }
 
 export default async function CardWithRealex(props: {

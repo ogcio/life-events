@@ -37,8 +37,11 @@ export default async function ({
   };
 
   const paymentsApi = await AuthenticationFactory.getPaymentsClient();
-  const { data: paymentRequestsData, error } =
-    await paymentsApi.getPaymentRequests(pagination);
+  const {
+    data: paymentRequestsData,
+    error,
+    metadata,
+  } = await paymentsApi.getPaymentRequests(pagination);
 
   const errors = errorHandler(error);
 
@@ -47,9 +50,9 @@ export default async function ({
   }
 
   const url = `/${locale}/${routeDefinitions.paymentSetup.requests.path()}`;
-  const links = buildPaginationLinks(url, paymentRequestsData?.metadata?.links);
+  const links = buildPaginationLinks(url, metadata?.links);
 
-  const paymentRequests = paymentRequestsData?.data ?? [];
+  const paymentRequests = paymentRequestsData ?? [];
 
   return (
     <PageWrapper locale={locale} disableOrgSelector={true}>

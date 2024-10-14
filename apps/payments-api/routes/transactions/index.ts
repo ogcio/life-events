@@ -4,6 +4,7 @@ import {
   CreateTransactionBody,
   GenericResponseSchema,
   Id,
+  IdSchema,
   PaginationParams,
   ParamsWithTransactionId,
   PaymentIntentId,
@@ -183,7 +184,7 @@ export default async function transactions(app: FastifyInstance) {
         tags: TAGS,
         body: CreateTransactionBody,
         response: {
-          200: GenericResponseSchema(Id),
+          200: GenericResponseSchema(IdSchema),
           401: HttpError,
           500: HttpError,
         },

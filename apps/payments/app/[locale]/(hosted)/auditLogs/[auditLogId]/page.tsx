@@ -13,7 +13,7 @@ async function getAuditLogDetails(auditLogId: string) {
 
   if (error) errorHandler(error);
 
-  return result?.data;
+  return result;
 }
 
 export default async function ({

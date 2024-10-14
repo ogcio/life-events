@@ -40,8 +40,11 @@ export default async function (props: Props) {
     limit: pageLimit,
   };
 
-  const { data: transactionsData, error } =
-    await paymentsApi.getCitizenTransactions(pagination);
+  const {
+    data: transactionsData,
+    error,
+    metadata,
+  } = await paymentsApi.getCitizenTransactions(pagination);
 
   const errors = errorHandler(error);
 
@@ -50,9 +53,9 @@ export default async function (props: Props) {
   }
 
   const url = `/${props.params.locale}/${routeDefinitions.citizen.transactions.path()}`;
-  const links = buildPaginationLinks(url, transactionsData?.metadata?.links);
+  const links = buildPaginationLinks(url, metadata?.links);
 
-  const transactions = transactionsData?.data ?? [];
+  const transactions = transactionsData ?? [];
 
   return (
     <div className="table-container">

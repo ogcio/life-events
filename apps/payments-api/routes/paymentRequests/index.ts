@@ -6,6 +6,7 @@ import {
   EditPaymentRequest,
   GenericResponseSchema,
   Id,
+  IdSchema,
   PaginationParams,
   ParamsWithPaymentRequestId,
   PaymentRequest,
@@ -157,7 +158,11 @@ export default async function paymentRequests(app: FastifyInstance) {
       schema: {
         tags: TAGS,
         body: CreatePaymentRequest,
-        response: { 200: GenericResponseSchema(Id) },
+        response: {
+          200: GenericResponseSchema(IdSchema),
+          "4xx": HttpError,
+          "5xx": HttpError,
+        },
       },
     },
     async (request, reply) => {
@@ -200,8 +205,12 @@ export default async function paymentRequests(app: FastifyInstance) {
         app.checkPermissions(req, res, [authPermissions.PAYMENT_REQUEST_ALL]),
       schema: {
         tags: TAGS,
-        body: GenericResponseSchema(EditPaymentRequest),
-        response: { 200: Id },
+        body: EditPaymentRequest,
+        response: {
+          200: GenericResponseSchema(IdSchema),
+          "4xx": HttpError,
+          "5xx": HttpError,
+        },
       },
     },
     async (request, reply) => {
