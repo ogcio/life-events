@@ -119,7 +119,7 @@ export default async function paymentRequests(app: FastifyInstance) {
   );
 
   app.get<{
-    Reply: PaymentRequestPublicInfoDO | Error;
+    Reply: { data: PaymentRequestPublicInfoDO } | Error;
     Params: ParamsWithPaymentRequestIdDO;
   }>(
     "/:requestId/public-info",
@@ -132,18 +132,17 @@ export default async function paymentRequests(app: FastifyInstance) {
         tags: TAGS,
         params: ParamsWithPaymentRequestId,
         response: {
-          200: PaymentRequestPublicInfo,
+          200: { data: PaymentRequestPublicInfo },
           404: HttpError,
         },
       },
     },
-    async (request, reply) => {
+    async (request) => {
       const { requestId } = request.params;
 
-      const result =
-        await app.paymentRequest.getPaymentRequestPublicInfo(requestId);
-
-      reply.send(result);
+      return {
+        data: await app.paymentRequest.getPaymentRequestPublicInfo(requestId),
+      };
     },
   );
 

@@ -1,9 +1,6 @@
-import { PaginationLinks } from "./pagination";
+import { ResponseMetadata } from "../routes/schemas";
 
 export type GenericResponse<T> = {
   data: T;
-  metadata?: {
-    links?: PaginationLinks;
-    totalCount?: number;
-  };
+  metadata?: ResponseMetadata;
 };

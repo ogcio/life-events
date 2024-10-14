@@ -33,7 +33,6 @@
     "allure-commandline": "^2.30.0",
     "analytics": "*",
     "auth": "*",
-    "building-blocks-sdk": "*",
     "dayjs": "^1.11.11",
     "db-migrate": "^0.11.14",
     "db-migrate-pg": "^1.5.2",

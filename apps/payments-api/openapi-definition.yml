@@ -1192,139 +1192,142 @@ paths:
               schema:
                 type: object
                 properties:
-                  paymentRequestId:
-                    type: string
-                  title:
-                    type: string
-                  description:
-                    type: string
-                  amount:
-                    type: number
-                  reference:
-                    type: string
-                  providers:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        userId:
-                          type: string
-                        id:
-                          type: string
-                        name:
-                          type: string
-                        type:
-                          anyOf:
-                            - type: string
-                              enum:
-                                - banktransfer
-                            - type: string
-                              enum:
-                                - openbanking
-                            - type: string
-                              enum:
-                                - stripe
-                            - type: string
-                              enum:
-                                - realex
-                            - type: string
-                              enum:
-                                - worldpay
-                        status:
-                          anyOf:
-                            - type: string
-                              enum:
-                                - connected
-                            - type: string
-                              enum:
-                                - disconnected
-                        data:
-                          anyOf:
-                            - type: object
-                              properties:
-                                iban:
-                                  type: string
-                                accountHolderName:
-                                  type: string
-                              required:
-                                - iban
-                                - accountHolderName
-                            - type: object
-                              properties:
-                                iban:
-                                  type: string
-                                accountHolderName:
-                                  type: string
-                              required:
-                                - iban
-                                - accountHolderName
-                            - type: object
-                              properties:
-                                livePublishableKey:
-                                  type: string
-                                liveSecretKey:
-                                  type: string
-                                webhookSigningKey:
-                                  type: string
-                              required:
-                                - livePublishableKey
-                                - liveSecretKey
-                            - type: object
-                              properties:
-                                merchantCode:
-                                  type: string
-                                installationId:
-                                  type: string
-                              required:
-                                - merchantCode
-                                - installationId
-                            - type: object
-                              properties:
-                                merchantId:
-                                  type: string
-                                sharedSecret:
-                                  type: string
-                              required:
-                                - merchantId
-                                - sharedSecret
-                        createdAt:
-                          type: string
-                      required:
-                        - userId
-                        - id
-                        - name
-                        - type
-                        - status
-                        - data
-                        - createdAt
-                  status:
-                    anyOf:
-                      - type: string
-                        enum:
-                          - active
-                      - type: string
-                        enum:
-                          - inactive
-                      - type: string
-                        enum:
-                          - draft
-                  redirectUrl:
-                    type: string
-                  allowAmountOverride:
-                    type: boolean
-                  allowCustomAmount:
-                    type: boolean
-                required:
-                  - paymentRequestId
-                  - title
-                  - description
-                  - amount
-                  - reference
-                  - providers
-                  - status
-                  - redirectUrl
-                  - allowAmountOverride
-                  - allowCustomAmount
+                  data:
+                    type: object
+                    properties:
+                      paymentRequestId:
+                        type: string
+                      title:
+                        type: string
+                      description:
+                        type: string
+                      amount:
+                        type: number
+                      reference:
+                        type: string
+                      providers:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            userId:
+                              type: string
+                            id:
+                              type: string
+                            name:
+                              type: string
+                            type:
+                              anyOf:
+                                - type: string
+                                  enum:
+                                    - banktransfer
+                                - type: string
+                                  enum:
+                                    - openbanking
+                                - type: string
+                                  enum:
+                                    - stripe
+                                - type: string
+                                  enum:
+                                    - realex
+                                - type: string
+                                  enum:
+                                    - worldpay
+                            status:
+                              anyOf:
+                                - type: string
+                                  enum:
+                                    - connected
+                                - type: string
+                                  enum:
+                                    - disconnected
+                            data:
+                              anyOf:
+                                - type: object
+                                  properties:
+                                    iban:
+                                      type: string
+                                    accountHolderName:
+                                      type: string
+                                  required:
+                                    - iban
+                                    - accountHolderName
+                                - type: object
+                                  properties:
+                                    iban:
+                                      type: string
+                                    accountHolderName:
+                                      type: string
+                                  required:
+                                    - iban
+                                    - accountHolderName
+                                - type: object
+                                  properties:
+                                    livePublishableKey:
+                                      type: string
+                                    liveSecretKey:
+                                      type: string
+                                    webhookSigningKey:
+                                      type: string
+                                  required:
+                                    - livePublishableKey
+                                    - liveSecretKey
+                                - type: object
+                                  properties:
+                                    merchantCode:
+                                      type: string
+                                    installationId:
+                                      type: string
+                                  required:
+                                    - merchantCode
+                                    - installationId
+                                - type: object
+                                  properties:
+                                    merchantId:
+                                      type: string
+                                    sharedSecret:
+                                      type: string
+                                  required:
+                                    - merchantId
+                                    - sharedSecret
+                            createdAt:
+                              type: string
+                          required:
+                            - userId
+                            - id
+                            - name
+                            - type
+                            - status
+                            - data
+                            - createdAt
+                      status:
+                        anyOf:
+                          - type: string
+                            enum:
+                              - active
+                          - type: string
+                            enum:
+                              - inactive
+                          - type: string
+                            enum:
+                              - draft
+                      redirectUrl:
+                        type: string
+                      allowAmountOverride:
+                        type: boolean
+                      allowCustomAmount:
+                        type: boolean
+                    required:
+                      - paymentRequestId
+                      - title
+                      - description
+                      - amount
+                      - reference
+                      - providers
+                      - status
+                      - redirectUrl
+                      - allowAmountOverride
+                      - allowCustomAmount
         "404":
           description: Default Response
           content:

@@ -415,32 +415,61 @@ export const PaginationParams = Type.Object({
   ),
 });
 
-export const PaginationLink = Type.Object({
-  href: Type.Optional(Type.String()),
-});
+export const getPaginationLinkSchema = (description?: string) =>
+  Type.Object({
+    href: Type.Optional(Type.String({ description })),
+  });
 
-export const PaginationLinks = Type.Object({
-  self: PaginationLink,
-  next: Type.Optional(PaginationLink),
-  prev: Type.Optional(PaginationLink),
-  first: PaginationLink,
-  last: PaginationLink,
-  pages: Type.Record(Type.String(), PaginationLink),
-});
+export const PaginationLinksSchema = Type.Object(
+  {
+    self: getPaginationLinkSchema("URL pointing to the request itself"),
+    next: Type.Optional(
+      getPaginationLinkSchema(
+        "URL pointing to the next page of results in a paginated response. If there are no more results, this field may be omitted",
+      ),
+    ),
+    prev: Type.Optional(
+      getPaginationLinkSchema(
+        "URL pointing to the previous page of results in a paginated response. If there are no more results, this field may be omitted",
+      ),
+    ),
+    first: getPaginationLinkSchema(
+      "URL pointing to the first page of results in a paginated response",
+    ),
+    last: getPaginationLinkSchema(
+      "URL pointing to the first page of results in a paginated response",
+    ),
+    pages: Type.Record(Type.String(), getPaginationLinkSchema(), {
+      description:
+        "It may contain a list of other useful URLs, e.g. one entry for page:'page 1', 'page 2'",
+    }),
+  },
+  { description: "Object containing the links to the related endpoints" },
+);
+
+export type PaginationLinks = Static<typeof PaginationLinksSchema>;
 
 /**
  * Generics
  */
 
-export const GenericResponse = <T extends TSchema>(T: T) =>
+export const ResponseMetadataSchema = Type.Optional(
   Type.Object({
-    data: T,
-    metadata: Type.Optional(
-      Type.Object({
-        links: Type.Optional(PaginationLinks),
-        totalCount: Type.Optional(Type.Number()),
+    links: Type.Optional(PaginationLinksSchema),
+    totalCount: Type.Optional(
+      Type.Number({
+        description: "Number representing the total number of available items",
       }),
     ),
+  }),
+);
+
+export type ResponseMetadata = Static<typeof ResponseMetadataSchema>;
+
+export const GenericResponseSchema = <T extends TSchema>(T: T) =>
+  Type.Object({
+    data: T,
+    metadata: ResponseMetadataSchema,
   });
 
 export const AuditLogEvent = Type.Object({
