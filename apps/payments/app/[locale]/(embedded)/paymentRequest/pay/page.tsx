@@ -25,7 +25,7 @@ type Props = {
     | {
         paymentId: string;
         id: string;
-        amount?: string;
+        token?: string;
         customAmount?: string;
         embed?: string;
         submissionId?: string;
@@ -62,6 +62,18 @@ async function selectCustomAmount(requestId: string, formData: FormData) {
   );
 }
 
+async function getDynamicAmount(token: string | undefined) {
+  "use server";
+  if (!token) return Promise.resolve({ amount: 0 });
+
+  const paymentsApi = await AuthenticationFactory.getPaymentsClient();
+  const { data: payload, error } = await paymentsApi.decodeToken({ token });
+
+  if (error) errorHandler(error);
+
+  return payload?.data;
+}
+
 export default async function Page(props: Props) {
   if (!props.searchParams?.paymentId || !props.searchParams?.id)
     return notFound();
@@ -71,11 +83,12 @@ export default async function Page(props: Props) {
 
   const embed = props.searchParams?.embed === "true";
 
-  const [details, t, tBanner, tCommon] = await Promise.all([
+  const [details, t, tBanner, tCommon, dynamicAmount] = await Promise.all([
     getPaymentRequestDetails(props.searchParams.paymentId),
     getTranslations("PayPaymentRequest"),
     getTranslations("PreviewBanner"),
     getTranslations("Common"),
+    getDynamicAmount(props.searchParams?.token),
   ]);
 
   const { messages } = await getRequestConfig({ locale: props.params.locale });
@@ -84,9 +97,8 @@ export default async function Page(props: Props) {
 
   const allowCustomAmount = details.allowCustomAmount;
 
-  let urlAmount = props.searchParams.amount
-    ? parseFloat(props.searchParams.amount)
-    : undefined;
+  let urlAmount = dynamicAmount?.amount ?? undefined;
+
   let customAmount = props.searchParams.customAmount
     ? parseFloat(props.searchParams.customAmount)
     : undefined;
@@ -106,7 +118,7 @@ export default async function Page(props: Props) {
     amount: details.amount,
     customAmount,
     amountOverride: urlAmount,
-    allowAmountOverride: details.allowAmountOverride,
+    allowDynamicAmount: details.allowAmountOverride,
     allowCustomOverride: details.allowCustomAmount,
   });
 

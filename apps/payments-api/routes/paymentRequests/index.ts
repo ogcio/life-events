@@ -13,6 +13,7 @@ import {
   PaymentRequestPublicInfo,
   TokenBody,
   TokenBodyDO,
+  TokenPayload,
   Transaction,
 } from "../schemas";
 import {
@@ -193,7 +194,7 @@ export default async function paymentRequests(app: FastifyInstance) {
 
   app.post<{
     Body: TokenBodyDO;
-    Reply: GenericResponseType<Record<string, unknown>> | Error;
+    Reply: GenericResponseType<TokenPayload> | Error;
   }>(
     "/decode",
     {
@@ -205,7 +206,7 @@ export default async function paymentRequests(app: FastifyInstance) {
         tags: TAGS,
         body: TokenBody,
         response: {
-          200: GenericResponse(Id),
+          200: GenericResponse(TokenPayload),
           401: HttpError,
           500: HttpError,
         },
@@ -222,17 +223,13 @@ export default async function paymentRequests(app: FastifyInstance) {
 
       try {
         const jwksUrl = `${process.env.INTEGRATOR_BACKEND_URL}/.well-known/jwks.json`;
-        const payload = await verifyJWT(token, {
+        const payload = (await verifyJWT(token, {
           jwksUrl,
           issuer: "integrator-api",
           audience: "payments-api",
-        });
+        })) as unknown as TokenPayload;
 
-        reply.send(
-          formatAPIResponse({
-            payload,
-          }),
-        );
+        reply.send(formatAPIResponse(payload));
       } catch (err) {
         throw app.httpErrors.unauthorized("Invalid token");
       }

@@ -35,19 +35,19 @@ export const getRealAmount = ({
   amount,
   customAmount,
   amountOverride,
-  allowAmountOverride,
+  allowDynamicAmount,
   allowCustomOverride,
 }: {
   // Default amount required from the database
   amount: number;
   // Custom amount choosen by the user (if applicable)
   customAmount?: number;
-  // Amount override from the URL (if applicable)
+  // Dynamc amount from the URL (if applicable)
   amountOverride?: number;
-  allowAmountOverride: boolean;
+  allowDynamicAmount: boolean;
   allowCustomOverride: boolean;
 }) => {
-  if (allowAmountOverride && amountOverride) return amountOverride;
+  if (allowDynamicAmount && amountOverride) return amountOverride;
   if (allowCustomOverride && customAmount) return customAmount;
 
   return amount;
