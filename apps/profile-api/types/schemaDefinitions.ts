@@ -1,4 +1,9 @@
-import { Static, Type } from "@sinclair/typebox";
+import { Static, TSchema, Type } from "@sinclair/typebox";
+import {
+  PAGINATION_MIN_OFFSET,
+  PAGINATION_LIMIT_DEFAULT,
+  PAGINATION_MAX_LIMIT,
+} from "./pagination";
 
 export const DEFAULT_LANGUAGE = "en";
 
@@ -180,3 +185,95 @@ export const FoundUserSchema = Type.Object({
   matchQuality: MatchQualityUnionType,
 });
 export type FoundUser = Static<typeof FoundUserSchema>;
+
+/**
+ * Generic Request / Response Types
+ */
+export const PaginationParamsSchema = Type.Object({
+  offset: Type.Optional(
+    Type.String({
+      pattern: "^[0-9][0-9]*|undefined$",
+      default: PAGINATION_MIN_OFFSET.toString(),
+      description:
+        "Indicates where to start fetching data or how many records to skip, defining the initial position within the list",
+    }),
+  ),
+  limit: Type.Optional(
+    Type.String({
+      default: PAGINATION_LIMIT_DEFAULT.toString(),
+      pattern: `^([1-9]|${PAGINATION_MAX_LIMIT})|undefined$`,
+      description: `Indicates the maximum number (${PAGINATION_MAX_LIMIT}) of items that will be returned in a single request`,
+    }),
+  ),
+});
+
+export type PaginationParams = Static<typeof PaginationParamsSchema>;
+
+export const IdParamsSchema = Type.Object({
+  recipientUserId: Type.Optional(
+    Type.String({
+      description: "Either recipientUserId and organisationId are mandatory",
+    }),
+  ),
+  organisationId: Type.Optional(
+    Type.String({
+      description: "Either recipientUserId and organisationId are mandatory",
+    }),
+  ),
+});
+
+export const getPaginationLinkSchema = (description?: string) =>
+  Type.Object({
+    href: Type.Optional(Type.String({ description })),
+  });
+
+export const PaginationLinksSchema = Type.Object(
+  {
+    self: getPaginationLinkSchema("URL pointing to the request itself"),
+    next: Type.Optional(
+      getPaginationLinkSchema(
+        "URL pointing to the next page of results in a paginated response. If there are no more results, this field may be omitted",
+      ),
+    ),
+    prev: Type.Optional(
+      getPaginationLinkSchema(
+        "URL pointing to the previous page of results in a paginated response. If there are no more results, this field may be omitted",
+      ),
+    ),
+    first: getPaginationLinkSchema(
+      "URL pointing to the first page of results in a paginated response",
+    ),
+    last: getPaginationLinkSchema(
+      "URL pointing to the first page of results in a paginated response",
+    ),
+    pages: Type.Record(Type.String(), getPaginationLinkSchema(), {
+      description:
+        "It may contain a list of other useful URLs, e.g. one entry for page:'page 1', 'page 2'",
+    }),
+  },
+  { description: "Object containing the links to the related endpoints" },
+);
+
+export type PaginationLinks = Static<typeof PaginationLinksSchema>;
+
+export const ResponseMetadataSchema = Type.Optional(
+  Type.Object({
+    links: Type.Optional(PaginationLinksSchema),
+    totalCount: Type.Optional(
+      Type.Number({
+        description: "Number representing the total number of available items",
+      }),
+    ),
+  }),
+);
+
+export const getGenericResponseSchema = <T extends TSchema>(dataType: T) =>
+  Type.Object({
+    data: dataType,
+    metadata: ResponseMetadataSchema,
+  });
+
+export type GenericResponse<T> = {
+  data: T;
+  metadata?: Static<typeof ResponseMetadataSchema>;
+};
