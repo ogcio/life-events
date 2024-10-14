@@ -2,7 +2,7 @@ import { FastifyInstance } from "fastify";
 import { HttpError } from "../../types/httpErrors";
 import {
   CitizenTransactions,
-  GenericResponse,
+  GenericResponseSchema,
   PaginationParams,
   ParamsWithTransactionId,
   TransactionDetails,
@@ -35,7 +35,7 @@ export default async function citizen(app: FastifyInstance) {
         tags: TAGS_CITIZEN,
         querystring: PaginationParams,
         response: {
-          200: GenericResponse(CitizenTransactions),
+          200: GenericResponseSchema(CitizenTransactions),
           401: HttpError,
           404: HttpError,
           500: HttpError,
@@ -81,7 +81,7 @@ export default async function citizen(app: FastifyInstance) {
       schema: {
         tags: TAGS_TRANSACTION,
         response: {
-          200: GenericResponse(TransactionDetails),
+          200: GenericResponseSchema(TransactionDetails),
           404: HttpError,
         },
       },

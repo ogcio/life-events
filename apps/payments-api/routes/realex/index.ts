@@ -1,6 +1,7 @@
 import { FastifyInstance } from "fastify";
 import { HttpError } from "../../types/httpErrors";
 import {
+  GenericResponseSchema,
   RealexPaymentObject,
   RealexPaymentObjectQueryParams,
   RealexStatusUpdateQueryParams,
@@ -13,12 +14,14 @@ import {
   RealexStatusEnum,
   RealexStatusUpdateDO,
 } from "../../plugins/entities/providers/types";
+import { formatAPIResponse } from "../../utils/responseFormatter";
+import { GenericResponse } from "../../types/genericResponse";
 
 const TAGS = ["Transactions"];
 
 export default async function realex(app: FastifyInstance) {
   app.get<{
-    Reply: RealexPaymentObjectDO | Error;
+    Reply: GenericResponse<RealexPaymentObjectDO> | Error;
     Querystring: RealexPaymentObjectQueryParams;
   }>(
     "/paymentObject",
@@ -31,7 +34,7 @@ export default async function realex(app: FastifyInstance) {
         tags: TAGS,
         querystring: RealexPaymentObjectQueryParams,
         response: {
-          200: RealexPaymentObject,
+          200: GenericResponseSchema(RealexPaymentObject),
           404: HttpError,
           422: HttpError,
         },
@@ -44,7 +47,7 @@ export default async function realex(app: FastifyInstance) {
         amount,
         intentId,
       );
-      reply.send(result);
+      reply.send(formatAPIResponse(result));
     },
   );
 

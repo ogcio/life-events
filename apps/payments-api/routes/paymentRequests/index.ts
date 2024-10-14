@@ -4,7 +4,7 @@ import { HttpError } from "../../types/httpErrors";
 import {
   CreatePaymentRequest,
   EditPaymentRequest,
-  GenericResponse,
+  GenericResponseSchema,
   Id,
   PaginationParams,
   ParamsWithPaymentRequestId,
@@ -47,7 +47,7 @@ export default async function paymentRequests(app: FastifyInstance) {
       schema: {
         tags: TAGS,
         querystring: PaginationParams,
-        response: { 200: GenericResponse(Type.Array(PaymentRequest)) },
+        response: { 200: GenericResponseSchema(Type.Array(PaymentRequest)) },
       },
     },
     async (request, reply) => {
@@ -85,7 +85,7 @@ export default async function paymentRequests(app: FastifyInstance) {
   );
 
   app.get<{
-    Reply: PaymentRequestDetailsDO | Error;
+    Reply: GenericResponseType<PaymentRequestDetailsDO> | Error;
     Params: ParamsWithPaymentRequestIdDO;
   }>(
     "/:requestId",
@@ -96,7 +96,7 @@ export default async function paymentRequests(app: FastifyInstance) {
         tags: TAGS,
         params: ParamsWithPaymentRequestId,
         response: {
-          200: PaymentRequestDetails,
+          200: GenericResponseSchema(PaymentRequestDetails),
           404: HttpError,
         },
       },
@@ -114,12 +114,12 @@ export default async function paymentRequests(app: FastifyInstance) {
         organizationId,
       );
 
-      reply.send(result);
+      reply.send(formatAPIResponse(result));
     },
   );
 
   app.get<{
-    Reply: { data: PaymentRequestPublicInfoDO } | Error;
+    Reply: GenericResponseType<PaymentRequestPublicInfoDO> | Error;
     Params: ParamsWithPaymentRequestIdDO;
   }>(
     "/:requestId/public-info",
@@ -132,7 +132,7 @@ export default async function paymentRequests(app: FastifyInstance) {
         tags: TAGS,
         params: ParamsWithPaymentRequestId,
         response: {
-          200: { data: PaymentRequestPublicInfo },
+          200: GenericResponseSchema(PaymentRequestPublicInfo),
           404: HttpError,
         },
       },
@@ -146,7 +146,10 @@ export default async function paymentRequests(app: FastifyInstance) {
     },
   );
 
-  app.post<{ Body: CreatePaymentRequestDO; Reply: Id | Error }>(
+  app.post<{
+    Body: CreatePaymentRequestDO;
+    Reply: GenericResponseType<Id> | Error;
+  }>(
     "/",
     {
       preValidation: (req, res) =>
@@ -154,7 +157,7 @@ export default async function paymentRequests(app: FastifyInstance) {
       schema: {
         tags: TAGS,
         body: CreatePaymentRequest,
-        response: { 200: Id },
+        response: { 200: GenericResponseSchema(Id) },
       },
     },
     async (request, reply) => {
@@ -183,18 +186,21 @@ export default async function paymentRequests(app: FastifyInstance) {
         },
       });
 
-      reply.send(requestId);
+      reply.send(formatAPIResponse(requestId));
     },
   );
 
-  app.put<{ Body: EditPaymentRequestDO; Reply: Id | Error }>(
+  app.put<{
+    Body: EditPaymentRequestDO;
+    Reply: GenericResponseType<Id> | Error;
+  }>(
     "/",
     {
       preValidation: (req, res) =>
         app.checkPermissions(req, res, [authPermissions.PAYMENT_REQUEST_ALL]),
       schema: {
         tags: TAGS,
-        body: EditPaymentRequest,
+        body: GenericResponseSchema(EditPaymentRequest),
         response: { 200: Id },
       },
     },
@@ -223,7 +229,7 @@ export default async function paymentRequests(app: FastifyInstance) {
         },
       });
 
-      reply.send(requestId);
+      reply.send(formatAPIResponse(requestId));
     },
   );
 
@@ -296,7 +302,7 @@ export default async function paymentRequests(app: FastifyInstance) {
         tags: ["Transactions"],
         querystring: PaginationParams,
         response: {
-          200: GenericResponse(Type.Array(Transaction)),
+          200: GenericResponseSchema(Type.Array(Transaction)),
         },
       },
     },

@@ -5,7 +5,7 @@ import {
   AuditLogEvents,
   AuditLogEventsFiltersQueryString,
   EventTypes,
-  GenericResponse,
+  GenericResponseSchema,
   ParamsWithAuditLogId,
 } from "../schemas";
 import {
@@ -38,7 +38,7 @@ export default async function auditLogs(app: FastifyInstance) {
         tags: TAGS_AUDIT_LOGS,
         querystring: AuditLogEventsFiltersQueryString,
         response: {
-          200: GenericResponse(AuditLogEvents),
+          200: GenericResponseSchema(AuditLogEvents),
           401: HttpError,
           500: HttpError,
         },
@@ -121,7 +121,7 @@ export default async function auditLogs(app: FastifyInstance) {
       schema: {
         tags: TAGS_AUDIT_LOGS,
         response: {
-          200: GenericResponse(EventTypes),
+          200: GenericResponseSchema(EventTypes),
           401: HttpError,
           500: HttpError,
         },
@@ -151,7 +151,7 @@ export default async function auditLogs(app: FastifyInstance) {
       schema: {
         tags: TAGS_AUDIT_LOGS,
         response: {
-          200: GenericResponse(AuditLogEventDetails),
+          200: GenericResponseSchema(AuditLogEventDetails),
           401: HttpError,
           500: HttpError,
         },

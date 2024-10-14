@@ -1,3 +1,5 @@
+import { PaginationLinks } from "../types/pagination";
+
 export type PaginationDetails = {
   offset: number;
   limit: number;
@@ -72,7 +74,9 @@ const generatePageLinks = (details: PaginationDetails) => {
   return pageLinks;
 };
 
-export const getPaginationLinks = (details: PaginationDetails) => {
+export const getPaginationLinks = (
+  details: PaginationDetails,
+): PaginationLinks => {
   return {
     self: {
       href: `${details.url}?limit=${details.limit}&offset=${details.offset}`,

@@ -1,6 +1,7 @@
 import { FastifyInstance } from "fastify";
 import { HttpError } from "../../types/httpErrors";
 import {
+  GenericResponseSchema,
   ProvidersList,
   UpdateProvider,
   CreateProvider,
@@ -14,13 +15,15 @@ import {
   ProviderDO,
   UpdateProviderDO,
 } from "../../plugins/entities/providers/types";
+import { formatAPIResponse } from "../../utils/responseFormatter";
+import { GenericResponse } from "../../types/genericResponse";
 import { authPermissions } from "../../types/authPermissions";
 import { AuditLogEventType } from "../../plugins/auditLog/auditLogEvents";
 
 const TAGS = ["Providers"];
 
 export default async function providers(app: FastifyInstance) {
-  app.post<{ Body: CreateProviderDO; Reply: Id }>(
+  app.post<{ Body: CreateProviderDO; Reply: GenericResponse<Id> }>(
     "/",
     {
       preValidation: (req, res) =>
@@ -29,7 +32,7 @@ export default async function providers(app: FastifyInstance) {
         tags: TAGS,
         body: CreateProvider,
         response: {
-          200: Id,
+          200: GenericResponseSchema(Id),
           401: HttpError,
           422: HttpError,
           500: HttpError,
@@ -62,11 +65,11 @@ export default async function providers(app: FastifyInstance) {
         },
       });
 
-      reply.send(result);
+      reply.send(formatAPIResponse(result));
     },
   );
 
-  app.get<{ Reply: ProviderDO[] }>(
+  app.get<{ Reply: GenericResponse<ProviderDO[]> }>(
     "/",
     {
       preValidation: (req, res) =>
@@ -74,7 +77,7 @@ export default async function providers(app: FastifyInstance) {
       schema: {
         tags: TAGS,
         response: {
-          200: ProvidersList,
+          200: GenericResponseSchema(ProvidersList),
           401: HttpError,
         },
       },
@@ -88,11 +91,14 @@ export default async function providers(app: FastifyInstance) {
 
       const providers = await app.providers.getProvidersList(organizationId);
 
-      reply.send(providers);
+      reply.send(formatAPIResponse(providers));
     },
   );
 
-  app.get<{ Reply: ProviderDO | Error; Params: ParamsWithProviderId }>(
+  app.get<{
+    Reply: GenericResponse<ProviderDO> | Error;
+    Params: ParamsWithProviderId;
+  }>(
     "/:providerId",
     {
       preValidation: (req, res) =>
@@ -100,7 +106,7 @@ export default async function providers(app: FastifyInstance) {
       schema: {
         tags: TAGS,
         response: {
-          200: ProviderReply,
+          200: GenericResponseSchema(ProviderReply),
           401: HttpError,
           404: HttpError,
         },
@@ -119,14 +125,14 @@ export default async function providers(app: FastifyInstance) {
         organizationId,
       );
 
-      reply.send(provider);
+      reply.send(formatAPIResponse(provider));
     },
   );
 
   app.put<{
     Body: UpdateProviderDO;
     Params: ParamsWithProviderId;
-    Reply: OkResponse;
+    Reply: GenericResponse<OkResponse>;
   }>(
     "/:providerId",
     {
@@ -136,7 +142,7 @@ export default async function providers(app: FastifyInstance) {
         tags: TAGS,
         body: UpdateProvider,
         response: {
-          200: OkResponse,
+          200: GenericResponseSchema(OkResponse),
           401: HttpError,
           422: HttpError,
           404: HttpError,
@@ -170,7 +176,7 @@ export default async function providers(app: FastifyInstance) {
         },
       });
 
-      reply.send({ ok: true });
+      reply.send(formatAPIResponse({ ok: true }));
     },
   );
 }

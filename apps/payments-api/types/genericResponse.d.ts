@@ -1,6 +1,7 @@
-import { ResponseMetadata } from "../routes/schemas";
+import { Static } from "@sinclair/typebox";
+import { ResponseMetadataSchema } from "../routes/schemas";
 
 export type GenericResponse<T> = {
   data: T;
-  metadata?: ResponseMetadata;
+  metadata?: Static<typeof ResponseMetadataSchema>;
 };

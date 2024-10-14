@@ -2,7 +2,7 @@ import { FastifyInstance } from "fastify";
 import { HttpError } from "../../types/httpErrors";
 import {
   CreateTransactionBody,
-  GenericResponse,
+  GenericResponseSchema,
   Id,
   PaginationParams,
   ParamsWithTransactionId,
@@ -43,7 +43,7 @@ export default async function transactions(app: FastifyInstance) {
       schema: {
         tags: TAGS,
         response: {
-          200: GenericResponse(TransactionDetails),
+          200: GenericResponseSchema(TransactionDetails),
           404: HttpError,
         },
       },
@@ -74,7 +74,7 @@ export default async function transactions(app: FastifyInstance) {
         tags: TAGS,
         querystring: PaginationParams,
         response: {
-          200: GenericResponse(Transactions),
+          200: GenericResponseSchema(Transactions),
           401: HttpError,
           404: HttpError,
           500: HttpError,
@@ -183,7 +183,7 @@ export default async function transactions(app: FastifyInstance) {
         tags: TAGS,
         body: CreateTransactionBody,
         response: {
-          200: GenericResponse(Id),
+          200: GenericResponseSchema(Id),
           401: HttpError,
           500: HttpError,
         },
@@ -238,7 +238,7 @@ export default async function transactions(app: FastifyInstance) {
       schema: {
         tags: TAGS,
         response: {
-          200: GenericResponse(PaymentIntentId),
+          200: GenericResponseSchema(PaymentIntentId),
           404: HttpError,
         },
       },
