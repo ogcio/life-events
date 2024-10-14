@@ -519,6 +519,6 @@ export type AuditLogEventsFiltersQueryString = Static<
   typeof AuditLogEventsFiltersQueryString
 >;
 
-export const RedirectTokenObject = Type.Object({
+export const TokenObject = Type.Object({
   token: Type.String(),
 });

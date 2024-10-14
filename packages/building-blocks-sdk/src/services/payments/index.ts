@@ -322,10 +322,10 @@ export class Payments {
   }
 
   async getRedirectToken(
-    transactionId: paths["/api/v1/redirectToken/{transactionId}"]["get"]["parameters"]["path"]["transactionId"],
+    transactionId: paths["/api/v1/transactions/{transactionId}/token"]["get"]["parameters"]["path"]["transactionId"],
   ) {
     return formatQueryResult(
-      this.client.GET("/api/v1/redirectToken/{transactionId}", {
+      this.client.GET("/api/v1/transactions/{transactionId}/token", {
         params: {
           path: {
             transactionId,

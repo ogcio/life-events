@@ -14,11 +14,7 @@ import { dirname, join } from "path";
 import healthCheck from "./routes/healthcheck";
 import sensible from "@fastify/sensible";
 import schemaValidators from "./routes/schemas/validations";
-import apiAuthPlugin, {
-  readOrGenerateKeyPair,
-  createSignedJWT,
-  getJWKSRoute,
-} from "api-auth";
+import apiAuthPlugin, { readOrGenerateKeyPair, getJWKSRoute } from "api-auth";
 import { initializeErrorHandler } from "@ogcio/fastify-error-handler";
 import { initializeLoggingHooks } from "@ogcio/fastify-logging-wrapper";
 import providers from "./plugins/entities/providers";
@@ -117,36 +113,6 @@ export async function build(opts?: FastifyServerOptions) {
     // const publicKey = await readLocalPublicKey(join(__dirname, "public.key"));
     const { publicKey } = await readOrGenerateKeyPair("payments-api");
     return getJWKSRoute(publicKey);
-  });
-
-  // This is a test route that calls the integrator with a callback
-  app.get("/call-integrator", async () => {
-    // const privateKey = await readLocalPrivateKey(
-    //   join(__dirname, "private.key"),
-    // );
-    const { privateKey } = await readOrGenerateKeyPair("payments-api");
-
-    const jwt = await createSignedJWT(
-      {
-        user: "tony-stark",
-        paymentStatus: "done",
-        transactionId: "1234",
-      },
-      privateKey,
-      {
-        audience: "integrator-api",
-        issuer: "payments-api",
-      },
-    );
-    const endpoint = `http://localhost:8009/callback?token=${encodeURIComponent(jwt)}`;
-
-    // Do you want to try it yourself in the browser?
-    console.log("TRY IT OUT: ", endpoint);
-
-    // Make the fetch request
-    const response = await fetch(endpoint);
-    const data = await response.json();
-    return { data };
   });
 
   return app;

@@ -13,6 +13,7 @@ import {
   TransactionDetails,
   Transactions,
   UpdateTransactionBody,
+  TokenObject,
 } from "../schemas";
 import { Type } from "@sinclair/typebox";
 import {
@@ -33,6 +34,7 @@ import { TransactionStatusesEnum } from "../../plugins/entities/transactions";
 import { authPermissions } from "../../types/authPermissions";
 import { AuditLogEventType } from "../../plugins/auditLog/auditLogEvents";
 import { getJourneyDetails } from "../../services/getJourney";
+import { createSignedJWT, readOrGenerateKeyPair } from "api-auth";
 
 const TAGS = ["Transactions"];
 
@@ -302,6 +304,51 @@ export default async function transactions(app: FastifyInstance) {
         await app.transactions.getTransactionData(transactionId);
 
       reply.send(formatAPIResponse(transactionDetails));
+    },
+  );
+
+  app.get<{
+    Reply: GenericResponseType<unknown> | Error;
+    Params: ParamsWithTransactionId;
+  }>(
+    "/:transactionId/token",
+    {
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [authPermissions.TRANSACTION_SELF_READ]),
+      schema: {
+        response: {
+          200: GenericResponse(TokenObject),
+          401: HttpError,
+          500: HttpError,
+        },
+      },
+    },
+    async (request, reply) => {
+      const userId = request.userData?.userId;
+      const { transactionId } = request.params;
+
+      if (!userId) {
+        throw app.httpErrors.unauthorized("Unauthorized!");
+      }
+
+      const transactionDetails = await app.transactions.getTransactionById(
+        transactionId,
+        userId,
+      );
+
+      const { privateKey } = await readOrGenerateKeyPair("payments-api");
+      const jwt = await createSignedJWT(
+        {
+          userId: userId,
+          transactionId: transactionDetails.transactionId,
+        },
+        privateKey,
+        {
+          issuer: "payments-api",
+        },
+      );
+
+      reply.send(formatAPIResponse({ token: jwt }));
     },
   );
 }
