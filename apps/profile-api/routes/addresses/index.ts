@@ -8,20 +8,26 @@ import {
   CreateAddressSchema,
   Address,
   AddressSchema,
+  GenericResponse,
   ParamsWithAddressId,
   ParamsWithAddressIdSchema,
   UpdateAddress,
   UpdateAddressSchema,
   PatchAddress,
   PatchAddressSchema,
+  getGenericResponseSchema,
 } from "../../types/schemaDefinitions";
 import { getErrorMessage } from "@ogcio/shared-errors";
 import { Permissions } from "../../types/permissions";
+import {
+  formatAPIListResponse,
+  formatAPIResponse,
+} from "../../types/pagination";
 
 const ADDRESSES_TAGS = ["Addresses"];
 
 export default async function addresses(app: FastifyInstance) {
-  app.get<{ Reply: AddressesList }>(
+  app.get<{ Reply: GenericResponse<AddressesList> }>(
     "/",
     {
       preValidation: (req, res) =>
@@ -34,7 +40,7 @@ export default async function addresses(app: FastifyInstance) {
       schema: {
         tags: ADDRESSES_TAGS,
         response: {
-          200: AddressesListSchema,
+          200: getGenericResponseSchema(AddressesListSchema),
           500: HttpError,
         },
       },
@@ -43,7 +49,7 @@ export default async function addresses(app: FastifyInstance) {
       const userId = request.userData?.userId;
 
       try {
-        const result = await app.pg.query(
+        const result = await app.pg.query<Address>(
           `SELECT address_id AS "addressId", 
             address_line1 AS "addressLine1", 
             address_line2 AS "addressLine2", 
@@ -57,14 +63,23 @@ export default async function addresses(app: FastifyInstance) {
           [userId],
         );
 
-        reply.send(result.rows);
+        reply.send(
+          formatAPIListResponse({
+            data: result.rows,
+            totalCount: result.rowCount ?? 0,
+            request,
+          }),
+        );
       } catch (error) {
         throw app.httpErrors.internalServerError(getErrorMessage(error));
       }
     },
   );
 
-  app.post<{ Body: CreateAddress; Reply: { id: string } }>(
+  app.post<{
+    Body: CreateAddress;
+    Reply: GenericResponse<{ id: string }>;
+  }>(
     "/",
     {
       preValidation: (req, res) =>
@@ -75,9 +90,11 @@ export default async function addresses(app: FastifyInstance) {
         tags: ADDRESSES_TAGS,
         body: CreateAddressSchema,
         response: {
-          200: Type.Object({
-            id: Type.String(),
-          }),
+          200: getGenericResponseSchema(
+            Type.Object({
+              id: Type.String(),
+            }),
+          ),
           500: HttpError,
         },
       },
@@ -95,7 +112,7 @@ export default async function addresses(app: FastifyInstance) {
       } = request.body;
 
       try {
-        const result = await app.pg.query(
+        const result = await app.pg.query<{ id: string }>(
           `
             INSERT INTO user_addresses (user_id, address_line1, address_line2, town, county, eirecode, move_in_date, move_out_date)
             VALUES($1, $2, $3, $4, $5, $6, $7, $8)
@@ -113,14 +130,17 @@ export default async function addresses(app: FastifyInstance) {
           ],
         );
 
-        reply.send({ id: result.rows[0].id });
+        reply.send(formatAPIResponse({ id: result.rows[0].id }));
       } catch (error) {
         throw app.httpErrors.internalServerError(getErrorMessage(error));
       }
     },
   );
 
-  app.get<{ Reply: Address | Error; Params: ParamsWithAddressId }>(
+  app.get<{
+    Reply: GenericResponse<Address>;
+    Params: ParamsWithAddressId;
+  }>(
     "/:addressId",
     {
       preValidation: (req, res) =>
@@ -134,7 +154,7 @@ export default async function addresses(app: FastifyInstance) {
         tags: ADDRESSES_TAGS,
         params: ParamsWithAddressIdSchema,
         response: {
-          200: AddressSchema,
+          200: getGenericResponseSchema(AddressSchema),
           404: HttpError,
           500: HttpError,
         },
@@ -146,7 +166,7 @@ export default async function addresses(app: FastifyInstance) {
 
       let result;
       try {
-        result = await app.pg.query(
+        result = await app.pg.query<Address>(
           `SELECT address_id "addressId", 
             address_line1 AS "addressLine1", 
             address_line2 AS "addressLine2", 
@@ -167,11 +187,15 @@ export default async function addresses(app: FastifyInstance) {
         throw app.httpErrors.notFound("Address not found");
       }
 
-      reply.send(result.rows[0]);
+      reply.send(formatAPIResponse(result.rows[0]));
     },
   );
 
-  app.put<{ Body: UpdateAddress; Params: ParamsWithAddressId }>(
+  app.put<{
+    Body: UpdateAddress;
+    Params: ParamsWithAddressId;
+    Reply: GenericResponse<{ id: string }>;
+  }>(
     "/:addressId",
     {
       preValidation: (req, res) =>
@@ -185,9 +209,11 @@ export default async function addresses(app: FastifyInstance) {
         tags: ADDRESSES_TAGS,
         body: UpdateAddressSchema,
         response: {
-          200: Type.Object({
-            id: Type.String(),
-          }),
+          200: getGenericResponseSchema(
+            Type.Object({
+              id: Type.String(),
+            }),
+          ),
           404: HttpError,
           500: HttpError,
         },
@@ -218,7 +244,7 @@ export default async function addresses(app: FastifyInstance) {
         .join(", ");
 
       try {
-        const result = await app.pg.query(
+        const result = await app.pg.query<{ id: string }>(
           `
               UPDATE user_addresses
               SET ${setClauses}, updated_at = now()
@@ -232,14 +258,18 @@ export default async function addresses(app: FastifyInstance) {
           throw app.httpErrors.notFound("Address not found");
         }
 
-        reply.send({ id: result.rows[0].id });
+        reply.send(formatAPIResponse({ id: result.rows[0].id }));
       } catch (error) {
         throw app.httpErrors.internalServerError(getErrorMessage(error));
       }
     },
   );
 
-  app.patch<{ Body: PatchAddress; Params: ParamsWithAddressId }>(
+  app.patch<{
+    Body: PatchAddress;
+    Params: ParamsWithAddressId;
+    Reply: GenericResponse<{ id: string }>;
+  }>(
     "/:addressId",
     {
       preValidation: (req, res) =>
@@ -253,9 +283,11 @@ export default async function addresses(app: FastifyInstance) {
         tags: ADDRESSES_TAGS,
         body: PatchAddressSchema,
         response: {
-          200: Type.Object({
-            id: Type.String(),
-          }),
+          200: getGenericResponseSchema(
+            Type.Object({
+              id: Type.String(),
+            }),
+          ),
           404: HttpError,
           500: HttpError,
         },
@@ -278,7 +310,7 @@ export default async function addresses(app: FastifyInstance) {
         )
         .join(", ");
       try {
-        const result = await app.pg.query(
+        const result = await app.pg.query<{ id: string }>(
           `
             UPDATE user_addresses
             SET ${setClauses}, updated_at = now()
@@ -292,14 +324,17 @@ export default async function addresses(app: FastifyInstance) {
           throw app.httpErrors.notFound("Address not found");
         }
 
-        reply.send({ id: result.rows[0].id });
+        reply.send(formatAPIResponse({ id: result.rows[0].id }));
       } catch (error) {
         throw app.httpErrors.internalServerError(getErrorMessage(error));
       }
     },
   );
 
-  app.delete<{ Reply: { id: string } | Error; Params: ParamsWithAddressId }>(
+  app.delete<{
+    Reply: GenericResponse<{ id: string }>;
+    Params: ParamsWithAddressId;
+  }>(
     "/:addressId",
     {
       preValidation: (req, res) =>
@@ -312,9 +347,11 @@ export default async function addresses(app: FastifyInstance) {
       schema: {
         tags: ADDRESSES_TAGS,
         response: {
-          200: Type.Object({
-            id: Type.String(),
-          }),
+          200: getGenericResponseSchema(
+            Type.Object({
+              id: Type.String(),
+            }),
+          ),
           404: HttpError,
           500: HttpError,
         },
@@ -341,7 +378,7 @@ export default async function addresses(app: FastifyInstance) {
         throw app.httpErrors.notFound("Address not found");
       }
 
-      reply.send({ id: result.rows[0].id });
+      reply.send(formatAPIResponse({ id: result.rows[0].id }));
     },
   );
 }

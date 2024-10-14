@@ -26,40 +26,103 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    addressId:
-                      type: string
-                    addressLine1:
-                      type: string
-                    addressLine2:
-                      type: string
-                    town:
-                      type: string
-                    county:
-                      type: string
-                    eirecode:
-                      type: string
-                    updatedAt:
-                      type: string
-                    moveInDate:
-                      type: string
-                    moveOutDate:
-                      type: string
-                    isPrimary:
-                      type: boolean
-                    ownershipStatus:
-                      type: string
-                  required:
-                    - addressId
-                    - addressLine1
-                    - addressLine2
-                    - town
-                    - county
-                    - eirecode
-                    - updatedAt
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        addressId:
+                          type: string
+                        addressLine1:
+                          type: string
+                        addressLine2:
+                          type: string
+                        town:
+                          type: string
+                        county:
+                          type: string
+                        eirecode:
+                          type: string
+                        updatedAt:
+                          type: string
+                        moveInDate:
+                          type: string
+                        moveOutDate:
+                          type: string
+                        isPrimary:
+                          type: boolean
+                        ownershipStatus:
+                          type: string
+                      required:
+                        - addressId
+                        - addressLine1
+                        - addressLine2
+                        - town
+                        - county
+                        - eirecode
+                        - updatedAt
+                  metadata:
+                    type: object
+                    properties:
+                      links:
+                        description: Object containing the links to the related endpoints
+                        type: object
+                        properties:
+                          self:
+                            type: object
+                            properties:
+                              href:
+                                description: URL pointing to the request itself
+                                type: string
+                          next:
+                            type: object
+                            properties:
+                              href:
+                                description: URL pointing to the next page of results in a paginated response.
+                                  If there are no more results, this field may
+                                  be omitted
+                                type: string
+                          prev:
+                            type: object
+                            properties:
+                              href:
+                                description: URL pointing to the previous page of results in a paginated
+                                  response. If there are no more results, this
+                                  field may be omitted
+                                type: string
+                          first:
+                            type: object
+                            properties:
+                              href:
+                                description: URL pointing to the first page of results in a paginated response
+                                type: string
+                          last:
+                            type: object
+                            properties:
+                              href:
+                                description: URL pointing to the first page of results in a paginated response
+                                type: string
+                          pages:
+                            description: It may contain a list of other useful URLs, e.g. one entry for
+                              page:'page 1', 'page 2'
+                            type: object
+                            additionalProperties:
+                              type: object
+                              properties:
+                                href:
+                                  type: string
+                        required:
+                          - self
+                          - first
+                          - last
+                          - pages
+                      totalCount:
+                        description: Number representing the total number of available items
+                        type: number
+                required:
+                  - data
         "500":
           description: Default Response
           content:
@@ -119,10 +182,73 @@ paths:
               schema:
                 type: object
                 properties:
-                  id:
-                    type: string
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                    required:
+                      - id
+                  metadata:
+                    type: object
+                    properties:
+                      links:
+                        description: Object containing the links to the related endpoints
+                        type: object
+                        properties:
+                          self:
+                            type: object
+                            properties:
+                              href:
+                                description: URL pointing to the request itself
+                                type: string
+                          next:
+                            type: object
+                            properties:
+                              href:
+                                description: URL pointing to the next page of results in a paginated response.
+                                  If there are no more results, this field may
+                                  be omitted
+                                type: string
+                          prev:
+                            type: object
+                            properties:
+                              href:
+                                description: URL pointing to the previous page of results in a paginated
+                                  response. If there are no more results, this
+                                  field may be omitted
+                                type: string
+                          first:
+                            type: object
+                            properties:
+                              href:
+                                description: URL pointing to the first page of results in a paginated response
+                                type: string
+                          last:
+                            type: object
+                            properties:
+                              href:
+                                description: URL pointing to the first page of results in a paginated response
+                                type: string
+                          pages:
+                            description: It may contain a list of other useful URLs, e.g. one entry for
+                              page:'page 1', 'page 2'
+                            type: object
+                            additionalProperties:
+                              type: object
+                              properties:
+                                href:
+                                  type: string
+                        required:
+                          - self
+                          - first
+                          - last
+                          - pages
+                      totalCount:
+                        description: Number representing the total number of available items
+                        type: number
                 required:
-                  - id
+                  - data
         "500":
           description: Default Response
           content:
@@ -163,36 +289,99 @@ paths:
               schema:
                 type: object
                 properties:
-                  addressId:
-                    type: string
-                  addressLine1:
-                    type: string
-                  addressLine2:
-                    type: string
-                  town:
-                    type: string
-                  county:
-                    type: string
-                  eirecode:
-                    type: string
-                  updatedAt:
-                    type: string
-                  moveInDate:
-                    type: string
-                  moveOutDate:
-                    type: string
-                  isPrimary:
-                    type: boolean
-                  ownershipStatus:
-                    type: string
+                  data:
+                    type: object
+                    properties:
+                      addressId:
+                        type: string
+                      addressLine1:
+                        type: string
+                      addressLine2:
+                        type: string
+                      town:
+                        type: string
+                      county:
+                        type: string
+                      eirecode:
+                        type: string
+                      updatedAt:
+                        type: string
+                      moveInDate:
+                        type: string
+                      moveOutDate:
+                        type: string
+                      isPrimary:
+                        type: boolean
+                      ownershipStatus:
+                        type: string
+                    required:
+                      - addressId
+                      - addressLine1
+                      - addressLine2
+                      - town
+                      - county
+                      - eirecode
+                      - updatedAt
+                  metadata:
+                    type: object
+                    properties:
+                      links:
+                        description: Object containing the links to the related endpoints
+                        type: object
+                        properties:
+                          self:
+                            type: object
+                            properties:
+                              href:
+                                description: URL pointing to the request itself
+                                type: string
+                          next:
+                            type: object
+                            properties:
+                              href:
+                                description: URL pointing to the next page of results in a paginated response.
+                                  If there are no more results, this field may
+                                  be omitted
+                                type: string
+                          prev:
+                            type: object
+                            properties:
+                              href:
+                                description: URL pointing to the previous page of results in a paginated
+                                  response. If there are no more results, this
+                                  field may be omitted
+                                type: string
+                          first:
+                            type: object
+                            properties:
+                              href:
+                                description: URL pointing to the first page of results in a paginated response
+                                type: string
+                          last:
+                            type: object
+                            properties:
+                              href:
+                                description: URL pointing to the first page of results in a paginated response
+                                type: string
+                          pages:
+                            description: It may contain a list of other useful URLs, e.g. one entry for
+                              page:'page 1', 'page 2'
+                            type: object
+                            additionalProperties:
+                              type: object
+                              properties:
+                                href:
+                                  type: string
+                        required:
+                          - self
+                          - first
+                          - last
+                          - pages
+                      totalCount:
+                        description: Number representing the total number of available items
+                        type: number
                 required:
-                  - addressId
-                  - addressLine1
-                  - addressLine2
-                  - town
-                  - county
-                  - eirecode
-                  - updatedAt
+                  - data
         "404":
           description: Default Response
           content:
@@ -287,10 +476,73 @@ paths:
               schema:
                 type: object
                 properties:
-                  id:
-                    type: string
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                    required:
+                      - id
+                  metadata:
+                    type: object
+                    properties:
+                      links:
+                        description: Object containing the links to the related endpoints
+                        type: object
+                        properties:
+                          self:
+                            type: object
+                            properties:
+                              href:
+                                description: URL pointing to the request itself
+                                type: string
+                          next:
+                            type: object
+                            properties:
+                              href:
+                                description: URL pointing to the next page of results in a paginated response.
+                                  If there are no more results, this field may
+                                  be omitted
+                                type: string
+                          prev:
+                            type: object
+                            properties:
+                              href:
+                                description: URL pointing to the previous page of results in a paginated
+                                  response. If there are no more results, this
+                                  field may be omitted
+                                type: string
+                          first:
+                            type: object
+                            properties:
+                              href:
+                                description: URL pointing to the first page of results in a paginated response
+                                type: string
+                          last:
+                            type: object
+                            properties:
+                              href:
+                                description: URL pointing to the first page of results in a paginated response
+                                type: string
+                          pages:
+                            description: It may contain a list of other useful URLs, e.g. one entry for
+                              page:'page 1', 'page 2'
+                            type: object
+                            additionalProperties:
+                              type: object
+                              properties:
+                                href:
+                                  type: string
+                        required:
+                          - self
+                          - first
+                          - last
+                          - pages
+                      totalCount:
+                        description: Number representing the total number of available items
+                        type: number
                 required:
-                  - id
+                  - data
         "404":
           description: Default Response
           content:
@@ -363,10 +615,73 @@ paths:
               schema:
                 type: object
                 properties:
-                  id:
-                    type: string
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                    required:
+                      - id
+                  metadata:
+                    type: object
+                    properties:
+                      links:
+                        description: Object containing the links to the related endpoints
+                        type: object
+                        properties:
+                          self:
+                            type: object
+                            properties:
+                              href:
+                                description: URL pointing to the request itself
+                                type: string
+                          next:
+                            type: object
+                            properties:
+                              href:
+                                description: URL pointing to the next page of results in a paginated response.
+                                  If there are no more results, this field may
+                                  be omitted
+                                type: string
+                          prev:
+                            type: object
+                            properties:
+                              href:
+                                description: URL pointing to the previous page of results in a paginated
+                                  response. If there are no more results, this
+                                  field may be omitted
+                                type: string
+                          first:
+                            type: object
+                            properties:
+                              href:
+                                description: URL pointing to the first page of results in a paginated response
+                                type: string
+                          last:
+                            type: object
+                            properties:
+                              href:
+                                description: URL pointing to the first page of results in a paginated response
+                                type: string
+                          pages:
+                            description: It may contain a list of other useful URLs, e.g. one entry for
+                              page:'page 1', 'page 2'
+                            type: object
+                            additionalProperties:
+                              type: object
+                              properties:
+                                href:
+                                  type: string
+                        required:
+                          - self
+                          - first
+                          - last
+                          - pages
+                      totalCount:
+                        description: Number representing the total number of available items
+                        type: number
                 required:
-                  - id
+                  - data
         "404":
           description: Default Response
           content:
@@ -429,10 +744,73 @@ paths:
               schema:
                 type: object
                 properties:
-                  id:
-                    type: string
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                    required:
+                      - id
+                  metadata:
+                    type: object
+                    properties:
+                      links:
+                        description: Object containing the links to the related endpoints
+                        type: object
+                        properties:
+                          self:
+                            type: object
+                            properties:
+                              href:
+                                description: URL pointing to the request itself
+                                type: string
+                          next:
+                            type: object
+                            properties:
+                              href:
+                                description: URL pointing to the next page of results in a paginated response.
+                                  If there are no more results, this field may
+                                  be omitted
+                                type: string
+                          prev:
+                            type: object
+                            properties:
+                              href:
+                                description: URL pointing to the previous page of results in a paginated
+                                  response. If there are no more results, this
+                                  field may be omitted
+                                type: string
+                          first:
+                            type: object
+                            properties:
+                              href:
+                                description: URL pointing to the first page of results in a paginated response
+                                type: string
+                          last:
+                            type: object
+                            properties:
+                              href:
+                                description: URL pointing to the first page of results in a paginated response
+                                type: string
+                          pages:
+                            description: It may contain a list of other useful URLs, e.g. one entry for
+                              page:'page 1', 'page 2'
+                            type: object
+                            additionalProperties:
+                              type: object
+                              properties:
+                                href:
+                                  type: string
+                        required:
+                          - self
+                          - first
+                          - last
+                          - pages
+                      totalCount:
+                        description: Number representing the total number of available items
+                        type: number
                 required:
-                  - id
+                  - data
         "404":
           description: Default Response
           content:
@@ -489,28 +867,91 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    firstname:
-                      type: string
-                    lastname:
-                      type: string
-                    type:
-                      type: string
-                    issueDate:
-                      type: string
-                    expiryDate:
-                      type: string
-                    documentNumber:
-                      type: string
-                  required:
-                    - firstname
-                    - lastname
-                    - type
-                    - issueDate
-                    - documentNumber
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        firstname:
+                          type: string
+                        lastname:
+                          type: string
+                        type:
+                          type: string
+                        issueDate:
+                          type: string
+                        expiryDate:
+                          type: string
+                        documentNumber:
+                          type: string
+                      required:
+                        - firstname
+                        - lastname
+                        - type
+                        - issueDate
+                        - documentNumber
+                  metadata:
+                    type: object
+                    properties:
+                      links:
+                        description: Object containing the links to the related endpoints
+                        type: object
+                        properties:
+                          self:
+                            type: object
+                            properties:
+                              href:
+                                description: URL pointing to the request itself
+                                type: string
+                          next:
+                            type: object
+                            properties:
+                              href:
+                                description: URL pointing to the next page of results in a paginated response.
+                                  If there are no more results, this field may
+                                  be omitted
+                                type: string
+                          prev:
+                            type: object
+                            properties:
+                              href:
+                                description: URL pointing to the previous page of results in a paginated
+                                  response. If there are no more results, this
+                                  field may be omitted
+                                type: string
+                          first:
+                            type: object
+                            properties:
+                              href:
+                                description: URL pointing to the first page of results in a paginated response
+                                type: string
+                          last:
+                            type: object
+                            properties:
+                              href:
+                                description: URL pointing to the first page of results in a paginated response
+                                type: string
+                          pages:
+                            description: It may contain a list of other useful URLs, e.g. one entry for
+                              page:'page 1', 'page 2'
+                            type: object
+                            additionalProperties:
+                              type: object
+                              properties:
+                                href:
+                                  type: string
+                        required:
+                          - self
+                          - first
+                          - last
+                          - pages
+                      totalCount:
+                        description: Number representing the total number of available items
+                        type: number
+                required:
+                  - data
         "500":
           description: Default Response
           content:
@@ -552,57 +993,120 @@ paths:
               schema:
                 type: object
                 properties:
-                  title:
-                    default: null
-                    anyOf:
-                      - type: "null"
-                      - type: string
-                  firstName:
-                    type: string
-                  lastName:
-                    type: string
-                  dateOfBirth:
-                    default: null
-                    anyOf:
-                      - type: "null"
-                      - format: date-time
+                  data:
+                    type: object
+                    properties:
+                      title:
+                        default: null
+                        anyOf:
+                          - type: "null"
+                          - type: string
+                      firstName:
                         type: string
-                  ppsn:
-                    default: null
-                    anyOf:
-                      - type: "null"
-                      - type: string
-                  ppsnVisible:
-                    default: false
-                    anyOf:
-                      - type: "null"
-                      - type: boolean
-                  gender:
-                    default: null
-                    anyOf:
-                      - type: "null"
-                      - type: string
-                  email:
-                    format: email
-                    type: string
-                  phone:
-                    default: null
-                    anyOf:
-                      - type: "null"
-                      - type: string
-                  consentToPrefillData:
-                    default: false
-                    anyOf:
-                      - type: "null"
-                      - type: boolean
-                  preferredLanguage:
-                    default: en
-                    type: string
+                      lastName:
+                        type: string
+                      dateOfBirth:
+                        default: null
+                        anyOf:
+                          - type: "null"
+                          - format: date-time
+                            type: string
+                      ppsn:
+                        default: null
+                        anyOf:
+                          - type: "null"
+                          - type: string
+                      ppsnVisible:
+                        default: false
+                        anyOf:
+                          - type: "null"
+                          - type: boolean
+                      gender:
+                        default: null
+                        anyOf:
+                          - type: "null"
+                          - type: string
+                      email:
+                        format: email
+                        type: string
+                      phone:
+                        default: null
+                        anyOf:
+                          - type: "null"
+                          - type: string
+                      consentToPrefillData:
+                        default: false
+                        anyOf:
+                          - type: "null"
+                          - type: boolean
+                      preferredLanguage:
+                        default: en
+                        type: string
+                    required:
+                      - firstName
+                      - lastName
+                      - email
+                      - preferredLanguage
+                  metadata:
+                    type: object
+                    properties:
+                      links:
+                        description: Object containing the links to the related endpoints
+                        type: object
+                        properties:
+                          self:
+                            type: object
+                            properties:
+                              href:
+                                description: URL pointing to the request itself
+                                type: string
+                          next:
+                            type: object
+                            properties:
+                              href:
+                                description: URL pointing to the next page of results in a paginated response.
+                                  If there are no more results, this field may
+                                  be omitted
+                                type: string
+                          prev:
+                            type: object
+                            properties:
+                              href:
+                                description: URL pointing to the previous page of results in a paginated
+                                  response. If there are no more results, this
+                                  field may be omitted
+                                type: string
+                          first:
+                            type: object
+                            properties:
+                              href:
+                                description: URL pointing to the first page of results in a paginated response
+                                type: string
+                          last:
+                            type: object
+                            properties:
+                              href:
+                                description: URL pointing to the first page of results in a paginated response
+                                type: string
+                          pages:
+                            description: It may contain a list of other useful URLs, e.g. one entry for
+                              page:'page 1', 'page 2'
+                            type: object
+                            additionalProperties:
+                              type: object
+                              properties:
+                                href:
+                                  type: string
+                        required:
+                          - self
+                          - first
+                          - last
+                          - pages
+                      totalCount:
+                        description: Number representing the total number of available items
+                        type: number
                 required:
-                  - firstName
-                  - lastName
-                  - email
-                  - preferredLanguage
+                  - data
         "404":
           description: Default Response
           content:
@@ -705,10 +1209,73 @@ paths:
               schema:
                 type: object
                 properties:
-                  id:
-                    type: string
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                    required:
+                      - id
+                  metadata:
+                    type: object
+                    properties:
+                      links:
+                        description: Object containing the links to the related endpoints
+                        type: object
+                        properties:
+                          self:
+                            type: object
+                            properties:
+                              href:
+                                description: URL pointing to the request itself
+                                type: string
+                          next:
+                            type: object
+                            properties:
+                              href:
+                                description: URL pointing to the next page of results in a paginated response.
+                                  If there are no more results, this field may
+                                  be omitted
+                                type: string
+                          prev:
+                            type: object
+                            properties:
+                              href:
+                                description: URL pointing to the previous page of results in a paginated
+                                  response. If there are no more results, this
+                                  field may be omitted
+                                type: string
+                          first:
+                            type: object
+                            properties:
+                              href:
+                                description: URL pointing to the first page of results in a paginated response
+                                type: string
+                          last:
+                            type: object
+                            properties:
+                              href:
+                                description: URL pointing to the first page of results in a paginated response
+                                type: string
+                          pages:
+                            description: It may contain a list of other useful URLs, e.g. one entry for
+                              page:'page 1', 'page 2'
+                            type: object
+                            additionalProperties:
+                              type: object
+                              properties:
+                                href:
+                                  type: string
+                        required:
+                          - self
+                          - first
+                          - last
+                          - pages
+                      totalCount:
+                        description: Number representing the total number of available items
+                        type: number
                 required:
-                  - id
+                  - data
         "404":
           description: Default Response
           content:
@@ -783,10 +1350,73 @@ paths:
               schema:
                 type: object
                 properties:
-                  id:
-                    type: string
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                    required:
+                      - id
+                  metadata:
+                    type: object
+                    properties:
+                      links:
+                        description: Object containing the links to the related endpoints
+                        type: object
+                        properties:
+                          self:
+                            type: object
+                            properties:
+                              href:
+                                description: URL pointing to the request itself
+                                type: string
+                          next:
+                            type: object
+                            properties:
+                              href:
+                                description: URL pointing to the next page of results in a paginated response.
+                                  If there are no more results, this field may
+                                  be omitted
+                                type: string
+                          prev:
+                            type: object
+                            properties:
+                              href:
+                                description: URL pointing to the previous page of results in a paginated
+                                  response. If there are no more results, this
+                                  field may be omitted
+                                type: string
+                          first:
+                            type: object
+                            properties:
+                              href:
+                                description: URL pointing to the first page of results in a paginated response
+                                type: string
+                          last:
+                            type: object
+                            properties:
+                              href:
+                                description: URL pointing to the first page of results in a paginated response
+                                type: string
+                          pages:
+                            description: It may contain a list of other useful URLs, e.g. one entry for
+                              page:'page 1', 'page 2'
+                            type: object
+                            additionalProperties:
+                              type: object
+                              properties:
+                                href:
+                                  type: string
+                        required:
+                          - self
+                          - first
+                          - last
+                          - pages
+                      totalCount:
+                        description: Number representing the total number of available items
+                        type: number
                 required:
-                  - id
+                  - data
         "404":
           description: Default Response
           content:
@@ -879,10 +1509,73 @@ paths:
               schema:
                 type: object
                 properties:
-                  id:
-                    type: string
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                    required:
+                      - id
+                  metadata:
+                    type: object
+                    properties:
+                      links:
+                        description: Object containing the links to the related endpoints
+                        type: object
+                        properties:
+                          self:
+                            type: object
+                            properties:
+                              href:
+                                description: URL pointing to the request itself
+                                type: string
+                          next:
+                            type: object
+                            properties:
+                              href:
+                                description: URL pointing to the next page of results in a paginated response.
+                                  If there are no more results, this field may
+                                  be omitted
+                                type: string
+                          prev:
+                            type: object
+                            properties:
+                              href:
+                                description: URL pointing to the previous page of results in a paginated
+                                  response. If there are no more results, this
+                                  field may be omitted
+                                type: string
+                          first:
+                            type: object
+                            properties:
+                              href:
+                                description: URL pointing to the first page of results in a paginated response
+                                type: string
+                          last:
+                            type: object
+                            properties:
+                              href:
+                                description: URL pointing to the first page of results in a paginated response
+                                type: string
+                          pages:
+                            description: It may contain a list of other useful URLs, e.g. one entry for
+                              page:'page 1', 'page 2'
+                            type: object
+                            additionalProperties:
+                              type: object
+                              properties:
+                                href:
+                                  type: string
+                        required:
+                          - self
+                          - first
+                          - last
+                          - pages
+                      totalCount:
+                        description: Number representing the total number of available items
+                        type: number
                 required:
-                  - id
+                  - data
         "500":
           description: Default Response
           content:
@@ -958,27 +1651,111 @@ paths:
               schema:
                 type: object
                 properties:
-                  id:
-                    type: string
-                  firstname:
-                    type: string
-                  lastname:
-                    type: string
-                  matchQuality:
-                    anyOf:
-                      - type: string
-                        enum:
-                          - exact
-                      - type: string
-                        enum:
-                          - approximate
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      firstname:
+                        type: string
+                      lastname:
+                        type: string
+                      matchQuality:
+                        anyOf:
+                          - type: string
+                            enum:
+                              - exact
+                          - type: string
+                            enum:
+                              - approximate
+                    required:
+                      - id
+                      - firstname
+                      - lastname
+                      - matchQuality
+                  metadata:
+                    type: object
+                    properties:
+                      links:
+                        description: Object containing the links to the related endpoints
+                        type: object
+                        properties:
+                          self:
+                            type: object
+                            properties:
+                              href:
+                                description: URL pointing to the request itself
+                                type: string
+                          next:
+                            type: object
+                            properties:
+                              href:
+                                description: URL pointing to the next page of results in a paginated response.
+                                  If there are no more results, this field may
+                                  be omitted
+                                type: string
+                          prev:
+                            type: object
+                            properties:
+                              href:
+                                description: URL pointing to the previous page of results in a paginated
+                                  response. If there are no more results, this
+                                  field may be omitted
+                                type: string
+                          first:
+                            type: object
+                            properties:
+                              href:
+                                description: URL pointing to the first page of results in a paginated response
+                                type: string
+                          last:
+                            type: object
+                            properties:
+                              href:
+                                description: URL pointing to the first page of results in a paginated response
+                                type: string
+                          pages:
+                            description: It may contain a list of other useful URLs, e.g. one entry for
+                              page:'page 1', 'page 2'
+                            type: object
+                            additionalProperties:
+                              type: object
+                              properties:
+                                href:
+                                  type: string
+                        required:
+                          - self
+                          - first
+                          - last
+                          - pages
+                      totalCount:
+                        description: Number representing the total number of available items
+                        type: number
                 required:
-                  - id
-                  - firstname
-                  - lastname
-                  - matchQuality
+                  - data
         "404":
           description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  requestId:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - requestId
+                  - name
         "500":
           description: Default Response
           content:
@@ -1052,6 +1829,64 @@ paths:
                         - lastName
                         - ppsn
                         - preferredLanguage
+                  metadata:
+                    type: object
+                    properties:
+                      links:
+                        description: Object containing the links to the related endpoints
+                        type: object
+                        properties:
+                          self:
+                            type: object
+                            properties:
+                              href:
+                                description: URL pointing to the request itself
+                                type: string
+                          next:
+                            type: object
+                            properties:
+                              href:
+                                description: URL pointing to the next page of results in a paginated response.
+                                  If there are no more results, this field may
+                                  be omitted
+                                type: string
+                          prev:
+                            type: object
+                            properties:
+                              href:
+                                description: URL pointing to the previous page of results in a paginated
+                                  response. If there are no more results, this
+                                  field may be omitted
+                                type: string
+                          first:
+                            type: object
+                            properties:
+                              href:
+                                description: URL pointing to the first page of results in a paginated response
+                                type: string
+                          last:
+                            type: object
+                            properties:
+                              href:
+                                description: URL pointing to the first page of results in a paginated response
+                                type: string
+                          pages:
+                            description: It may contain a list of other useful URLs, e.g. one entry for
+                              page:'page 1', 'page 2'
+                            type: object
+                            additionalProperties:
+                              type: object
+                              properties:
+                                href:
+                                  type: string
+                        required:
+                          - self
+                          - first
+                          - last
+                          - pages
+                      totalCount:
+                        description: Number representing the total number of available items
+                        type: number
                 required:
                   - data
         4XX:

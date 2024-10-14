@@ -187,6 +187,22 @@ export const FoundUserSchema = Type.Object({
 export type FoundUser = Static<typeof FoundUserSchema>;
 
 /**
+ * Get user details
+ */
+
+export const UserSelectSchema = Type.Object({
+  id: Type.String(),
+  firstName: Type.String(),
+  lastName: Type.String(),
+  ppsn: Type.String(),
+  email: Type.Optional(Type.String({ format: "email" })),
+  phone: Type.Optional(Type.String()),
+  preferredLanguage: Type.String(),
+});
+
+export type UserSelect = Static<typeof UserSelectSchema>;
+
+/**
  * Generic Request / Response Types
  */
 export const PaginationParamsSchema = Type.Object({

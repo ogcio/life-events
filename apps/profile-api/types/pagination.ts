@@ -16,13 +16,20 @@ export const PAGINATION_MAX_LIMIT = 100;
 export const PAGINATION_MIN_LIMIT = 1;
 export const PAGINATION_MIN_OFFSET = 0;
 
-export const formatAPIResponse = <T>(params: {
-  data: T[];
+// This method takes only non-array params
+export const formatAPIResponse = <T>(
+  data: T extends Array<unknown> ? never : T,
+): { data: T } => {
+  return { data };
+};
+
+export const formatAPIListResponse = <G, T extends Array<G>>(params: {
+  data: T;
   pagination?: PaginationDetails;
   request?: FastifyRequest;
   totalCount: number;
-}): GenericResponse<T[]> => {
-  const response: GenericResponse<T[]> = {
+}): GenericResponse<T> => {
+  const response: GenericResponse<T> = {
     data: params.data,
   };
 

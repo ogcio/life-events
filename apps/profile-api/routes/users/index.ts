@@ -7,6 +7,8 @@ import {
   FindUserParamsSchema,
   FoundUser,
   FoundUserSchema,
+  GenericResponse,
+  getGenericResponseSchema,
   ParamsWithUserId,
   ParamsWithUserIdSchema,
   PatchUser,
@@ -15,6 +17,8 @@ import {
   UpdateUserSchema,
   UserDetails,
   UserDetailsSchema,
+  UserSelect,
+  UserSelectSchema,
 } from "../../types/schemaDefinitions";
 import { Type } from "@sinclair/typebox";
 import { findUser, getUser } from "../../services/users/find-user";
@@ -23,11 +27,15 @@ import { getErrorMessage } from "@ogcio/shared-errors";
 import { isNativeError } from "util/types";
 import { Permissions } from "../../types/permissions";
 import { ensureUserCanAccessUser } from "api-auth";
+import {
+  formatAPIListResponse,
+  formatAPIResponse,
+} from "../../types/pagination";
 
 const USER_TAGS = ["Users"];
 
 export default async function users(app: FastifyInstance) {
-  app.get<{ Reply: UserDetails | Error; Params: ParamsWithUserId }>(
+  app.get<{ Reply: GenericResponse<UserDetails>; Params: ParamsWithUserId }>(
     "/:userId",
     {
       preValidation: (req, res) =>
@@ -41,7 +49,7 @@ export default async function users(app: FastifyInstance) {
         params: ParamsWithUserIdSchema,
         tags: USER_TAGS,
         response: {
-          200: UserDetailsSchema,
+          200: getGenericResponseSchema(UserDetailsSchema),
           404: HttpError,
           500: HttpError,
         },
@@ -50,10 +58,12 @@ export default async function users(app: FastifyInstance) {
     async (request) => {
       ensureUserCanAccessUser(request.userData, request.params.userId);
 
-      return getUser({
-        pool: app.pg.pool,
-        id: request.params.userId,
-      });
+      return formatAPIResponse(
+        await getUser({
+          pool: app.pg.pool,
+          id: request.params.userId,
+        }),
+      );
     },
   );
 
@@ -61,7 +71,7 @@ export default async function users(app: FastifyInstance) {
  those are the only fields we always have access to via the current auth session -
  to be revised when we integrate with GOV ID
  */
-  app.post<{ Body: CreateUser; Reply: { id: string } }>(
+  app.post<{ Body: CreateUser; Reply: GenericResponse<{ id: string }> }>(
     "/",
     {
       preValidation: (req, res) =>
@@ -72,9 +82,11 @@ export default async function users(app: FastifyInstance) {
         tags: USER_TAGS,
         body: CreateUserSchema,
         response: {
-          200: Type.Object({
-            id: Type.String(),
-          }),
+          200: getGenericResponseSchema(
+            Type.Object({
+              id: Type.String(),
+            }),
+          ),
           500: HttpError,
         },
       },
@@ -82,11 +94,13 @@ export default async function users(app: FastifyInstance) {
     async (request, reply) => {
       try {
         reply.send(
-          await createUser({
-            pool: app.pg.pool,
-            createUserData: request.body,
-            userId: request.userData!.userId,
-          }),
+          formatAPIResponse(
+            await createUser({
+              pool: app.pg.pool,
+              createUserData: request.body,
+              userId: request.userData!.userId,
+            }),
+          ),
         );
       } catch (error) {
         throw app.httpErrors.internalServerError(getErrorMessage(error));
@@ -94,7 +108,11 @@ export default async function users(app: FastifyInstance) {
     },
   );
 
-  app.put<{ Body: UpdateUser; Params: ParamsWithUserId }>(
+  app.put<{
+    Body: UpdateUser;
+    Params: ParamsWithUserId;
+    Reply: GenericResponse<{ id: string }>;
+  }>(
     "/:userId",
     {
       preValidation: (req, res) =>
@@ -109,9 +127,11 @@ export default async function users(app: FastifyInstance) {
         params: ParamsWithUserIdSchema,
         body: UpdateUserSchema,
         response: {
-          200: Type.Object({
-            id: Type.String(),
-          }),
+          200: getGenericResponseSchema(
+            Type.Object({
+              id: Type.String(),
+            }),
+          ),
           404: HttpError,
           500: HttpError,
         },
@@ -144,7 +164,7 @@ export default async function users(app: FastifyInstance) {
         .join(", ");
 
       try {
-        result = await app.pg.query(
+        result = await app.pg.query<{ id: string }>(
           `
             UPDATE user_details
             SET ${setClauses}, updated_at = now()
@@ -161,11 +181,15 @@ export default async function users(app: FastifyInstance) {
         throw app.httpErrors.notFound("User not found");
       }
 
-      reply.send({ id: result.rows[0].id });
+      reply.send(formatAPIResponse({ id: result.rows[0].id }));
     },
   );
 
-  app.patch<{ Body: PatchUser; Params: ParamsWithUserId }>(
+  app.patch<{
+    Body: PatchUser;
+    Params: ParamsWithUserId;
+    Reply: GenericResponse<{ id: string }>;
+  }>(
     "/:userId",
     {
       preValidation: (req, res) =>
@@ -179,9 +203,11 @@ export default async function users(app: FastifyInstance) {
         tags: USER_TAGS,
         body: PatchUserSchema,
         response: {
-          200: Type.Object({
-            id: Type.String(),
-          }),
+          200: getGenericResponseSchema(
+            Type.Object({
+              id: Type.String(),
+            }),
+          ),
           404: HttpError,
           500: HttpError,
         },
@@ -206,7 +232,7 @@ export default async function users(app: FastifyInstance) {
         .join(", ");
 
       try {
-        result = await app.pg.query(
+        result = await app.pg.query<{ id: string }>(
           `
             UPDATE user_details
             SET ${setClauses}, updated_at = now()
@@ -223,11 +249,11 @@ export default async function users(app: FastifyInstance) {
         throw app.httpErrors.notFound("User not found");
       }
 
-      reply.send({ id: result.rows[0].id });
+      reply.send(formatAPIResponse({ id: result.rows[0].id }));
     },
   );
 
-  app.get<{ Reply: FoundUser | null; Querystring: FindUserParams }>(
+  app.get<{ Reply: GenericResponse<FoundUser>; Querystring: FindUserParams }>(
     "/find",
     {
       preValidation: (req, res) =>
@@ -238,8 +264,8 @@ export default async function users(app: FastifyInstance) {
         tags: USER_TAGS,
         querystring: FindUserParamsSchema,
         response: {
-          200: FoundUserSchema,
-          404: Type.Null(),
+          200: getGenericResponseSchema(FoundUserSchema),
+          404: HttpError,
           500: HttpError,
         },
       },
@@ -251,7 +277,7 @@ export default async function users(app: FastifyInstance) {
       });
 
       if (foundUser) {
-        reply.send(foundUser);
+        reply.send(formatAPIResponse(foundUser));
         return;
       }
 
@@ -264,7 +290,7 @@ export default async function users(app: FastifyInstance) {
    * todo: change to :id/details ?
    * todo: add ppsn
    */
-  app.post<{ Body: { ids: string[] } }>(
+  app.post<{ Body: { ids: string[] }; Reply: GenericResponse<UserSelect[]> }>(
     "/select",
     {
       preValidation: (req, res) =>
@@ -280,19 +306,7 @@ export default async function users(app: FastifyInstance) {
           ids: Type.Array(Type.String()),
         }),
         response: {
-          200: Type.Object({
-            data: Type.Array(
-              Type.Object({
-                id: Type.String(),
-                firstName: Type.String(),
-                lastName: Type.String(),
-                ppsn: Type.String(),
-                email: Type.Optional(Type.String({ format: "email" })),
-                phone: Type.Optional(Type.String()),
-                preferredLanguage: Type.String(),
-              }),
-            ),
-          }),
+          200: getGenericResponseSchema(Type.Array(UserSelectSchema)),
           "4xx": HttpError,
           "5xx": HttpError,
         },
@@ -300,17 +314,9 @@ export default async function users(app: FastifyInstance) {
     },
     async function handler(request) {
       const ids = request.body.ids;
-      type User = {
-        id: string;
-        firstName: string;
-        lastName: string;
-        ppsn: string;
-        email: string;
-        phone: string;
-      };
-      const users: User[] = [];
+      const users: UserSelect[] = [];
       try {
-        const usersQueryResult = await app.pg.pool.query<User>(
+        const usersQueryResult = await app.pg.pool.query<UserSelect>(
           `
         select 
           user_id as "id", 
@@ -337,7 +343,11 @@ export default async function users(app: FastifyInstance) {
         throw app.httpErrors.notFound("User not found");
       }
 
-      return { data: users };
+      return formatAPIListResponse({
+        data: users,
+        totalCount: users.length,
+        request,
+      });
     },
   );
 }
