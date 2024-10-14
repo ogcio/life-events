@@ -1,15 +1,13 @@
 import { FormService } from "./formService";
-import { MessagingService } from "./messagingService";
 import { PaymentService } from "./paymentService";
-import { IService } from "./types";
+import { IExternalService } from "./types";
 
-const serviceMap: Record<string, IService> = {
+const serviceMap: Record<string, IExternalService> = {
   form: new FormService(),
   payment: new PaymentService(),
-  messaging: new MessagingService(),
 };
 
-export const getService = (serviceName: string) => {
+export const getExternalService = (serviceName: string) => {
   if (!serviceMap[serviceName]) {
     throw new Error("The requested service doesn not exist.");
   }

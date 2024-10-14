@@ -1,13 +1,12 @@
 import {
   FormStepDataDO,
   JourneyStepDO,
-} from "../plugins/entities/journeySteps/types";
-import { IService } from "./types";
+} from "../../plugins/entities/journeySteps/types";
+import { IExternalService } from "./types";
 
-export class FormService implements IService {
+export class FormService implements IExternalService {
   private readonly getSchemaPath = (id: string) =>
     `/api/v3/public/forms/${id}/schema`;
-  private readonly getDataPath = (id: string) => ``;
   private readonly getAccessTokenPath = "/api/v3/public/token";
 
   private async getAccessToken() {
@@ -44,13 +43,13 @@ export class FormService implements IService {
       `${this.getSchemaPath(id)}`,
       process.env.FORMS_SERVICE_URL,
     );
-    const tonek = await this.getAccessToken();
+    const token = await this.getAccessToken();
 
     try {
       const response = await fetch(url, {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${tonek.accessToken}`,
+          Authorization: `Bearer ${token.accessToken}`,
         },
       });
 
@@ -63,10 +62,6 @@ export class FormService implements IService {
     } catch (error: any) {
       throw new Error(error.message);
     }
-  }
-
-  async getData() {
-    return Promise.resolve({});
   }
 
   getStepResourceId(step: JourneyStepDO) {

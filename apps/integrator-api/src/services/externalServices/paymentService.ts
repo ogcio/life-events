@@ -1,14 +1,12 @@
 import { URL } from "url";
-import { IService } from "./types";
+import { IExternalService } from "./types";
 import {
   JourneyStepDO,
   PaymentStepDataDO,
-} from "../plugins/entities/journeySteps/types";
+} from "../../plugins/entities/journeySteps/types";
 
-export class PaymentService implements IService {
+export class PaymentService implements IExternalService {
   private readonly getSchemaPath = "/api/v1/transactions/schema";
-  private readonly getDataPath = (id: string) =>
-    `/api/v1/transactions/data/${id}`;
 
   async getSchema() {
     const url = new URL(
@@ -32,14 +30,6 @@ export class PaymentService implements IService {
     } catch (error: any) {
       throw new Error(error.message);
     }
-  }
-
-  async getData(transactionId: string) {
-    const url = new URL(
-      `${this.getDataPath(transactionId)}`,
-      process.env.PAYMENTS_SERVICE_URL,
-    );
-    return Promise.resolve({});
   }
 
   getStepResourceId(step: JourneyStepDO) {

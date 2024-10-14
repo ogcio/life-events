@@ -11,7 +11,6 @@ import {
   JourneySchema,
   JourneyStepSchema,
   ParamsWithJourneyId,
-  StepData,
   UpdateJourneyBody,
   UpdateJourneyBodyDO,
 } from "../schemas";
@@ -21,7 +20,7 @@ import {
   CreateJourneyBodyDO,
   JourneyPublicDetailsDO,
 } from "../../plugins/entities/journey/types";
-import { getService } from "../../services/serviceProvider";
+import { getExternalService } from "../../services/externalServices/externalServiceProvider";
 
 const TAGS = ["Journeys"];
 
@@ -215,22 +214,45 @@ export default async function journeys(app: FastifyInstance) {
       const steps = await app.journeySteps.getJourneySteps(journeyId);
 
       const stepsData = steps.map((step) => {
-        return new Promise<JourneyStepSchema>((resolve, reject) => {
-          const service = getService(step.stepType);
-          const resourceId = service.getStepResourceId(step);
-          service
-            .getSchema(resourceId)
-            .then((schema) => {
-              resolve({
-                stepId: step.id,
-                type: step.stepType,
-                resourceId: resourceId,
-                stepSchema: schema,
-              } as JourneyStepSchema);
-            })
-            .catch((reason: any) => {
-              reject(reason);
-            });
+        return new Promise<JourneyStepSchema>((resolve) => {
+          try {
+            const service = getExternalService(step.stepType);
+
+            const result = {
+              stepId: step.id,
+              type: step.stepType,
+              resourceId: "",
+              stepSchema: undefined,
+            } as JourneyStepSchema;
+
+            const resourceId = service.getStepResourceId(step);
+
+            if (!resourceId) {
+              resolve(result);
+              return;
+            }
+
+            result.resourceId = resourceId;
+
+            service
+              .getSchema(resourceId)
+              .then((schema) => {
+                result.stepSchema = schema;
+                resolve(result);
+              })
+              .catch(() => {
+                resolve(result);
+              });
+          } catch (err) {
+            app.log.error(err);
+
+            resolve({
+              stepId: step.id,
+              type: step.stepType,
+              resourceId: "",
+              stepSchema: undefined,
+            } as JourneyStepSchema);
+          }
         });
       });
       const stepDataResult = await Promise.all(stepsData);

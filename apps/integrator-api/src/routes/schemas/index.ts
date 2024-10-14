@@ -245,7 +245,7 @@ export const JourneyStepSchema = Type.Object({
   stepId: Type.String(),
   type: JourneyStepTypes,
   resourceId: Type.String(),
-  stepSchema: Type.Any(),
+  stepSchema: Type.Optional(Type.Any()),
 });
 export type JourneyStepSchema = Static<typeof JourneyStepSchema>;
 
