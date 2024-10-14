@@ -33,7 +33,6 @@ stages:
     - stage: Performance_Tests_${{ replace(serviceName, '-', '_') }}
       displayName: Run performance tests - ${{ serviceName }}
       pool: 'Openshift'
-      dependsOn: Regression_Tests_${{ replace(serviceName, '-', '_') }}
       jobs:
         - template: test/performance_test.yml@pipeline-templates
           parameters:
