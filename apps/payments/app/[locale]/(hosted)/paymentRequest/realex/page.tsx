@@ -91,6 +91,10 @@ export default async function CardWithRealex(props: {
     "/api/v1/realex/verifyPaymentResponse",
     process.env.BACKEND_URL,
   ).toString();
+  const statusUpdateUrl = new URL(
+    "/api/v1/realex/statusUpdate",
+    process.env.BACKEND_URL,
+  ).toString();
 
   const intentId = await generatePaymentIntentId();
   const { amount, providerId } = paymentDetails;
@@ -139,6 +143,7 @@ export default async function CardWithRealex(props: {
         <RealexHost
           payment={payment}
           responseUrl={responseUrl}
+          statusUpdateUrl={statusUpdateUrl}
           locale={props.params.locale}
         />
       </NextIntlClientProvider>

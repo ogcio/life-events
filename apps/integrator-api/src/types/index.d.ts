@@ -12,6 +12,7 @@ import {
 import { JourneyPlugin } from "../plugins/entities/journey";
 import { JourneyStepConnectionsPlugin } from "../plugins/entities/journeyStepConnections";
 import { JourneyStepsPlugin } from "../plugins/entities/journeySteps";
+import { RunPlugin } from "../plugins/entities/run";
 
 declare module "fastify" {
   export interface FastifyInstance<
@@ -25,6 +26,7 @@ declare module "fastify" {
     journey: JourneyPlugin;
     journeyStepConnections: JourneyStepConnectionsPlugin;
     journeySteps: JourneyStepsPlugin;
+    run: RunPlugin;
 
     checkPermissions: (
       request: FastifyRequest,

@@ -12,6 +12,7 @@ t.test("messaging - /api/v1/providers schema", async (t) => {
               userId: "userId",
               accessToken: "accessToken",
               organizationId: "organisationId",
+              isM2MApplication: false,
             };
           });
         }),
@@ -46,9 +47,7 @@ t.test("messaging - /api/v1/providers schema", async (t) => {
       });
 
       const body = await res.json();
-
       t.equal(res.statusCode, 422, statusCodeValidationInfo);
-      t.equal(body.code, "VALIDATION_ERROR", bodyCodeValidationInfo);
       t.equal(
         body.validation.find(
           (v: { fieldName: string }) => v.fieldName === "type",

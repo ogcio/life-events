@@ -4,7 +4,6 @@ import {
   createRemoteJWKSet,
   exportJWK,
   importPKCS8,
-  KeyLike,
   JWTVerifyOptions,
   JWTPayload,
   JWK,

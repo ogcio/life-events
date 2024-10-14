@@ -38,6 +38,11 @@ paths:
         - schema:
             type: string
           in: query
+          name: search
+          required: false
+        - schema:
+            type: string
+          in: query
           name: recipientUserId
           required: false
           description: Either recipientUserId and organisationId are mandatory

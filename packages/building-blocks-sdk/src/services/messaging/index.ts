@@ -29,7 +29,12 @@ export class Messaging {
 
   async getMessagesForUser(
     userId: string,
-    filter?: { offset?: number; limit?: number; isSeen?: boolean },
+    filter?: {
+      offset?: number;
+      limit?: number;
+      isSeen?: boolean;
+      search?: string;
+    },
   ) {
     const isSeen =
       filter?.isSeen === undefined
@@ -45,6 +50,7 @@ export class Messaging {
           recipientUserId: userId,
           status: "delivered",
           isSeen,
+          search: filter?.search,
         },
       },
     });

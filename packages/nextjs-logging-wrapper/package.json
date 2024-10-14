@@ -32,6 +32,6 @@
   "dependencies": {
     "next": "^14.2.4",
     "pino": "^9.2.0",
-    "shared-errors": "*"
+    "@ogcio/shared-errors": "^1.0.0"
   }
 }

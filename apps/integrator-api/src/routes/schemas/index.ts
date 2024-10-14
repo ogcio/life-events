@@ -114,7 +114,7 @@ export const ParamsWithJourneyStepId = Type.Object({
 export type ParamsWithJourneyStepIdDO = Static<typeof ParamsWithJourneyStepId>;
 
 /**
- * Journey
+ * Journeys
  */
 export const ParamsWithJourneyId = Type.Object({
   journeyId: Type.String(),
@@ -167,3 +167,76 @@ export const UpdateJourneyBody = Type.Pick(FullJourney, [
   "initialStepId",
 ]);
 export type UpdateJourneyBodyDO = Static<typeof UpdateJourneyBody>;
+
+/**
+ * Run Steps
+ */
+export const StepStatus = Type.Union([
+  Type.Literal("pending"),
+  Type.Literal("in_progress"),
+  Type.Literal("failed"),
+  Type.Literal("completed"),
+]);
+
+export const RunStep = Type.Object({
+  id: Type.String(),
+  runId: Type.String(),
+  stepId: Type.String(),
+  status: StepStatus,
+  data: Type.Any(),
+  createdAt: Type.String(),
+  updatedAt: Type.String(),
+});
+
+/**
+ * Runs
+ */
+export const RunStatus = Type.Union([
+  Type.Literal("pending"),
+  Type.Literal("failed"),
+  Type.Literal("completed"),
+]);
+
+export const UserFullRun = Type.Object({
+  id: Type.String(),
+  userId: Type.String(),
+  journeyId: Type.String(),
+  status: RunStatus,
+  createdAt: Type.String(),
+  updatedAt: Type.String(),
+  steps: Type.Array(RunStep),
+});
+export type UserFullRunDO = Static<typeof UserFullRun>;
+
+export const PublicServantFullRun = Type.Composite([
+  UserFullRun,
+  Type.Object({
+    organizationId: Type.String(),
+  }),
+]);
+export type PublicServantFullRunDO = Static<typeof PublicServantFullRun>;
+
+export const UserRunDetails = Type.Pick(UserFullRun, [
+  "id",
+  "userId",
+  "journeyId",
+  "status",
+  "createdAt",
+  "updatedAt",
+]);
+
+export const UserRuns = Type.Array(UserRunDetails);
+
+export const PublicServantRunDetails = Type.Composite([
+  UserRunDetails,
+  Type.Object({
+    organizationId: Type.String(),
+  }),
+]);
+
+export const PublicServantRuns = Type.Array(UserRunDetails);
+
+export const ParamsWithRunId = Type.Object({
+  runId: Type.String(),
+});
+export type ParamsWithRunIdDO = Static<typeof ParamsWithRunId>;

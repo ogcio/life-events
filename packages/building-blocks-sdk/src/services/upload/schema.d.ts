@@ -4,18 +4,13 @@
  */
 
 export interface paths {
-  "/health": {
-    get: {
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: never;
-        };
-      };
-    };
-  };
   "/api/v1/files/": {
     post: {
+      requestBody?: {
+        content: {
+          "multipart/form-data": unknown;
+        };
+      };
       responses: {
         /** @description Default Response */
         201: {
@@ -104,6 +99,7 @@ export interface paths {
       parameters: {
         query?: {
           userId?: string;
+          organizationId?: string;
         };
       };
       responses: {
@@ -115,14 +111,7 @@ export interface paths {
                 fileName: string;
                 id?: string;
                 key: string;
-                owner?: {
-                  id: string;
-                  firstName: string;
-                  lastName: string;
-                  ppsn: string;
-                  email?: string;
-                  phone?: string;
-                };
+                ownerId: string;
                 fileSize: number;
                 mimeType: string;
                 createdAt: string;
@@ -132,14 +121,7 @@ export interface paths {
                 infected: boolean;
                 infectionDescription?: string;
                 antivirusDbVersion?: string;
-                sharedWith?: {
-                  id: string;
-                  firstName: string;
-                  lastName: string;
-                  ppsn: string;
-                  email?: string;
-                  phone?: string;
-                }[];
+                expiresAt?: string;
               }[];
             };
           };
@@ -236,14 +218,7 @@ export interface paths {
                 fileName: string;
                 id?: string;
                 key: string;
-                owner?: {
-                  id: string;
-                  firstName: string;
-                  lastName: string;
-                  ppsn: string;
-                  email?: string;
-                  phone?: string;
-                };
+                ownerId: string;
                 fileSize: number;
                 mimeType: string;
                 createdAt: string;
@@ -253,14 +228,7 @@ export interface paths {
                 infected: boolean;
                 infectionDescription?: string;
                 antivirusDbVersion?: string;
-                sharedWith?: {
-                  id: string;
-                  firstName: string;
-                  lastName: string;
-                  ppsn: string;
-                  email?: string;
-                  phone?: string;
-                }[];
+                expiresAt?: string;
               };
             };
           };
@@ -294,7 +262,42 @@ export interface paths {
       };
     };
   };
-  "/api/v1/metadata/share/": {
+  "/api/v1/permissions/": {
+    get: {
+      parameters: {
+        query: {
+          fileId: string;
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        "4XX": {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              requestId: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        "5XX": {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              requestId: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
+      };
+    };
     post: {
       requestBody: {
         content: {

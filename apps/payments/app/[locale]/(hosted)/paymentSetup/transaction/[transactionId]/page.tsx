@@ -148,7 +148,7 @@ export default async function ({
           )}
         </dl>
 
-        {details.providerType &&
+        {details.providerType === "banktransfer" &&
           details.status === TransactionStatuses.Pending && (
             <form action={confirm}>
               <button className="govie-button govie-button--primary">

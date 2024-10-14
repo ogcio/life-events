@@ -1,12 +1,14 @@
 import t from "tap";
 import { Pool, PoolClient } from "pg";
 import {
-  getOwnedFiles,
   getOrganizationFiles,
   getSharedFiles,
   getExpiredFiles,
   markFilesAsDeleted,
+  scheduleExpiredFilesForDeletion,
+  scheduleFileForDeletion,
 } from "../../../../routes/metadata/utils/filesMetadata.js";
+import { PostgresDb } from "@fastify/postgres";
 
 // Mock the PoolClient query method
 class MockPoolClient {
@@ -59,18 +61,6 @@ class MockPoolClient {
 }
 
 t.test("filesMetadata", async (t) => {
-  t.test("getOwnedFiles should return files for a given owner", async (t) => {
-    const mockClient = new MockPoolClient();
-    const ownerId = "user1";
-
-    const result = await getOwnedFiles(mockClient as PoolClient, ownerId);
-
-    t.equal(result.rows.length, 1, "Should return one file");
-    t.equal(result.rows[0].ownerId, ownerId, "Owner ID should match");
-    t.equal(result.rows[0].key, "file1.txt", "File key should match");
-    t.end();
-  });
-
   t.test(
     "getOrganizationFiles should return files for a given organization excluding specified IDs",
     async (t) => {
@@ -78,11 +68,11 @@ t.test("filesMetadata", async (t) => {
       const organizationId = "org1";
       const toExclude = ["3", "4"];
 
-      const result = await getOrganizationFiles(
-        mockClient as PoolClient,
+      const result = await getOrganizationFiles({
+        client: mockClient as PoolClient,
         organizationId,
         toExclude,
-      );
+      });
 
       t.equal(result.rows.length, 1, "Should return one file");
       t.equal(result.rows[0].id, "2", "File ID should match");
@@ -101,11 +91,11 @@ t.test("filesMetadata", async (t) => {
       const organizationId = "org1";
       const toExclude: string[] = [];
 
-      const result = await getOrganizationFiles(
-        mockClient as PoolClient,
+      const result = await getOrganizationFiles({
+        client: mockClient as PoolClient,
         organizationId,
         toExclude,
-      );
+      });
 
       t.equal(result.rows.length, 1, "Should return one file");
       t.equal(result.rows[0].id, "2", "File ID should match");
@@ -121,7 +111,11 @@ t.test("filesMetadata", async (t) => {
 
       const toExclude: string[] = [];
 
-      getSharedFiles(client as PoolClient, "userId", toExclude);
+      getSharedFiles({
+        client: client as PoolClient,
+        userId: "userId",
+        toExclude,
+      });
 
       t.match(params[1], ["userId"]);
     },
@@ -135,7 +129,11 @@ t.test("filesMetadata", async (t) => {
 
       const toExclude: string[] = ["file-1", "file-2"];
 
-      getSharedFiles(client as PoolClient, "userId", toExclude);
+      getSharedFiles({
+        client: client as PoolClient,
+        userId: "userId",
+        toExclude,
+      });
 
       t.match(params[1], ["userId", "file-1", "file-2"]);
     },
@@ -168,4 +166,52 @@ t.test("filesMetadata", async (t) => {
       t.match(params[1], [ids]);
     },
   );
+
+  t.test("Schedule file deletion", async (t) => {
+    const OriginalDate = Date;
+
+    t.before(() => {
+      Date = class extends Date {
+        constructor() {
+          super(OriginalDate.UTC(2024, 0, 5, 0, 0, 0));
+        }
+      };
+    });
+
+    t.after(() => {
+      Date = OriginalDate;
+    });
+
+    t.test(
+      "scheduleExpiredFilesForDeletion should execute a query with the correct parameters",
+      async (t) => {
+        const params: string[] = [];
+        const pool = { query: (...args: string[]) => params.push(...args) };
+
+        scheduleExpiredFilesForDeletion(pool as Pool);
+
+        t.equal(
+          params[1][0].toString(),
+          new OriginalDate(OriginalDate.UTC(2024, 1, 4, 0, 0, 0)).toString(),
+        );
+      },
+    );
+
+    t.test(
+      "scheduleFileForDeletion should execute a query with the correct params",
+      async (t) => {
+        const params: string[] = [];
+        const pg = {
+          query: (...args: string[]) => params.push(...args),
+        };
+
+        scheduleFileForDeletion(pg as PostgresDb, "fileId");
+        t.equal(params[1][0], "fileId");
+        t.equal(
+          params[1][1].toString(),
+          new OriginalDate(OriginalDate.UTC(2024, 1, 4, 0, 0, 0)).toString(),
+        );
+      },
+    );
+  });
 });

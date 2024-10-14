@@ -2,7 +2,7 @@ import { PostgresDb } from "@fastify/postgres";
 import { QueryResult } from "pg";
 import {
   CreateTransactionBodyDO,
-  FullTransactionDO,
+  TransactionDataDO,
   TransactionDetailsDO,
   TransactionEntry,
 } from "./types";
@@ -44,7 +44,8 @@ export class TransactionsRepo {
         t.amount,
         t.updated_at as "updatedAt",
         pp.provider_name as "providerName",
-        pp.provider_type as "providerType"
+        pp.provider_type as "providerType",
+        pp.provider_id as "paymentProviderId"
       FROM payment_transactions t
       LEFT JOIN payment_requests pr ON pr.payment_request_id = t.payment_request_id
       JOIN payment_providers pp ON t.payment_provider_id = pp.provider_id
@@ -52,6 +53,33 @@ export class TransactionsRepo {
       ${userId ? "AND t.user_id = $2" : ""}
       ${organizationId ? "AND pr.organization_id = $2" : ""}`,
       params,
+    );
+  }
+
+  getTransactionByExtId(
+    extId: string,
+  ): Promise<QueryResult<TransactionDetailsDO>> {
+    return this.pg.query(
+      `SELECT
+        t.transaction_id as "transactionId",
+        t.status,
+        t.user_id as "userId",
+        t.user_data as "userData",
+        pr.title,
+        pr.payment_request_id as "paymentRequestId",
+        pr.description,
+        t.ext_payment_id as "extPaymentId",
+        t.amount,
+        t.updated_at as "updatedAt",
+        pp.provider_name as "providerName",
+        pp.provider_type as "providerType",
+        pp.provider_id as "paymentProviderId"
+      FROM payment_transactions t
+      LEFT JOIN payment_requests pr ON pr.payment_request_id = t.payment_request_id
+      JOIN payment_providers pp ON t.payment_provider_id = pp.provider_id
+      WHERE t.ext_payment_id = $1
+      `,
+      [extId],
     );
   }
 
@@ -85,7 +113,8 @@ export class TransactionsRepo {
         t.amount,
         t.updated_at as "updatedAt",
         pp.provider_name as "providerName",
-        pp.provider_type as "providerType"
+        pp.provider_type as "providerType",
+        pp.provider_id as "paymentProviderId"
       FROM payment_transactions t
       INNER JOIN payment_requests pr ON pr.payment_request_id = t.payment_request_id AND pr.organization_id = $1
       INNER JOIN payment_transactions pt ON pt.transaction_id = t.transaction_id
@@ -145,7 +174,8 @@ export class TransactionsRepo {
         pr.title,
         pt.amount,
         t.ext_payment_id as "extPaymentId",
-        t.updated_at as "updatedAt"
+        t.updated_at as "updatedAt",
+        t.payment_provider_id as "paymentProviderId"
       FROM payment_transactions t
       INNER JOIN payment_requests pr ON pr.payment_request_id = t.payment_request_id
       INNER JOIN payment_transactions pt ON pt.transaction_id = t.transaction_id
@@ -215,6 +245,30 @@ export class TransactionsRepo {
       `SELECT
         t.payment_request_id as "paymentRequestId"
       FROM payment_transactions t
+      WHERE t.transaction_id = $1`,
+      [transactionId],
+    );
+  }
+
+  getTransactionData(
+    transactionId: string,
+  ): Promise<QueryResult<TransactionDataDO>> {
+    return this.pg.query(
+      `SELECT
+        t.user_id as "userId",
+        t.transaction_id as "transactionId",
+        pr.payment_request_id as "paymentRequestId",
+        pr.title as "paymentRequestTitle",
+        t.amount,
+        t.ext_payment_id as "extReferenceCode",
+        pp.provider_type as "paymentMethod",
+        pp.provider_name as "paymentProviderName",
+        t.status,
+        t.created_at as "createdAt",
+        t.updated_at as "updatedAt"
+      FROM payment_transactions t
+      LEFT JOIN payment_requests pr ON pr.payment_request_id = t.payment_request_id
+      LEFT JOIN payment_providers pp ON t.payment_provider_id = pp.provider_id
       WHERE t.transaction_id = $1`,
       [transactionId],
     );

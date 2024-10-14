@@ -7,6 +7,9 @@ import {
   PaginationParams,
   ParamsWithTransactionId,
   PaymentIntentId,
+  transactionDataJsonSchema,
+  transactionDataSchema,
+  TransactionData,
   TransactionDetails,
   Transactions,
   UpdateTransactionBody,
@@ -22,6 +25,7 @@ import { GenericResponse as GenericResponseType } from "../../types/genericRespo
 import { PaginationParams as PaginationParamsType } from "../../types/pagination";
 import {
   CreateTransactionBodyDO,
+  TransactionDataDO,
   TransactionDetailsDO,
   UpdateTransactionBodyDO,
 } from "../../plugins/entities/transactions/types";
@@ -112,6 +116,21 @@ export default async function transactions(app: FastifyInstance) {
       };
 
       reply.send(formatAPIResponse(transactions, paginationDetails));
+    },
+  );
+
+  app.get(
+    "/schema",
+    {
+      schema: {
+        tags: TAGS,
+        response: {
+          200: transactionDataJsonSchema,
+        },
+      },
+    },
+    async (_, reply) => {
+      reply.send(transactionDataSchema);
     },
   );
 
@@ -256,6 +275,33 @@ export default async function transactions(app: FastifyInstance) {
     async (request, reply) => {
       const result = await app.transactions.generatePaymentIntentId();
       reply.send(formatAPIResponse(result));
+    },
+  );
+
+  // Transaction data for integrator
+  app.get<{
+    Reply: GenericResponseType<TransactionDataDO> | Error;
+    Params: ParamsWithTransactionId;
+  }>(
+    "/data/:transactionId",
+    {
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [authPermissions.TRANSACTION_READ]),
+      schema: {
+        tags: TAGS,
+        response: {
+          200: GenericResponse(TransactionData),
+          404: HttpError,
+        },
+      },
+    },
+    async (request, reply) => {
+      const { transactionId } = request.params;
+
+      const transactionDetails =
+        await app.transactions.getTransactionData(transactionId);
+
+      reply.send(formatAPIResponse(transactionDetails));
     },
   );
 }

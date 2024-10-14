@@ -1,4 +1,5 @@
 import { Static, TSchema, Type } from "@sinclair/typebox";
+import toJsonSchema from "to-json-schema";
 import {
   PAGINATION_LIMIT_DEFAULT,
   PAGINATION_OFFSET_DEFAULT,
@@ -31,6 +32,7 @@ export const BankTransferData = Type.Object({
 export const StripeData = Type.Object({
   livePublishableKey: Type.String(),
   liveSecretKey: Type.String(),
+  webhookSigningKey: Type.Optional(Type.String()),
 });
 
 export const WorldpayData = Type.Object({
@@ -234,7 +236,7 @@ export const FullTransaction = Type.Object({
   extPaymentId: Type.String(),
   status: TransactionStatuses,
   integrationReference: Type.String(),
-  amount: Type.Number(),
+  amount: Type.Number({ minimum: 1, maximum: 1000000 }),
   paymentProviderId: Type.String(),
   createdAt: Type.String(),
   updatedAt: Type.String(),
@@ -248,12 +250,30 @@ export const FullTransaction = Type.Object({
   }),
 });
 
+export const TransactionData = Type.Object({
+  userId: Type.String(),
+  transactionId: Type.String(),
+  paymentRequestId: Type.String(),
+  paymentRequestTitle: Type.String(),
+  amount: Type.Number({ minimum: 1, maximum: 1000000 }),
+  extReferenceCode: Type.String(),
+  paymentMethod: Type.String(),
+  paymentProviderName: Type.String(),
+  status: TransactionStatuses,
+  createdAt: Type.String(),
+  updatedAt: Type.String(),
+});
+
+export const transactionDataSchema = Type.Strict(TransactionData);
+export const transactionDataJsonSchema = toJsonSchema(transactionDataSchema);
+
 export const Transaction = Type.Composite([
   Type.Pick(FullTransaction, [
     "transactionId",
     "status",
     "amount",
     "extPaymentId",
+    "paymentProviderId",
     "updatedAt",
   ]),
   Type.Object({
@@ -358,6 +378,28 @@ export const RealexHppResponse = Type.Object({
   HPP_CUSTOMER_EMAIL: Type.String(),
   HPP_ADDRESS_MATCH_INDICATOR: Type.String(),
   BATCHID: Type.String(),
+});
+
+export const RealexStatusUpdateQueryParams = Type.Object({
+  sha1hash: Type.String(),
+  timestamp: Type.String(),
+  merchantid: Type.String(),
+  orderid: Type.String(),
+  result: Type.String(),
+  message: Type.String(),
+  pasref: Type.String(),
+  paymentmethod: Type.String(),
+  waitfornotification: Type.String(),
+  fundstatus: Type.String(),
+  paymentpurpose: Type.String(),
+  acountholdername: Type.String(),
+  country: Type.String(),
+  accountnumber: Type.String(),
+  iban: Type.String(),
+  bic: Type.String(),
+  bankname: Type.String(),
+  bankcode: Type.String(),
+  redirectoptional: Type.String(),
 });
 
 /**

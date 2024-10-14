@@ -2,12 +2,12 @@ import { PostgresDb } from "@fastify/postgres";
 import { FastifyInstance, FastifyPluginCallback } from "fastify";
 import fp from "fastify-plugin";
 import t from "tap";
-import * as authenticationFactory from "../../../utils/authentication-factory.js";
 import { CONFIG_TYPE } from "../../../utils/storeConfig.js";
+import { getUserFiles } from "../../../routes/metadata/utils/filesMetadata.js";
+import { PoolClient } from "pg";
 
 const buildApp = async ({
-  profileSdkResponse,
-  getOwnedFiles,
+  getUserFiles,
   getOrganizationFiles,
   getSharedFiles,
   getFileMetadataById,
@@ -15,9 +15,15 @@ const buildApp = async ({
   getSharedFilesPerOrganization,
   scheduleFileForDeletion,
   removeAllFileSharings,
+  userData,
 }: {
-  profileSdkResponse?: () => Promise<unknown>;
-  getOwnedFiles?: () => Promise<unknown>;
+  userData?: {
+    isM2MApplication: boolean;
+    userId: string;
+    accessToken: string;
+    organizationId?: string;
+  };
+  getUserFiles?: () => Promise<unknown>;
   getOrganizationFiles?: () => Promise<unknown>;
   getSharedFiles?: () => Promise<unknown>;
   getFileMetadataById?: () => Promise<unknown>;
@@ -60,12 +66,14 @@ const buildApp = async ({
       "api-auth": {
         default: fp(async (fastify) => {
           fastify.decorate("checkPermissions", async (request) => {
-            request.userData = {
-              isM2MApplication: false,
-              userId: "userId",
-              accessToken: "accessToken",
-              organizationId: "ogcio",
-            };
+            request.userData = userData
+              ? userData
+              : {
+                  isM2MApplication: false,
+                  userId: "userId",
+                  accessToken: "accessToken",
+                  organizationId: "ogcio",
+                };
           });
         }),
       },
@@ -84,29 +92,18 @@ const buildApp = async ({
   const routes = await t.mockImport<
     typeof import("../../../routes/metadata/index.js")
   >("../../../routes/metadata/index.js", {
-    "../../../utils/authentication-factory.js": t.createMock(
-      authenticationFactory,
-      {
-        getProfileSdk: () =>
-          Promise.resolve({
-            selectUsers: () => profileSdkResponse?.(),
-          }),
-      },
-    ),
     "../../../routes/metadata/utils/filesMetadata.js": {
-      getOwnedFiles,
+      getUserFiles,
       getOrganizationFiles,
       getSharedFiles,
       getSharedFilesPerOrganization,
+      scheduleFileForDeletion,
     },
     "../../../routes/utils/getFileMetadataById.js": {
       default: getFileMetadataById,
     },
     "../../../routes/metadata/utils/getFileSharings.js": {
       default: getFileSharings,
-    },
-    "../../../routes/metadata/utils/scheduleFileForDeletion.js": {
-      default: scheduleFileForDeletion,
     },
     "../../../routes/metadata/utils/removeAllFileSharings.js": {
       default: removeAllFileSharings,
@@ -131,21 +128,123 @@ t.test("metadata", async (t) => {
   });
 
   t.test("list", async (t) => {
-    t.test(
-      "Should return a list of all files uploaded by a user",
-      async (t) => {
-        const ownerData = {
-          id: "user",
-          firstName: "firstName",
-          lastName: "lastName",
-          email: "email@gov.ie",
-          ppsn: "ppsn",
-        };
+    t.test("ensureUserCanAccessResource", async (t) => {
+      t.test(
+        "Public servants should not be able to query other organizations",
+        async (t) => {
+          app = await buildApp({});
+          await app.ready();
+          const response = await app.inject({
+            method: "GET",
+            url: "/metadata",
+            query: {
+              organizationId: "another-org",
+            },
+          });
+          t.equal(response.statusCode, 403);
+        },
+      );
 
+      t.test("Citizens should not be able to query other users", async (t) => {
         app = await buildApp({
-          profileSdkResponse: () =>
-            Promise.resolve({ data: [ownerData], error: null }),
-          getOwnedFiles: () =>
+          userData: {
+            accessToken: "",
+            isM2MApplication: false,
+            userId: "user-id",
+          },
+        });
+        await app.ready();
+        const response = await app.inject({
+          method: "GET",
+          url: "/metadata",
+          query: {
+            userId: "anotherId",
+          },
+        });
+        t.equal(response.statusCode, 403);
+      });
+
+      t.test(
+        "Citizens should not be able to query organizations",
+        async (t) => {
+          app = await buildApp({
+            userData: {
+              accessToken: "",
+              isM2MApplication: false,
+              userId: "user-id",
+            },
+          });
+          await app.ready();
+          const response = await app.inject({
+            method: "GET",
+            url: "/metadata",
+            query: {
+              userId: "user-id",
+              organizationId: "orgId",
+            },
+          });
+          t.equal(response.statusCode, 403);
+        },
+      );
+    });
+
+    t.test(
+      "Public servants should be able to retrieve all files for the requested user",
+      async (t) => {
+        app = await buildApp({
+          getUserFiles: () =>
+            Promise.resolve([
+              {
+                fileName: "fileName",
+                id: "1",
+                key: "user/fileName",
+                ownerId: "user",
+                organizationId: "ogcio",
+                fileSize: 100,
+                mimeType: "image/png",
+                createdAt: "2024-08-12T13:12:18.681Z",
+                lastScan: "2024-08-12T13:12:18.681Z",
+                deleted: false,
+                infected: false,
+                infectionDescription: null,
+                antivirusDbVersion: "1",
+              },
+            ]),
+        });
+
+        const response = await app.inject({
+          method: "GET",
+          url: "/metadata",
+          query: {
+            organizationId: "ogcio",
+            userId: "user",
+          },
+        });
+
+        t.same(response.json().data, [
+          {
+            fileName: "fileName",
+            id: "1",
+            key: "user/fileName",
+            ownerId: "user",
+            fileSize: 100,
+            mimeType: "image/png",
+            createdAt: "2024-08-12T13:12:18.681Z",
+            lastScan: "2024-08-12T13:12:18.681Z",
+            deleted: false,
+            infected: false,
+            infectionDescription: "",
+            antivirusDbVersion: "1",
+          },
+        ]);
+      },
+    );
+
+    t.test(
+      "Public servants should be able to retrieve all files within their org",
+      async (t) => {
+        app = await buildApp({
+          getOrganizationFiles: () =>
             Promise.resolve({
               rows: [
                 {
@@ -165,350 +264,214 @@ t.test("metadata", async (t) => {
                 },
               ],
             }),
-          getOrganizationFiles: () =>
-            Promise.resolve({
-              rows: [],
-            }),
-          getSharedFiles: () =>
-            Promise.resolve({
-              rows: [],
-            }),
         });
-
-        await app.ready();
 
         const response = await app.inject({
           method: "GET",
           url: "/metadata",
+          query: {
+            organizationId: "ogcio",
+          },
         });
 
-        t.match(response.json(), {
-          data: [
-            {
-              fileName: "fileName",
-              id: "1",
-              key: "user/fileName",
-              owner: ownerData,
-              fileSize: 100,
-              mimeType: "image/png",
-              createdAt: "2024-08-12T13:12:18.681Z",
-              lastScan: "2024-08-12T13:12:18.681Z",
-              deleted: false,
-              infected: false,
-              infectionDescription: "",
-              antivirusDbVersion: "1",
-            },
-          ],
+        t.same(response.json().data, [
+          {
+            fileName: "fileName",
+            id: "1",
+            key: "user/fileName",
+            ownerId: "user",
+            fileSize: 100,
+            mimeType: "image/png",
+            createdAt: "2024-08-12T13:12:18.681Z",
+            lastScan: "2024-08-12T13:12:18.681Z",
+            deleted: false,
+            infected: false,
+            infectionDescription: "",
+            antivirusDbVersion: "1",
+          },
+        ]);
+      },
+    );
+
+    t.test(
+      "Citizen should be able to retrieve files shared with them",
+      async (t) => {
+        app = await buildApp({
+          userData: {
+            accessToken: "",
+            isM2MApplication: false,
+            userId: "userId",
+          },
+          getSharedFiles: () =>
+            Promise.resolve({
+              rows: [
+                {
+                  fileName: "fileName",
+                  id: "1",
+                  key: "user/fileName",
+                  ownerId: "userId",
+                  organizationId: "ogcio",
+                  fileSize: 100,
+                  mimeType: "image/png",
+                  createdAt: "2024-08-12T13:12:18.681Z",
+                  lastScan: "2024-08-12T13:12:18.681Z",
+                  deleted: false,
+                  infected: false,
+                  infectionDescription: null,
+                  antivirusDbVersion: "1",
+                },
+              ],
+            }),
+        });
+
+        const response = await app.inject({
+          method: "GET",
+          url: "/metadata",
+          query: {
+            userId: "userId",
+          },
         });
 
         t.equal(response.statusCode, 200);
+        t.same(response.json().data, [
+          {
+            fileName: "fileName",
+            id: "1",
+            key: "user/fileName",
+            ownerId: "userId",
+            fileSize: 100,
+            mimeType: "image/png",
+            createdAt: "2024-08-12T13:12:18.681Z",
+            lastScan: "2024-08-12T13:12:18.681Z",
+            deleted: false,
+            infected: false,
+            infectionDescription: "",
+            antivirusDbVersion: "1",
+          },
+        ]);
       },
     );
 
-    t.test(
-      "Should return a list of all files uploaded by a user and within the org",
-      async (t) => {
-        const ownerData = {
-          id: "user",
-          firstName: "firstName",
-          lastName: "lastName",
-          email: "email@gov.ie",
-          ppsn: "ppsn",
-        };
-
-        app = await buildApp({
-          profileSdkResponse: () =>
-            Promise.resolve({ data: [ownerData], error: null }),
-          getOwnedFiles: () =>
-            Promise.resolve({
-              rows: [
-                {
-                  fileName: "fileName",
-                  id: "1",
-                  key: "user/fileName",
-                  ownerId: "user",
-                  fileSize: 100,
-                  mimeType: "image/png",
-                  createdAt: "2024-08-12T13:12:18.681Z",
-                  lastScan: "2024-08-12T13:12:18.681Z",
-                  deleted: false,
-                  infected: false,
-                  infectionDescription: null,
-                  antivirusDbVersion: "1",
-                },
-              ],
-            }),
-          getOrganizationFiles: () =>
-            Promise.resolve({
-              rows: [
-                {
-                  fileName: "fileName-1",
-                  id: "2",
-                  organizationId: "ogcio",
-                  key: "user2/fileName",
-                  ownerId: "user",
-                  fileSize: 100,
-                  mimeType: "image/png",
-                  createdAt: "2024-08-12T13:12:18.681Z",
-                  lastScan: "2024-08-12T13:12:18.681Z",
-                  deleted: false,
-                  infected: false,
-                  infectionDescription: null,
-                  antivirusDbVersion: "1",
-                },
-              ],
-            }),
-          getSharedFiles: () =>
-            Promise.resolve({
-              rows: [],
-            }),
-        });
-
-        const response = await app.inject({
-          method: "GET",
-          url: "/metadata",
-        });
-
-        t.match(response.json(), {
-          data: [
-            {
-              fileName: "fileName",
-              id: "1",
-              key: "user/fileName",
-              owner: ownerData,
-              fileSize: 100,
-              mimeType: "image/png",
-              createdAt: "2024-08-12T13:12:18.681Z",
-              lastScan: "2024-08-12T13:12:18.681Z",
-              deleted: false,
-              infected: false,
-              infectionDescription: "",
-              antivirusDbVersion: "1",
-            },
-            {
-              fileName: "fileName-1",
-              id: "2",
-              key: "user2/fileName",
-              owner: ownerData,
-              fileSize: 100,
-              mimeType: "image/png",
-              createdAt: "2024-08-12T13:12:18.681Z",
-              lastScan: "2024-08-12T13:12:18.681Z",
-              deleted: false,
-              infected: false,
-              infectionDescription: "",
-              antivirusDbVersion: "1",
-            },
-          ],
-        });
-      },
-    );
-
-    t.test(
-      "Should return a list of all files shared with the current user",
-      async (t) => {
-        const ownerData = {
-          id: "user",
-          firstName: "firstName",
-          lastName: "lastName",
-          email: "email@gov.ie",
-          ppsn: "ppsn",
-        };
-
-        app = await buildApp({
-          profileSdkResponse: () =>
-            Promise.resolve({ data: [ownerData], error: null }),
-          getOwnedFiles: () =>
-            Promise.resolve({
-              rows: [],
-            }),
-          getOrganizationFiles: () =>
-            Promise.resolve({
-              rows: [],
-            }),
-          getSharedFiles: () =>
-            Promise.resolve({
-              rows: [
-                {
-                  fileName: "fileName-1",
-                  id: "2",
-                  organizationId: "ogcio",
-                  key: "user2/fileName",
-                  ownerId: "user",
-                  fileSize: 100,
-                  mimeType: "image/png",
-                  createdAt: "2024-08-12T13:12:18.681Z",
-                  lastScan: "2024-08-12T13:12:18.681Z",
-                  deleted: false,
-                  infected: false,
-                  infectionDescription: null,
-                  antivirusDbVersion: "1",
-                },
-              ],
-            }),
-        });
-
-        const response = await app.inject({
-          method: "GET",
-          url: "/metadata",
-        });
-
-        t.match(response.json(), {
-          data: [
-            {
-              fileName: "fileName-1",
-              id: "2",
-              key: "user2/fileName",
-              owner: ownerData,
-              fileSize: 100,
-              mimeType: "image/png",
-              createdAt: "2024-08-12T13:12:18.681Z",
-              lastScan: "2024-08-12T13:12:18.681Z",
-              deleted: false,
-              infected: false,
-              infectionDescription: "",
-              antivirusDbVersion: "1",
-            },
-          ],
-        });
-      },
-    );
-
-    t.test(
-      "Should return a empty array when no files are available",
-      async (t) => {
-        const ownerData = {
-          id: "user",
-          firstName: "firstName",
-          lastName: "lastName",
-          email: "email@gov.ie",
-          ppsn: "ppsn",
-        };
-
-        app = await buildApp({
-          profileSdkResponse: () =>
-            Promise.resolve({ data: [ownerData], error: null }),
-          getOwnedFiles: () =>
-            Promise.resolve({
-              rows: [],
-            }),
-          getOrganizationFiles: () =>
-            Promise.resolve({
-              rows: [],
-            }),
-          getSharedFiles: () =>
-            Promise.resolve({
-              rows: [],
-            }),
-        });
-
-        const response = await app.inject({
-          method: "GET",
-          url: "/metadata",
-        });
-
-        t.match(response.json(), {
-          data: [],
-        });
-      },
-    );
-
-    t.test(
-      "Should throw an error when retrieving metadata throws",
-      async (t) => {
-        const ownerData = {
-          id: "user",
-          firstName: "firstName",
-          lastName: "lastName",
-          email: "email@gov.ie",
-          ppsn: "ppsn",
-        };
-
-        app = await buildApp({
-          profileSdkResponse: () =>
-            Promise.resolve({ data: [ownerData], error: null }),
-          getOwnedFiles: () => Promise.reject("Error"),
-          getOrganizationFiles: () =>
-            Promise.resolve({
-              rows: [],
-            }),
-          getSharedFiles: () =>
-            Promise.resolve({
-              rows: [],
-            }),
-        });
-
-        const response = await app.inject({
-          method: "GET",
-          url: "/metadata",
-        });
-
-        t.match(response.statusCode, 500);
-      },
-    );
-
-    t.test("Should throw an error when profile sdk throws", async (t) => {
+    t.test("Should throw if a retrieval operation fails", async (t) => {
       app = await buildApp({
-        profileSdkResponse: () => Promise.reject("Error"),
-        getOwnedFiles: () => Promise.resolve({ rows: [{ key: "key" }] }),
-        getOrganizationFiles: () =>
-          Promise.resolve({
-            rows: [],
-          }),
-        getSharedFiles: () =>
-          Promise.resolve({
-            rows: [],
-          }),
+        userData: {
+          accessToken: "",
+          isM2MApplication: false,
+          userId: "userId",
+        },
+        getSharedFiles: () => Promise.reject("Error"),
       });
 
       const response = await app.inject({
         method: "GET",
         url: "/metadata",
+        query: {
+          userId: "userId",
+        },
       });
 
-      t.match(response.statusCode, 500);
+      t.equal(response.statusCode, 500);
     });
 
-    t.test("Should throw an error when profile returns an error", async (t) => {
-      app = await buildApp({
-        profileSdkResponse: () =>
-          Promise.resolve({
-            data: null,
-            error: new Error("profile sdk error"),
-          }),
-        getOwnedFiles: () => Promise.resolve({ rows: [{ key: "key" }] }),
-        getOrganizationFiles: () =>
-          Promise.resolve({
-            rows: [],
-          }),
-        getSharedFiles: () =>
-          Promise.resolve({
-            rows: [],
-          }),
-      });
+    t.test(
+      "getUserFiles should return files for the requested organization and user",
 
-      const response = await app.inject({
-        method: "GET",
-        url: "/metadata",
-      });
+      async (t) => {
+        let counter = 0;
 
-      t.match(response.statusCode, 500);
-    });
+        const client = {
+          query: () => {
+            if (counter++ === 0) {
+              return Promise.resolve({
+                rows: [
+                  {
+                    id: "id-1",
+                    ownerId: "userId",
+                    organization: "ogcio",
+                  },
+                ],
+              });
+            } else {
+              return Promise.resolve({
+                rows: [
+                  {
+                    id: "id-2",
+                    ownerId: "userId",
+                    organization: "ogcio",
+                  },
+                ],
+              });
+            }
+          },
+        };
+
+        const data = await getUserFiles({
+          client: client as unknown as PoolClient,
+          userId: "userId",
+          organizationId: "organizationId",
+          toExclude: [],
+        });
+
+        t.same(data, [
+          { id: "id-1", ownerId: "userId", organization: "ogcio" },
+          { id: "id-2", ownerId: "userId", organization: "ogcio" },
+        ]);
+      },
+    );
+
+    t.test(
+      "getUserFiles should return files for the requested organization and user with exclusions",
+
+      async (t) => {
+        let counter = 0;
+        const queryParams: string[] = [];
+        const client = {
+          query: (...params: string[]) => {
+            queryParams.push(...params);
+            if (counter++ === 0) {
+              return Promise.resolve({
+                rows: [
+                  {
+                    id: "id-1",
+                    ownerId: "userId",
+                    organization: "ogcio",
+                  },
+                ],
+              });
+            } else {
+              return Promise.resolve({
+                rows: [
+                  {
+                    id: "id-2",
+                    ownerId: "userId",
+                    organization: "ogcio",
+                  },
+                ],
+              });
+            }
+          },
+        };
+
+        const data = await getUserFiles({
+          client: client as unknown as PoolClient,
+          userId: "userId",
+          organizationId: "organizationId",
+          toExclude: ["id-1"],
+        });
+
+        t.same(queryParams[1][2], "id-1");
+
+        t.same(data, [
+          { id: "id-1", ownerId: "userId", organization: "ogcio" },
+          { id: "id-2", ownerId: "userId", organization: "ogcio" },
+        ]);
+      },
+    );
   });
 
   t.test("get", async (t) => {
     t.test("Should return file metadata", async (t) => {
-      const ownerData = {
-        id: "user",
-        firstName: "firstName",
-        lastName: "lastName",
-        email: "email@gov.ie",
-        ppsn: "ppsn",
-      };
-
       app = await buildApp({
-        profileSdkResponse: () =>
-          Promise.resolve({ data: [ownerData], error: null }),
         getFileMetadataById: () =>
           Promise.resolve({
             rows: [
@@ -541,7 +504,7 @@ t.test("metadata", async (t) => {
           fileName: "fileName",
           id: "1",
           key: "user/fileName",
-          owner: ownerData,
+          ownerId: "user",
           fileSize: 100,
           mimeType: "image/png",
           createdAt: "2024-08-12T13:12:18.681Z",
@@ -568,8 +531,6 @@ t.test("metadata", async (t) => {
         };
 
         app = await buildApp({
-          profileSdkResponse: () =>
-            Promise.resolve({ data: [ownerData], error: null }),
           getFileMetadataById: () =>
             Promise.resolve({
               rows: [],
@@ -596,8 +557,6 @@ t.test("metadata", async (t) => {
       };
 
       app = await buildApp({
-        profileSdkResponse: () =>
-          Promise.resolve({ data: [ownerData], error: null }),
         getFileMetadataById: () => Promise.reject("Error"),
         getFileSharings: () => Promise.resolve({ rows: [] }),
       });
@@ -612,7 +571,6 @@ t.test("metadata", async (t) => {
 
     t.test("Should throw an error when profile sdk throws", async (t) => {
       app = await buildApp({
-        profileSdkResponse: () => Promise.reject("Error"),
         getFileMetadataById: () => Promise.resolve({ rows: [{ key: "key" }] }),
         getFileSharings: () => Promise.resolve({ rows: [] }),
       });
@@ -625,19 +583,7 @@ t.test("metadata", async (t) => {
     });
 
     t.test("Should throw an error when profile returns an error", async (t) => {
-      const ownerData = {
-        id: "user",
-        firstName: "firstName",
-        lastName: "lastName",
-        email: "email@gov.ie",
-        ppsn: "ppsn",
-      };
       app = await buildApp({
-        profileSdkResponse: () =>
-          Promise.resolve({
-            data: [ownerData],
-            error: new Error("profile sdk error"),
-          }),
         getFileMetadataById: () => Promise.resolve({ rows: [{ key: "key" }] }),
         getFileSharings: () => Promise.resolve({ rows: [] }),
       });
@@ -704,11 +650,6 @@ t.test("metadata", async (t) => {
             fileId: "1",
           },
         });
-
-        t.match(
-          (paramsUsed[2] as unknown as Date).toISOString(),
-          "2024-01-31T00:00:00.000Z",
-        );
 
         t.match(response.json(), {
           data: {
