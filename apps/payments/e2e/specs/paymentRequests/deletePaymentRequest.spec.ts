@@ -53,7 +53,7 @@ test.describe("Payment Request deletion", () => {
     const paymentRequestsPage = new PaymentRequestsPage(publicServantPage);
     await paymentRequestsPage.goto();
     await paymentRequestsPage.gotoDetails(
-      paymentRequestWithManualBankTransferProvider,
+      paymentRequestWithManualBankTransferProvider.name,
     );
 
     const detailsPage = new PaymentRequestDetailsPage(publicServantPage);

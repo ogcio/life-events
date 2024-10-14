@@ -50,7 +50,7 @@ test.describe("Payment Request with open banking provider", () => {
     );
     await createPaymentRequestPage.enterReference(mockPaymentRequestReference);
     await createPaymentRequestPage.enterAmount(mockAmount);
-    await createPaymentRequestPage.selectAllowAmountOverride();
+    await createPaymentRequestPage.selectAllowDynamicAmount();
     await createPaymentRequestPage.selectCustomAmount();
     await createPaymentRequestPage.enterRedirectURL(mockRedirectUrl);
     await createPaymentRequestPage.selectInactiveStatus();

@@ -326,7 +326,7 @@
         "currencySymbol": "€",
         "redirectUrl": "Redirect url",
         "redirectUrlRequired": "Redirect url is required.",
-        "allowAmountOverride": "Allow amount override from url",
+        "allowDynamicAmount": "Allow dynamic amount",
         "allowCustomAmount": "Allow the user to pay a custom amount",
         "submit": "Continue"
       },

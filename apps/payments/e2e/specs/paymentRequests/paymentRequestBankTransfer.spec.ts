@@ -50,7 +50,7 @@ test.describe("Payment Request with manual bank transfer provider", () => {
     );
     await createPaymentRequestPage.enterReference(mockPaymentRequestReference);
     await createPaymentRequestPage.enterAmount(mockAmount);
-    await createPaymentRequestPage.selectAllowAmountOverride();
+    await createPaymentRequestPage.selectAllowDynamicAmount();
     await createPaymentRequestPage.selectCustomAmount();
     await createPaymentRequestPage.enterRedirectURL(mockRedirectUrl);
     await createPaymentRequestPage.selectInactiveStatus();
