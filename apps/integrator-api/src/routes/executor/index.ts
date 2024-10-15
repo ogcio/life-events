@@ -10,6 +10,8 @@ import {
   PublicServantRuns,
   PublicServantFullRunDO,
   PublicServantFullRun,
+  Id,
+  CreateJourneyRun,
 } from "../schemas";
 import { formatAPIResponse } from "../../utils/responseFormatter";
 import { authPermissions } from "../../types/authPermissions";
@@ -154,6 +156,43 @@ export default async function executor(app: FastifyInstance) {
       };
 
       reply.send(formatAPIResponse(fullRun));
+    },
+  );
+
+  // RUN
+  app.post<{
+    Reply: GenericResponse<Id> | Error;
+    Body: CreateJourneyRun;
+  }>(
+    "/run",
+    {
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [authPermissions.RUN_WRITE]),
+      schema: {
+        tags: TAGS,
+        body: CreateJourneyRun,
+        response: {
+          200: GenericResponse(Id),
+          401: HttpError,
+          404: HttpError,
+        },
+      },
+    },
+    async (request, reply) => {
+      const { journeyId } = request.body;
+      const userId = "asdf"; //request.userData?.userId;
+
+      if (!userId) {
+        throw app.httpErrors.unauthorized("Unauthorized!");
+      }
+
+      const journeyInfo = await app.journey.getJourneyById(journeyId);
+
+      const runId = await app.run.createRun(journeyId, userId);
+      console.log(">>>>>>", runId);
+      await app.run.createRunStep(runId.id, journeyInfo.initialStepId);
+
+      reply.send(formatAPIResponse(runId));
     },
   );
 }

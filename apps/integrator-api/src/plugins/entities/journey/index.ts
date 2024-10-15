@@ -34,7 +34,7 @@ const buildGetJourneyById =
   (repo: JourneyRepo, log: FastifyBaseLogger, httpErrors: HttpErrors) =>
   async (
     journeyId: string,
-    organizationId: string,
+    organizationId?: string,
   ): Promise<JourneyDetailsDO> => {
     let result;
 

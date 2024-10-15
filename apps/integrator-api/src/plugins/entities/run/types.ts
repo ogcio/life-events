@@ -15,3 +15,10 @@ export enum RunStatusEnum {
   FAILED = "failed",
   COMPLETED = "completed",
 }
+
+export enum RunStepStatusEnum {
+  PENDING = "pending",
+  IN_PROGRESS = "in_progress",
+  FAILED = "failed",
+  COMPLETED = "completed",
+}

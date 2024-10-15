@@ -256,3 +256,8 @@ export const JourneySchema = Type.Object({
   stepConnections: Type.Array(JourneyStepConnection),
 });
 export type JourneySchema = Static<typeof JourneySchema>;
+
+export const CreateJourneyRun = Type.Object({
+  journeyId: Type.String(),
+});
+export type CreateJourneyRun = Static<typeof CreateJourneyRun>;

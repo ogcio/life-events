@@ -79,6 +79,8 @@ export const AuthSession: IAuthSession = {
     config: LogtoNextConfig,
     resource?: string,
   ): Promise<string> {
+    console.log(">>>", config);
+    console.log(">>>>", resource);
     return await getAccessToken(config, resource);
   },
   async getOrgToken(

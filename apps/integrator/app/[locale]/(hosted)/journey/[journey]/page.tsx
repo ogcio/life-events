@@ -10,8 +10,6 @@ import {
 import { IntegratorEngine } from "../../../../../libraries/integratorEngine";
 import { getJourney } from "../../../../utils/journeys";
 
-// TODO: outsource types to file
-
 type Props = {
   params: {
     locale: string;
@@ -38,8 +36,14 @@ export default async (props: Props) => {
     return redirect("/admin/journeys", RedirectType.replace);
   }
 
-  //INTEGRATOR ENGINE
+  const client = await AuthenticationFactory.getIntegratorClient();
+  const runId = await client.createRun({
+    journeyId,
+  });
+  console.log(runId);
 
+  //INTEGRATOR ENGINE
+  /*
   // the journy_id is unique for a user
   const submissionDataQueryResult = await getUserSubmissions(pgpool, userId);
 
@@ -85,6 +89,7 @@ export default async (props: Props) => {
     userSubmissionStepsData,
   );
   await engine.execute(userId);
+*/
 
   return (
     <div className="govie-width-container" style={{ width: "100%" }}>

@@ -2,6 +2,8 @@ import { AuthenticationContextConfig } from "auth/base-authentication-context";
 import { organizationScopes } from "auth/authentication-context";
 import { headers } from "next/headers";
 
+const integratorResource = process.env.INTEGRATOR_BACKEND_URL + "/";
+
 export const baseConfig = {
   cookieSecure: process.env.NODE_ENV === "production",
   baseUrl: process.env.HOST_URL as string,
@@ -19,19 +21,11 @@ const buildLoginUrlWithPostLoginRedirect = () => {
   return `/preLogin?loginUrl=/login&postLoginRedirectUrl=${encodeURIComponent(currentPath ?? "")}`;
 };
 
-export const getAuthenticationContextConfig =
-  (): AuthenticationContextConfig => ({
-    baseUrl: baseConfig.baseUrl,
-    appId: baseConfig.appId,
-    appSecret: baseConfig.appSecret,
-    citizenScopes: [],
-    publicServantExpectedRoles,
-    publicServantScopes: [...profileApiScopes],
-    loginUrl: buildLoginUrlWithPostLoginRedirect(),
-    resourceUrl: "",
-  });
-
-export const postSignoutRedirect = process.env.HOST_URL;
+const citizenScopes = [
+  "integrator:journey.public:read",
+  "integrator:run.self:read",
+  "integrator:run:write",
+];
 
 export const integratorPublicServantScopes = [
   "integrator:journey:*",
@@ -39,13 +33,27 @@ export const integratorPublicServantScopes = [
   "integrator:run:read",
 ];
 
+export const getAuthenticationContextConfig =
+  (): AuthenticationContextConfig => ({
+    baseUrl: baseConfig.baseUrl,
+    appId: baseConfig.appId,
+    appSecret: baseConfig.appSecret,
+    citizenScopes: [...citizenScopes],
+    publicServantExpectedRoles,
+    publicServantScopes: [...integratorPublicServantScopes],
+    loginUrl: buildLoginUrlWithPostLoginRedirect(),
+    resourceUrl: integratorResource,
+  });
+
+export const postSignoutRedirect = process.env.HOST_URL;
+
 export const getSignInConfiguration = () => ({
   ...baseConfig,
   resources: [],
   scopes: [
     ...organizationScopes,
     ...integratorPublicServantScopes,
-    ...profileApiScopes,
+    ...citizenScopes,
   ],
 });
 
