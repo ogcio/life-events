@@ -119,10 +119,10 @@ export class BaseAuthenticationContext {
 
   async getSelectedOrganization(): Promise<string> {
     const storedOrgId = getSelectedOrganization();
-    getCommonLogger().info({ storedOrgId });
+    console.log({ storedOrgId });
     if (storedOrgId) {
       const context = await this.getCitizen();
-      getCommonLogger().info({ citizenContext: context });
+      console.log({ citizenContext: context });
       const userOrganizations = Object.keys(
         context.user?.organizationData ?? {},
       );
@@ -132,7 +132,7 @@ export class BaseAuthenticationContext {
     }
 
     const orgs = await this.getOrganizations();
-    getCommonLogger().info({ gotOrganizations: orgs });
+    console.log({ gotOrganizations: orgs });
     return Object.values(orgs)?.[0]?.id;
   }
 
