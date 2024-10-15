@@ -25,6 +25,10 @@ export type Session = {
 
 export type AuthConfig = LogtoNextConfig;
 
+export type SignInAuthOptions = {
+  signInConnector: "mygovid" | "entraid";
+};
+
 export type OrganizationData = {
   id: string;
   name: string;
@@ -80,7 +84,7 @@ export interface Sessions {
 }
 
 export type IAuthSession = {
-  login(config: AuthConfig): Promise<void>;
+  login(config: AuthConfig, options?: SignInAuthOptions): Promise<void>;
   logout(config: AuthConfig, redirectUri?: string): Promise<void>;
   get(
     config: AuthConfig,

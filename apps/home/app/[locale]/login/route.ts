@@ -7,5 +7,7 @@ export async function GET() {
     redirect("/", RedirectType.replace);
   }
 
-  await AuthSession.login(logtoConfig);
+  await AuthSession.login(logtoConfig, {
+    signInConnector: "entraid",
+  });
 }
