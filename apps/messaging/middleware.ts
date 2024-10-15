@@ -10,7 +10,7 @@ export default async function (request: NextRequest) {
   })(request);
 
   nextResponse.headers.append("x-pathname", request.nextUrl.pathname);
-  nextResponse.headers.append("x-href", request.nextUrl.href);
+  nextResponse.headers.append("x-search", request.nextUrl.search);
   return nextResponse;
 }
 
