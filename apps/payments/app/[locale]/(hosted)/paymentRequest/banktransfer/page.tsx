@@ -66,7 +66,20 @@ async function confirmPayment(transactionId: string, redirectUrl: string) {
     errorHandler(error);
   }
 
-  redirect(redirectUrl, RedirectType.replace);
+  const { data: redirectToken, error: tokenError } =
+    await paymentsApi.getRedirectToken(transactionId);
+
+  if (tokenError) {
+    errorHandler(tokenError);
+  }
+
+  const token = redirectToken?.data.token;
+  const url = new URL(redirectUrl);
+  if (token) {
+    url.searchParams.append("token", token);
+  }
+
+  redirect(url.toString(), RedirectType.replace);
 }
 
 async function generatePaymentIntentId(): Promise<string> {

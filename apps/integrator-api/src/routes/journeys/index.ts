@@ -8,6 +8,8 @@ import {
   Id,
   JourneyPublicDetails,
   Journeys,
+  JourneySchema,
+  JourneyStepSchema,
   ParamsWithJourneyId,
   UpdateJourneyBody,
   UpdateJourneyBodyDO,
@@ -18,6 +20,7 @@ import {
   CreateJourneyBodyDO,
   JourneyPublicDetailsDO,
 } from "../../plugins/entities/journey/types";
+import { getExternalService } from "../../services/externalServices/externalServiceProvider";
 
 const TAGS = ["Journeys"];
 
@@ -185,6 +188,86 @@ export default async function journeys(app: FastifyInstance) {
       });
 
       reply.send(formatAPIResponse(res));
+    },
+  );
+
+  app.get<{
+    Reply: GenericResponse<JourneySchema> | Error;
+    Params: ParamsWithJourneyId;
+  }>(
+    "/:journeyId/schema",
+    {
+      schema: {
+        tags: TAGS,
+        response: {
+          200: GenericResponse(JourneySchema),
+          401: HttpError,
+          404: HttpError,
+        },
+      },
+    },
+    async (request, reply) => {
+      const { journeyId } = request.params;
+
+      const journeyDetails = await app.journey.getJourneyPublicInfo(journeyId);
+
+      const steps = await app.journeySteps.getJourneySteps(journeyId);
+
+      const stepsData = steps.map((step) => {
+        return new Promise<JourneyStepSchema>((resolve) => {
+          try {
+            const service = getExternalService(step.stepType);
+
+            const result = {
+              stepId: step.id,
+              type: step.stepType,
+              resourceId: "",
+              stepSchema: undefined,
+            } as JourneyStepSchema;
+
+            const resourceId = service.getStepResourceId(step);
+
+            if (!resourceId) {
+              resolve(result);
+              return;
+            }
+
+            result.resourceId = resourceId;
+
+            service
+              .getSchema(resourceId)
+              .then((schema) => {
+                result.stepSchema = schema;
+                resolve(result);
+              })
+              .catch(() => {
+                resolve(result);
+              });
+          } catch (err) {
+            app.log.error(err);
+
+            resolve({
+              stepId: step.id,
+              type: step.stepType,
+              resourceId: "",
+              stepSchema: undefined,
+            } as JourneyStepSchema);
+          }
+        });
+      });
+      const stepDataResult = await Promise.all(stepsData);
+
+      const connections =
+        await app.journeyStepConnections.getJourneyStepConnections(journeyId);
+
+      const result = {
+        journeyId: journeyDetails.id,
+        jounrneyTitle: journeyDetails.title,
+        steps: stepDataResult,
+        stepConnections: connections,
+      };
+
+      reply.send(formatAPIResponse(result));
     },
   );
 }

@@ -240,3 +240,19 @@ export const ParamsWithRunId = Type.Object({
   runId: Type.String(),
 });
 export type ParamsWithRunIdDO = Static<typeof ParamsWithRunId>;
+
+export const JourneyStepSchema = Type.Object({
+  stepId: Type.String(),
+  type: JourneyStepTypes,
+  resourceId: Type.String(),
+  stepSchema: Type.Optional(Type.Any()),
+});
+export type JourneyStepSchema = Static<typeof JourneyStepSchema>;
+
+export const JourneySchema = Type.Object({
+  journeyId: Type.String(),
+  jounrneyTitle: Type.String(),
+  steps: Type.Array(JourneyStepSchema),
+  stepConnections: Type.Array(JourneyStepConnection),
+});
+export type JourneySchema = Static<typeof JourneySchema>;
