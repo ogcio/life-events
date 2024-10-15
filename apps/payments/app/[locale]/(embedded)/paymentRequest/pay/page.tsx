@@ -61,16 +61,6 @@ async function selectCustomAmount(requestId: string, formData: FormData) {
   );
 }
 
-export async function getDynamicAmount(token: string | undefined) {
-  "use server";
-  const paymentsApi = await AuthenticationFactory.getPaymentsClient();
-  const { data: payload, error } = await paymentsApi.decodeToken({ token });
-
-  if (error || !validateCustomAmount(payload?.data.amount)) errorHandler(error);
-
-  return payload!.data.amount;
-}
-
 export default async function Page(props: Props) {
   if (!props.searchParams?.paymentId || !props.searchParams?.id)
     return notFound();
