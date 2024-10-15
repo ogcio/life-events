@@ -119,10 +119,10 @@ export class BaseAuthenticationContext {
 
   async getSelectedOrganization(): Promise<string> {
     const storedOrgId = getSelectedOrganization();
-    console.log({ storedOrgId });
+    getCommonLogger().info({ storedOrgId });
     if (storedOrgId) {
       const context = await this.getCitizen();
-      console.log({ citizenContext: context });
+      getCommonLogger().info({ citizenContext: context });
       const userOrganizations = Object.keys(
         context.user?.organizationData ?? {},
       );
@@ -132,7 +132,7 @@ export class BaseAuthenticationContext {
     }
 
     const orgs = await this.getOrganizations();
-    console.log({ gotOrganizations: orgs });
+    getCommonLogger().info({ gotOrganizations: orgs });
     return Object.values(orgs)?.[0]?.id;
   }
 
@@ -155,25 +155,25 @@ export class BaseAuthenticationContext {
 
   async getToken() {
     try {
-      console.log({
+      getCommonLogger().info({
         get_token_config: this.config,
       });
       let response: string | null = null;
       const isPublicServant = await this.isPublicServant();
-      console.log({ isPublicServant });
+      getCommonLogger().info({ isPublicServant });
       if (isPublicServant) {
         response = await getOrgToken(
           this.config,
           await this.getSelectedOrganization(),
         );
-        console.log({ getOrgTokenResponse: response });
+        getCommonLogger().info({ getOrgTokenResponse: response });
         return response;
       }
       response = await getCitizenToken(this.config, this.config.resourceUrl);
-      console.log({ getCitizenTokenResponse: response });
+      getCommonLogger().info({ getCitizenTokenResponse: response });
       return response;
     } catch (e) {
-      console.log({ msg: "Error in base auth context", error: e });
+      getCommonLogger().error(e, "Error in base auth context");
       throw e;
     }
   }
