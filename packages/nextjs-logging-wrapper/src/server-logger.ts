@@ -1,8 +1,9 @@
 import { headers } from "next/headers.js";
 import { hostname } from "os";
 import { Level, Logger } from "pino";
-import { REQUEST_ID_HEADER } from "@ogcio/shared-errors";
 import { REQUEST_ID_LOG_LABEL, getPinoInstance } from "./shared.js";
+
+const REQUEST_ID_HEADER = "x-life-events-request-id";
 
 export interface LoggingRequest {
   scheme: string | undefined;

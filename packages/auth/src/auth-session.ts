@@ -48,18 +48,18 @@ export const AuthSession: IAuthSession = {
       context = await getLogtoContext(config, getContextParameters);
     } catch (err) {
       getCommonLogger().error(err);
-      redirect(getContextParameters?.loginUrl ?? "/logto_integration/login");
+      redirect(getContextParameters?.loginUrl ?? "/login");
     }
 
     if (!context.isAuthenticated) {
-      redirect(getContextParameters?.loginUrl ?? "/logto_integration/login");
+      redirect(getContextParameters?.loginUrl ?? "/login");
     }
 
     try {
       return parseContext(context, getContextParameters);
     } catch (err) {
       getCommonLogger().error(err);
-      redirect(getContextParameters?.loginUrl ?? "/logto_integration/login");
+      redirect(getContextParameters?.loginUrl ?? "/login");
     }
   },
   async isAuthenticated(config, getContextParameters) {
