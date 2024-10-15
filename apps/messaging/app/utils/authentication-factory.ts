@@ -28,10 +28,13 @@ export class AuthenticationFactory {
       const logger = getCommonLogger();
       logger.fatal(e, "Error while getting token");
       if (res) {
-        logger.fatal({
-          response_body:
-            res.body === null ? "IS NULL" : this.streamToString(res.body),
-        });
+        logger.fatal(
+          {
+            response_body:
+              res.body === null ? "IS NULL" : this.streamToString(res.body),
+          },
+          "Get token response body",
+        );
       }
       throw e;
     }
