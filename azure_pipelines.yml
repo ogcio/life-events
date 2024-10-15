@@ -40,7 +40,7 @@ resources:
     - repository: pipeline-templates
       type: github
       name: ogcio/building-blocks-pipelines
-      ref: unitTestReporting
+      ref: refs/tags/v0.2
       endpoint: ogcio
 
 stages:
