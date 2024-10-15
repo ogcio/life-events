@@ -1,15 +1,11 @@
 import { RedirectType, notFound, redirect } from "next/navigation";
 import { routeDefinitions } from "../../../../routeDefinitions";
 import { getTranslations } from "next-intl/server";
-import {
-  errorHandler,
-  formatCurrency,
-  validateCustomAmount,
-} from "../../../../utils";
+import { errorHandler, formatCurrency } from "../../../../utils";
 import { TransactionStatuses } from "../../../../../types/TransactionStatuses";
 import { BankTransferData } from "../../paymentSetup/providers/types";
 import { AuthenticationFactory } from "../../../../../libraries/authentication-factory";
-import { PaymentRequest } from "../../../../../types/common";
+import { getAmount } from "../utils";
 
 type Params = {
   searchParams: {
@@ -21,31 +17,6 @@ type Params = {
     customAmount?: string;
   };
 };
-
-async function getAmountFromToken(token: string) {
-  const paymentsApi = await AuthenticationFactory.getPaymentsClient();
-  const { data: payload, error } = await paymentsApi.decodeToken({ token });
-
-  if (error || !validateCustomAmount(payload?.data.amount)) errorHandler(error);
-
-  return payload!.data.amount;
-}
-
-async function getAmount({
-  customAmount,
-  token,
-  prDetails,
-}: {
-  customAmount?: string;
-  token?: string;
-  prDetails: PaymentRequest;
-}) {
-  if (token && prDetails.allowAmountOverride) return getAmountFromToken(token);
-
-  return prDetails.allowCustomAmount && customAmount
-    ? parseFloat(customAmount)
-    : prDetails.amount;
-}
 
 async function getPaymentDetails({
   id,

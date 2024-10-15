@@ -12,7 +12,7 @@ type Props = {
   journeyId?: string;
   isPublicServant: boolean;
   token?: string;
-  customAmount?: number;
+  customAmount?: string;
 };
 
 type UrlParams = {
@@ -21,7 +21,7 @@ type UrlParams = {
   journeyId?: string;
   integrationRef: string;
   token?: string;
-  customAmount?: number;
+  customAmount?: string;
 };
 
 async function redirectToPaymentUrl(settings: UrlParams, event) {
@@ -58,7 +58,7 @@ async function getPaymentUrl({
     url.searchParams.set("token", token);
   }
   if (customAmount) {
-    url.searchParams.set("customAmount", customAmount.toString());
+    url.searchParams.set("customAmount", customAmount);
   }
   return url.href;
 }

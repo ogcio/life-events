@@ -30,29 +30,6 @@ export function validateCustomAmount(amount) {
   return true;
 }
 
-// Generating the amount to pay based on the business rules of the application
-export const getRealAmount = ({
-  amount,
-  customAmount,
-  dynamicAmount,
-  allowDynamicAmount,
-  allowCustomOverride,
-}: {
-  // Default amount required from the database
-  amount: number;
-  // Custom amount choosen by the user (if applicable)
-  customAmount?: number;
-  // Dynamc amount from the URL (if applicable)
-  dynamicAmount?: number;
-  allowDynamicAmount: boolean;
-  allowCustomOverride: boolean;
-}) => {
-  if (allowDynamicAmount && dynamicAmount) return dynamicAmount;
-  if (allowCustomOverride && customAmount) return customAmount;
-
-  return amount;
-};
-
 export enum ValidationErrorTypes {
   REQUIRED = "required",
   INVALID = "invalid",

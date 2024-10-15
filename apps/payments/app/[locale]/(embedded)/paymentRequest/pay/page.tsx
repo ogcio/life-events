@@ -1,10 +1,8 @@
 import { getTranslations } from "next-intl/server";
 import { NextIntlClientProvider, AbstractIntlMessages } from "next-intl";
-
 import {
   errorHandler,
   formatCurrency,
-  getRealAmount,
   stringToAmount,
   validateCustomAmount,
 } from "../../../../utils";
@@ -16,6 +14,7 @@ import { EmptyStatus } from "../../../../components/EmptyStatus";
 import Header from "../../../../components/Header/Header";
 import Banner from "../../../../components/Banner";
 import { AuthenticationFactory } from "../../../../../libraries/authentication-factory";
+import { getAmount } from "../../../(hosted)/paymentRequest/utils";
 
 type Props = {
   params: {
@@ -92,30 +91,20 @@ export default async function Page(props: Props) {
 
   if (!details || details.status === "draft") return notFound();
 
-  const dynamicAmount =
-    details.allowAmountOverride && props.searchParams?.token
-      ? await getDynamicAmount(props.searchParams.token)
-      : 0;
-
   const allowCustomAmount =
     details.allowCustomAmount && !details.allowAmountOverride;
 
-  let customAmount = props.searchParams.customAmount
-    ? parseFloat(props.searchParams.customAmount)
-    : undefined;
-
+  let customAmount = props.searchParams.customAmount;
   let customAmountError = false;
   if (customAmount && !validateCustomAmount(customAmount)) {
-    customAmount = 0;
+    customAmount = "0";
     customAmountError = true;
   }
 
-  const realAmount = getRealAmount({
-    amount: details.amount,
+  const realAmount = await getAmount({
     customAmount,
-    dynamicAmount: dynamicAmount,
-    allowDynamicAmount: details.allowAmountOverride,
-    allowCustomOverride: details.allowCustomAmount,
+    token: props.searchParams.token,
+    prDetails: details,
   });
 
   const selectAmountAction = selectCustomAmount.bind(
@@ -182,7 +171,7 @@ export default async function Page(props: Props) {
                       required
                       defaultValue={
                         customAmount && allowCustomAmount
-                          ? customAmount / 100
+                          ? parseFloat(customAmount) / 100
                           : undefined
                       }
                     />

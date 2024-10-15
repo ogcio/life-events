@@ -1,17 +1,18 @@
 import OpenBankingHost from "./OpenBankingHost";
 import { createPaymentRequest } from "../../../../integration/trueLayer";
 import { getTranslations } from "next-intl/server";
-import { errorHandler, getRealAmount } from "../../../../utils";
+import { errorHandler } from "../../../../utils";
 import { redirect, RedirectType } from "next/navigation";
 import { AuthenticationFactory } from "../../../../../libraries/authentication-factory";
+import { getAmount } from "../utils";
 
 const MAX_WAIT_FOR_RESULT = "60";
 
 async function getPaymentDetails(
   paymentId: string,
   user: { name: string; email: string },
-  amount?: number,
-  customAmount?: number,
+  token?: string,
+  customAmount?: string,
 ) {
   const paymentsApi = await AuthenticationFactory.getPaymentsClient();
   const { data: details, error } =
@@ -29,20 +30,14 @@ async function getPaymentDetails(
 
   if (!provider) return undefined;
 
-  const realAmount = getRealAmount({
-    amount: details.amount,
-    customAmount,
-    dynamicAmount: amount,
-    allowDynamicAmount: details.allowAmountOverride,
-    allowCustomOverride: details.allowCustomAmount,
-  });
+  const amount = await getAmount({ customAmount, token, prDetails: details });
 
   const paymentDetails = {
     ...details,
     providerId: provider.id,
     providerName: provider.name,
     providerData: provider.data,
-    amount: realAmount,
+    amount,
     user,
   };
 
@@ -59,7 +54,7 @@ export default async function Bank(props: {
     | {
         paymentId: string;
         integrationRef: string;
-        amount?: string;
+        token?: string;
         customAmount?: string;
         submissionId?: string;
         journeyId?: string;
@@ -77,22 +72,16 @@ export default async function Bank(props: {
 
   const {
     paymentId,
-    amount: amountParam,
-    customAmount: customAmountParam,
+    token,
+    customAmount,
     submissionId = "",
     journeyId = "",
   } = props.searchParams;
 
-  const amount = amountParam ? parseFloat(amountParam) : undefined;
-
-  const customAmount = customAmountParam
-    ? parseFloat(customAmountParam)
-    : undefined;
-
   const details = await getPaymentDetails(
     paymentId,
     { email: user?.email ?? "", name: user?.name ?? "" },
-    amount,
+    token,
     customAmount,
   );
 
