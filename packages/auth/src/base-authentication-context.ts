@@ -54,31 +54,16 @@ export class BaseAuthenticationContext {
   }
 
   async getCitizen() {
-    getCommonLogger().info(
-      { authConfig: this.config, citizenContext: this.citizenContext },
-      "in get citizen method",
-    );
     if (!this.citizenContext) {
       this.citizenContext =
         this.sharedContext && !this.sharedContext.isPublicServant
           ? this.sharedContext
           : await getCitizenContext(this.config);
     }
-    getCommonLogger().info(
-      { citizenContext: this.citizenContext },
-      "got citizen",
-    );
     return this.citizenContext as PartialAuthSessionContext;
   }
 
   async getPublicServant() {
-    getCommonLogger().info(
-      {
-        authConfig: this.config,
-        publicServantContext: this.publicServantContext,
-      },
-      "in get public servant method",
-    );
     if (!this.publicServantContext) {
       this.publicServantContext =
         this.sharedContext && this.sharedContext.isPublicServant
@@ -87,10 +72,6 @@ export class BaseAuthenticationContext {
               ...this.config,
               organizationId: await this.getSelectedOrganization(),
             });
-      getCommonLogger().info(
-        { pubServantCOntext: this.publicServantContext },
-        "got ps context",
-      );
     }
     return this.publicServantContext as PartialAuthSessionContext;
   }
