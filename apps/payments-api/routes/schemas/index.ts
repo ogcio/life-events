@@ -215,6 +215,16 @@ export const ParamsWithPaymentRequestId = Type.Object({
   requestId: Type.String(),
 });
 
+export const TokenBody = Type.Object({
+  token: Type.String(),
+});
+export type TokenBodyDO = Static<typeof TokenBody>;
+
+export const TokenPayload = Type.Object({
+  amount: Type.Number(),
+});
+export type TokenPayload = Static<typeof TokenPayload>;
+
 /**
  * Transaction status
  */

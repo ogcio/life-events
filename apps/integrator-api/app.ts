@@ -13,7 +13,11 @@ import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import sensible from "@fastify/sensible";
 import schemaValidators from "./src/routes/schemas/validations";
-import apiAuthPlugin, { verifyJWT } from "api-auth";
+import apiAuthPlugin, {
+  getJWKSRoute,
+  readOrGenerateKeyPair,
+  verifyJWT,
+} from "api-auth";
 import { initializeErrorHandler } from "@ogcio/fastify-error-handler";
 import { initializeLoggingHooks } from "@ogcio/fastify-logging-wrapper";
 import healthCheck from "./src/routes/healthcheck";
@@ -87,6 +91,11 @@ export async function build(opts?: FastifyServerOptions) {
   app.register(healthCheck);
 
   app.register(routes, { prefix: "/api/v1" });
+
+  app.get("/.well-known/jwks.json", async () => {
+    const { publicKey } = await readOrGenerateKeyPair("integrator-api");
+    return getJWKSRoute(publicKey);
+  });
 
   // Test callback route to test communication between systems
   app.get("/callback", async (request, reply) => {

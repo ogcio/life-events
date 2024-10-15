@@ -11,8 +11,8 @@ type Props = {
   submissionId?: string;
   journeyId?: string;
   isPublicServant: boolean;
-  urlAmount?: number;
-  customAmount?: number;
+  token?: string;
+  customAmount?: string;
 };
 
 type UrlParams = {
@@ -20,8 +20,8 @@ type UrlParams = {
   submissionId?: string;
   journeyId?: string;
   integrationRef: string;
-  amount?: number;
-  customAmount?: number;
+  token?: string;
+  customAmount?: string;
 };
 
 async function redirectToPaymentUrl(settings: UrlParams, event) {
@@ -43,7 +43,7 @@ async function getPaymentUrl({
   journeyId,
   type,
   integrationRef,
-  amount,
+  token,
   customAmount,
 }: UrlParams & { type: string }) {
   const url = new URL(
@@ -54,11 +54,11 @@ async function getPaymentUrl({
   url.searchParams.set("integrationRef", integrationRef);
   if (submissionId) url.searchParams.set("submissionId", submissionId);
   if (journeyId) url.searchParams.set("journeyId", journeyId);
-  if (amount) {
-    url.searchParams.set("amount", amount.toString());
+  if (token) {
+    url.searchParams.set("token", token);
   }
   if (customAmount) {
-    url.searchParams.set("customAmount", customAmount.toString());
+    url.searchParams.set("customAmount", customAmount);
   }
   return url.href;
 }
@@ -70,7 +70,7 @@ export default function ({
   submissionId,
   journeyId,
   isPublicServant,
-  urlAmount,
+  token,
   customAmount,
 }: Props) {
   const t = useTranslations();
@@ -107,7 +107,7 @@ export default function ({
     submissionId,
     journeyId,
     integrationRef: referenceId,
-    amount: urlAmount,
+    token,
     customAmount,
   });
 

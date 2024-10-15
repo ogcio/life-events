@@ -11,6 +11,9 @@ import {
   PaymentRequest,
   PaymentRequestDetails,
   PaymentRequestPublicInfo,
+  TokenBody,
+  TokenBodyDO,
+  TokenPayload,
   Transaction,
 } from "../schemas";
 import {
@@ -32,6 +35,7 @@ import {
   PaymentRequestPublicInfoDO,
 } from "../../plugins/entities/paymentRequest/types";
 import { AuditLogEventType } from "../../plugins/auditLog/auditLogEvents";
+import { verifyJWT } from "api-auth";
 
 const TAGS = ["PaymentRequests"];
 
@@ -185,6 +189,50 @@ export default async function paymentRequests(app: FastifyInstance) {
       });
 
       reply.send(requestId);
+    },
+  );
+
+  app.post<{
+    Body: TokenBodyDO;
+    Reply: GenericResponseType<TokenPayload> | Error;
+  }>(
+    "/decode",
+    {
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [
+          authPermissions.PAYMENT_REQUEST_PUBLIC_READ,
+        ]),
+      schema: {
+        tags: TAGS,
+        body: TokenBody,
+        response: {
+          200: GenericResponse(TokenPayload),
+          401: HttpError,
+          500: HttpError,
+        },
+      },
+    },
+    async (request, reply) => {
+      const userId = request.userData?.userId;
+
+      if (!userId) {
+        throw app.httpErrors.unauthorized("Unauthorized!");
+      }
+
+      const { token } = request.body;
+
+      try {
+        const jwksUrl = `${process.env.INTEGRATOR_BACKEND_URL}/.well-known/jwks.json`;
+        const payload = (await verifyJWT(token, {
+          jwksUrl,
+          issuer: "integrator-api",
+          audience: "payments-api",
+        })) as unknown as TokenPayload;
+
+        reply.send(formatAPIResponse(payload));
+      } catch (err) {
+        throw app.httpErrors.unauthorized("Invalid token");
+      }
     },
   );
 

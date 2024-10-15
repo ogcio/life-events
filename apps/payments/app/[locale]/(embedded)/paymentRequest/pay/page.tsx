@@ -1,12 +1,10 @@
 import { getTranslations } from "next-intl/server";
 import { NextIntlClientProvider, AbstractIntlMessages } from "next-intl";
-
 import {
   errorHandler,
   formatCurrency,
-  getRealAmount,
   stringToAmount,
-  validateURLAmount,
+  validateCustomAmount,
 } from "../../../../utils";
 import { notFound, redirect } from "next/navigation";
 import SelectPaymentMethod from "./SelectPaymentMethod";
@@ -16,6 +14,7 @@ import { EmptyStatus } from "../../../../components/EmptyStatus";
 import Header from "../../../../components/Header/Header";
 import Banner from "../../../../components/Banner";
 import { AuthenticationFactory } from "../../../../../libraries/authentication-factory";
+import { getAmount } from "../../../(hosted)/paymentRequest/utils";
 
 type Props = {
   params: {
@@ -25,7 +24,7 @@ type Props = {
     | {
         paymentId: string;
         id: string;
-        amount?: string;
+        token?: string;
         customAmount?: string;
         embed?: string;
         submissionId?: string;
@@ -82,32 +81,20 @@ export default async function Page(props: Props) {
 
   if (!details || details.status === "draft") return notFound();
 
-  const allowCustomAmount = details.allowCustomAmount;
+  const allowCustomAmount =
+    details.allowCustomAmount && !details.allowAmountOverride;
 
-  let urlAmount = props.searchParams.amount
-    ? parseFloat(props.searchParams.amount)
-    : undefined;
-  let customAmount = props.searchParams.customAmount
-    ? parseFloat(props.searchParams.customAmount)
-    : undefined;
-
+  let customAmount = props.searchParams.customAmount;
   let customAmountError = false;
-  if (urlAmount && !validateURLAmount(urlAmount)) {
-    urlAmount = 0;
+  if (customAmount && !validateCustomAmount(customAmount)) {
+    customAmount = "0";
     customAmountError = true;
   }
 
-  if (customAmount && !validateURLAmount(customAmount)) {
-    customAmount = 0;
-    customAmountError = true;
-  }
-
-  const realAmount = getRealAmount({
-    amount: details.amount,
+  const realAmount = await getAmount({
     customAmount,
-    amountOverride: urlAmount,
-    allowAmountOverride: details.allowAmountOverride,
-    allowCustomOverride: details.allowCustomAmount,
+    token: props.searchParams.token,
+    prDetails: details,
   });
 
   const selectAmountAction = selectCustomAmount.bind(
@@ -174,7 +161,7 @@ export default async function Page(props: Props) {
                       required
                       defaultValue={
                         customAmount && allowCustomAmount
-                          ? customAmount / 100
+                          ? parseFloat(customAmount) / 100
                           : undefined
                       }
                     />
@@ -200,7 +187,7 @@ export default async function Page(props: Props) {
               submissionId={props.searchParams.submissionId}
               journeyId={props.searchParams.journeyId}
               isPublicServant={isPublicServant}
-              urlAmount={urlAmount}
+              token={props.searchParams.token}
               customAmount={customAmount}
             />
           </NextIntlClientProvider>

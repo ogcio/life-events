@@ -29,7 +29,7 @@ export class PaymentRequestFormPage {
   private readonly referenceInput: Locator;
   private readonly amountInput: Locator;
   private readonly redirectURLInput: Locator;
-  private readonly amountOverrideCheckbox: Locator;
+  private readonly dynamicAmountCheckbox: Locator;
   private readonly customAmountCheckbox: Locator;
   private readonly activeStatusRadioBtn: Locator;
   private readonly inactiveStatusRadioBtn: Locator;
@@ -50,9 +50,7 @@ export class PaymentRequestFormPage {
     this.cardSelect = this.page.getByLabel("Card Payment Account");
     this.referenceInput = this.page.getByRole("textbox", { name: /Reference/ });
     this.amountInput = this.page.getByLabel("Amount", { exact: true });
-    this.amountOverrideCheckbox = this.page.getByLabel(
-      "Allow amount override from URL",
-    );
+    this.dynamicAmountCheckbox = this.page.getByLabel("Allow dynamic amount");
     this.customAmountCheckbox = this.page.getByLabel(
       "Allow the user to pay a custom amount",
     );
@@ -84,7 +82,7 @@ export class PaymentRequestFormPage {
 
     await this.enterReference(mockPaymentRequestReference);
     await this.enterAmount(mockAmount);
-    await this.selectAllowAmountOverride();
+    await this.selectAllowDynamicAmount();
     await this.selectCustomAmount();
     await this.enterRedirectURL(mockRedirectUrl);
     (await props.status) === "inactive"
@@ -170,12 +168,12 @@ export class PaymentRequestFormPage {
     await this.amountInput.fill(amount);
   }
 
-  async selectAllowAmountOverride() {
-    await this.amountOverrideCheckbox.check();
+  async selectAllowDynamicAmount() {
+    await this.dynamicAmountCheckbox.check();
   }
 
-  async deselectAllowAmountOverride() {
-    await this.amountOverrideCheckbox.uncheck();
+  async deselectAllowDynamicAmount() {
+    await this.dynamicAmountCheckbox.uncheck();
   }
 
   async selectCustomAmount() {
