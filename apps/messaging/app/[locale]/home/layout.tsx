@@ -18,24 +18,30 @@ export default async function homeLayout(
   const environment = String(process.env.ENVIRONMENT);
   const links = getLinks(environment, props.params.locale);
 
-  const path = headers().get("x-pathname");
-
-  const oppositeLanguage = props.params.locale === LANG_EN ? LANG_GA : LANG_EN;
-
-  const languageToggleUrl = new URL(
-    `${process.env.NEXT_PUBLIC_MESSAGING_SERVICE_ENTRY_POINT!}${path ? `${path.replace(/(\/en\/|\/ga\/)/, `/${oppositeLanguage}/`)}` : ""}`,
+  const currentUrl = new URL(
+    headers().get("x-href") ||
+      process.env.NEXT_PUBLIC_MESSAGING_SERVICE_ENTRY_POINT!,
   );
 
-  languageToggleUrl.search = headers().get("x-search") || "";
+  const gaUrl = new URL(currentUrl);
+  const gaUrlSplit = gaUrl.pathname.split("/");
 
-  const oppositeLanguageLabel =
+  if (gaUrlSplit.length > 1) {
+    gaUrlSplit[1] = LANG_GA;
+    gaUrl.pathname = gaUrlSplit.join("/");
+  }
+
+  const enUrl = new URL(currentUrl);
+  const enUrlSplit = enUrl.pathname.split("/");
+  if (enUrlSplit.length > 1) {
+    enUrlSplit[1] = LANG_EN;
+    enUrl.pathname = enUrlSplit.join("/");
+  }
+
+  const languages =
     props.params.locale === LANG_EN
-      ? tHome("gaeilgeMenuLabel")
-      : tHome("englishMenuLabel");
-
-  const languages = [
-    { href: languageToggleUrl.href, label: oppositeLanguageLabel },
-  ];
+      ? [{ href: gaUrl.href, label: tHome("gaeilgeMenuLabel") }]
+      : [{ href: enUrl.href, label: tHome("englishMenuLabel") }];
 
   async function headerSearchAction(formData: FormData) {
     "use server";
