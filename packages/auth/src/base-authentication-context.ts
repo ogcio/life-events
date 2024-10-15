@@ -171,6 +171,7 @@ export class BaseAuthenticationContext {
       }
       response = await getCitizenToken(this.config, this.config.resourceUrl);
       getCommonLogger().info({ getCitizenTokenResponse: response });
+      return response;
     } catch (e) {
       getCommonLogger().error(e, "Error in base auth context");
       throw e;
