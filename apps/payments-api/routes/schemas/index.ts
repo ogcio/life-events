@@ -518,3 +518,7 @@ export const AuditLogEventsFiltersQueryString = Type.Composite([
 export type AuditLogEventsFiltersQueryString = Static<
   typeof AuditLogEventsFiltersQueryString
 >;
+
+export const TokenObject = Type.Object({
+  token: Type.String(),
+});

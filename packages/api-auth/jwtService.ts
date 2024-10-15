@@ -10,7 +10,6 @@ import {
   importJWK,
 } from "jose";
 import { createPublicKey, generateKeyPairSync } from "crypto";
-import fs from "fs/promises";
 
 const defaultAlgorithm = "RS256";
 
