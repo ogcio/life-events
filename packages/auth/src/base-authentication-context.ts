@@ -119,10 +119,9 @@ export class BaseAuthenticationContext {
 
   async getSelectedOrganization(): Promise<string> {
     const storedOrgId = getSelectedOrganization();
-    getCommonLogger().info({ storedOrgId });
+
     if (storedOrgId) {
       const context = await this.getCitizen();
-      getCommonLogger().info({ citizenContext: context });
       const userOrganizations = Object.keys(
         context.user?.organizationData ?? {},
       );
@@ -132,7 +131,6 @@ export class BaseAuthenticationContext {
     }
 
     const orgs = await this.getOrganizations();
-    getCommonLogger().info({ gotOrganizations: orgs });
     return Object.values(orgs)?.[0]?.id;
   }
 
@@ -154,27 +152,12 @@ export class BaseAuthenticationContext {
   };
 
   async getToken() {
-    try {
-      getCommonLogger().info({
-        get_token_config: this.config,
-      });
-      let response: string | null = null;
-      const isPublicServant = await this.isPublicServant();
-      getCommonLogger().info({ isPublicServant });
-      if (isPublicServant) {
-        response = await getOrgToken(
-          this.config,
-          await this.getSelectedOrganization(),
-        );
-        getCommonLogger().info({ getOrgTokenResponse: response });
-        return response;
-      }
-      response = await getCitizenToken(this.config, this.config.resourceUrl);
-      getCommonLogger().info({ getCitizenTokenResponse: response });
-      return response;
-    } catch (e) {
-      getCommonLogger().error(e, "Error in base auth context");
-      throw e;
+    if (await this.isPublicServant()) {
+      return await getOrgToken(
+        this.config,
+        await this.getSelectedOrganization(),
+      );
     }
+    return await getCitizenToken(this.config, this.config.resourceUrl);
   }
 }
