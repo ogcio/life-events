@@ -155,25 +155,25 @@ export class BaseAuthenticationContext {
 
   async getToken() {
     try {
-      getCommonLogger().info({
+      console.log({
         get_token_config: this.config,
       });
       let response: string | null = null;
       const isPublicServant = await this.isPublicServant();
-      getCommonLogger().info({ isPublicServant });
+      console.log({ isPublicServant });
       if (isPublicServant) {
         response = await getOrgToken(
           this.config,
           await this.getSelectedOrganization(),
         );
-        getCommonLogger().info({ getOrgTokenResponse: response });
+        console.log({ getOrgTokenResponse: response });
         return response;
       }
       response = await getCitizenToken(this.config, this.config.resourceUrl);
-      getCommonLogger().info({ getCitizenTokenResponse: response });
+      console.log({ getCitizenTokenResponse: response });
       return response;
     } catch (e) {
-      getCommonLogger().error(e, "Error in base auth context");
+      console.log({ msg: "Error in base auth context", error: e });
       throw e;
     }
   }
