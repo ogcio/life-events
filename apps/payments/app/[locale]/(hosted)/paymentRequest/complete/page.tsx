@@ -48,9 +48,10 @@ async function getTransactionDetails(extPaymentId: string) {
     transaction_id: number;
     payment_request_id: string;
     integration_reference: string;
+    amount: string;
   }>(
     `
-    SELECT transaction_id, payment_request_id, integration_reference
+    SELECT transaction_id, payment_request_id, integration_reference, amount
     FROM payment_transactions
     where ext_payment_id = $1
     `,
@@ -150,7 +151,7 @@ export default async function Page(props: Props) {
   );
   returnUrl.searchParams.append("id", transactionDetail.integration_reference);
   returnUrl.searchParams.append("status", status);
-  returnUrl.searchParams.append("pay", requestDetail.amount.toString());
+  returnUrl.searchParams.append("pay", transactionDetail.amount);
 
   redirect(returnUrl.href, RedirectType.replace);
 }
