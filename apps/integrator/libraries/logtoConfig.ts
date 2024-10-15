@@ -1,6 +1,7 @@
 import { AuthenticationContextConfig } from "auth/base-authentication-context";
 import { organizationScopes } from "auth/authentication-context";
 import { headers } from "next/headers";
+import { AuthUserScope } from "auth/auth-session";
 
 const integratorResource = process.env.INTEGRATOR_BACKEND_URL + "/";
 
@@ -20,6 +21,8 @@ const buildLoginUrlWithPostLoginRedirect = () => {
   const currentPath = headers().get("x-url");
   return `/preLogin?loginUrl=/login&postLoginRedirectUrl=${encodeURIComponent(currentPath ?? "")}`;
 };
+
+export const commonScopes = [AuthUserScope.Email];
 
 const citizenScopes = [
   "integrator:journey.public:read",
@@ -49,8 +52,9 @@ export const postSignoutRedirect = process.env.HOST_URL;
 
 export const getSignInConfiguration = () => ({
   ...baseConfig,
-  resources: [],
+  resources: [integratorResource],
   scopes: [
+    ...commonScopes,
     ...organizationScopes,
     ...integratorPublicServantScopes,
     ...citizenScopes,
