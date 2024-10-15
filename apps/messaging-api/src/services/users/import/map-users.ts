@@ -10,7 +10,6 @@ import {
   UsersImport,
 } from "../../../types/usersSchemaDefinitions.js";
 import { isNativeError } from "util/types";
-import { Profile } from "building-blocks-sdk";
 import {
   AvailableTransports,
   getUserByContacts,
@@ -23,6 +22,7 @@ import { getProfileSdk } from "../../../utils/authentication-factory.js";
 import { EditableProviderTypes } from "../../../types/schemaDefinitions.js";
 import { httpErrors } from "@fastify/sensible";
 import { isHttpError } from "http-errors";
+import { BuildingBlocksSDK } from "@ogcio/building-blocks-sdk";
 interface FoundUser {
   id: string;
   firstname: string;
@@ -283,7 +283,7 @@ const processOrganizationUserRelation = async (params: {
 };
 
 const processToImportUser = async (params: {
-  profile: Profile;
+  profile: BuildingBlocksSDK["profile"];
   toImportUser: ToImportUser;
   organisationId: string;
   client: PoolClient;
@@ -564,7 +564,7 @@ const extractUserDetails = (toImportUser: ToImportUser): UserDetails => ({
 });
 
 const getUserProfile = async (params: {
-  profile: Profile;
+  profile: BuildingBlocksSDK["profile"];
   toImportUser: ToImportUser;
 }): Promise<{ data: FoundUser | undefined }> => {
   const { profile, toImportUser } = params;

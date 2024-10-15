@@ -5,9 +5,9 @@ import {
   User,
   UsersImport,
 } from "../../types/usersSchemaDefinitions.js";
-import { Profile } from "building-blocks-sdk";
 import { PaginationParams } from "../../types/schemaDefinitions.js";
 import { httpErrors } from "@fastify/sensible";
+import { BuildingBlocksSDK } from "@ogcio/building-blocks-sdk";
 
 const getUser = async (params: {
   client: PoolClient;
@@ -275,11 +275,11 @@ export const getUserProfiles = async (
 };
 
 export function ProfileSdkFacade(
-  sdkProfile: Profile,
+  sdkProfile: BuildingBlocksSDK["profile"],
   messagingProfile: {
     selectUsers(ids: string[]): ReturnType<typeof getUserProfiles>;
   },
-): Omit<Profile, "client"> {
+): Omit<BuildingBlocksSDK["profile"], "client"> {
   return {
     createAddress: sdkProfile.createAddress,
     createUser: sdkProfile.createUser,
