@@ -1,10 +1,15 @@
 import { RedirectType, notFound, redirect } from "next/navigation";
 import { routeDefinitions } from "../../../../routeDefinitions";
 import { getTranslations } from "next-intl/server";
-import { errorHandler, formatCurrency } from "../../../../utils";
+import {
+  errorHandler,
+  formatCurrency,
+  validateCustomAmount,
+} from "../../../../utils";
 import { TransactionStatuses } from "../../../../../types/TransactionStatuses";
 import { BankTransferData } from "../../paymentSetup/providers/types";
 import { AuthenticationFactory } from "../../../../../libraries/authentication-factory";
+import { PaymentRequest } from "../../../../../types/common";
 
 type Params = {
   searchParams: {
@@ -12,14 +17,48 @@ type Params = {
     integrationRef: string;
     submissionId?: string;
     journeyId?: string;
-    amount?: string;
+    token?: string;
+    customAmount?: string;
   };
 };
 
-async function getPaymentDetails(paymentId: string, amount?: number) {
+async function getAmountFromToken(token: string) {
+  const paymentsApi = await AuthenticationFactory.getPaymentsClient();
+  const { data: payload, error } = await paymentsApi.decodeToken({ token });
+
+  if (error || !validateCustomAmount(payload?.data.amount)) errorHandler(error);
+
+  return payload!.data.amount;
+}
+
+async function getAmount({
+  customAmount,
+  token,
+  prDetails,
+}: {
+  customAmount?: string;
+  token?: string;
+  prDetails: PaymentRequest;
+}) {
+  if (token && prDetails.allowAmountOverride) return getAmountFromToken(token);
+
+  return prDetails.allowCustomAmount && customAmount
+    ? parseFloat(customAmount)
+    : prDetails.amount;
+}
+
+async function getPaymentDetails({
+  id,
+  customAmount,
+  token,
+}: {
+  id: string;
+  customAmount?: string;
+  token?: string;
+}) {
   const paymentsApi = await AuthenticationFactory.getPaymentsClient();
   const { data: details, error } =
-    await paymentsApi.getPaymentRequestPublicInfo(paymentId);
+    await paymentsApi.getPaymentRequestPublicInfo(id);
 
   if (error) {
     errorHandler(error);
@@ -33,12 +72,14 @@ async function getPaymentDetails(paymentId: string, amount?: number) {
 
   if (!provider) return undefined;
 
+  const amount = await getAmount({ customAmount, token, prDetails: details });
+
   return {
     ...details,
     providerId: provider.id,
     providerName: provider.name,
     providerData: provider.data,
-    amount: details.allowAmountOverride && amount ? amount : details.amount,
+    amount,
   };
 }
 
@@ -98,13 +139,11 @@ export default async function Bank(params: Params) {
 
   const t = await getTranslations("PayManualBankTransfer");
 
-  const amount = params.searchParams.amount
-    ? parseFloat(params.searchParams.amount)
-    : undefined;
-  const paymentDetails = await getPaymentDetails(
-    params.searchParams.paymentId,
-    amount,
-  );
+  const paymentDetails = await getPaymentDetails({
+    id: params.searchParams.paymentId,
+    customAmount: params.searchParams.customAmount,
+    token: params.searchParams.token,
+  });
 
   if (!paymentDetails) {
     notFound();

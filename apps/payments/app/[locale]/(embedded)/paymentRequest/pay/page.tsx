@@ -6,7 +6,7 @@ import {
   formatCurrency,
   getRealAmount,
   stringToAmount,
-  validateURLAmount,
+  validateCustomAmount,
 } from "../../../../utils";
 import { notFound, redirect } from "next/navigation";
 import SelectPaymentMethod from "./SelectPaymentMethod";
@@ -62,16 +62,14 @@ async function selectCustomAmount(requestId: string, formData: FormData) {
   );
 }
 
-async function getDynamicAmount(token: string | undefined) {
+export async function getDynamicAmount(token: string | undefined) {
   "use server";
-  if (!token) return Promise.resolve({ amount: 0 });
-
   const paymentsApi = await AuthenticationFactory.getPaymentsClient();
   const { data: payload, error } = await paymentsApi.decodeToken({ token });
 
-  if (error) errorHandler(error);
+  if (error || !validateCustomAmount(payload?.data.amount)) errorHandler(error);
 
-  return payload?.data;
+  return payload!.data.amount;
 }
 
 export default async function Page(props: Props) {
@@ -83,33 +81,31 @@ export default async function Page(props: Props) {
 
   const embed = props.searchParams?.embed === "true";
 
-  const [details, t, tBanner, tCommon, dynamicAmount] = await Promise.all([
+  const [details, t, tBanner, tCommon] = await Promise.all([
     getPaymentRequestDetails(props.searchParams.paymentId),
     getTranslations("PayPaymentRequest"),
     getTranslations("PreviewBanner"),
     getTranslations("Common"),
-    getDynamicAmount(props.searchParams?.token),
   ]);
 
   const { messages } = await getRequestConfig({ locale: props.params.locale });
 
   if (!details || details.status === "draft") return notFound();
 
-  const allowCustomAmount = details.allowCustomAmount;
+  const dynamicAmount =
+    details.allowAmountOverride && props.searchParams?.token
+      ? await getDynamicAmount(props.searchParams.token)
+      : 0;
 
-  let urlAmount = dynamicAmount?.amount ?? undefined;
+  const allowCustomAmount =
+    details.allowCustomAmount && !details.allowAmountOverride;
 
   let customAmount = props.searchParams.customAmount
     ? parseFloat(props.searchParams.customAmount)
     : undefined;
 
   let customAmountError = false;
-  if (urlAmount && !validateURLAmount(urlAmount)) {
-    urlAmount = 0;
-    customAmountError = true;
-  }
-
-  if (customAmount && !validateURLAmount(customAmount)) {
+  if (customAmount && !validateCustomAmount(customAmount)) {
     customAmount = 0;
     customAmountError = true;
   }
@@ -117,7 +113,7 @@ export default async function Page(props: Props) {
   const realAmount = getRealAmount({
     amount: details.amount,
     customAmount,
-    dynamicAmount: urlAmount,
+    dynamicAmount: dynamicAmount,
     allowDynamicAmount: details.allowAmountOverride,
     allowCustomOverride: details.allowCustomAmount,
   });
@@ -212,7 +208,7 @@ export default async function Page(props: Props) {
               submissionId={props.searchParams.submissionId}
               journeyId={props.searchParams.journeyId}
               isPublicServant={isPublicServant}
-              urlAmount={urlAmount}
+              token={props.searchParams.token}
               customAmount={customAmount}
             />
           </NextIntlClientProvider>

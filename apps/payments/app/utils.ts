@@ -18,7 +18,7 @@ export function stringToAmount(amount: string) {
   return Math.round(parseFloat(amount) * 100);
 }
 
-export function validateURLAmount(amount) {
+export function validateCustomAmount(amount) {
   if (isNaN(amount)) {
     return false;
   }
