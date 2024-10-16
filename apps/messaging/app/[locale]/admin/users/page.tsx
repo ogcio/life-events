@@ -69,7 +69,7 @@ export default async (props: {
       throw notFound();
     }
     const messagingClient = await AuthenticationFactory.getMessagingClient();
-    const { data } = await messagingClient.getUsers({ activeOnly: false });
+    const { data } = await messagingClient.getUsers({ activeOnly: "false" });
     users = data;
   }
   return (
