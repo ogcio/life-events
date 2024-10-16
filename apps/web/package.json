@@ -10,7 +10,7 @@
     "test:e2e": "playwright test",
     "test:smoke:e2e": "echo \"Error: no test specified\" && exit 0",
     "test:regression:e2e": "echo \"Error: no test specified\" && exit 0",
-    "test:perf": "$CHROME_PATH=/opt/azure-agent/.cache/puppeteer/chrome/linux-127.0.6533.88/chrome-linux64/ && node perf/lighthouse/main.mjs",
+    "test:perf": "$CHROME_PATH=/opt/azure-agent/.cache/puppeteer/chrome/linux-127.0.6533.88/ && node perf/lighthouse/main.mjs",
     "test:perf:local": "node perf/lighthouse/main.mjs",
     "migrate": "db-migrate up"
   },
