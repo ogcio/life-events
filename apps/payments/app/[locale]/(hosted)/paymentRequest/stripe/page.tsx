@@ -46,7 +46,7 @@ export default async function Card(props: {
         paymentId: string;
         integrationRef: string;
         token?: string;
-        submissionId?: string;
+        runId?: string;
         journeyId?: string;
         customAmount?: string;
       }
@@ -69,7 +69,7 @@ export default async function Card(props: {
     return redirect("/not-found", RedirectType.replace);
   }
 
-  const { paymentId, submissionId = "", journeyId = "" } = props.searchParams;
+  const { paymentId, runId = "", journeyId = "" } = props.searchParams;
 
   const paymentDetails = await getPaymentDetails(
     paymentId,
@@ -93,7 +93,7 @@ export default async function Card(props: {
     metadata: {
       email: user?.email ?? "",
       name: user?.name ?? "",
-      submissionId,
+      runId,
       journeyId,
     },
   });

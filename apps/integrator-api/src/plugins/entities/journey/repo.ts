@@ -39,6 +39,12 @@ export class JourneyRepo {
     journeyId: string,
     organizationId: string,
   ): Promise<QueryResult<JourneyDetailsDO>> {
+    const data = [journeyId];
+
+    if (organizationId) {
+      data.push(organizationId);
+    }
+
     return this.pg.query(
       `SELECT
           j.id,
@@ -48,11 +54,11 @@ export class JourneyRepo {
           j.status,
           j.initial_step_id as "initialStepId",
           j.created_at as "createdAt",
-          j.updated_at as "updatedAt",
+          j.updated_at as "updatedAt"
         FROM journeys as j
-        WHERE j.id = $1 AND j.organization_id = $2
+        WHERE j.id = $1 ${organizationId ? "AND j.organization_id = $2" : ""}
         GROUP BY j.id`,
-      [journeyId, organizationId],
+      data,
     );
   }
 
@@ -65,7 +71,8 @@ export class JourneyRepo {
           title,
           user_id as "userId",
           organization_id as "organizationId",
-          status
+          status,
+          initial_step_id as "initialStepId"
         FROM journeys
         WHERE id = $1`,
       [journeyId],

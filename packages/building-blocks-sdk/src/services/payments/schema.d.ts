@@ -777,7 +777,7 @@ export interface paths {
                 metadata: {
                   name: string;
                   email: string;
-                  submissionId?: string;
+                  runId?: string;
                   journeyId?: string;
                   journeyTitle?: string;
                 };
@@ -900,7 +900,7 @@ export interface paths {
                 metadata: {
                   name: string;
                   email: string;
-                  submissionId?: string;
+                  runId?: string;
                   journeyId?: string;
                   journeyTitle?: string;
                 };
@@ -990,7 +990,7 @@ export interface paths {
             metadata: {
               name: string;
               email: string;
-              submissionId?: string;
+              runId?: string;
               journeyId?: string;
               journeyTitle?: string;
             };
@@ -1442,7 +1442,7 @@ export interface paths {
                 metadata: {
                   name: string;
                   email: string;
-                  submissionId?: string;
+                  runId?: string;
                   journeyId?: string;
                   journeyTitle?: string;
                 };

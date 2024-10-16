@@ -8,7 +8,7 @@ type Props = {
   providers: ProviderWithUnknownData[];
   paymentId: string;
   referenceId: string;
-  submissionId?: string;
+  runId?: string;
   journeyId?: string;
   isPublicServant: boolean;
   token?: string;
@@ -17,7 +17,7 @@ type Props = {
 
 type UrlParams = {
   paymentId: string;
-  submissionId?: string;
+  runId?: string;
   journeyId?: string;
   integrationRef: string;
   token?: string;
@@ -39,7 +39,7 @@ async function redirectToPaymentUrl(settings: UrlParams, event) {
 
 async function getPaymentUrl({
   paymentId,
-  submissionId,
+  runId,
   journeyId,
   type,
   integrationRef,
@@ -52,7 +52,7 @@ async function getPaymentUrl({
   );
   url.searchParams.set("paymentId", paymentId);
   url.searchParams.set("integrationRef", integrationRef);
-  if (submissionId) url.searchParams.set("submissionId", submissionId);
+  if (runId) url.searchParams.set("runId", runId);
   if (journeyId) url.searchParams.set("journeyId", journeyId);
   if (token) {
     url.searchParams.set("token", token);
@@ -67,7 +67,7 @@ export default function ({
   providers,
   paymentId,
   referenceId,
-  submissionId,
+  runId,
   journeyId,
   isPublicServant,
   token,
@@ -104,7 +104,7 @@ export default function ({
 
   const redirectToPayment = redirectToPaymentUrl.bind(this, {
     paymentId,
-    submissionId,
+    runId,
     journeyId,
     integrationRef: referenceId,
     token,

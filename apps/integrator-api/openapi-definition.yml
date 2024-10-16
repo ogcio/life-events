@@ -44,12 +44,15 @@ paths:
                             - type: string
                               enum:
                                 - draft
+                        initialStepId:
+                          type: string
                       required:
                         - id
                         - title
                         - userId
                         - organizationId
                         - status
+                        - initialStepId
                   metadata:
                     type: object
                     properties:
@@ -633,12 +636,15 @@ paths:
                           - type: string
                             enum:
                               - draft
+                      initialStepId:
+                        type: string
                     required:
                       - id
                       - title
                       - userId
                       - organizationId
                       - status
+                      - initialStepId
                   metadata:
                     type: object
                     properties:
@@ -2420,6 +2426,128 @@ paths:
                       - updatedAt
                       - steps
                       - organizationId
+                  metadata:
+                    type: object
+                    properties:
+                      links:
+                        type: object
+                        properties:
+                          self:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          next:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          prev:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          first:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          last:
+                            type: object
+                            properties:
+                              href:
+                                type: string
+                          pages:
+                            type: object
+                            additionalProperties:
+                              type: object
+                              properties:
+                                href:
+                                  type: string
+                        required:
+                          - self
+                          - first
+                          - last
+                          - pages
+                      totalCount:
+                        type: number
+                required:
+                  - data
+        "401":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  requestId:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - requestId
+                  - name
+        "404":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  requestId:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - requestId
+                  - name
+  /api/v1/executor/run:
+    post:
+      tags: *a4
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                journeyId:
+                  type: string
+              required:
+                - journeyId
+        required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                    required:
+                      - id
                   metadata:
                     type: object
                     properties:

@@ -30,7 +30,7 @@ export type TransactionEntry = {
     name: string;
     email: string;
     journeyId?: string;
-    submissionId?: string;
+    runId?: string;
     journeyTitle?: string;
   };
   userId: string;

@@ -94,4 +94,30 @@ export class RunRepo {
       [runId],
     );
   }
+
+  createRun(
+    journeyId: string,
+    userId: string,
+  ): Promise<QueryResult<{ id: string }>> {
+    return this.pg.query(
+      `INSERT INTO runs
+        (journey_id, user_id, status)
+        VALUES ($1, $2, 'pending')
+      RETURNING id`,
+      [journeyId, userId],
+    );
+  }
+
+  createRunStep(
+    runId: string,
+    stepId: string,
+  ): Promise<QueryResult<{ id: string }>> {
+    return this.pg.query(
+      `INSERT INTO run_steps
+        (run_id, step_id, data, status)
+        VALUES ($1, $2, '{}'::json, 'pending')
+        RETURNING id`,
+      [runId, stepId],
+    );
+  }
 }

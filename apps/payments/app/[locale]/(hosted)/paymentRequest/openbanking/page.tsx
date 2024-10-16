@@ -56,7 +56,7 @@ export default async function Bank(props: {
         integrationRef: string;
         token?: string;
         customAmount?: string;
-        submissionId?: string;
+        runId?: string;
         journeyId?: string;
       }
     | undefined;
@@ -74,7 +74,7 @@ export default async function Bank(props: {
     paymentId,
     token,
     customAmount,
-    submissionId = "",
+    runId = "",
     journeyId = "",
   } = props.searchParams;
 
@@ -100,7 +100,7 @@ export default async function Bank(props: {
     metadata: {
       email: user?.email ?? "",
       name: user?.name ?? "",
-      submissionId,
+      runId,
       journeyId,
     },
   });

@@ -143,6 +143,7 @@ export const JourneyPublicDetails = Type.Pick(JourneyDetails, [
   "userId",
   "organizationId",
   "status",
+  "initialStepId",
 ]);
 
 export const FullJourney = Type.Composite([
@@ -256,3 +257,8 @@ export const JourneySchema = Type.Object({
   stepConnections: Type.Array(JourneyStepConnection),
 });
 export type JourneySchema = Static<typeof JourneySchema>;
+
+export const CreateJourneyRun = Type.Object({
+  journeyId: Type.String(),
+});
+export type CreateJourneyRun = Static<typeof CreateJourneyRun>;

@@ -11,7 +11,7 @@ type Params = {
   searchParams: {
     paymentId: string;
     integrationRef: string;
-    submissionId?: string;
+    runId?: string;
     journeyId?: string;
     token?: string;
     customAmount?: string;
@@ -113,7 +113,7 @@ export default async function Bank(params: Params) {
   const {
     paymentId,
     integrationRef,
-    submissionId = "",
+    runId = "",
     journeyId = "",
   } = params.searchParams;
 
@@ -144,7 +144,7 @@ export default async function Bank(params: Params) {
     metadata: {
       email: user?.email ?? "",
       name: user?.name ?? "",
-      submissionId,
+      runId,
       journeyId,
     },
   });
