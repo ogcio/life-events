@@ -25,13 +25,13 @@ export async function runLighthouseForURL (pageURL, opts, reportName) {
       SEO: 0.90
     }
 
-    fs.writeFile('perf/lighthouse/reports/' + reportNameForFile + '.html', html, (err) => {
+    fs.writeFile('performance_test_reports/' + reportNameForFile + '.html', html, (err) => {
       if (err) {
         console.error(err)
       }
     })
 
-    fs.writeFile('perf/lighthouse/reports/' + reportNameForFile + '.json', json, (err) => {
+    fs.writeFile('performance_test_reports/' + reportNameForFile + '.json', json, (err) => {
       if (err) {
         console.error(err)
       }

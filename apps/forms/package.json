@@ -11,7 +11,7 @@
     "test:visual": "playwright test --ui",
     "test:smoke:e2e": "echo \"Error: no test specified\" && exit 0",
     "test:regression:e2e": "echo \"Error: no test specified\" && exit 0",
-    "test:perf": "echo \"Error: no test specified\" && exit 0",
+    "test:perf": "mkdir -p performance_test_reports && echo \"Error: no test specified\" && exit 0",
     "lint": "next lint"
   },
   "nodemonConfig": {

@@ -10,7 +10,7 @@
     "test:e2e": "playwright test",
     "test:smoke:e2e": "echo \"Error: no test specified\" && exit 0",
     "test:regression:e2e": "echo \"Error: no test specified\" && exit 0",
-    "test:perf": "echo \"Error: no test specified\" && exit 0",
+    "test:perf": "mkdir -p performance_test_reports && echo \"Error: no test specified\" && exit 0",
     "migrate": "db-migrate up && db-migrate --config database-shared.json up:shared",
     "migrate:create": "db-migrate create $npm_config_name --sql-file"
   },
