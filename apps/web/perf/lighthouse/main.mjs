@@ -32,6 +32,7 @@ const opts = {
 }
 
   // Launch chrome using chrome-launcher
+  console.log(chromeLauncher.getChromePath())
   const chrome = await chromeLauncher.launch(opts)
   opts.port = chrome.port
 
