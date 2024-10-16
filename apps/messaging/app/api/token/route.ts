@@ -10,7 +10,7 @@ export async function GET() {
   const token = await AuthenticationFactory.getInstance().getToken();
   const isJson = isValidJson(token);
   if (!isJson) {
-    getCommonLoggerWithEnvLevel().trace(
+    getCommonLoggerWithEnvLevel().warn(
       { retrievedToken: token },
       "The token retrieved in /api/token is not valid",
     );
