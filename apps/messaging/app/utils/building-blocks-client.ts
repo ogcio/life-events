@@ -3,6 +3,7 @@ import {
   default as getBuildingBlockSDK,
 } from "@ogcio/building-blocks-sdk";
 import { headers } from "next/headers";
+import { getCommonLoggerWithEnvLevel } from "./messaging";
 let buildingBlockSdk: BuildingBlocksSDK | undefined = undefined;
 
 export const getSdks = () => {
@@ -33,14 +34,24 @@ const invokeTokenApi = async (
   // call a route handler that retrieves the cached token
   // we need to forward the cookie header or the request won't be authenticated
   const cookieHeader = headers().get("cookie") as string;
+  const serviceRoute =
+    serviceName === "messaging" ? "/api/token" : "/api/profile-token";
+  try {
+    const res = await fetch(
+      new URL(
+        serviceRoute,
+        process.env.NEXT_PUBLIC_MESSAGING_SERVICE_ENTRY_POINT as string,
+      ),
+      { headers: { cookie: cookieHeader } },
+    );
+    const { token } = await res.json();
+    return token;
+  } catch (e) {
+    getCommonLoggerWithEnvLevel().error(
+      { error: e, serviceRoute },
+      "Error retrieving token from NextJs API",
+    );
 
-  const res = await fetch(
-    new URL(
-      serviceName === "messaging" ? "/api/token" : "/api/profile-token",
-      process.env.NEXT_PUBLIC_MESSAGING_SERVICE_ENTRY_POINT as string,
-    ),
-    { headers: { cookie: cookieHeader } },
-  );
-  const { token } = await res.json();
-  return token;
+    throw e;
+  }
 };
