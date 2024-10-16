@@ -1663,7 +1663,7 @@ paths:
                             type: string
                           email:
                             type: string
-                          submissionId:
+                          runId:
                             type: string
                           journeyId:
                             type: string
@@ -1904,7 +1904,7 @@ paths:
                               type: string
                             email:
                               type: string
-                            submissionId:
+                            runId:
                               type: string
                             journeyId:
                               type: string
@@ -2078,7 +2078,7 @@ paths:
                       type: string
                     email:
                       type: string
-                    submissionId:
+                    runId:
                       type: string
                     journeyId:
                       type: string
@@ -2883,7 +2883,7 @@ paths:
                             type: string
                           email:
                             type: string
-                          submissionId:
+                          runId:
                             type: string
                           journeyId:
                             type: string

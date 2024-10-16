@@ -254,7 +254,7 @@ export const FullTransaction = Type.Object({
   metadata: Type.Object({
     name: Type.String(),
     email: Type.String(),
-    submissionId: Type.Optional(Type.String()),
+    runId: Type.Optional(Type.String()),
     journeyId: Type.Optional(Type.String()),
     journeyTitle: Type.Optional(Type.String()),
   }),

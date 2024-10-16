@@ -122,11 +122,11 @@ export default async function ({
               {details.metadata.email}
             </dt>
           </div>
-          {details.metadata.submissionId && (
+          {details.metadata.runId && (
             <div className="govie-summary-list__row">
-              <dt className="govie-summary-list__key">{t("submissionId")}</dt>
+              <dt className="govie-summary-list__key">{t("runId")}</dt>
               <dt className="govie-summary-list__value">
-                {details.metadata.submissionId}
+                {details.metadata.runId}
               </dt>
             </div>
           )}

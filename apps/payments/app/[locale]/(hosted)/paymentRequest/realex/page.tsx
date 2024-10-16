@@ -62,7 +62,7 @@ export default async function CardWithRealex(props: {
         paymentId: string;
         integrationRef: string;
         token?: string;
-        submissionId?: string;
+        runId?: string;
         journeyId?: string;
         customAmount?: string;
       }
@@ -115,7 +115,7 @@ export default async function CardWithRealex(props: {
       metadata: {
         email: user?.email ?? "",
         name: user?.name ?? "",
-        submissionId: props.searchParams.submissionId ?? "",
+        runId: props.searchParams.runId ?? "",
         journeyId: props.searchParams.journeyId ?? "",
       },
     },

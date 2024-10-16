@@ -180,16 +180,14 @@ export default async function executor(app: FastifyInstance) {
     },
     async (request, reply) => {
       const { journeyId } = request.body;
-      const userId = "asdf"; //request.userData?.userId;
+      const userId = request.userData?.userId;
 
       if (!userId) {
         throw app.httpErrors.unauthorized("Unauthorized!");
       }
 
       const journeyInfo = await app.journey.getJourneyById(journeyId);
-
       const runId = await app.run.createRun(journeyId, userId);
-      console.log(">>>>>>", runId);
       await app.run.createRunStep(runId.id, journeyInfo.initialStepId);
 
       reply.send(formatAPIResponse(runId));
