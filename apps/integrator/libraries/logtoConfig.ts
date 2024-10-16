@@ -27,7 +27,7 @@ export const commonScopes = [AuthUserScope.Email];
 const citizenScopes = [
   "integrator:journey.public:read",
   "integrator:run.self:read",
-  "integrator:run:write",
+  "integrator:run.self:write",
 ];
 
 export const integratorPublicServantScopes = [
