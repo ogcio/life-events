@@ -1,8 +1,4 @@
 import React, { PropsWithChildren } from "react";
-import { Link } from "../../../data/data";
-import { translate } from "../../../utils/locale";
-import { Icon } from "@govie-ds/react";
-import "./Links.css";
 
 export async function ItemContainer(props: PropsWithChildren) {
   return (
@@ -10,8 +6,8 @@ export async function ItemContainer(props: PropsWithChildren) {
       style={{
         display: "flex",
         flexWrap: "wrap",
-        paddingBottom: "24px",
         gap: "24px",
+        paddingBottom: "24px",
       }}
     >
       {props.children}

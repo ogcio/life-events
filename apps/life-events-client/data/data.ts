@@ -124,11 +124,15 @@ export const data = {
     },
   },
   subcategory: {
-    async mainList(slug: string): Promise<{
+    async mainList(
+      slug: string,
+      search?: string,
+    ): Promise<{
       categoryName: Lang<string>;
       subcategories: SubcategoryMainListModel[];
     }> {
       try {
+        const query = search ? `%${search}%` : null;
         const queryResult =
           await lifeEventsPool.query<SubcategoryMainListQueryRow>(
             `
@@ -149,10 +153,15 @@ export const data = {
             from categories c
             left join subcategories s on c.id = s.category_id
             left join subcategory_items i on i.subcategory_id = s.id
-            where c.slug_en = $1
+            where c.slug_en = $1 
+            and
+              case when $2::text is not null then
+                s.title_en ilike $2 
+                or s.title_ga ilike $2
+              else TRUE end
             order by s.sort_order
           `,
-            [slug],
+            [slug, query],
           );
 
         if (!queryResult.rows.length) {

@@ -2,74 +2,12 @@
   "Home": {
     "gaeilgeMenuLabel": "Gaeilge",
     "englishMenuLabel": "English",
-    "newSubcategoryLink": "New subcategory",
-    "journeyCategoriesHeading": "Journey categories"
+    "myDashboard": "My dashboard",
+    "messaging": "Messaging",
+    "aboutMe": "About me"
   },
-  "Navigation": {
-    "back": "Back",
-    "home": "Home",
-    "recommendedPathsBreadcrumb": "Recommended paths",
-    "categoriesBreadcrumb": "Categoies",
-    "createPathBreadcrumb": "New path",
-    "updatePathBreadcrumb": "Update path"
-  },
-  "Table": {
-    "actions": "Actions",
-    "category": "Category",
-    "subcategory": "Subcategory",
-    "journeyItem": "Item",
-    "editAction": "Edit",
-    "deleteAction": "Delete",
-    "noRows": "No items",
-    "from": "From",
-    "to": "To"
-  },
-  "Form": {
-    "en": "English",
-    "ga": "Irish",
-    "create": "Create",
-    "update": "Update",
-    "title": "Title",
-    "text": "Text",
-    "save": "Save",
-    "link1": "Link 1",
-    "link2": "Link 2",
-    "link3": "Link 3",
-    "isExternal": "External link",
-    "links": "Links",
-    "href": "Url",
-    "itemLabel": "Item",
-    "selectCategory": "Select a category",
-    "selectSubcategory": "Select a subcategory",
-    "selectItem": "Select an item"
-  },
-  "Modal": {
-    "deleteP1Generic": "You are about to permanently delete the chosen item",
-    "deleteP2Generic": "Confirm by clicking the delete button",
-    "confirmDeletionTitleGeneric": "Confirm deletion",
-    "confirmDelete": "Delete",
-    "confirmCancel": "Cancel"
-  },
-  "Subcategory": {
-    "newSubcatHeading": "Create a new subcategory",
-    "subcategoriesHeading": "Subcategories",
-    "addNewItem": "New item",
-    "emptyDisclaimer": "If fields are empty, it will not show up for clients",
-    "back": "Back",
-    "newItem": "Create a new Item",
-    "delete": "Delete",
-    "deleteConfirm": "Delete",
-    "modalCancel": "Cancel",
-    "modalDeleteP1": "You are about to delete the subcategory",
-    "modalDeleteP2": "Confirm by clicking the delete button",
-    "confirmDeletionTitle": "Confirm deletion",
-    "newItemBreadcrumb": "New item"
-  },
-  "Paths": {
-    "pathsHeader": "Recommended paths",
-    "newPathLabel": "New path",
-    "itemJourneysHeader": "Item Journeys",
-    "updateJourneyHeader": "Update a journey link",
-    "createJourneyHeader": "Create a new journey link"
+  "Subcategories": {
+    "searchPlaceholderPrefix": "Search",
+    "noItems": "No items"
   }
 }

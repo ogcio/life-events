@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "../../../data/data";
 import { translate } from "../../../utils/locale";
 import { Icon } from "@govie-ds/react";
+import "./Links.css";
 
 export function Links(props: { links: Link[]; keyId: string; locale: string }) {
   const render: React.ReactElement[] = [];

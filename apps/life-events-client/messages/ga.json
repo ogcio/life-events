@@ -2,74 +2,12 @@
   "Home": {
     "gaeilgeMenuLabel": "Gaeilge",
     "englishMenuLabel": "English",
-    "newSubcategoryLink": "Fochatagóir nua",
-    "journeyCategoriesHeading": "Catagóirí turais"
+    "myDashboard": "Mo phainéal",
+    "messaging": "Teachtaireachtaí",
+    "aboutMe": "Maidir liomsa"
   },
-  "Navigation": {
-    "back": "Ar ais",
-    "home": "Abhaile",
-    "recommendedPathsBreadcrumb": "Cosáin molta",
-    "categoriesBreadcrumb": "Catagóirí",
-    "createPathBreadcrumb": "Cosán nua",
-    "updatePathBreadcrumb": "Nuashonraigh cosán"
-  },
-  "Table": {
-    "actions": "Gnímh",
-    "category": "Chatagóir",
-    "subcategory": "Fochatagóir",
-    "journeyItem": "Mír turais",
-    "editAction": "Eagar",
-    "deleteAction": "Scrios",
-    "noRows": "Uimh míreanna",
-    "from": "Ó",
-    "to": "Chuig"
-  },
-  "Form": {
-    "en": "Béarla",
-    "ga": "Gaeilge",
-    "create": "Chruthú",
-    "update": "Nuashonrú",
-    "title": "Teideal",
-    "text": "Téacs",
-    "save": "Sábháil",
-    "link1": "Link 1",
-    "link2": "Link 2",
-    "link3": "Link 3",
-    "isExternal": "Seachtrach link",
-    "links": "Links",
-    "href": "Url",
-    "itemLabel": "Mír",
-    "selectCategory": "Roghnaigh catagóir",
-    "selectSubcategory": "Roghnaigh fochatagóir",
-    "selectItem": "Roghnaigh mír"
-  },
-  "Modal": {
-    "deleteP1Generic": "Tá tú ar tí an mhír roghnaithe a scriosadh go buan",
-    "deleteP2Generic": "Deimhnigh trí chliceáil ar an gcnaipe Scrios",
-    "confirmDeletionTitleGeneric": "Deimhnigh scriosadh",
-    "confirmDelete": "Deimhnigh scriosadh",
-    "confirmCancel": "Ceal"
-  },
-  "Subcategory": {
-    "newSubcatHeading": "Cruthaigh fochatagóir nua",
-    "subcategoriesHeading": "Fochatagóirí",
-    "emptyLinkDisclaimer": "Ní thaispeánfar mura líontar url",
-    "back": "Ar ais",
-    "newItem": "Cruthaigh mír nua",
-    "addNewItem": "Mír nua",
-    "delete": "Scrios",
-    "deleteConfirm": "Scrios",
-    "modalCancel": "Ceal",
-    "modalDeleteP1": "Tá tú ar tí an fochatagóir a scriosadh",
-    "modalDeleteP2": "Deimhnigh trí chliceáil ar an gcnaipe Scrios",
-    "confirmDeletionTitle": "Deimhnigh scriosadh",
-    "newItemBreadcrumb": "Mír nua"
-  },
-  "Paths": {
-    "pathsHeader": "Cosáin molta",
-    "newPathLabel": "Cosán nua",
-    "itemJourneysHeader": "Turais Mír",
-    "updateJourneyHeader": "Nuashonraigh nasc turais",
-    "createJourneyHeader": "Cruthaigh nasc turais nua"
+  "Subcategories": {
+    "searchPlaceholderPrefix": "Cuardach",
+    "noItems": "Uimh míreanna"
   }
 }

@@ -1,63 +1,46 @@
-import React from "react";
+import React, { PropsWithChildren, ReactElement } from "react";
 import ds from "design-system";
 import "./PageMenu.css";
 import { Lang } from "../../../data/data";
 import { translate } from "../../../utils/locale";
 import { Icon } from "@govie-ds/react";
 
+/**
+ * Note on the Icon icon property
+ *
+ * They use an icon library but haven't added all icon names
+ * as a valid icon property, even though they are just passing the
+ * prop to the library as is.
+ *
+ *  Whenever this gets resolved, remove the "as any" values
+ */
+
+export function PageMenuItem(
+  props: PropsWithChildren<{
+    icon: string;
+    isSelected: boolean;
+    href: string;
+  }>,
+) {
+  return (
+    <li className={`${props.isSelected ? "selected-menu-item" : ""}`}>
+      <Icon icon={props.icon as any} className="menu-icon" variant="outlined" />
+      <a href={props.href}>{props.children}</a>
+    </li>
+  );
+}
+
 export default function PageMenu(props: {
   userName: string;
-  selectedSlug: string;
-  locale: string;
-  categoryItems: {
-    id: string;
-    name: Lang<string>;
-    slug: Lang<string>;
-    icon: string;
-  }[];
+  topItems: ReactElement[];
+  bottomItems: ReactElement[];
 }) {
-  console.log(ds.hexToRgba(ds.colours.ogcio.gold, 15));
-  console.log(ds.hexToRgba(ds.colours.ogcio.gold, 5));
   return (
     <div className="main-content-page-menu">
       <div className="user-name">{props.userName}</div>
-      <ol>
-        <li
-          className={`${"my-dashboard" === props.selectedSlug ? "selected-menu-item" : ""}`}
-        >
-          <ds.Icon icon="events" color={ds.colours.ogcio.green} />
-          <a href="/">My dashboard</a>
-        </li>
-        <li
-          className={`${"messaging" === props.selectedSlug ? "selected-menu-item" : ""}`}
-        >
-          <ds.Icon icon="send-a-message" color={ds.colours.ogcio.green} />
-          <a href="/">Messaging</a>
-        </li>
-        <li
-          className={`${"about-me" === props.selectedSlug ? "selected-menu-item" : ""}`}
-        >
-          <ds.Icon icon="events" color={ds.colours.ogcio.green} />
-          <a href="/">About me</a>
-        </li>
-      </ol>
+      <ol>{props.topItems}</ol>
       <hr />
-      <ol>
-        {props.categoryItems.map((cat) => (
-          <li
-            key={cat.id}
-            className={`${cat.slug.en === props.selectedSlug ? "selected-menu-item" : ""}`}
-          >
-            <ds.Icon
-              icon={cat.icon as React.ComponentProps<typeof ds.Icon>["icon"]}
-              color={ds.colours.ogcio.green}
-            />
-            <a href={`/${props.locale}/${cat.slug.en}`}>
-              {translate(cat.name, props.locale)}
-            </a>
-          </li>
-        ))}
-      </ol>
+      <ol>{props.bottomItems}</ol>
     </div>
   );
 }

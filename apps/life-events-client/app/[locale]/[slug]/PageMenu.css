@@ -1,5 +1,9 @@
 .main-content-page-menu {
-  min-width: 180px;
+  min-width: 192px;
+
+  .menu-icon {
+    color: #00703c;
+  }
 
   .user-name {
     background: rgba(163, 145, 97, 0.15);
