@@ -143,6 +143,7 @@ export const JourneyPublicDetails = Type.Pick(JourneyDetails, [
   "userId",
   "organizationId",
   "status",
+  "initialStepId",
 ]);
 
 export const FullJourney = Type.Composite([

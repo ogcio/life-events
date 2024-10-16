@@ -167,7 +167,7 @@ export default async function executor(app: FastifyInstance) {
     "/run",
     {
       preValidation: (req, res) =>
-        app.checkPermissions(req, res, [authPermissions.RUN_WRITE]),
+        app.checkPermissions(req, res, [authPermissions.RUN_SELF_WRITE]),
       schema: {
         tags: TAGS,
         body: CreateJourneyRun,
@@ -186,7 +186,7 @@ export default async function executor(app: FastifyInstance) {
         throw app.httpErrors.unauthorized("Unauthorized!");
       }
 
-      const journeyInfo = await app.journey.getJourneyById(journeyId);
+      const journeyInfo = await app.journey.getJourneyPublicInfo(journeyId);
       const runId = await app.run.createRun(journeyId, userId);
       await app.run.createRunStep(runId.id, journeyInfo.initialStepId);
 

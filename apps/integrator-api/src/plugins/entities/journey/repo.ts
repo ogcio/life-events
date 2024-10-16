@@ -37,7 +37,7 @@ export class JourneyRepo {
 
   getJourneyById(
     journeyId: string,
-    organizationId?: string,
+    organizationId: string,
   ): Promise<QueryResult<JourneyDetailsDO>> {
     const data = [journeyId];
 
@@ -71,7 +71,8 @@ export class JourneyRepo {
           title,
           user_id as "userId",
           organization_id as "organizationId",
-          status
+          status,
+          initial_step_id as "initialStepId"
         FROM journeys
         WHERE id = $1`,
       [journeyId],

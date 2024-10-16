@@ -44,12 +44,15 @@ paths:
                             - type: string
                               enum:
                                 - draft
+                        initialStepId:
+                          type: string
                       required:
                         - id
                         - title
                         - userId
                         - organizationId
                         - status
+                        - initialStepId
                   metadata:
                     type: object
                     properties:
@@ -633,12 +636,15 @@ paths:
                           - type: string
                             enum:
                               - draft
+                      initialStepId:
+                        type: string
                     required:
                       - id
                       - title
                       - userId
                       - organizationId
                       - status
+                      - initialStepId
                   metadata:
                     type: object
                     properties:

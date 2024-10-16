@@ -114,7 +114,7 @@ const buildCreateRun =
     }
 
     if (!result?.rowCount) {
-      throw httpErrors.notFound("Something went wrong!");
+      throw httpErrors.internalServerError("Something went wrong!");
     }
 
     return result.rows[0];
@@ -132,7 +132,7 @@ const buildCreateRunStep =
     }
 
     if (!result?.rowCount) {
-      throw httpErrors.notFound("Something went wrong!");
+      throw httpErrors.internalServerError("Something went wrong!");
     }
 
     return result.rows[0];
