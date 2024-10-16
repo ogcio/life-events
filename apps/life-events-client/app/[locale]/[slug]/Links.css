@@ -1,0 +1,23 @@
+.link-icon {
+  position: absolute;
+  bottom: 3px;
+  padding-left: 6px;
+  padding-right: 6px;
+}
+
+.link-container {
+  display: flex;
+  gap: 18px;
+}
+
+.link-anchor {
+  position: relative;
+}
+
+.link-anchor.link-anchor__padded {
+  padding-right: 16px;
+}
+
+.link-divider {
+  border-left: 1px solid #b1b4b6;
+}

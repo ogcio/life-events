@@ -1,11 +1,5 @@
 import React from "react";
-import {
-  Heading,
-  TextInput,
-  Label,
-  LabelSize,
-  Paragraph,
-} from "@govie-ds/react";
+import { Heading, TextInput, Paragraph } from "@govie-ds/react";
 import { data } from "../../../../data/data";
 import { translate } from "../../../../utils/locale";
 import { getTranslations } from "next-intl/server";

@@ -3,7 +3,13 @@ import "@govie-ds/theme-govie/theme.css";
 import "@govie-ds/react/styles.css";
 import "design-system/dist/style.css";
 import "design-system/dist/esm/index.css";
-import { Container, Footer, Header, Heading } from "@govie-ds/react";
+import {
+  Container,
+  Footer,
+  Header,
+  Heading,
+  PhaseBanner,
+} from "@govie-ds/react";
 import { LANG_EN, LANG_GA } from "../../utils/locale";
 import { headers } from "next/headers";
 import { getTranslations } from "next-intl/server";
@@ -58,7 +64,8 @@ export default async function RootLayout(
         ></Header>
         <main style={{ flex: "auto" }}>
           <Container>
-            {!isPublicServant ? (
+            <PhaseBanner level="beta">blabla</PhaseBanner>
+            {isPublicServant ? (
               <Heading>This is not for you!</Heading>
             ) : (
               props.children

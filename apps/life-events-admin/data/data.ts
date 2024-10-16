@@ -1,4 +1,3 @@
-import RecommendedPaths from "../app/[locale]/recommended-paths/page";
 import { lifeEventsPool } from "./postgres";
 
 type Lang<T> = {

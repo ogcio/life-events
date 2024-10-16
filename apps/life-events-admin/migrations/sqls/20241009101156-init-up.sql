@@ -3,6 +3,7 @@ create table categories(
 	icon text,
 	name_en text not null,
 	name_ga text not null,
+	slug_en text not null,
 	sort_order int,
 	created_at timestamptz not null default now()
 );
@@ -31,35 +32,42 @@ create table subcategory_items(
 	created_at timestamptz not null default now()
 );
 
+create table recommended_paths(
+	id uuid default gen_random_uuid() primary key,
+	from_subcategory_item_id uuid not null,
+	to_subcategory_item_id uuid not null,
+	created_at timestamptz not null default now()
+);
+
 
 insert into categories (
-	name_en, name_ga, sort_order
-) values('Birth','Breith',1);
+	name_en, name_ga, sort_order, slug_en
+) values('Birth','Breith',1 ,'birth');
 
 insert into categories (
-	name_en, name_ga, sort_order
-) values('Health','Sláinte',2);
+	name_en, name_ga, sort_order, slug_en
+) values('Health','Sláinte',2,'health');
 
 insert into categories (
-	name_en, name_ga, sort_order
-) values('Driving','Tiomáint',3);
+	name_en, name_ga, sort_order, slug_en
+) values('Driving','Tiomáint',3,'driving');
 
 insert into categories (
-	name_en, name_ga, sort_order
-) values('Employment','Fostaíocht',4);
+	name_en, name_ga, sort_order, slug_en
+) values('Employment','Fostaíocht',4,'employment');
 
 insert into categories (
-	name_en, name_ga, sort_order
-) values('Starting a business','Gnó a thosú',5);
+	name_en, name_ga, sort_order, slug_en
+) values('Starting a business','Gnó a thosú',5,'staring-a-business');
 
 insert into categories (
-	name_en, name_ga, sort_order
-) values('Housing','Tithíocht',6);
+	name_en, name_ga, sort_order, slug_en
+) values('Housing','Tithíocht',6,'housing');
 
 with ly as (
 insert into categories (
-	name_en, name_ga, sort_order
-) values('Later years','Blianta ina dhiaidh sin',7)
+	name_en, name_ga, sort_order, slug_en
+) values('Later years','Blianta ina dhiaidh sin',7,'later-years')
 returning id
 ), sub_will as(
 	insert into subcategories(
@@ -147,7 +155,7 @@ insert into subcategory_items(
 		{"href":"/", "isExternal":true, "name_en":"Register the death", "name_ga":"Clárú an bás"},
 		{"href":"/", "isExternal":false, "name_en":"FAQs", "name_ga":"FAQs"}
 		]',
-		1
+		2
 	),
 	(
 	(select id from sub_death),
