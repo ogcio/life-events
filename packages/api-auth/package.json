@@ -8,10 +8,10 @@
     "./*": "./dist/*.js"
   },
   "dependencies": {
-    "@ogcio/shared-errors": "1.0.0",
-    "@logto/node": "^2.5.7",
-    "fastify": "^4.28.1",
     "@fastify/sensible": "5.6.0",
+    "@logto/node": "^2.5.8",
+    "@ogcio/shared-errors": "1.0.0",
+    "fastify": "^4.28.1",
     "fastify-plugin": "^4.5.1",
     "jose": "^5.9.3"
   },
