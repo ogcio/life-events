@@ -61,7 +61,16 @@ export class BaseAuthenticationContext {
       }
 
       this.sharedContext = this.ensureIsFullContext(context);
-      this.logger.trace({ sharedContext: context }, "Got shared context");
+      this.logger.trace(
+        {
+          sharedContext: {
+            ...this.sharedContext,
+            organization: { id: this.sharedContext.organization?.id },
+            user: { id: this.sharedContext.user.id },
+          },
+        },
+        "Got shared context",
+      );
     }
 
     return this.sharedContext;
