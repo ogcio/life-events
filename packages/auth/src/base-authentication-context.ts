@@ -177,8 +177,13 @@ export class BaseAuthenticationContext {
       return await getOrgToken(
         this.config,
         await this.getSelectedOrganization(),
+        this.logger,
       );
     }
-    return await getCitizenToken(this.config, this.config.resourceUrl);
+    return await getCitizenToken(
+      this.config,
+      this.logger,
+      this.config.resourceUrl,
+    );
   }
 }

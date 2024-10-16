@@ -1,6 +1,5 @@
 import { AuthSession, AuthUserScope } from "auth/auth-session";
 import { PartialAuthSessionContext } from "auth/types";
-import { log } from "console";
 import { Logger } from "pino";
 
 export const getBaseLogtoConfig = () => ({
@@ -175,17 +174,72 @@ export const getSelectedOrganization = () =>
 export const setSelectedOrganization = (organizationId) =>
   AuthSession.setSelectedOrganization(organizationId);
 
-export const getCitizenToken = (
+export const getCitizenToken = async (
   params: CitizenParameters,
+  logger: Logger,
   resource?: string,
-): Promise<string> =>
-  AuthSession.getCitizenToken(buildCitizenAuthConfig(params), resource);
+): Promise<string> => {
+  const authConfig = buildCitizenAuthConfig(params);
+  logger.trace(
+    {
+      citizenAuthConfig: {
+        endpoint: authConfig.endpoint,
+        resources: authConfig.resources,
+        cookieSecure: authConfig.cookieSecure,
+        scopes: authConfig.scopes,
+        baseUrl: authConfig.baseUrl,
+        appId: authConfig.appId,
+        isCookieSecretSet: authConfig.cookieSecret.length > 0,
+      },
+      resource,
+    },
+    "Requesting citizen token",
+  );
+  try {
+    const token = await AuthSession.getCitizenToken(authConfig, resource);
+    logger.trace({}, "Citizen token retrieved");
 
-export const getOrgToken = (
+    return token;
+  } catch (e) {
+    logger.error({ e }, "Error getting citizen token");
+    throw e;
+  }
+};
+
+export const getOrgToken = async (
   params: PublicServantParameters,
   organizationId: string,
-): Promise<string> =>
-  AuthSession.getOrgToken(buildPublicServantAuthConfig(params), organizationId);
+  logger: Logger,
+): Promise<string> => {
+  const authConfig = buildPublicServantAuthConfig(params);
+  logger.trace(
+    {
+      citizenAuthConfig: {
+        endpoint: authConfig.endpoint,
+        resources: authConfig.resources,
+        cookieSecure: authConfig.cookieSecure,
+        scopes: authConfig.scopes,
+        baseUrl: authConfig.baseUrl,
+        appId: authConfig.appId,
+        isCookieSecretSet: authConfig.cookieSecret.length > 0,
+      },
+      organizationId,
+    },
+    "Requesting public servant token",
+  );
+  try {
+    const token = await AuthSession.getOrgToken(
+      buildPublicServantAuthConfig(params),
+      organizationId,
+    );
+    logger.trace({}, "Public servant token retrieved!");
+    return token;
+  } catch (e) {
+    logger.error(e, "Error getting public servant token");
+
+    throw e;
+  }
+};
 
 const buildPublicServantAuthConfig = (params: PublicServantParameters) => ({
   ...getBaseLogtoConfig(),
