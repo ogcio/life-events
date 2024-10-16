@@ -174,16 +174,12 @@ export class BaseAuthenticationContext {
 
   async getToken() {
     if (await this.isPublicServant()) {
-      return await getOrgToken(
+      return getOrgToken(
         this.config,
         await this.getSelectedOrganization(),
         this.logger,
       );
     }
-    return await getCitizenToken(
-      this.config,
-      this.logger,
-      this.config.resourceUrl,
-    );
+    return getCitizenToken(this.config, this.logger, this.config.resourceUrl);
   }
 }
