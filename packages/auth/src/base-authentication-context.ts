@@ -17,7 +17,7 @@ import {
 import { notFound } from "next/navigation";
 import { getCommonLogger } from "nextjs-logging-wrapper";
 import createError from "http-errors";
-import { Level, levels, Logger } from "pino";
+import { Level, Logger } from "pino";
 
 export interface AuthenticationContextConfig {
   resourceUrl?: string;
@@ -148,11 +148,10 @@ export class BaseAuthenticationContext {
     }
 
     const orgs = await this.getOrganizations();
-    const setOrganizationId = Object.values(orgs)?.[0]?.id;
-    this.logger.trace({ setOrganizationId }, "Setting organization id");
-    setSelectedOrganization(setOrganizationId);
+    const loadedOrganizationId = Object.values(orgs)?.[0]?.id;
+    this.logger.trace({ loadedOrganizationId }, "Got organization id");
 
-    return setOrganizationId;
+    return loadedOrganizationId;
   }
 
   setSelectedOrganization(organizationId: string): string {
