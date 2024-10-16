@@ -72,7 +72,7 @@ export const getCitizenContext = async (
 
     return citizenContext;
   } catch (e) {
-    logger.error(e, "Error getting citizen context");
+    logger.error({ error: e }, "Error getting citizen context");
     throw e;
   }
 };
@@ -115,7 +115,7 @@ export const getPublicServantContext = async (
 
     return publicServantContext;
   } catch (e) {
-    logger.error(e, "Error getting public servant context");
+    logger.error({ error: e }, "Error getting public servant context");
     throw e;
   }
 };
@@ -201,7 +201,7 @@ export const getCitizenToken = async (
 
     return token;
   } catch (e) {
-    logger.error({ e }, "Error getting citizen token");
+    logger.error({ error: e }, "Error getting citizen token");
     throw e;
   }
 };
@@ -235,7 +235,7 @@ export const getOrgToken = async (
     logger.trace({}, "Public servant token retrieved!");
     return token;
   } catch (e) {
-    logger.error(e, "Error getting public servant token");
+    logger.error({ error: e }, "Error getting public servant token");
 
     throw e;
   }
