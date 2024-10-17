@@ -38,13 +38,19 @@ const invokeTokenApi = async (
     serviceName === "messaging" ? "/api/token" : "/api/profile-token";
   let responseClone: undefined | Response = undefined;
   try {
-    const res = await fetch(
-      new URL(
-        serviceRoute,
-        process.env.NEXT_PUBLIC_MESSAGING_SERVICE_ENTRY_POINT as string,
-      ),
-      { headers: { cookie: cookieHeader } },
+    const tokenUrl = new URL(
+      serviceRoute,
+      process.env.NEXT_PUBLIC_MESSAGING_SERVICE_ENTRY_POINT as string,
     );
+    getCommonLoggerWithEnvLevel().trace(
+      {
+        tokenUrl: tokenUrl.toString(),
+        hostname: tokenUrl.host,
+        isCookieSet: cookieHeader?.length > 0,
+      },
+      "Invoking NextJs API to get token",
+    );
+    const res = await fetch(tokenUrl, { headers: { cookie: cookieHeader } });
     responseClone = res.clone();
     const { token } = await res.json();
     return token;
