@@ -64,8 +64,8 @@ export const getProfileAuthenticationContextConfig =
     appSecret,
     organizationId,
     citizenScopes,
-    publicServantExpectedRoles,
-    publicServantScopes,
+    publicServantExpectedRoles: ["Profile Public Servant"],
+    publicServantScopes: ["profile:user:*"],
     loginUrl: logtoLogin.url,
     resourceUrl: profileApiResource,
   });

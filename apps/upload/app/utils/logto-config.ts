@@ -9,40 +9,61 @@ export const uploadApiResource = process.env.UPLOAD_BACKEND_URL?.endsWith("/")
   ? process.env.UPLOAD_BACKEND_URL
   : `${process.env.UPLOAD_BACKEND_URL}/`;
 
-export const baseConfig = {
-  cookieSecure: process.env.NODE_ENV === "production",
-  baseUrl: process.env.UPLOAD_ENTRY_POINT as string,
-  endpoint: process.env.LOGTO_ENDPOINT as string,
-  cookieSecret: process.env.LOGTO_COOKIE_SECRET as string,
+export const profileApiResource = process.env.PROFILE_BACKEND_URL?.endsWith("/")
+  ? process.env.PROFILE_BACKEND_URL
+  : `${process.env.PROFILE_BACKEND_URL}/`;
 
-  appId: process.env.LOGTO_UPLOAD_APP_ID as string,
-  appSecret: process.env.LOGTO_UPLOAD_APP_SECRET as string,
-};
+const uploadEntryPoint = (
+  process.env.NEXT_PUBLIC_UPLOAD_SERVICE_ENTRY_POINT?.endsWith("/")
+    ? process.env.NEXT_PUBLIC_UPLOAD_SERVICE_ENTRY_POINT.substring(
+        0,
+        process.env.NEXT_PUBLIC_UPLOAD_SERVICE_ENTRY_POINT.length - 1,
+      )
+    : process.env.NEXT_PUBLIC_UPLOAD_SERVICE_ENTRY_POINT
+) as string;
+const uploadEntryPointSlash = `${uploadEntryPoint}/` as string;
 
+const appId = process.env.LOGTO_UPLOAD_APP_ID as string;
+const appSecret = process.env.LOGTO_UPLOAD_APP_SECRET as string;
 const organizationId = "ogcio";
 export const citizenScopes = ["upload:file.self:read"];
 export const publicServantScopes = ["upload:file:*", "profile:user:read"];
-const publicServantExpectedRole = "File Upload Public Servant";
+const publicServantExpectedRoles = ["File Upload Public Servant"];
 
 export const getAuthenticationContextConfig =
   (): AuthenticationContextConfig => ({
-    baseUrl: baseConfig.baseUrl,
-    appId: baseConfig.appId,
-    appSecret: baseConfig.appSecret,
+    baseUrl: uploadEntryPointSlash,
+    appId: appId,
+    appSecret: appSecret,
     organizationId,
     citizenScopes,
-    publicServantExpectedRoles: [publicServantExpectedRole],
+    publicServantExpectedRoles,
     publicServantScopes,
     loginUrl: logtoLogin.url,
     resourceUrl: uploadApiResource,
+  });
+
+export const getProfileAuthenticationContextConfig =
+  (): AuthenticationContextConfig => ({
+    baseUrl: uploadEntryPointSlash,
+    appId: process.env.LOGTO_PROFILE_APP_ID as string,
+    appSecret: process.env.LOGTO_PROFILE_APP_SECRET as string,
+    organizationId,
+    citizenScopes,
+    publicServantExpectedRoles: ["Profile Public Servant"],
+    publicServantScopes: ["profile:user:*"],
+    loginUrl: logtoLogin.url,
+    resourceUrl: profileApiResource,
   });
 
 export const postSignoutRedirect = process.env.UPLOAD_ENTRY_POINT;
 
 export const getSignInConfiguration = () => ({
   ...getBaseLogtoConfig(),
-  ...baseConfig,
+  baseUrl: uploadEntryPoint,
+  appId,
+  appSecret,
   // All the available resources to the app
-  resources: [uploadApiResource],
+  resources: [uploadApiResource, profileApiResource],
   scopes: [...organizationScopes, ...citizenScopes, ...publicServantScopes],
 });

@@ -11,6 +11,7 @@ export type FileMetadata = {
   fileName: string;
   id?: string;
   key: string;
+  ownerId: string;
   owner?: FileOwner;
   fileSize: number;
   mimeType: string;
