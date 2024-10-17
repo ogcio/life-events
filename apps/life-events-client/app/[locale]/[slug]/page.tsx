@@ -75,7 +75,7 @@ export default async function RootPage(props: {
           </PageMenuItem>
         ))}
       ></PageMenu>
-      <section style={{ minWidth: "360px" }}>
+      <section style={{ minWidth: "360px", width: "100%" }}>
         <Heading>{translate(title, props.params.locale)}</Heading>
 
         <Search
