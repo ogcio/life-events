@@ -3,7 +3,7 @@ import {
   default as getBuildingBlockSDK,
 } from "@ogcio/building-blocks-sdk";
 import { headers } from "next/headers";
-import { getCommonLoggerWithEnvLevel } from "./messaging";
+import { getCommonLoggerWithEnvLevel, streamToString } from "./messaging";
 let buildingBlockSdk: BuildingBlocksSDK | undefined = undefined;
 
 export const getSdks = () => {
@@ -36,6 +36,7 @@ const invokeTokenApi = async (
   const cookieHeader = headers().get("cookie") as string;
   const serviceRoute =
     serviceName === "messaging" ? "/api/token" : "/api/profile-token";
+  let responseClone: undefined | Response = undefined;
   try {
     const res = await fetch(
       new URL(
@@ -44,11 +45,18 @@ const invokeTokenApi = async (
       ),
       { headers: { cookie: cookieHeader } },
     );
+    responseClone = res.clone();
     const { token } = await res.json();
     return token;
   } catch (e) {
+    let responseBody = "Response clone has not been set";
+    let responseCode: number | undefined = undefined;
+    if (responseClone && responseClone.body) {
+      responseBody = await streamToString(responseClone.body);
+      responseCode = responseClone.status;
+    }
     getCommonLoggerWithEnvLevel().error(
-      { error: e, serviceRoute },
+      { error: e, serviceRoute, responseCode, responseBody },
       "Error retrieving token from NextJs API",
     );
 
