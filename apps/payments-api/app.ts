@@ -27,7 +27,7 @@ import rawbody from "fastify-raw-body";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const keyAlias = "alias/payments-api-key";
+const keyAlias = "alias/life-events-payments-api-key";
 
 dotenv.config();
 

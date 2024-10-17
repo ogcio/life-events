@@ -44,7 +44,7 @@ for SERVICE in "payments-api" "integrator-api"; do
   echo "Creating KMS alias for $SERVICE..."
 
   aws kms create-alias \
-    --alias-name "alias/$SERVICE-key" \
+    --alias-name "alias/life-events-$SERVICE-key" \
     --target-key-id "$KMS_KEY_ID" \
     --endpoint-url $LOCALSTACK_ENDPOINT \
     --region $AWS_REGION

@@ -24,7 +24,7 @@ import run from "./src/plugins/entities/run";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-const keyAlias = "alias/integrator-api-key";
+const keyAlias = "alias/life-events-integrator-api-key";
 
 dotenv.config();
 
