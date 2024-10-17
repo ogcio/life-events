@@ -50,13 +50,7 @@ const invokeTokenApi = async (
       },
       "Invoking NextJs API to get token",
     );
-    const res = await fetch(
-      new URL(
-        serviceRoute,
-        process.env.NEXT_PUBLIC_MESSAGING_SERVICE_ENTRY_POINT as string,
-      ),
-      { headers: { cookie: cookieHeader } },
-    );
+    const res = await fetch(tokenUrl, { headers: { cookie: cookieHeader } });
     responseClone = res.clone();
     const { token } = await res.json();
     return token;
