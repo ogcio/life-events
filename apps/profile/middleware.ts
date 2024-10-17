@@ -1,19 +1,26 @@
 import createMiddleware from "next-intl/middleware";
-import type { NextRequest } from "next/server";
-const locales = ["en", "ga"];
+import { NextRequest } from "next/server";
+import { getCommonLogger } from "nextjs-logging-wrapper";
 
-export default async function (request: NextRequest) {
+export const locales = ["en", "ga"] as const;
+export const localePrefix = "always"; // Default
+
+export default function (request: NextRequest) {
+  getCommonLogger().trace(
+    { destinationUrl: request.url },
+    "I am in middleware",
+  );
   const nextResponse = createMiddleware({
     locales,
     defaultLocale: "en",
-    localePrefix: "always",
+    localePrefix,
   })(request);
 
-  nextResponse.headers.append("x-url", request.url);
+  nextResponse.headers.append("x-pathname", request.nextUrl.pathname);
 
   return nextResponse;
 }
 
 export const config = {
-  matcher: ["/((?!static|health|api|_next/static|_next/image|favicon.ico).*)"],
+  matcher: ["/((?!static|api|health|_next/static|_next/image|favicon.ico).*)"],
 };
