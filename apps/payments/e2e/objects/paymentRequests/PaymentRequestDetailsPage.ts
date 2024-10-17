@@ -11,12 +11,12 @@ export class PaymentRequestDetailsPage {
   private readonly statusLabel: Locator;
   private readonly amountLabel: Locator;
   private readonly redirectURLLabel: Locator;
-  private readonly amountOverrideLabel: Locator;
+  private readonly dynamicAmountLabel: Locator;
   private readonly customAmountLabel: Locator;
   private readonly paymentLinkLabel: Locator;
   private readonly paymentLink: Locator;
   private readonly status: (status: string) => Locator;
-  private readonly allowAmountOverride: (value: string) => Locator;
+  private readonly allowDynamicAmount: (value: string) => Locator;
   private readonly allowCustomAmount: (value: string) => Locator;
 
   constructor(public readonly page: Page) {
@@ -30,9 +30,7 @@ export class PaymentRequestDetailsPage {
     this.statusLabel = this.page.getByText("Status");
     this.amountLabel = this.page.getByText("Amount", { exact: true });
     this.redirectURLLabel = this.page.getByText("Redirect URL");
-    this.amountOverrideLabel = this.page.getByText(
-      "Allow amount override from url",
-    );
+    this.dynamicAmountLabel = this.page.getByText("Allow dynamic amount");
     this.customAmountLabel = this.page.getByText(
       "Allow the user to pay a custom amount",
     );
@@ -48,10 +46,10 @@ export class PaymentRequestDetailsPage {
         .filter({ hasText: "Status" })
         .last()
         .getByText(status);
-    this.allowAmountOverride = (value: string) =>
+    this.allowDynamicAmount = (value: string) =>
       this.page
         .locator("div")
-        .filter({ hasText: "Allow amount override from url" })
+        .filter({ hasText: "Allow dynamic amount" })
         .last()
         .getByText(value);
     this.allowCustomAmount = (value: string) =>
@@ -114,9 +112,9 @@ export class PaymentRequestDetailsPage {
     await expect(this.page.getByText(url)).toBeVisible();
   }
 
-  async checkAmountOverrideOption(bool: boolean) {
-    await expect(this.amountOverrideLabel).toBeVisible();
-    await expect(this.allowAmountOverride(bool.toString())).toBeVisible();
+  async checkDynamicAmountOption(bool: boolean) {
+    await expect(this.dynamicAmountLabel).toBeVisible();
+    await expect(this.allowDynamicAmount(bool.toString())).toBeVisible();
   }
 
   async checkCustomAmountOption(bool: boolean) {

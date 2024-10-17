@@ -1,0 +1,29 @@
+.iconCol {
+  padding: 10px 8px 10px 18px;
+}
+
+.titleCol {
+  width: 70%;
+}
+
+.ellipsis {
+  position: relative;
+}
+.ellipsis:before {
+  content: "&nbsp;";
+  visibility: hidden;
+}
+.ellipsis span {
+  position: absolute;
+  left: 0;
+  right: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.stepRequired {
+  background-color: #e0e0e0;
+  padding: 2px 6px;
+  font-size: 16px;
+}

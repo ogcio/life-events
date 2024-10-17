@@ -146,7 +146,7 @@ export default function ({
             className="govie-label--s govie-checkboxes__label"
             htmlFor="allow-override-hint"
           >
-            {t("form.allowAmountOverride")}
+            {t("form.allowDynamicAmount")}
           </label>
         </div>
       </div>

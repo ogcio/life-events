@@ -1,17 +1,18 @@
 import OpenBankingHost from "./OpenBankingHost";
 import { createPaymentRequest } from "../../../../integration/trueLayer";
 import { getTranslations } from "next-intl/server";
-import { errorHandler, getRealAmount } from "../../../../utils";
+import { errorHandler } from "../../../../utils";
 import { redirect, RedirectType } from "next/navigation";
 import { AuthenticationFactory } from "../../../../../libraries/authentication-factory";
+import { getAmount } from "../utils";
 
 const MAX_WAIT_FOR_RESULT = "60";
 
 async function getPaymentDetails(
   paymentId: string,
   user: { name: string; email: string },
-  amount?: number,
-  customAmount?: number,
+  token?: string,
+  customAmount?: string,
 ) {
   const paymentsApi = await AuthenticationFactory.getPaymentsClient();
   const { data: details, error } =
@@ -29,20 +30,14 @@ async function getPaymentDetails(
 
   if (!provider) return undefined;
 
-  const realAmount = getRealAmount({
-    amount: details.amount,
-    customAmount,
-    amountOverride: amount,
-    allowAmountOverride: details.allowAmountOverride,
-    allowCustomOverride: details.allowCustomAmount,
-  });
+  const amount = await getAmount({ customAmount, token, prDetails: details });
 
   const paymentDetails = {
     ...details,
     providerId: provider.id,
     providerName: provider.name,
     providerData: provider.data,
-    amount: realAmount,
+    amount,
     user,
   };
 
@@ -59,8 +54,10 @@ export default async function Bank(props: {
     | {
         paymentId: string;
         integrationRef: string;
-        amount?: string;
+        token?: string;
         customAmount?: string;
+        runId?: string;
+        journeyId?: string;
       }
     | undefined;
 }) {
@@ -73,18 +70,18 @@ export default async function Bank(props: {
     return redirect("/not-found", RedirectType.replace);
   }
 
-  const amount = props.searchParams.amount
-    ? parseFloat(props.searchParams.amount)
-    : undefined;
-
-  const customAmount = props.searchParams.customAmount
-    ? parseFloat(props.searchParams.customAmount)
-    : undefined;
+  const {
+    paymentId,
+    token,
+    customAmount,
+    runId = "",
+    journeyId = "",
+  } = props.searchParams;
 
   const details = await getPaymentDetails(
-    props.searchParams.paymentId,
+    paymentId,
     { email: user?.email ?? "", name: user?.name ?? "" },
-    amount,
+    token,
     customAmount,
   );
 
@@ -100,7 +97,12 @@ export default async function Bank(props: {
     integrationReference: props.searchParams.integrationRef,
     amount: paymentDetails.amount,
     paymentProviderId: paymentDetails.providerId,
-    userData: { email: user?.email ?? "", name: user?.name ?? "" },
+    metadata: {
+      email: user?.email ?? "",
+      name: user?.name ?? "",
+      runId,
+      journeyId,
+    },
   });
 
   if (error) {

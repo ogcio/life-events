@@ -14,7 +14,7 @@ import { dirname, join } from "path";
 import healthCheck from "./routes/healthcheck";
 import sensible from "@fastify/sensible";
 import schemaValidators from "./routes/schemas/validations";
-import apiAuthPlugin from "api-auth";
+import apiAuthPlugin, { readOrGenerateKeyPair, getJWKSRoute } from "api-auth";
 import { initializeErrorHandler } from "@ogcio/fastify-error-handler";
 import { initializeLoggingHooks } from "@ogcio/fastify-logging-wrapper";
 import providers from "./plugins/entities/providers";
@@ -107,6 +107,13 @@ export async function build(opts?: FastifyServerOptions) {
   app.register(citizen);
   app.register(transactions);
   app.register(paymentRequest);
+
+  // This route exposes the Public keys
+  app.get("/.well-known/jwks.json", async () => {
+    // const publicKey = await readLocalPublicKey(join(__dirname, "public.key"));
+    const { publicKey } = await readOrGenerateKeyPair("payments-api");
+    return getJWKSRoute(publicKey);
+  });
 
   return app;
 }

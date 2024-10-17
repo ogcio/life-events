@@ -170,6 +170,16 @@ export class Payments {
     );
   }
 
+  async decodeToken(
+    data: paths["/api/v1/requests/decode"]["post"]["requestBody"]["content"]["application/json"],
+  ) {
+    return formatQueryResult(
+      this.client.POST("/api/v1/requests/decode", {
+        body: data,
+      }),
+    );
+  }
+
   /**
    * TRANSACTIONS
    */
@@ -195,6 +205,12 @@ export class Payments {
           },
         },
       }),
+    );
+  }
+
+  async getTransactionSchema() {
+    return formatQueryResult(
+      this.client.GET("/api/v1/transactions/schema", {}),
     );
   }
 
@@ -301,5 +317,19 @@ export class Payments {
 
   async getAuditLogEventTypes() {
     return formatQueryResult(this.client.GET("/api/v1/auditLogs/event-types"));
+  }
+
+  async getRedirectToken(
+    transactionId: paths["/api/v1/transactions/{transactionId}/token"]["get"]["parameters"]["path"]["transactionId"],
+  ) {
+    return formatQueryResult(
+      this.client.GET("/api/v1/transactions/{transactionId}/token", {
+        params: {
+          path: {
+            transactionId,
+          },
+        },
+      }),
+    );
   }
 }

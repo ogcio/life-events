@@ -20,6 +20,9 @@ export const envSchema = {
     "LOGTO_M2M_PROFILE_APP_ID",
     "LOGTO_M2M_PROFILE_APP_SECRET",
     "PROFILE_BACKEND_URL",
+    "LOGTO_M2M_INTEGRATOR_APP_ID",
+    "LOGTO_M2M_INTEGRATOR_APP_SECRET",
+    "INTEGRATOR_BACKEND_URL",
   ],
   properties: {
     POSTGRES_USER: {
@@ -77,6 +80,15 @@ export const envSchema = {
       type: "string",
     },
     PROFILE_BACKEND_URL: {
+      type: "string",
+    },
+    LOGTO_M2M_INTEGRATOR_APP_ID: {
+      type: "string",
+    },
+    LOGTO_M2M_INTEGRATOR_APP_SECRET: {
+      type: "string",
+    },
+    INTEGRATOR_BACKEND_URL: {
       type: "string",
     },
   },

@@ -1,0 +1,9 @@
+.footerContainer {
+  :global(.govie-footer__meta) {
+    align-items: center;
+  }
+
+  :global(.govie-footer__meta-item) {
+    text-align: center;
+  }
+}

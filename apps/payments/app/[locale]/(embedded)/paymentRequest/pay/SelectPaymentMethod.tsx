@@ -8,20 +8,23 @@ type Props = {
   providers: ProviderWithUnknownData[];
   paymentId: string;
   referenceId: string;
+  runId?: string;
+  journeyId?: string;
   isPublicServant: boolean;
-  urlAmount?: number;
-  customAmount?: number;
+  token?: string;
+  customAmount?: string;
 };
 
-async function redirectToPaymentUrl(
-  settings: {
-    paymentId: string;
-    integrationRef: string;
-    amount?: number;
-    customAmount?: number;
-  },
-  event,
-) {
+type UrlParams = {
+  paymentId: string;
+  runId?: string;
+  journeyId?: string;
+  integrationRef: string;
+  token?: string;
+  customAmount?: string;
+};
+
+async function redirectToPaymentUrl(settings: UrlParams, event) {
   event.preventDefault();
 
   // SelectPaymentMethod is a client component
@@ -36,28 +39,26 @@ async function redirectToPaymentUrl(
 
 async function getPaymentUrl({
   paymentId,
+  runId,
+  journeyId,
   type,
   integrationRef,
-  amount,
+  token,
   customAmount,
-}: {
-  paymentId: string;
-  type: string;
-  integrationRef: string;
-  amount?: number;
-  customAmount?: number;
-}) {
+}: UrlParams & { type: string }) {
   const url = new URL(
     `/paymentRequest/${type}`,
     process.env.NEXT_PUBLIC_HOST_URL,
   );
   url.searchParams.set("paymentId", paymentId);
   url.searchParams.set("integrationRef", integrationRef);
-  if (amount) {
-    url.searchParams.set("amount", amount.toString());
+  if (runId) url.searchParams.set("runId", runId);
+  if (journeyId) url.searchParams.set("journeyId", journeyId);
+  if (token) {
+    url.searchParams.set("token", token);
   }
   if (customAmount) {
-    url.searchParams.set("customAmount", customAmount.toString());
+    url.searchParams.set("customAmount", customAmount);
   }
   return url.href;
 }
@@ -66,8 +67,10 @@ export default function ({
   providers,
   paymentId,
   referenceId,
+  runId,
+  journeyId,
   isPublicServant,
-  urlAmount,
+  token,
   customAmount,
 }: Props) {
   const t = useTranslations();
@@ -101,8 +104,10 @@ export default function ({
 
   const redirectToPayment = redirectToPaymentUrl.bind(this, {
     paymentId,
+    runId,
+    journeyId,
     integrationRef: referenceId,
-    amount: urlAmount,
+    token,
     customAmount,
   });
 
