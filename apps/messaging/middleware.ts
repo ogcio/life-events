@@ -25,7 +25,6 @@ export default async function (request: NextRequest) {
   nextResponse.headers.append("x-pathname", request.nextUrl.pathname);
   nextResponse.headers.append("x-search", request.nextUrl.search);
 
-  getCommonLoggerWithEnvLevel().trace({ destinationUrl: request.url });
   return nextResponse;
 }
 
