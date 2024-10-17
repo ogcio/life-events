@@ -277,3 +277,10 @@ export const JourneyStepExecutionResponse = Type.Object({
 export type JourneyStepExecutionResponse = Static<
   typeof JourneyStepExecutionResponse
 >;
+
+export const TransitionJourneyStep = Type.Object({
+  journeyId: Type.String(),
+  runId: Type.String(),
+  data: Type.Any(),
+});
+export type TransitionJourneyStep = Static<typeof TransitionJourneyStep>;
