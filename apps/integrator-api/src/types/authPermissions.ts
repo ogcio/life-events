@@ -9,4 +9,5 @@ export enum authPermissions {
   RUN_READ = "integrator:run:read",
   RUN_SELF_READ = "integrator:run.self:read",
   RUN_WRITE = "integrator:run:write",
+  RUN_SELF_WRITE = "integrator:run.self:write",
 }

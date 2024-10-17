@@ -18,6 +18,7 @@ export const envSchema = {
     "FORMS_PUBLIC_API_KEY",
     "AWS_REGION",
     "KMS_ENDPOINT",
+    "INTEGRATOR_URL",
   ],
   properties: {
     POSTGRES_USER: {
@@ -69,6 +70,9 @@ export const envSchema = {
       type: "string",
     },
     KMS_ENDPOINT: {
+      type: "string",
+    },
+    INTEGRATOR_URL: {
       type: "string",
     },
   },

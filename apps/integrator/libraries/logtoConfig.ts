@@ -1,6 +1,9 @@
 import { AuthenticationContextConfig } from "auth/base-authentication-context";
 import { organizationScopes } from "auth/authentication-context";
 import { headers } from "next/headers";
+import { AuthUserScope } from "auth/auth-session";
+
+const integratorResource = process.env.INTEGRATOR_BACKEND_URL + "/";
 
 export const baseConfig = {
   cookieSecure: process.env.NODE_ENV === "production",
@@ -19,19 +22,13 @@ const buildLoginUrlWithPostLoginRedirect = () => {
   return `/preLogin?loginUrl=/login&postLoginRedirectUrl=${encodeURIComponent(currentPath ?? "")}`;
 };
 
-export const getAuthenticationContextConfig =
-  (): AuthenticationContextConfig => ({
-    baseUrl: baseConfig.baseUrl,
-    appId: baseConfig.appId,
-    appSecret: baseConfig.appSecret,
-    citizenScopes: [],
-    publicServantExpectedRoles,
-    publicServantScopes: [...profileApiScopes],
-    loginUrl: buildLoginUrlWithPostLoginRedirect(),
-    resourceUrl: "",
-  });
+export const commonScopes = [AuthUserScope.Email];
 
-export const postSignoutRedirect = process.env.HOST_URL;
+const citizenScopes = [
+  "integrator:journey.public:read",
+  "integrator:run.self:read",
+  "integrator:run.self:write",
+];
 
 export const integratorPublicServantScopes = [
   "integrator:journey:*",
@@ -39,13 +36,28 @@ export const integratorPublicServantScopes = [
   "integrator:run:read",
 ];
 
+export const getAuthenticationContextConfig =
+  (): AuthenticationContextConfig => ({
+    baseUrl: baseConfig.baseUrl,
+    appId: baseConfig.appId,
+    appSecret: baseConfig.appSecret,
+    citizenScopes: [...citizenScopes],
+    publicServantExpectedRoles,
+    publicServantScopes: [...integratorPublicServantScopes],
+    loginUrl: buildLoginUrlWithPostLoginRedirect(),
+    resourceUrl: integratorResource,
+  });
+
+export const postSignoutRedirect = process.env.HOST_URL;
+
 export const getSignInConfiguration = () => ({
   ...baseConfig,
-  resources: [],
+  resources: [integratorResource],
   scopes: [
+    ...commonScopes,
     ...organizationScopes,
     ...integratorPublicServantScopes,
-    ...profileApiScopes,
+    ...citizenScopes,
   ],
 });
 

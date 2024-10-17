@@ -10,13 +10,20 @@ import {
   PublicServantRuns,
   PublicServantFullRunDO,
   PublicServantFullRun,
+  Id,
+  CreateJourneyRun,
+  ExecuteJourneyStep,
+  JourneyStepExecutionResponse,
 } from "../schemas";
 import { formatAPIResponse } from "../../utils/responseFormatter";
 import { authPermissions } from "../../types/authPermissions";
 import {
   UserRunDetailsDO,
   PSRunDetailsDO,
+  RunStatusEnum,
+  RunStepStatusEnum,
 } from "../../plugins/entities/run/types";
+import IntegratorEngine from "../../libraries/integratorEngine";
 
 const TAGS = ["Executor"];
 
@@ -154,6 +161,99 @@ export default async function executor(app: FastifyInstance) {
       };
 
       reply.send(formatAPIResponse(fullRun));
+    },
+  );
+
+  // RUN
+  app.post<{
+    Reply: GenericResponse<Id> | Error;
+    Body: CreateJourneyRun;
+  }>(
+    "/run",
+    {
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [authPermissions.RUN_SELF_WRITE]),
+      schema: {
+        tags: TAGS,
+        body: CreateJourneyRun,
+        response: {
+          200: GenericResponse(Id),
+          401: HttpError,
+          404: HttpError,
+        },
+      },
+    },
+    async (request, reply) => {
+      const { journeyId } = request.body;
+      const userId = request.userData?.userId;
+
+      if (!userId) {
+        throw app.httpErrors.unauthorized("Unauthorized!");
+      }
+
+      const journeyInfo = await app.journey.getJourneyPublicInfo(journeyId);
+      const runId = await app.run.createRun(journeyId, userId);
+      await app.run.createRunStep(runId.id, journeyInfo.initialStepId);
+
+      reply.send(formatAPIResponse(runId));
+    },
+  );
+
+  app.post<{
+    Reply: GenericResponse<JourneyStepExecutionResponse> | Error;
+    Body: ExecuteJourneyStep;
+  }>(
+    "/execute",
+    {
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [authPermissions.RUN_SELF_WRITE]),
+      schema: {
+        tags: TAGS,
+        body: ExecuteJourneyStep,
+        response: {
+          200: GenericResponse(JourneyStepExecutionResponse),
+          401: HttpError,
+          404: HttpError,
+        },
+      },
+    },
+    async (request, reply) => {
+      const { journeyId, runId } = request.body;
+      const userId = request.userData?.userId;
+
+      if (!userId) {
+        throw app.httpErrors.unauthorized("Unauthorized!");
+      }
+
+      const run = await app.run.getUserRunById(runId, userId);
+
+      if (run.status === RunStatusEnum.COMPLETED) {
+        reply.send(
+          formatAPIResponse({
+            url: new URL(
+              `/journey/${journeyId}/complete`,
+              process.env.INTEGRATOR_URL,
+            ).href,
+          }),
+        );
+      }
+
+      const activeRunStep = await app.run.getActiveRunStep(runId);
+
+      if (!activeRunStep) {
+        throw app.httpErrors.internalServerError("No active step found");
+      }
+
+      const step = await app.journeySteps.getStepById(activeRunStep.stepId);
+      const engine = new IntegratorEngine(step.stepType);
+      const result = await engine.executeStep(step.stepData);
+
+      await app.run.updateRunStep(activeRunStep.id, {
+        data: activeRunStep.data,
+        status: RunStepStatusEnum.IN_PROGRESS,
+      });
+
+      reply.send(formatAPIResponse(result));
     },
   );
 }
