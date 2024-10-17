@@ -40,7 +40,6 @@ const getKmsClient = (() => {
 const defaultAlgorithm = "RS256";
 
 interface JWTOptions {
-  algorithm?: string; // Algorithm used for signing the token
   expirationTime?: string; // Token expiration time (e.g., "1h")
   audience?: string; // Expected audience
   issuer?: string; // Token issuer
@@ -57,10 +56,10 @@ async function createSignedJWT(
   keyId: string,
   options: JWTOptions,
 ) {
-  const { algorithm = defaultAlgorithm, audience: aud, issuer: iss } = options;
+  const { audience: aud, issuer: iss } = options;
 
   const header = {
-    alg: algorithm,
+    alg: defaultAlgorithm,
     typ: "JWT",
   };
 
@@ -102,7 +101,6 @@ interface VerifyJWTOptions {
   jwksUrl: string;
   audience?: string; // Expected audience for the token
   issuer?: string; // Expected issuer for the token
-  algorithm?: string; // Algorithm used for signing the token
 }
 
 /**
@@ -114,14 +112,14 @@ async function verifyJWT(
   token: string,
   options: VerifyJWTOptions,
 ): Promise<JWTPayload> {
-  const { jwksUrl, audience, issuer, algorithm = defaultAlgorithm } = options;
+  const { jwksUrl, audience, issuer } = options;
 
   // Create the remote JWK set from the given URL
   const JWKS = createRemoteJWKSet(new URL(jwksUrl));
 
   // Define verification options
   const verifyOptions: JWTVerifyOptions = {
-    algorithms: [algorithm],
+    algorithms: [defaultAlgorithm],
     audience, // Check if token is for the expected audience
     issuer, // Check if token was issued by the expected issuer
   };
