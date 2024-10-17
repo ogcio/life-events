@@ -43,14 +43,6 @@ resources:
       ref: refs/tags/v0.2
       endpoint: ogcio
 
-resources:
-  repositories:
-    - repository: pipeline-templates
-      type: github
-      name: ogcio/building-blocks-pipelines
-      ref: main
-      endpoint: ogcio
-
 stages:
   - stage: securityScan
     displayName: Security Scans
@@ -165,4 +157,3 @@ stages:
           parameters:
             serviceName: ${{ serviceName }}
             testPath: './apps/'
-
