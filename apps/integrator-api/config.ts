@@ -16,6 +16,8 @@ export const envSchema = {
     "FORMS_SERVICE_URL",
     "FORMS_SECRET_API_KEY",
     "FORMS_PUBLIC_API_KEY",
+    "AWS_REGION",
+    "KMS_ENDPOINT",
     "INTEGRATOR_URL",
   ],
   properties: {
@@ -62,6 +64,12 @@ export const envSchema = {
       type: "string",
     },
     FORMS_PUBLIC_API_KEY: {
+      type: "string",
+    },
+    AWS_REGION: {
+      type: "string",
+    },
+    KMS_ENDPOINT: {
       type: "string",
     },
     INTEGRATOR_URL: {

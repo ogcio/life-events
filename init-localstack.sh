@@ -26,4 +26,30 @@ echo '{
 
 awslocal s3api put-bucket-cors --bucket "$IMAGES_S3_BUCKET" --cors-configuration file://cors-config.json
 
+AWS_REGION="eu-west-1"
+
+for SERVICE in "payments-api" "integrator-api"; do
+  echo "Creating KMS key for $SERVICE..."
+
+  KMS_KEY_ID=$(aws kms create-key \
+    --key-usage SIGN_VERIFY \
+    --customer-master-key-spec RSA_2048 \
+    --endpoint-url $LOCALSTACK_ENDPOINT \
+    --region $AWS_REGION \
+    --query 'KeyMetadata.KeyId' \
+    --output text)
+
+  echo "Created KMS key for $SERVICE with Key ID: $KMS_KEY_ID"
+
+  echo "Creating KMS alias for $SERVICE..."
+
+  aws kms create-alias \
+    --alias-name "alias/life-events-$SERVICE-key" \
+    --target-key-id "$KMS_KEY_ID" \
+    --endpoint-url $LOCALSTACK_ENDPOINT \
+    --region $AWS_REGION
+
+  echo "KMS key and alias created for $SERVICE with Key ID: $KMS_KEY_ID"
+done
+
 set +x

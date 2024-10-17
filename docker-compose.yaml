@@ -39,10 +39,11 @@ services:
     ports:
       - 4566:4566
     environment:
-      SERVICES: "s3,secretsmanager"
+      SERVICES: "s3,secretsmanager, kms"
       FILES_S3_BUCKET: "life-events-files"
       IMAGES_S3_BUCKET: "life-events-images"
       FILE_UPLOAD_SERVICE_BUCKET: "file-upload-service"
+      LOCALSTACK_ENDPOINT: "http://localhost:4566"
     volumes:
       - './.localstack:/var/lib/localstack'
       - '/var/run/docker.sock:/var/run/docker.sock'
