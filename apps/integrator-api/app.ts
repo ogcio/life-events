@@ -93,6 +93,7 @@ export async function build(opts?: FastifyServerOptions) {
     return getJWKS(keyAlias);
   });
 
+  // can be used to test
   app.get("/token", async (_, reply) => {
     const payload = { amount: 70 };
 
@@ -125,7 +126,6 @@ export async function build(opts?: FastifyServerOptions) {
         jwksUrl,
         issuer: "payments-api",
         audience: "integrator-api",
-        algorithm: "RS256",
       });
 
       // Send back the payload if the JWT verification is successful

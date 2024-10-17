@@ -14,7 +14,7 @@ import { dirname, join } from "path";
 import healthCheck from "./routes/healthcheck";
 import sensible from "@fastify/sensible";
 import schemaValidators from "./routes/schemas/validations";
-import apiAuthPlugin, { getJWKS, verifyJWT } from "api-auth";
+import apiAuthPlugin, { createSignedJWT, getJWKS, verifyJWT } from "api-auth";
 import { initializeErrorHandler } from "@ogcio/fastify-error-handler";
 import { initializeLoggingHooks } from "@ogcio/fastify-logging-wrapper";
 import providers from "./plugins/entities/providers";
@@ -26,6 +26,8 @@ import rawbody from "fastify-raw-body";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+
+const keyAlias = "alias/payments-api-key";
 
 dotenv.config();
 
@@ -109,7 +111,19 @@ export async function build(opts?: FastifyServerOptions) {
   app.register(paymentRequest);
 
   app.get("/.well-known/jwks.json", async () => {
-    return getJWKS("alias/payments-api-key");
+    return getJWKS(keyAlias);
+  });
+
+  // can be used to test
+  app.get("/token", async (_, reply) => {
+    const payload = { amount: 70 };
+
+    const jwt = await createSignedJWT(payload, keyAlias, {
+      audience: "payments-api",
+      issuer: "integrator-api",
+    });
+
+    return reply.code(200).send({ token: jwt });
   });
 
   return app;
