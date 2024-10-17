@@ -42,7 +42,7 @@
     "@fastify/under-pressure": "^8.3.0",
     "@ogcio/fastify-logging-wrapper": "^4.0.1",
     "@ogcio/fastify-error-handler": "^4.0.1",
-    "@sinclair/typebox": "^0.32.16",
+    "@sinclair/typebox": "^0.33.17",
     "auth": "*",
     "dotenv": "^16.4.5",
     "fastify": "^4.26.2",
