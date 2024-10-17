@@ -75,7 +75,7 @@ export default async function RootPage(props: {
           </PageMenuItem>
         ))}
       ></PageMenu>
-      <section style={{ width: "100%" }}>
+      <section style={{ minWidth: "360px" }}>
         <Heading>{translate(title, props.params.locale)}</Heading>
 
         <Search
@@ -131,7 +131,6 @@ export default async function RootPage(props: {
                         >
                           {translate(item.copy, props.params.locale, "text")}
                         </Paragraph>
-
                         <Links
                           keyId={item.id}
                           links={item.links}
