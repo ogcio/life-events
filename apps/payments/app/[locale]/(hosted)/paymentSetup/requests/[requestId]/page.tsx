@@ -24,6 +24,7 @@ export default async function ({
   searchParams: { action, page, limit },
 }) {
   const t = await getTranslations("PaymentSetup.Request");
+  const tStatus = await getTranslations("PaymentSetup.paymentStatus");
   const paymentsApi = await AuthenticationFactory.getPaymentsClient();
 
   const currentPage = page ? parseInt(page) : PAGINATION_PAGE_DEFAULT;
@@ -101,7 +102,7 @@ export default async function ({
                             className={`govie-tag ${mapTransactionStatusColorClassName(trx.status)} govie-body-s`}
                             style={{ marginBottom: "0px" }}
                           >
-                            {trx.status}
+                            {tStatus(trx.status)}
                           </strong>
                         </td>
                         <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">

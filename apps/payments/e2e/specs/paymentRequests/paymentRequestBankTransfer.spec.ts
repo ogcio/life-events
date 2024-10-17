@@ -81,7 +81,7 @@ test.describe("Payment Request with manual bank transfer provider", () => {
     await paymentRequestsPage.goto();
     await paymentRequestsPage.checkHeader();
     await paymentRequestsPage.checkRequestIsVisible(name);
-    await paymentRequestsPage.checkBeneficiaryAccounts(name, [
+    await paymentRequestsPage.checkRecipientAccounts(name, [
       bankTransferProvider.name,
     ]);
     await paymentRequestsPage.checkAmount(name, mockAmount);
@@ -153,7 +153,7 @@ test.describe("Payment Request with manual bank transfer provider", () => {
     await paymentRequestsPage.goto();
     await paymentRequestsPage.checkHeader();
     await paymentRequestsPage.checkRequestIsVisible(name);
-    await paymentRequestsPage.checkBeneficiaryAccounts(name, [
+    await paymentRequestsPage.checkRecipientAccounts(name, [
       bankTransferProvider.name,
     ]);
     await paymentRequestsPage.checkAmount(name, mockAmount);

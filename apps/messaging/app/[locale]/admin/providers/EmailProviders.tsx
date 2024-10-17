@@ -47,7 +47,7 @@ export default async () => {
                   href={(() => {
                     const url = new URL(
                       `${providerRoutes.url}/email`,
-                      process.env.HOST_URL,
+                      process.env.NEXT_PUBLIC_MESSAGING_SERVICE_ENTRY_POINT,
                     );
                     url.searchParams.append("id", provider.id);
                     return url.href;
@@ -60,7 +60,7 @@ export default async () => {
                   href={(() => {
                     const url = new URL(
                       providerRoutes.url,
-                      process.env.HOST_URL,
+                      process.env.NEXT_PUBLIC_MESSAGING_SERVICE_ENTRY_POINT,
                     );
                     url.searchParams.append(searchKeyDeleteId, provider.id);
                     url.searchParams.append(

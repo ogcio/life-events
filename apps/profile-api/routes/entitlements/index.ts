@@ -4,8 +4,7 @@ import {
   EntitlementsList,
   EntitlementsListSchema,
 } from "../../types/schemaDefinitions";
-import { ServerError } from "shared-errors";
-import { getErrorMessage } from "../../utils/error-utils";
+import { getErrorMessage } from "@ogcio/shared-errors";
 import { Permissions } from "../../types/permissions";
 
 const ENTITLEMENTS_TAGS = ["Entitlements"];
@@ -65,7 +64,7 @@ export default async function entitlements(app: FastifyInstance) {
           },
         ];
       } catch (error) {
-        throw new ServerError(ERROR_PROCESS, getErrorMessage(error));
+        throw app.httpErrors.internalServerError(getErrorMessage(error));
       }
     },
   );

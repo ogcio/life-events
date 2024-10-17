@@ -18,7 +18,7 @@ export class Upload {
   }
 
   async shareFile(fileId: string, userId: string) {
-    const { data, error } = await this.client.POST("/api/v1/metadata/share/", {
+    const { data, error } = await this.client.POST("/api/v1/permissions/", {
       body: { fileId, userId },
     });
 
@@ -26,7 +26,7 @@ export class Upload {
   }
 
   async removeFileSharing(fileId: string, userId: string) {
-    const { error } = await this.client.DELETE("/api/v1/metadata/share/", {
+    const { error } = await this.client.DELETE("/api/v1/permissions/", {
       body: { fileId, userId },
     });
 
@@ -65,6 +65,13 @@ export class Upload {
     return { error, data: data?.data };
   }
 
+  async getSharedFilesForUser(userId: string) {
+    const { error, data } = await this.client.GET("/api/v1/metadata/", {
+      params: { query: { userId } },
+    });
+    return { error, data: data?.data };
+  }
+
   async getFileMetadata(id: string) {
     const { data, error } = await this.client.GET("/api/v1/metadata/{id}", {
       params: { path: { id } },
@@ -80,24 +87,21 @@ export class Upload {
     return { error, data: data?.data };
   }
 
-  async uploadFile(file?: File) {
+  async uploadFile(file: File, expirationDate?: string) {
     const { error, response, data } = await this.client.POST("/api/v1/files/", {
       body: {
         file,
+        expirationDate,
       } as any,
+
       bodySerializer: (body: any) => {
         const formData = new FormData();
+        if (body.expirationDate) {
+          formData.set("expirationDate", body.expirationDate);
+        }
         formData.set("file", body.file);
         return formData;
       },
-    });
-
-    return { error };
-  }
-
-  async deleteFile(id: string) {
-    const { error } = await this.client.DELETE("/api/v1/files/{id}", {
-      params: { path: { id } },
     });
 
     return { error };

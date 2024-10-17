@@ -15,7 +15,8 @@ export default (pg: fastifyPostgres.PostgresDb, fileId: string) => {
       infected,
       infection_description as "infectionDescription",
       file_name as "fileName",
-      antivirus_db_version as "antivirusDbVersion"
+      antivirus_db_version as "antivirusDbVersion",
+      expires_at as "expiresAt"
     FROM 
       files
     WHERE

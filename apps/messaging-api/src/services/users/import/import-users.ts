@@ -13,9 +13,8 @@ import { isNativeError } from "util/types";
 import { mapUsers } from "./map-users.js";
 import { sendInvitationsForUsersImport } from "../invitations/send-invitations.js";
 import { PostgresDb } from "@fastify/postgres";
-import { BadRequestError, ServerError } from "shared-errors";
+import { httpErrors } from "@fastify/sensible";
 
-export const IMPORT_USERS_ERROR = "IMPORT_USERS_ERROR";
 const TAGS_SEPARATOR = ";";
 
 interface RequestUser {
@@ -34,10 +33,7 @@ export const importCsvFileFromRequest = async (params: {
   const usersToImport = await getUsersFromCsv(params.filepath);
 
   if (usersToImport.length === 0) {
-    throw new BadRequestError(
-      IMPORT_USERS_ERROR,
-      "Files must have at least one user",
-    );
+    throw httpErrors.badRequest("Files must have at least one user");
   }
 
   const imported = await importUsers({
@@ -62,7 +58,7 @@ export const importCsvRecords = async (params: {
   );
 
   if (toImportUsers.length === 0) {
-    throw new BadRequestError(IMPORT_USERS_ERROR, "At least one user needed");
+    throw httpErrors.badRequest("At least one user needed");
   }
 
   const imported = await importUsers({
@@ -210,8 +206,7 @@ const insertToImportUsers = async (params: {
     );
 
     if (result.rowCount === 0) {
-      throw new ServerError(
-        IMPORT_USERS_ERROR,
+      throw httpErrors.internalServerError(
         "Cannot store the users_import data",
       );
     }
@@ -219,8 +214,7 @@ const insertToImportUsers = async (params: {
     return result.rows[0].import_id;
   } catch (error) {
     const message = isNativeError(error) ? error.message : "unknown error";
-    throw new ServerError(
-      IMPORT_USERS_ERROR,
+    throw httpErrors.internalServerError(
       `Error during CSV file store on db: ${message}`,
     );
   }

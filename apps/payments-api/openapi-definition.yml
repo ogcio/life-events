@@ -191,6 +191,8 @@ paths:
                               type: string
                             liveSecretKey:
                               type: string
+                            webhookSigningKey:
+                              type: string
                           required:
                             - livePublishableKey
                             - liveSecretKey
@@ -312,6 +314,8 @@ paths:
                           livePublishableKey:
                             type: string
                           liveSecretKey:
+                            type: string
+                          webhookSigningKey:
                             type: string
                         required:
                           - livePublishableKey
@@ -634,6 +638,8 @@ paths:
                                         type: string
                                       liveSecretKey:
                                         type: string
+                                      webhookSigningKey:
+                                        type: string
                                     required:
                                       - livePublishableKey
                                       - liveSecretKey
@@ -673,12 +679,12 @@ paths:
                             - type: string
                               enum:
                                 - inactive
+                            - type: string
+                              enum:
+                                - draft
                       required:
                         - paymentRequestId
                         - title
-                        - description
-                        - amount
-                        - reference
                         - providers
                         - status
                   metadata:
@@ -740,17 +746,47 @@ paths:
                   validator: RequiredValidator
                   type: string
                 description:
-                  type: string
+                  validator:
+                    name: OptionalRequiredValidator
+                    options:
+                      field: status
+                      operation: notEqual
+                      value: draft
+                  anyOf:
+                    - type: string
+                    - type: "null"
                 reference:
-                  validator: RequiredValidator
-                  type: string
+                  validator:
+                    name: OptionalRequiredValidator
+                    options:
+                      field: status
+                      operation: notEqual
+                      value: draft
+                  anyOf:
+                    - type: string
+                    - type: "null"
                 amount:
-                  minimum: 1
-                  maximum: 1000000
-                  type: number
+                  validator:
+                    name: OptionalRequiredValidator
+                    options:
+                      field: status
+                      operation: notEqual
+                      value: draft
+                  anyOf:
+                    - minimum: 1
+                      maximum: 1000000
+                      type: number
+                    - type: "null"
                 redirectUrl:
-                  validator: RequiredValidator
-                  type: string
+                  validator:
+                    name: OptionalRequiredValidator
+                    options:
+                      field: status
+                      operation: notEqual
+                      value: draft
+                  anyOf:
+                    - type: string
+                    - type: "null"
                 allowAmountOverride:
                   type: boolean
                 allowCustomAmount:
@@ -767,6 +803,9 @@ paths:
                     - type: string
                       enum:
                         - inactive
+                    - type: string
+                      enum:
+                        - draft
                   validator: PaymentRequestStatusValidator
               required:
                 - title
@@ -803,17 +842,47 @@ paths:
                   validator: RequiredValidator
                   type: string
                 description:
-                  type: string
+                  validator:
+                    name: OptionalRequiredValidator
+                    options:
+                      field: status
+                      operation: notEqual
+                      value: draft
+                  anyOf:
+                    - type: string
+                    - type: "null"
                 reference:
-                  validator: RequiredValidator
-                  type: string
+                  validator:
+                    name: OptionalRequiredValidator
+                    options:
+                      field: status
+                      operation: notEqual
+                      value: draft
+                  anyOf:
+                    - type: string
+                    - type: "null"
                 amount:
-                  minimum: 1
-                  maximum: 1000000
-                  type: number
+                  validator:
+                    name: OptionalRequiredValidator
+                    options:
+                      field: status
+                      operation: notEqual
+                      value: draft
+                  anyOf:
+                    - minimum: 1
+                      maximum: 1000000
+                      type: number
+                    - type: "null"
                 redirectUrl:
-                  validator: RequiredValidator
-                  type: string
+                  validator:
+                    name: OptionalRequiredValidator
+                    options:
+                      field: status
+                      operation: notEqual
+                      value: draft
+                  anyOf:
+                    - type: string
+                    - type: "null"
                 allowAmountOverride:
                   type: boolean
                 allowCustomAmount:
@@ -830,6 +899,9 @@ paths:
                     - type: string
                       enum:
                         - inactive
+                    - type: string
+                      enum:
+                        - draft
                   validator: PaymentRequestStatusValidator
                 paymentRequestId:
                   type: string
@@ -961,6 +1033,8 @@ paths:
                                   type: string
                                 liveSecretKey:
                                   type: string
+                                webhookSigningKey:
+                                  type: string
                               required:
                                 - livePublishableKey
                                 - liveSecretKey
@@ -1000,6 +1074,9 @@ paths:
                       - type: string
                         enum:
                           - inactive
+                      - type: string
+                        enum:
+                          - draft
                   redirectUrl:
                     type: string
                   allowAmountOverride:
@@ -1009,12 +1086,8 @@ paths:
                 required:
                   - paymentRequestId
                   - title
-                  - description
-                  - amount
-                  - reference
                   - providers
                   - status
-                  - redirectUrl
                   - allowAmountOverride
                   - allowCustomAmount
         "404":
@@ -1191,6 +1264,8 @@ paths:
                                   type: string
                                 liveSecretKey:
                                   type: string
+                                webhookSigningKey:
+                                  type: string
                               required:
                                 - livePublishableKey
                                 - liveSecretKey
@@ -1230,6 +1305,9 @@ paths:
                       - type: string
                         enum:
                           - inactive
+                      - type: string
+                        enum:
+                          - draft
                   redirectUrl:
                     type: string
                   allowAmountOverride:
@@ -1329,8 +1407,12 @@ paths:
                               enum:
                                 - failed
                         amount:
+                          minimum: 1
+                          maximum: 1000000
                           type: number
                         extPaymentId:
+                          type: string
+                        paymentProviderId:
                           type: string
                         updatedAt:
                           type: string
@@ -1341,6 +1423,7 @@ paths:
                         - status
                         - amount
                         - extPaymentId
+                        - paymentProviderId
                         - updatedAt
                         - title
                   metadata:
@@ -1431,11 +1514,15 @@ paths:
                             enum:
                               - failed
                       amount:
+                        minimum: 1
+                        maximum: 1000000
                         type: number
                       extPaymentId:
                         allOf:
                           - type: string
                           - type: string
+                      paymentProviderId:
+                        type: string
                       updatedAt:
                         type: string
                       title:
@@ -1452,6 +1539,8 @@ paths:
                         required:
                           - name
                           - email
+                      description:
+                        type: string
                       providerName:
                         type: string
                       providerType:
@@ -1463,10 +1552,12 @@ paths:
                       - status
                       - amount
                       - extPaymentId
+                      - paymentProviderId
                       - updatedAt
                       - title
                       - userId
                       - userData
+                      - description
                       - providerName
                       - providerType
                       - paymentRequestId
@@ -1658,11 +1749,15 @@ paths:
                               enum:
                                 - failed
                         amount:
+                          minimum: 1
+                          maximum: 1000000
                           type: number
                         extPaymentId:
                           allOf:
                             - type: string
                             - type: string
+                        paymentProviderId:
+                          type: string
                         updatedAt:
                           type: string
                         title:
@@ -1679,6 +1774,8 @@ paths:
                           required:
                             - name
                             - email
+                        description:
+                          type: string
                         providerName:
                           type: string
                         providerType:
@@ -1690,10 +1787,12 @@ paths:
                         - status
                         - amount
                         - extPaymentId
+                        - paymentProviderId
                         - updatedAt
                         - title
                         - userId
                         - userData
+                        - description
                         - providerName
                         - providerType
                         - paymentRequestId
@@ -1828,6 +1927,8 @@ paths:
                 integrationReference:
                   type: string
                 amount:
+                  minimum: 1
+                  maximum: 1000000
                   type: number
                 paymentProviderId:
                   type: string
@@ -2105,6 +2206,8 @@ paths:
                         extPaymentId:
                           type: string
                         amount:
+                          minimum: 1
+                          maximum: 1000000
                           type: number
                       required:
                         - transactionId
@@ -2270,11 +2373,15 @@ paths:
                             enum:
                               - failed
                       amount:
+                        minimum: 1
+                        maximum: 1000000
                         type: number
                       extPaymentId:
                         allOf:
                           - type: string
                           - type: string
+                      paymentProviderId:
+                        type: string
                       updatedAt:
                         type: string
                       title:
@@ -2291,6 +2398,8 @@ paths:
                         required:
                           - name
                           - email
+                      description:
+                        type: string
                       providerName:
                         type: string
                       providerType:
@@ -2302,10 +2411,12 @@ paths:
                       - status
                       - amount
                       - extPaymentId
+                      - paymentProviderId
                       - updatedAt
                       - title
                       - userId
                       - userData
+                      - description
                       - providerName
                       - providerType
                       - paymentRequestId
@@ -2540,13 +2651,105 @@ paths:
                   - detail
                   - requestId
                   - name
-  /api/v1/test/citizen:
+  /api/v1/realex/statusUpdate:
     get:
-      responses:
-        "200":
-          description: Default Response
-  /api/v1/test/pub-ser:
-    get:
+      tags: *a4
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: sha1hash
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: timestamp
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: merchantid
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: orderid
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: result
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: message
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: pasref
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: paymentmethod
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: waitfornotification
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: fundstatus
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: paymentpurpose
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: acountholdername
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: country
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: accountnumber
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: iban
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: bic
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: bankname
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: bankcode
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: redirectoptional
+          required: true
       responses:
         "200":
           description: Default Response
@@ -2941,6 +3144,34 @@ paths:
                   - requestId
                   - name
         "500":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  detail:
+                    type: string
+                  requestId:
+                    type: string
+                  name:
+                    type: string
+                  validation: {}
+                  validationContext:
+                    type: string
+                required:
+                  - code
+                  - detail
+                  - requestId
+                  - name
+  /api/v1/stripe/webhook:
+    post:
+      tags:
+        - Stripe
+      responses:
+        "404":
           description: Default Response
           content:
             application/json:

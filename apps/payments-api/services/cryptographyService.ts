@@ -40,8 +40,8 @@ class CryptographyService {
     return decrypted;
   }
 
-  hash(text: string): string {
-    const hash = crypto.createHash(this.hashAlgorithm);
+  hash(text: string, algorithm?: string): string {
+    const hash = crypto.createHash(algorithm ?? this.hashAlgorithm);
     hash.update(text);
     return hash.digest("hex");
   }

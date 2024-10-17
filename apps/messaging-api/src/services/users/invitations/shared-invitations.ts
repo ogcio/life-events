@@ -2,14 +2,13 @@ import { PoolClient } from "pg";
 import { isNativeError } from "util/types";
 import { OrganisationInvitationFeedback } from "../../../types/usersSchemaDefinitions.js";
 import { utils } from "../../../utils.js";
-import { ServerError } from "shared-errors";
+import { httpErrors } from "@fastify/sensible";
 
 export const executeUpdateOrganisationFeedback = async (params: {
   client: PoolClient;
   feedback: OrganisationInvitationFeedback;
   organisationSettingId: string;
   userId: string;
-  errorCode: string;
 }): Promise<void> => {
   try {
     const { feedback, organisationSettingId } = params;
@@ -29,8 +28,7 @@ export const executeUpdateOrganisationFeedback = async (params: {
     );
   } catch (error) {
     const message = isNativeError(error) ? error.message : "unknown error";
-    throw new ServerError(
-      params.errorCode,
+    throw httpErrors.internalServerError(
       `Error on invitation feedback: ${message}`,
     );
   }

@@ -45,6 +45,8 @@ export default async function ({
     getTransactionDetails(transactionId),
     getTranslations("PaymentSetup.Request"),
   ]);
+  const tStatus = await getTranslations("PaymentSetup.paymentStatus");
+  const tProviderType = await getTranslations("PaymentSetup.providerType");
 
   if (!details) {
     notFound();
@@ -73,6 +75,12 @@ export default async function ({
             </dt>
           </div>
           <div className="govie-summary-list__row">
+            <dt className="govie-summary-list__key">{t("description")}</dt>
+            <dt className="govie-summary-list__value">
+              <pre style={{ fontFamily: "inherit" }}>{details.description}</pre>
+            </dt>
+          </div>
+          <div className="govie-summary-list__row">
             <dt className="govie-summary-list__key">{t("lastUpdate")}</dt>
             <dt className="govie-summary-list__value">
               {dayjs(details.updatedAt).format("DD/MM/YYYY - HH:mm:ss")}
@@ -80,7 +88,9 @@ export default async function ({
           </div>
           <div className="govie-summary-list__row">
             <dt className="govie-summary-list__key">{t("status")}</dt>
-            <dt className="govie-summary-list__value">{details.status}</dt>
+            <dt className="govie-summary-list__value">
+              {tStatus(details.status)}
+            </dt>
           </div>
           <div className="govie-summary-list__row">
             <dt className="govie-summary-list__key">{t("providerName")}</dt>
@@ -91,7 +101,7 @@ export default async function ({
           <div className="govie-summary-list__row">
             <dt className="govie-summary-list__key">{t("providerType")}</dt>
             <dt className="govie-summary-list__value">
-              {details.providerType}
+              {tProviderType(details.providerType)}
             </dt>
           </div>
           <div className="govie-summary-list__row">
@@ -114,7 +124,7 @@ export default async function ({
           </div>
         </dl>
 
-        {details.providerType &&
+        {details.providerType === "banktransfer" &&
           details.status === TransactionStatuses.Pending && (
             <form action={confirm}>
               <button className="govie-button govie-button--primary">

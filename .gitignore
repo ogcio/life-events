@@ -9,3 +9,5 @@ bearer-*-report.html
 .tap
 .vscode
 allure-results
+!.env.sample
+.env.*

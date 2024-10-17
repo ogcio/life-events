@@ -1,7 +1,6 @@
 import { FastifyInstance } from "fastify";
 import { HttpError } from "../../types/httpErrors.js";
 import { Type } from "@sinclair/typebox";
-import { ServerError } from "shared-errors";
 import { Permissions } from "../../types/permissions.js";
 
 type RequestBody = {
@@ -52,7 +51,9 @@ export default async function tasks(app: FastifyInstance) {
           values,
         );
       } catch (err) {
-        throw new ServerError(SCHEDULE_TASK, "failed to parse request", err);
+        throw app.httpErrors.createError(500, "failed to parse request", {
+          parent: err,
+        });
       }
 
       reply.status(202);

@@ -1,11 +1,5 @@
 import { Type } from "@sinclair/typebox";
 import { FastifyInstance } from "fastify";
-import {
-  isLifeEventsError,
-  NotFoundError,
-  ServerError,
-  ValidationError,
-} from "shared-errors";
 import { Permissions } from "../../types/permissions.js";
 import { HttpError } from "../../types/httpErrors.js";
 import {
@@ -22,6 +16,7 @@ import {
   formatAPIResponse,
   sanitizePagination,
 } from "../../utils/pagination.js";
+import { isHttpError } from "http-errors";
 
 const tags = ["Templates"];
 
@@ -139,9 +134,7 @@ export default async function templates(app: FastifyInstance) {
       },
     },
     async function handleGetAll(request, _reply) {
-      const errorProcess = "TEMPLATES_GET_ALL";
-
-      const organisationId = ensureOrganizationIdIsSet(request, errorProcess);
+      const organisationId = ensureOrganizationIdIsSet(request);
       const { limit, offset } = sanitizePagination({
         limit: request.query.limit,
         offset: request.query.offset,
@@ -264,8 +257,7 @@ export default async function templates(app: FastifyInstance) {
       },
     },
     async function handleCreate(request, reply) {
-      const errorCode = "CREATE_TEMPLATE";
-      const userId = ensureUserIdIsSet(request, errorCode);
+      const userId = ensureUserIdIsSet(request);
 
       const { contents, variables } = request.body;
 
@@ -276,9 +268,7 @@ export default async function templates(app: FastifyInstance) {
         client.query("BEGIN");
 
         const queryFilter: string[] = [];
-        const values: string[] = [
-          ensureOrganizationIdIsSet(request, errorCode),
-        ];
+        const values: string[] = [ensureOrganizationIdIsSet(request)];
         let index = 1;
         for (const { templateName, language: lang } of contents) {
           queryFilter.push(
@@ -300,13 +290,19 @@ export default async function templates(app: FastifyInstance) {
         );
 
         if (templateNameExists.rows[0]?.exists) {
-          throw new ValidationError(errorCode, "template name already exists", [
+          throw app.httpErrors.createError(
+            422,
+            "template name already exists",
             {
-              fieldName: "templateName",
-              message: "alreadyInUse",
-              validationRule: "already-in-use",
+              validation: [
+                {
+                  fieldName: "templateName",
+                  message: "alreadyInUse",
+                  validationRule: "already-in-use",
+                },
+              ],
             },
-          ]);
+          );
         }
 
         const templateMetaResponse = await client.query<{ id: string }>(
@@ -315,12 +311,14 @@ export default async function templates(app: FastifyInstance) {
           values($1,$2)
           returning id
         `,
-          [ensureOrganizationIdIsSet(request, errorCode), userId],
+          [ensureOrganizationIdIsSet(request), userId],
         );
         templateMetaId = templateMetaResponse.rows.at(0)?.id;
 
         if (!templateMetaId) {
-          throw new ServerError(errorCode, "failed to create a template meta");
+          throw app.httpErrors.internalServerError(
+            "failed to create a template meta",
+          );
         }
 
         for (const content of contents) {
@@ -376,9 +374,9 @@ export default async function templates(app: FastifyInstance) {
           this.log.error(err.message);
         }
 
-        throw isLifeEventsError(err)
+        throw isHttpError(err)
           ? err
-          : new ServerError(errorCode, "failed to create template");
+          : app.httpErrors.internalServerError("failed to create template");
       } finally {
         client.release();
       }
@@ -428,8 +426,6 @@ export default async function templates(app: FastifyInstance) {
       // if template does not exist
       await getTemplate(app, templateId);
 
-      const errorCode = "TEMPLATE_UPDATE";
-
       const { contents, variables } = request.body;
 
       const client = await app.pg.pool.connect();
@@ -438,7 +434,7 @@ export default async function templates(app: FastifyInstance) {
 
         const queryFilter: string[] = [];
         const values: string[] = [
-          ensureOrganizationIdIsSet(request, errorCode),
+          ensureOrganizationIdIsSet(request),
           templateId,
         ];
         let index = values.length;
@@ -463,13 +459,19 @@ export default async function templates(app: FastifyInstance) {
         );
 
         if (templateNameExists.rows[0]?.exists) {
-          throw new ValidationError(errorCode, "template name already exists", [
+          throw app.httpErrors.createError(
+            422,
+            "template name already exists",
             {
-              fieldName: "templateName",
-              message: "alreadyInUse",
-              validationRule: "already-in-use",
+              validation: [
+                {
+                  fieldName: "templateName",
+                  message: "alreadyInUse",
+                  validationRule: "already-in-use",
+                },
+              ],
             },
-          ]);
+          );
         }
 
         await client.query(
@@ -541,11 +543,12 @@ export default async function templates(app: FastifyInstance) {
         }
         await client.query("COMMIT");
       } catch (error) {
-        console.log(error);
         client.query("ROLLBACK");
-        throw isLifeEventsError(error)
+        throw isHttpError(error)
           ? error
-          : new ServerError(errorCode, "failed to update", error);
+          : app.httpErrors.createError(500, "failed to update", {
+              parent: error,
+            });
       } finally {
         client.release();
       }
@@ -589,7 +592,6 @@ export default async function templates(app: FastifyInstance) {
   );
 
   const getTemplate = async (app: FastifyInstance, templateId: string) => {
-    const errorCode = "TEMPLATE_GET_ONE";
     const templateMeta = await app.pg.pool.query<{
       templateName: string;
       subject: string;
@@ -673,7 +675,7 @@ export default async function templates(app: FastifyInstance) {
     }
 
     if (!template.contents.length) {
-      throw new NotFoundError(errorCode, "no template found");
+      throw app.httpErrors.notFound("no template found");
     }
 
     return template;

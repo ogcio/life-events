@@ -414,7 +414,23 @@
       "emailDelivered": "DELIVERED",
       "emailFailed": "EMAIL FAILED",
       "smsDelivered": "DELIVERED",
-      "smsFailed": "SMS FAILED"
+      "smsFailed": "SMS FAILED",
+      "seen": "SEEN",
+      "unseen": "UNSEEN"
     }
+  },
+  "Home": {
+    "header": "Life Events Messaging",
+    "unread": "Unread",
+    "all": "All",
+    "date": "Date",
+    "details": "Details",
+    "noMessages": "You have no messages",
+    "backLink": "Back",
+    "markAsUnread": "Mark as unread",
+    "englishMenuLabel": "English",
+    "gaeilgeMenuLabel": "Gaeilge",
+    "messagingNavLabel": "Life Events Messages",
+    "messagingTitle": "Messaging"
   }
 }

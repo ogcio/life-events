@@ -25,7 +25,10 @@ const TO_ADD_IDS_KEY = "recipientToAddIds";
 const TO_REMOVE_ID_KEY = "recipientToRemoveId";
 
 const getBaseUrl = (): URL =>
-  new URL(`${sendAMessage.url}/recipients`, process.env.HOST_URL);
+  new URL(
+    `${sendAMessage.url}/recipients`,
+    process.env.NEXT_PUBLIC_MESSAGING_SERVICE_ENTRY_POINT,
+  );
 
 // Why are not using SDKs?
 // To avoid to transport thousand of users through REST APIs every time
@@ -163,8 +166,10 @@ export default async (props: MessageCreateProps) => {
   const messaging = await AuthenticationFactory.getMessagingClient();
   const response = await messaging.getUsers({
     ...queryParams,
+    limit: queryParams.limit ? String(queryParams.limit) : undefined,
+    offset: queryParams.offset ? String(queryParams.offset) : undefined,
     transports: props.state.transportations.join(","),
-    activeOnly: true,
+    activeOnly: "true",
   });
 
   if (response.error || !response.data) {
