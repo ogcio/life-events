@@ -227,3 +227,24 @@ export const isValidJson = (token: string): boolean => {
     return false;
   }
 };
+
+export const streamToString = async (
+  stream: ReadableStream<Uint8Array>,
+): Promise<string> => {
+  const reader = stream.getReader();
+  const textDecoder = new TextDecoder();
+  let result = "";
+
+  async function read() {
+    const { done, value } = await reader.read();
+
+    if (done) {
+      return result;
+    }
+
+    result += textDecoder.decode(value, { stream: true });
+    return read();
+  }
+
+  return read();
+};

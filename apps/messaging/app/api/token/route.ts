@@ -14,7 +14,18 @@ export async function GET() {
       { retrievedToken: token },
       "The token retrieved in /api/token is not valid",
     );
+    throw new Error(
+      `The token retrieved in /api/token is not a valid JSON: ${token}`,
+    );
   }
+
+  getCommonLoggerWithEnvLevel().trace(
+    {
+      subToken:
+        token && typeof token === "string" ? token.substring(0, 10) : token,
+    },
+    "Token retrieved in /api/token",
+  );
 
   return NextResponse.json({ token });
 }
