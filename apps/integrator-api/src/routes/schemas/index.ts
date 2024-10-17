@@ -189,6 +189,8 @@ export const RunStep = Type.Object({
   updatedAt: Type.String(),
 });
 
+export const UpdateRunStep = Type.Pick(RunStep, ["status", "data"]);
+
 /**
  * Runs
  */
@@ -262,3 +264,16 @@ export const CreateJourneyRun = Type.Object({
   journeyId: Type.String(),
 });
 export type CreateJourneyRun = Static<typeof CreateJourneyRun>;
+
+export const ExecuteJourneyStep = Type.Object({
+  journeyId: Type.String(),
+  runId: Type.String(),
+});
+export type ExecuteJourneyStep = Static<typeof ExecuteJourneyStep>;
+
+export const JourneyStepExecutionResponse = Type.Object({
+  url: Type.String(),
+});
+export type JourneyStepExecutionResponse = Static<
+  typeof JourneyStepExecutionResponse
+>;

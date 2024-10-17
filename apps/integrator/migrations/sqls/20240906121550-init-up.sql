@@ -54,7 +54,7 @@ BEGIN
         run_id UUID REFERENCES runs(id) ON DELETE CASCADE, -- Foreign key to the run
         step_id UUID REFERENCES journey_steps(id) ON DELETE CASCADE, -- Foreign key to the specific step in the journey
         data JSONB,                                      -- The data collected or processed for this step, stored in JSONB format
-        status run_status NOT NULL DEFAULT 'pending',   -- Status of the step (pending, in_progress, completed, failed)
+        status step_status NOT NULL DEFAULT 'pending',   -- Status of the step (pending, in_progress, completed, failed)
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  -- Timestamp when the step was created
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP   -- Timestamp of the last time the step was updated
     );

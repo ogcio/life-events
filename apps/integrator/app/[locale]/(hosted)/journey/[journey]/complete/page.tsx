@@ -1,29 +1,16 @@
 import { getTranslations } from "next-intl/server";
 import { redirect, RedirectType } from "next/navigation";
-import { AuthenticationFactory } from "../../../../../../../libraries/authentication-factory";
+import { AuthenticationFactory } from "../../../../../../libraries/authentication-factory";
 
 type Props = {
   params: {
     locale: string;
     journey: string;
-    runId: string;
   };
 };
 
-const executeStep = async (journeyId: string, runId: string) => {
-  "use server";
-
-  const client = await AuthenticationFactory.getIntegratorClient();
-  const result = await client.executeStep({
-    journeyId,
-    runId,
-  });
-
-  return result.data?.data.url;
-};
-
 export default async (props: Props) => {
-  const { locale, journey: journeyId, runId } = props.params;
+  const { locale, journey: journeyId } = props.params;
 
   const t = await getTranslations();
 
@@ -38,12 +25,10 @@ export default async (props: Props) => {
     return redirect("/admin/journeys", RedirectType.replace);
   }
 
-  const url = await executeStep(journeyId, runId);
-
   return (
     <div className="govie-width-container" style={{ width: "100%" }}>
       <div className="two-columns-layout">
-        <div className="column"></div>
+        <div className="column">The journey was completed.</div>
       </div>
     </div>
   );
