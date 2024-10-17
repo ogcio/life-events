@@ -1,63 +1,33 @@
 import {
-  SignJWT,
   jwtVerify,
   createRemoteJWKSet,
   exportJWK,
-  importPKCS8,
   JWTVerifyOptions,
   JWTPayload,
   JWK,
-  importJWK,
+  importSPKI,
 } from "jose";
-import { createPublicKey, generateKeyPairSync } from "crypto";
+import {
+  GetPublicKeyCommand,
+  KMSClient,
+  KMSClientConfig,
+  SignCommand,
+} from "@aws-sdk/client-kms";
+
+const kmsConfig: KMSClientConfig = {
+  region: process.env.AWS_REGION,
+  endpoint: process.env.KMS_ENDPOINT,
+};
+if (process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY) {
+  kmsConfig.credentials = {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  };
+}
+
+const kmsClient = new KMSClient(kmsConfig);
 
 const defaultAlgorithm = "RS256";
-
-// A simple in-memory store to simulate key storage
-const keyStore: { [key: string]: { publicKey: JWK; privateKey: JWK } } = {};
-
-/**
- * Reads or generates a public-private key pair for the given serviceName.
- * If the key pair already exists, it retrieves it. Otherwise, it generates a new pair.
- * @param serviceName - The name of the service to generate or retrieve the key pair for.
- */
-
-// This can be used for local development and testing
-// In remote environments we will need to use KMS
-async function readOrGenerateKeyPair(
-  serviceName: string,
-): Promise<{ publicKey: JWK; privateKey: JWK }> {
-  // Check if the key pair already exists in memory (could be on disk instead)
-  if (keyStore[serviceName]) {
-    return keyStore[serviceName];
-  }
-
-  // If not found, generate a new key pair
-  const { publicKey, privateKey } = generateKeyPairSync("rsa", {
-    modulusLength: 2048,
-    publicKeyEncoding: {
-      type: "spki",
-      format: "pem",
-    },
-    privateKeyEncoding: {
-      type: "pkcs8",
-      format: "pem",
-    },
-  });
-
-  // Convert the public and private keys into JWK format
-  const publicKeyJWK = await exportJWK(createPublicKey(publicKey));
-  const privateKeyJWK = await exportJWK(await importPKCS8(privateKey, "RS256"));
-
-  // Store the generated key pair in memory
-  keyStore[serviceName] = {
-    publicKey: publicKeyJWK,
-    privateKey: privateKeyJWK,
-  };
-
-  // Return the newly generated key pair
-  return keyStore[serviceName];
-}
 
 interface JWTOptions {
   algorithm?: string; // Algorithm used for signing the token
@@ -69,36 +39,45 @@ interface JWTOptions {
 /**
  * Creates and signs a JWT using the provided payload and private key.
  * @param payload - The JWT payload as an object.
- * @param privateKey - The private key to sign the token with.
+ * @param keyId - The key id or alias in KMS
  * @param options - Optional parameters for customizing the JWT creation (e.g., expiration, audience, issuer).
  */
 async function createSignedJWT(
   payload: Record<string, unknown>,
-  privateKey: JWK,
-  options: JWTOptions = {},
+  keyId: string,
+  options: JWTOptions,
 ) {
-  const {
-    algorithm = defaultAlgorithm,
-    expirationTime = "2h",
-    audience,
-    issuer,
-  } = options;
+  const { algorithm = defaultAlgorithm, audience: aud, issuer: iss } = options;
 
-  const pk = await importJWK(privateKey, algorithm);
+  const header = {
+    alg: algorithm,
+    typ: "JWT",
+  };
 
-  const jwt = new SignJWT(payload)
-    .setProtectedHeader({ alg: algorithm })
-    .setIssuedAt()
-    .setExpirationTime(expirationTime);
+  const payloadString = JSON.stringify({ ...payload, aud, iss });
 
-  if (audience) {
-    jwt.setAudience(audience);
+  const encodedHeader = Buffer.from(JSON.stringify(header)).toString(
+    "base64url",
+  );
+  const encodedPayload = Buffer.from(payloadString).toString("base64url");
+
+  const messageToSign = `${encodedHeader}.${encodedPayload}`;
+
+  const input = {
+    KeyId: keyId,
+    Message: Buffer.from(messageToSign),
+    MessageType: "RAW" as const,
+    SigningAlgorithm: "RSASSA_PKCS1_V1_5_SHA_256" as const,
+  };
+  const command = new SignCommand(input);
+  const signResponse = await kmsClient.send(command);
+
+  if (!signResponse.Signature) {
+    throw new Error("KMS did not return a signature. Signing failed.");
   }
+  const signature = Buffer.from(signResponse.Signature).toString("base64url");
 
-  if (issuer) {
-    jwt.setIssuer(issuer);
-  }
-  return jwt.sign(pk);
+  return `${messageToSign}.${signature}`;
 }
 
 /**
@@ -146,4 +125,24 @@ async function verifyJWT(
 
   return payload;
 }
-export { createSignedJWT, getJWKSRoute, verifyJWT, readOrGenerateKeyPair };
+
+/**
+ * Retrieves a public key from KMS and returns the JWKS (JSON Web Key Set) for the public key.
+ * @param keyId - The key id or alias in KMS.
+ */
+async function getJWKS(keyId: string): Promise<{ keys: JWK[] }> {
+  const command = new GetPublicKeyCommand({ KeyId: keyId });
+  const { PublicKey } = await kmsClient.send(command);
+
+  if (!PublicKey)
+    throw new Error("KMS did not return a public key. Retrieval failed.");
+
+  // convert Uint8Array to JWK
+  const spki = `-----BEGIN PUBLIC KEY-----\n${Buffer.from(PublicKey).toString("base64")}\n-----END PUBLIC KEY-----`;
+  const keyObject = await importSPKI(spki, "RS256");
+  const jwk = await exportJWK(keyObject);
+
+  return getJWKSRoute(jwk);
+}
+
+export { createSignedJWT, verifyJWT, getJWKS };

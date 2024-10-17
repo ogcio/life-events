@@ -34,7 +34,7 @@ import { TransactionStatusesEnum } from "../../plugins/entities/transactions";
 import { authPermissions } from "../../types/authPermissions";
 import { AuditLogEventType } from "../../plugins/auditLog/auditLogEvents";
 import { getJourneyDetails } from "../../services/getJourney";
-import { createSignedJWT, readOrGenerateKeyPair } from "api-auth";
+import { createSignedJWT } from "api-auth";
 
 const TAGS = ["Transactions"];
 
@@ -336,15 +336,15 @@ export default async function transactions(app: FastifyInstance) {
         userId,
       );
 
-      const { privateKey } = await readOrGenerateKeyPair("payments-api");
       const jwt = await createSignedJWT(
         {
           userId: userId,
           transactionId: transactionDetails.transactionId,
         },
-        privateKey,
+        "alias/payments-api-key",
         {
           issuer: "payments-api",
+          audience: "integrator-api",
         },
       );
 

@@ -13,11 +13,7 @@ import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import sensible from "@fastify/sensible";
 import schemaValidators from "./src/routes/schemas/validations";
-import apiAuthPlugin, {
-  getJWKSRoute,
-  readOrGenerateKeyPair,
-  verifyJWT,
-} from "api-auth";
+import apiAuthPlugin, { createSignedJWT, getJWKS, verifyJWT } from "api-auth";
 import { initializeErrorHandler } from "@ogcio/fastify-error-handler";
 import { initializeLoggingHooks } from "@ogcio/fastify-logging-wrapper";
 import healthCheck from "./src/routes/healthcheck";
@@ -28,6 +24,7 @@ import run from "./src/plugins/entities/run";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+const keyAlias = "alias/integrator-api-key";
 
 dotenv.config();
 
@@ -93,8 +90,18 @@ export async function build(opts?: FastifyServerOptions) {
   app.register(routes, { prefix: "/api/v1" });
 
   app.get("/.well-known/jwks.json", async () => {
-    const { publicKey } = await readOrGenerateKeyPair("integrator-api");
-    return getJWKSRoute(publicKey);
+    return getJWKS(keyAlias);
+  });
+
+  app.get("/token", async (_, reply) => {
+    const payload = { amount: 70 };
+
+    const jwt = await createSignedJWT(payload, keyAlias, {
+      audience: "payments-api",
+      issuer: "integrator-api",
+    });
+
+    return reply.code(200).send({ token: jwt });
   });
 
   // Test callback route to test communication between systems
@@ -118,6 +125,7 @@ export async function build(opts?: FastifyServerOptions) {
         jwksUrl,
         issuer: "payments-api",
         audience: "integrator-api",
+        algorithm: "RS256",
       });
 
       // Send back the payload if the JWT verification is successful
