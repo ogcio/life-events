@@ -6,10 +6,6 @@ export const locales = ["en", "ga"] as const;
 export const localePrefix = "always"; // Default
 
 export default function (request: NextRequest) {
-  getCommonLogger().trace(
-    { destinationUrl: request.url },
-    "I am in middleware",
-  );
   const nextResponse = createMiddleware({
     locales,
     defaultLocale: "en",
