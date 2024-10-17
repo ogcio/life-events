@@ -21,6 +21,6 @@ export default function (request: NextRequest) {
   return nextResponse;
 }
 
-// export const config = {
-//   matcher: ["/((?!static|api|health|_next/static|_next/image|favicon.ico).*)"],
-// };
+export const config = {
+  matcher: ["/((?!static|api|health|_next/static|_next/image|favicon.ico).*)"],
+};
