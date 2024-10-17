@@ -38,6 +38,11 @@ paths:
         - schema:
             type: string
           in: query
+          name: search
+          required: false
+        - schema:
+            type: string
+          in: query
           name: recipientUserId
           required: false
           description: Either recipientUserId and organisationId are mandatory
@@ -96,6 +101,9 @@ paths:
                         recipientUserId:
                           description: Unique id of the recipient
                           type: string
+                        attachmentsCount:
+                          description: Number of attachments
+                          type: integer
                       required:
                         - id
                         - subject
@@ -103,6 +111,7 @@ paths:
                         - threadName
                         - organisationId
                         - recipientUserId
+                        - attachmentsCount
                   metadata:
                     type: object
                     properties:
@@ -278,6 +287,11 @@ paths:
                     - plainText
                     - richText
                     - language
+                attachments:
+                  type: array
+                  items:
+                    format: uuid
+                    type: string
               required:
                 - preferredTransports
                 - recipientUserId
@@ -442,6 +456,12 @@ paths:
                           - confidential
                           - public
                         description: Confidentiality level of the message
+                      attachments:
+                        description: Ids of the related attachments
+                        type: array
+                        items:
+                          format: uuid
+                          type: string
                     required:
                       - subject
                       - createdAt
@@ -453,6 +473,7 @@ paths:
                       - richText
                       - isSeen
                       - security
+                      - attachments
                   metadata:
                     type: object
                     properties:

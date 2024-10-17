@@ -10,5 +10,5 @@ include:
 jobs: 8
 reporter: base
 snapshot-clean-cwd: true
-timeout: 30
+timeout: 60
 allow-incomplete-coverage: true

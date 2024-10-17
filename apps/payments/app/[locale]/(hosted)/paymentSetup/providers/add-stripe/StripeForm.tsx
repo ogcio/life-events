@@ -13,6 +13,7 @@ export default ({
     providerName: string;
     livePublishableKey: string;
     liveSecretKey: string;
+    webhookSigningKey?: string;
   };
 }) => {
   const t = useTranslations("AddStripe");

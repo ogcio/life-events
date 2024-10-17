@@ -1,0 +1,40 @@
+meta {
+  name: Create message with attachment
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/v1/messages
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "preferredTransports": [],
+    "recipientUserId": "{{consentUserId}}",
+    "security": "public",
+    "bypassConsent": true,
+    "scheduleAt": "2024-08-26T10:05:04.865Z",
+    "message": {
+      "threadName": "threadName",
+      "subject": "MessageWithAttachment",
+      "excerpt": "excerpt",
+      "plainText": "plainText",
+      "richText": "richText",
+      "language": "en"
+    },
+    "attachments": ["{{consentUserId}}"]
+  }
+}
+
+assert {
+  res.status: eq 400
+  res.body.requestId: isDefined
+  res.body.detail: contains {{consentUserId}}
+}

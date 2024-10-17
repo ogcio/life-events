@@ -184,7 +184,7 @@ const ContentForm = async (props: {
 
     for (const key of langContents.langs) {
       contents.push({
-        language: key,
+        language: key as "en" | "ga",
         excerpt: langContents[key].excerpt,
         plainText: langContents[key].plainText,
         richText: langContents[key].plainText,
@@ -204,7 +204,8 @@ const ContentForm = async (props: {
         await temporaryMockUtils.createErrors(
           [
             {
-              errorValue: error.detail || "update_error",
+              errorValue:
+                (error as { detail?: string }).detail || "update_error",
               field: "update_error",
               messageKey: "update_error",
             },
@@ -440,9 +441,9 @@ export default async (props: {
   const client = await AuthenticationFactory.getMessagingClient();
   const contents: State = { langs: Array<string>() };
 
-  let templateFetchError: Awaited<
-    ReturnType<typeof client.getTemplate>
-  >["error"];
+  let templateFetchError:
+    | Awaited<ReturnType<typeof client.getTemplate>>["error"]
+    | undefined = undefined;
 
   if (props.searchParams.id) {
     const { data, error } = await client.getTemplate(props.searchParams.id);

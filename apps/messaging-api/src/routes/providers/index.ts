@@ -20,21 +20,15 @@ import {
 } from "../../types/schemaDefinitions.js";
 import { Static, Type } from "@sinclair/typebox";
 import { HttpError } from "../../types/httpErrors.js";
+import { HttpError as SensibleHttpError } from "@fastify/sensible";
 import {
   formatAPIResponse,
   sanitizePagination,
 } from "../../utils/pagination.js";
 import { QueryResult } from "pg";
-import {
-  BadRequestError,
-  isLifeEventsError,
-  LifeEventsError,
-  NotFoundError,
-  ServerError,
-  ValidationError,
-} from "shared-errors";
 import { Permissions } from "../../types/permissions.js";
 import { ensureOrganizationIdIsSet } from "../../utils/authentication-factory.js";
+import { isHttpError } from "http-errors";
 
 export const prefix = "/providers";
 
@@ -93,12 +87,11 @@ export default async function providers(app: FastifyInstance) {
       },
     },
     async function handleGetProviders(request) {
-      const errorProcess = "GET_PROVIDERS";
       const { limit, offset } = sanitizePagination({
         limit: request.query.limit,
         offset: request.query.offset,
       });
-      const organizationId = ensureOrganizationIdIsSet(request, errorProcess);
+      const organizationId = ensureOrganizationIdIsSet(request);
       const { type } = request.query;
 
       type QueryProvider = Static<typeof ProviderListItemSchema> & {
@@ -141,10 +134,10 @@ export default async function providers(app: FastifyInstance) {
             [organizationId, limit, offset],
           );
         } catch (error) {
-          throw new ServerError(
-            errorProcess,
+          throw app.httpErrors.createError(
+            500,
             "failed to query email providers",
-            error,
+            { parent: error },
           );
         }
       } else if (type === "sms") {
@@ -174,17 +167,14 @@ export default async function providers(app: FastifyInstance) {
             [organizationId, limit, offset],
           );
         } catch (error) {
-          throw new ServerError(
-            errorProcess,
+          throw app.httpErrors.createError(
+            500,
             "failed to query sms providers",
-            error,
+            { parent: error },
           );
         }
       } else {
-        throw new BadRequestError(
-          errorProcess,
-          "illegal type, email or sms accepted",
-        );
+        throw app.httpErrors.badRequest("illegal type, email or sms accepted");
       }
 
       const totalCount = query.rows.at(0)?.count || 0;
@@ -231,12 +221,11 @@ export default async function providers(app: FastifyInstance) {
       },
     },
     async function handleGetProvider(request) {
-      const errorProcess = "GET_PROVIDER";
-      const organisationId = ensureOrganizationIdIsSet(request, errorProcess);
+      const organisationId = ensureOrganizationIdIsSet(request);
       const providerId = request.params.providerId;
 
       if (request.query.type !== "email" && request.query.type !== "sms") {
-        throw new BadRequestError(errorProcess, "illegal request type");
+        throw app.httpErrors.badRequest("illegal request type");
       }
 
       return {
@@ -245,7 +234,6 @@ export default async function providers(app: FastifyInstance) {
           providerType: request.query.type,
           organisationId,
           providerId,
-          errorProcess,
         }),
       };
     },
@@ -275,20 +263,18 @@ export default async function providers(app: FastifyInstance) {
       },
     },
     async function handleCreateProvider(request) {
-      const errorProcess = "CREATE_PROVIDER";
-
-      const organisationid = ensureOrganizationIdIsSet(request, errorProcess);
+      const organisationid = ensureOrganizationIdIsSet(request);
       const provider = request.body;
 
       if (!isSmsProvider(provider) && !isEmailProvider(provider)) {
-        throw new BadRequestError(errorProcess, "illegal type query");
+        throw app.httpErrors.badRequest("illegal type query");
       }
 
       const client = await app.pg.pool.connect();
 
       let providerId = "";
 
-      let queryError: LifeEventsError | undefined;
+      let queryError: SensibleHttpError | undefined;
       if (isSmsProvider(provider)) {
         try {
           client.query("begin");
@@ -301,16 +287,18 @@ export default async function providers(app: FastifyInstance) {
           );
 
           if (exists.rows.at(0)?.exists) {
-            throw new ValidationError(
-              errorProcess,
+            throw app.httpErrors.createError(
+              422,
               "provider name already in use",
-              [
-                {
-                  fieldName: "providerName",
-                  message: "alreadyInUse",
-                  validationRule: "already-in-use",
-                },
-              ],
+              {
+                validation: [
+                  {
+                    fieldName: "providerName",
+                    message: "alreadyInUse",
+                    validationRule: "already-in-use",
+                  },
+                ],
+              },
             );
           }
 
@@ -353,13 +341,11 @@ export default async function providers(app: FastifyInstance) {
 
           await client.query("commit");
         } catch (error) {
-          queryError = isLifeEventsError(error)
+          queryError = isHttpError(error)
             ? error
-            : new ServerError(
-                errorProcess,
-                "failed to insert sms provider",
-                error,
-              );
+            : app.httpErrors.createError(500, "failed to insert sms provider", {
+                parent: error,
+              });
         }
       } else if (isEmailProvider(provider)) {
         try {
@@ -373,16 +359,19 @@ export default async function providers(app: FastifyInstance) {
           );
 
           if (exists.rows.at(0)?.exists) {
-            throw new ValidationError(
-              errorProcess,
+            throw app.httpErrors.createError(
+              422,
+
               "provider name already in use",
-              [
-                {
-                  fieldName: "providerName",
-                  message: "alreadyInUse",
-                  validationRule: "already-in-use",
-                },
-              ],
+              {
+                validation: [
+                  {
+                    fieldName: "providerName",
+                    message: "alreadyInUse",
+                    validationRule: "already-in-use",
+                  },
+                ],
+              },
             );
           }
 
@@ -425,12 +414,12 @@ export default async function providers(app: FastifyInstance) {
 
           await client.query("commit");
         } catch (error) {
-          queryError = isLifeEventsError(error)
+          queryError = isHttpError(error)
             ? error
-            : new ServerError(
-                errorProcess,
+            : app.httpErrors.createError(
+                500,
                 "failed to insert email provider",
-                error,
+                { parent: error },
               );
         }
       }
@@ -472,19 +461,17 @@ export default async function providers(app: FastifyInstance) {
       },
     },
     async function handleUpdateProvider(request) {
-      const errorProcess = "UPDATE_PROVIDER";
       if (request.body.id !== request.params.providerId) {
-        throw new BadRequestError(
-          errorProcess,
+        throw app.httpErrors.badRequest(
           "provider id from body and url param are not identical",
         );
       }
 
-      const organizationId = ensureOrganizationIdIsSet(request, errorProcess);
+      const organizationId = ensureOrganizationIdIsSet(request);
       const provider = request.body;
 
       if (!isSmsProvider(provider) && !isEmailProvider(provider)) {
-        throw new BadRequestError(errorProcess, "illegal type query");
+        throw app.httpErrors.badRequest("illegal type query");
       }
 
       // adding this will return
@@ -494,7 +481,6 @@ export default async function providers(app: FastifyInstance) {
         providerType: provider.type,
         organisationId: organizationId,
         providerId: request.params.providerId,
-        errorProcess,
       });
 
       if (isSmsProvider(provider)) {
@@ -533,10 +519,10 @@ export default async function providers(app: FastifyInstance) {
           await client.query("commit");
         } catch (error) {
           await client.query("rollback");
-          throw new ServerError(
-            errorProcess,
+          throw app.httpErrors.createError(
+            500,
             "failed to update sms provider",
-            error,
+            { parent: error },
           );
         }
       } else if (isEmailProvider(provider)) {
@@ -560,25 +546,23 @@ export default async function providers(app: FastifyInstance) {
 
           addressExists = Boolean(duplicationQueryResult.rows.at(0)?.exists);
         } catch (error) {
-          throw new ServerError(
-            errorProcess,
+          throw app.httpErrors.createError(
+            500,
             "failed to query if provider address existed",
-            error,
+            { parent: error },
           );
         }
 
         if (addressExists) {
-          throw new ValidationError(
-            errorProcess,
-            "from address already in use",
-            [
+          throw app.httpErrors.createError(422, "from address already in use", {
+            validation: [
               {
                 fieldName: "fromAddress",
                 message: "alreadyInUse",
                 validationRule: "already-in-use",
               },
             ],
-          );
+          });
         }
 
         try {
@@ -626,10 +610,10 @@ export default async function providers(app: FastifyInstance) {
           client.query("commit");
         } catch (error) {
           client.query("rollback");
-          throw new ServerError(
-            errorProcess,
+          throw app.httpErrors.createError(
+            500,
             "failed to update email provider",
-            error,
+            { parent: error },
           );
         }
       }
@@ -659,8 +643,7 @@ export default async function providers(app: FastifyInstance) {
       },
     },
     async function handleDeleteProvider(request) {
-      const errorProcess = "DELETE_PROVIDER";
-      const organizationId = ensureOrganizationIdIsSet(request, errorProcess);
+      const organizationId = ensureOrganizationIdIsSet(request);
       const providerId = request.params.providerId;
 
       let deleted = 0;
@@ -685,11 +668,13 @@ export default async function providers(app: FastifyInstance) {
 
         deleted = deleteQueryResult.rowCount || 0;
       } catch (error) {
-        throw new ServerError(errorProcess, "failed delete query", error);
+        throw app.httpErrors.createError(500, "failed delete query", {
+          parent: error,
+        });
       }
 
       if (deleted === 0) {
-        throw new NotFoundError(errorProcess, "no provider found");
+        throw app.httpErrors.badRequest("no provider found");
       }
     },
   );
@@ -698,7 +683,6 @@ export default async function providers(app: FastifyInstance) {
     app: FastifyInstance;
     providerType: string;
     providerId: string;
-    errorProcess: string;
     organisationId: string;
   }) => {
     let provider:
@@ -706,8 +690,7 @@ export default async function providers(app: FastifyInstance) {
       | Static<typeof SmsProviderSchema>
       | undefined;
 
-    const { app, providerType, providerId, errorProcess, organisationId } =
-      params;
+    const { app, providerType, providerId, organisationId } = params;
     if (providerType === "email") {
       try {
         const queryResult = await app.pg.pool.query<
@@ -736,15 +719,15 @@ export default async function providers(app: FastifyInstance) {
 
         provider = queryResult.rows.at(0);
       } catch (error) {
-        throw new ServerError(
-          errorProcess,
+        throw app.httpErrors.createError(
+          500,
           "failed to query email provider",
-          error,
+          { parent: error },
         );
       }
 
       if (!provider) {
-        throw new NotFoundError(errorProcess, "failed to find email provider");
+        throw app.httpErrors.notFound("failed to find email provider");
       }
     } else if (providerType === "sms") {
       try {
@@ -768,15 +751,13 @@ export default async function providers(app: FastifyInstance) {
 
         provider = queryResult.rows.at(0);
       } catch (error) {
-        throw new ServerError(
-          errorProcess,
-          "failed to query sms provider",
-          error,
-        );
+        throw app.httpErrors.createError(500, "failed to query sms provider", {
+          parent: error,
+        });
       }
 
       if (!provider) {
-        throw new NotFoundError(errorProcess, "failed to find sms provider");
+        throw app.httpErrors.notFound("failed to find sms provider");
       }
     }
 

@@ -25,6 +25,9 @@ export default async ({ files, isPublicServant }: FileTableProps) => {
           <th scope="col" className="govie-table__header">
             {tTable("header.uploadedBy")}
           </th>
+          <th scope="col" className="govie-table__header">
+            {tTable("header.fileTTL")}
+          </th>
           {isPublicServant && (
             <th scope="col" className="govie-table__header">
               {tTable("header.action")}

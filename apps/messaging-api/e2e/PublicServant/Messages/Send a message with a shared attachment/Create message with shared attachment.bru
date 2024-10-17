@@ -1,0 +1,43 @@
+meta {
+  name: Create message with shared attachment
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/api/v1/messages
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "preferredTransports": [],
+    "recipientUserId": "{{attachmentUserId}}",
+    "security": "public",
+    "bypassConsent": true,
+    "scheduleAt": "2024-08-26T10:05:04.865Z",
+    "message": {
+      "threadName": "threadName",
+      "subject": "MessageWithSharedAttachment",
+      "excerpt": "excerpt",
+      "plainText": "plainText",
+      "richText": "richText",
+      "language": "en"
+    },
+    "attachments": ["{{attachmentId}}"]
+  }
+}
+
+vars:post-response {
+  ~withAttachmentMessageId: res.data.id
+}
+
+assert {
+  res.status: eq 201
+  ~res.body.id: isDefined
+}

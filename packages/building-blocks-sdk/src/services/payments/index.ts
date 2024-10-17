@@ -270,15 +270,37 @@ export class Payments {
   }
 
   /**
-   * TESTS - To remove once Logto has been fully integrated
+   * AUDIT LOGS
    */
 
-  async testCitizenAuth() {
-    return formatQueryResult(this.client.GET("/api/v1/test/citizen", {}));
+  async getAuditLogEvents(
+    query: paths["/api/v1/auditLogs/"]["get"]["parameters"]["query"],
+  ) {
+    return formatQueryResult(
+      this.client.GET("/api/v1/auditLogs/", {
+        params: {
+          query,
+        },
+      }),
+    );
   }
 
-  async testPublicServantAuth() {
-    return formatQueryResult(this.client.GET("/api/v1/test/pub-ser", {}));
+  async getAuditLogDetails(
+    auditLogId: paths["/api/v1/auditLogs/{auditLogId}"]["get"]["parameters"]["path"]["auditLogId"],
+  ) {
+    return formatQueryResult(
+      this.client.GET("/api/v1/auditLogs/{auditLogId}", {
+        params: {
+          path: {
+            auditLogId,
+          },
+        },
+      }),
+    );
+  }
+
+  async getAuditLogEventTypes() {
+    return formatQueryResult(this.client.GET("/api/v1/auditLogs/event-types"));
   }
 
   /**

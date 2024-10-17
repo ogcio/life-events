@@ -39,6 +39,7 @@ export const seedProviders = (pool, userId) => {
     data: {
       liveSecretKey: process.env.STRIPE_SECRET_KEY ?? "",
       livePublishableKey: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ?? "",
+      webhookSigningKey: process.env.STRIPE_WEBHOOK_SECRET ?? "",
     },
   });
 

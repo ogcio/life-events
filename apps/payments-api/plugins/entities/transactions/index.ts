@@ -49,6 +49,24 @@ const buildGetTransactionById =
     return result?.rows[0];
   };
 
+const buildGetTransactionByExtId =
+  (repo: TransactionsRepo, log: FastifyBaseLogger, httpErrors: HttpErrors) =>
+  async (extId: string): Promise<TransactionDetailsDO> => {
+    let result;
+
+    try {
+      result = await repo.getTransactionByExtId(extId);
+    } catch (err) {
+      log.error((err as Error).message);
+    }
+
+    if (!result?.rowCount) {
+      throw httpErrors.notFound("The requested transaction was not found");
+    }
+
+    return result?.rows[0];
+  };
+
 const buildGetTransactions =
   (repo: TransactionsRepo, log: FastifyBaseLogger) =>
   async (
@@ -240,6 +258,7 @@ const buildPlugin = (
 ) => {
   return {
     getTransactionById: buildGetTransactionById(repo, log, httpErrors),
+    getTransactionByExtId: buildGetTransactionByExtId(repo, log, httpErrors),
     updateTransactionStatus: buildUpdateTransactionStatus(
       repo,
       log,

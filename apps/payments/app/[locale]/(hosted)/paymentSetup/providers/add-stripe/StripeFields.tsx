@@ -34,6 +34,14 @@ export default ({ state }: Props) => {
         defaultValue={state.defaultState?.liveSecretKey}
         autoComplete="off"
       />
+      <InputField
+        name="webhook_signing_key"
+        label={t("webhookSigningKey")}
+        hint={t("webhookSigningKeyHint")}
+        error={state.errors.webhookSigningKey}
+        defaultValue={state.defaultState?.webhookSigningKey}
+        autoComplete="off"
+      />
     </div>
   );
 };

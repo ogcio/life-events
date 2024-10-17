@@ -8,12 +8,12 @@ dotenv.config({ path: ".env.test" });
 const baseURL = process.env.BASE_URL;
 
 export default defineConfig({
-  timeout: 500000,
+  timeout: 60000,
   grep: testPlanFilter(),
   reporter: [
     ["line"],
     ["allure-playwright"],
-    ["html"],
+    ["html", { open: "never" }],
     ["junit", { outputFile: "./e2e/test-results/results.xml" }],
   ], // Test directory
   testDir: path.join(__dirname, "e2e"),

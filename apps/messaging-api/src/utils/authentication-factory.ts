@@ -1,6 +1,6 @@
 import { getAccessToken, getOrganizationToken } from "api-auth";
-import { Profile, Scheduler } from "building-blocks-sdk";
-import { AuthorizationError } from "shared-errors";
+import { Profile, Scheduler, Upload } from "building-blocks-sdk";
+import { httpErrors } from "@fastify/sensible";
 
 const getBaseProfileConfig = (): {
   logtoOidcEndpoint: string;
@@ -57,26 +57,37 @@ export const getSchedulerSdk = async (
   return new Scheduler(token);
 };
 
-export const ensureUserIdIsSet = (
-  request: { userData?: { userId?: string } },
-  errorProcess: string,
-  errorMessage: string = "User id is not set",
-): string => {
+export const ensureUserIdIsSet = (request: {
+  userData?: { userId?: string };
+}): string => {
   if (request.userData && request.userData.userId) {
     return request.userData.userId;
   }
 
-  throw new AuthorizationError(errorProcess, errorMessage);
+  throw httpErrors.forbidden("User id is not set");
 };
 
-export const ensureOrganizationIdIsSet = (
-  request: { userData?: { organizationId?: string } },
-  errorProcess: string,
-  errorMessage: string = "Organization id is not set",
-): string => {
+export const ensureOrganizationIdIsSet = (request: {
+  userData?: { organizationId?: string };
+}): string => {
   if (request.userData && request.userData.organizationId) {
     return request.userData.organizationId;
   }
 
-  throw new AuthorizationError(errorProcess, errorMessage);
+  throw httpErrors.forbidden("Organization id is not set");
+};
+
+const getOrganizationUploadToken = (organizationId: string): Promise<string> =>
+  getOrganizationToken({
+    logtoOidcEndpoint: process.env.LOGTO_OIDC_ENDPOINT ?? "",
+    applicationId: process.env.LOGTO_M2M_UPLOADER_APP_ID ?? "",
+    applicationSecret: process.env.LOGTO_M2M_UPLOADER_APP_SECRET ?? "",
+    scopes: ["upload:file:*"],
+    organizationId,
+  });
+
+export const getUploadSdk = async (organizationId: string): Promise<Upload> => {
+  const token = await getOrganizationUploadToken(organizationId);
+
+  return new Upload(token);
 };

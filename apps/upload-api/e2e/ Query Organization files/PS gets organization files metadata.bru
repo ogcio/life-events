@@ -1,0 +1,24 @@
+meta {
+  name: PS gets organization files metadata
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/api/v1/metadata?organizationId=first-testing
+  body: none
+  auth: none
+}
+
+params:query {
+  organizationId: first-testing
+}
+
+headers {
+  Authorization: Bearer {{accessToken}}
+}
+
+assert {
+  res.status: eq 200
+  res.body.data[0].id: eq {{fileId}}
+}

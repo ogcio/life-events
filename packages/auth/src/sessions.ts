@@ -1,6 +1,6 @@
 import { Pool } from "pg";
 import * as jose from "jose";
-import { cookies, headers } from "next/headers.js";
+import { cookies } from "next/headers.js";
 import { redirect, RedirectType } from "next/navigation.js";
 import { GovIdJwtPayload, Sessions } from "./types";
 

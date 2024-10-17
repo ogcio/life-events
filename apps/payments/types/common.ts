@@ -7,18 +7,18 @@ export type NextPageProps = {
   };
 };
 
-export type PaymentRequestStatus = "active" | "inactive";
+export type PaymentRequestStatus = "active" | "inactive" | "draft";
 
 export type PaymentRequestDO = {
   paymentRequestId: string;
   userId: string;
   title: string;
-  description: string;
+  description?: string;
   provider_id: string;
-  reference: string;
-  amount: number;
+  reference?: string;
+  amount?: number;
   status: PaymentRequestStatus;
-  redirectUrl: string;
+  redirectUrl?: string;
   allowAmountOverride: boolean;
   allowCustomAmount: boolean;
 };

@@ -24,9 +24,9 @@ const TableRow = async ({ file, isPublicServant }: TableRowProps) => {
         scope="row"
       >
         {!file.infected && !file.deleted && (
-          <a href={`/api/file/${file.id}`} target="_blank">
+          <Link href={`/api/file/${file.id}`} target="_blank">
             {file.fileName}
-          </a>
+          </Link>
         )}
         {file.infected && (
           <span>
@@ -40,6 +40,9 @@ const TableRow = async ({ file, isPublicServant }: TableRowProps) => {
       </th>
       <td className={cellClasses}>{formatBytes(file.fileSize)}</td>
       <td className={cellClasses}>{file?.owner?.email}</td>
+      <td className={cellClasses}>
+        {file.expiresAt && new Date(file.expiresAt).toLocaleString()}
+      </td>
       {isPublicServant && (
         <td className={cellClasses}>
           <DeleteFile

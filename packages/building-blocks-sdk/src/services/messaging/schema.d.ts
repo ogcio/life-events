@@ -16,7 +16,8 @@ export interface paths {
       parameters: {
         query?: {
           status?: "delivered";
-          isSeen?: boolean;
+          isSeen?: "true" | "false" | "0" | "1";
+          search?: string;
           /** @description Either recipientUserId and organisationId are mandatory */
           recipientUserId?: string;
           /** @description Either recipientUserId and organisationId are mandatory */
@@ -52,6 +53,8 @@ export interface paths {
                 organisationId: string;
                 /** @description Unique id of the recipient */
                 recipientUserId: string;
+                /** @description Number of attachments */
+                attachmentsCount: number;
               }[];
               metadata?: {
                 /** @description Object containing the links to the related endpoints */
@@ -163,6 +166,7 @@ export interface paths {
                */
               language: "en" | "ga";
             };
+            attachments?: string[];
           };
         };
       };
@@ -291,6 +295,8 @@ export interface paths {
                  * @enum {string}
                  */
                 security: "confidential" | "public";
+                /** @description Ids of the related attachments */
+                attachments: string[];
               };
               metadata?: {
                 /** @description Object containing the links to the related endpoints */

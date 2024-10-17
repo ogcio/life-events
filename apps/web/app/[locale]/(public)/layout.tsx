@@ -45,15 +45,6 @@ export default async function RootLayout({
 
   const authFactory = AuthenticationFactory.getInstance();
 
-  const isAuthenticatedWithLogto =
-    await authFactory.isPublicServantAuthenticated();
-
-  if (isAuthenticatedWithLogto) {
-    redirect(`/${locale}/admin`, RedirectType.replace);
-  }
-
-  const redirectUrl = `${path}${queryString ? `?${queryString}` : ""}`;
-
   const { userId, firstName, lastName, verificationLevel } =
     await PgSessions.get(redirectUrl);
 

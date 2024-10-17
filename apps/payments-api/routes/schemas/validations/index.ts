@@ -1,5 +1,5 @@
 import Ajv from "ajv";
-import validator from "./validators";
+import validatorEngine from "./validators";
 
 const ajv = new Ajv({
   removeAdditional: true,
@@ -10,13 +10,13 @@ const ajv = new Ajv({
 
 ajv.addKeyword({
   keyword: "validator",
-  compile: (validatorFn) => {
+  compile: (validator) => {
     return function validate(data: any, ctx: any) {
       const errors: Array<any> = [];
       try {
-        const valid = validator(
+        const valid = validatorEngine(
           data,
-          validatorFn,
+          validator,
           ctx.parentDataProperty,
           ctx.rootData,
           errors,

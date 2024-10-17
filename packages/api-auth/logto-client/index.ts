@@ -1,5 +1,5 @@
+import { httpErrors } from "@fastify/sensible";
 import { UserScope } from "@logto/node";
-import { AuthenticationError } from "shared-errors";
 interface GetTokenBaseParams {
   logtoOidcEndpoint: string;
   applicationId: string;
@@ -75,10 +75,7 @@ const fetchToken = async (params: {
   });
 
   if (response.status !== 200) {
-    throw new AuthenticationError(
-      "GET_ACCESS_TOKEN",
-      JSON.stringify(await response.json()),
-    );
+    throw httpErrors.unauthorized(JSON.stringify(await response.json()));
   }
 
   return response.json() as Promise<TokenResponseBody>;

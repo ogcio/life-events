@@ -1,0 +1,25 @@
+meta {
+  name: PS Shares the second file
+  type: http
+  seq: 8
+}
+
+post {
+  url: {{baseUrl}}/api/v1/permissions
+  body: formUrlEncoded
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{accessToken}}
+}
+
+body:form-urlencoded {
+  fileId: {{fileId}}
+  userId: e2e-user-1
+}
+
+assert {
+  res.status: eq 201
+  res.body.data.userId: eq e2e-user-1
+}

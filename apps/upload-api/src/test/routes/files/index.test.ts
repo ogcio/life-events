@@ -9,6 +9,7 @@ import { FieldDef } from "pg";
 import { PassThrough } from "stream";
 import t from "tap";
 import * as authenticationFactory from "../../../utils/authentication-factory.js";
+import { CONFIG_TYPE, SCHEDULER_TOKEN } from "../../../utils/storeConfig.js";
 
 const nextTick = () =>
   new Promise<void>((resolve) => setTimeout(() => resolve()));
@@ -16,7 +17,11 @@ const nextTick = () =>
 const decorateRequest = (
   fastify: FastifyInstance,
   data:
-    | { file: PassThrough & { truncated: boolean }; filename?: string }
+    | {
+        file: PassThrough & { truncated: boolean };
+        filename?: string;
+        fields?: { [key: string]: { value: string } };
+      }
     | null
     | undefined,
 ) => {
@@ -89,12 +94,21 @@ t.test("files", async (t) => {
         default: fp(async (fastify) => {
           fastify.decorate("checkPermissions", async (request) => {
             request.userData = {
+              isM2MApplication: false,
               userId: "userId",
               accessToken: "accessToken",
               organizationId: "ogcio",
             };
           });
         }),
+      },
+      "../../../utils/storeConfig.js": {
+        storeConfig: () => Promise.resolve(),
+        CONFIG_TYPE,
+        SCHEDULER_TOKEN,
+      },
+      "../../../utils/scheduleCleanupTask.js": {
+        default: () => Promise.resolve(),
       },
     },
   );
@@ -117,6 +131,9 @@ t.test("files", async (t) => {
           });
         }
       },
+    },
+    "../../../routes/files/utils/getFilename.js": {
+      default: (pg: unknown, filename: string) => Promise.resolve(filename),
     },
     "../../../utils/authentication-factory.js": t.createMock(
       authenticationFactory,
@@ -223,6 +240,7 @@ t.test("files", async (t) => {
       decorateRequest(app, {
         file: passthroughStream,
         filename: "tooBig.txt",
+        fields: {},
       });
 
       app
@@ -246,6 +264,7 @@ t.test("files", async (t) => {
       decorateRequest(app, {
         file: passthroughStream,
         filename: "sample.txt",
+        fields: {},
       });
 
       app
@@ -275,11 +294,12 @@ t.test("files", async (t) => {
     });
 
     t.test(
-      "Should return a 200 status code when file is uploaded",
+      "Should return a 200 status code when file is uploaded with no expiration date",
       async (t) => {
         decorateRequest(app, {
           file: passthroughStream,
           filename: "sample.txt",
+          fields: {},
         });
 
         app
@@ -305,12 +325,12 @@ t.test("files", async (t) => {
     );
 
     t.test(
-      "Should return a 400 status code when an error in deletion happens",
-      { skip: "Legacy test" },
-      (t) => {
+      "Should return a 200 status code when file is uploaded with expiration date",
+      async (t) => {
         decorateRequest(app, {
           file: passthroughStream,
           filename: "sample.txt",
+          fields: { expirationDate: { value: "2024-01-01T10:00" } },
         });
 
         app
@@ -319,52 +339,24 @@ t.test("files", async (t) => {
             url: "/files",
           })
           .then((response) => {
-            t.equal(response.statusCode, 400);
+            t.equal(response.statusCode, 201);
             t.end();
           });
 
-        setTimeout(() => {
-          passthroughStream.truncated = true;
-          uploadEventEmitter.emit("fileUploaded");
-          antivirusPassthrough.emit("scan-complete", { isInfected: false });
-          setTimeout(() => {
-            s3SendEventEmitter.emit("send-error");
-          });
-        });
-      },
-    );
-
-    t.test(
-      "should return a 400 status code when an error happens in deleting infected file",
-      { skip: "Legacy test" },
-      (t) => {
-        decorateRequest(app, {
-          file: passthroughStream,
-          filename: "sample.txt",
-        });
-
-        app
-          .inject({
-            method: "POST",
-            url: "/files",
-          })
-          .then((response) => {
-            t.equal(response.statusCode, 400);
-            t.end();
-          });
-
-        setTimeout(() => {
-          uploadEventEmitter.emit("fileUploaded");
-          antivirusPassthrough.emit("scan-complete", { isInfected: true });
-          setTimeout(() => {
-            s3SendEventEmitter.emit("send-error");
-          });
-        });
+        passthroughStream.end(Buffer.alloc(1));
+        await nextTick();
+        antivirusVersionEventEmitter.emit("version", "");
+        await nextTick();
+        uploadEventEmitter.emit("fileUploaded", { Key: "key" });
+        await nextTick();
+        pgEventEmitter.emit("done", [{ id: "1" }]);
+        await nextTick();
+        antivirusPassthrough.emit("scan-complete", { isInfected: false });
       },
     );
 
     t.test("should return an error when filename is not provided", (t) => {
-      decorateRequest(app, { file: passthroughStream });
+      decorateRequest(app, { file: passthroughStream, fields: {} });
 
       app
         .inject({
@@ -378,10 +370,74 @@ t.test("files", async (t) => {
         });
     });
 
+    t.test("should return an error when a dotfile is uploaded", (t) => {
+      decorateRequest(app, {
+        file: passthroughStream,
+        filename: ".env",
+        fields: {},
+      });
+
+      app
+        .inject({
+          method: "POST",
+          url: "/files",
+        })
+        .then((response) => {
+          t.equal(response.statusCode, 400);
+          t.equal(response.json().detail, "File not allowed");
+          t.end();
+        });
+    });
+
+    t.test(
+      "should return an error when a a file with a forbidden extension is uploaded",
+      (t) => {
+        decorateRequest(app, {
+          file: passthroughStream,
+          filename: "test.exe",
+          fields: {},
+        });
+
+        app
+          .inject({
+            method: "POST",
+            url: "/files",
+          })
+          .then((response) => {
+            t.equal(response.statusCode, 400);
+            t.equal(response.json().detail, "File not allowed");
+            t.end();
+          });
+      },
+    );
+
+    t.test(
+      "should return an error when a a file with no extension is uploaded",
+      (t) => {
+        decorateRequest(app, {
+          file: passthroughStream,
+          filename: "test",
+          fields: {},
+        });
+
+        app
+          .inject({
+            method: "POST",
+            url: "/files",
+          })
+          .then((response) => {
+            t.equal(response.statusCode, 400);
+            t.equal(response.json().detail, "File not allowed");
+            t.end();
+          });
+      },
+    );
+
     t.test("should return an error when AV scan fails in POST", async (t) => {
       decorateRequest(app, {
         file: passthroughStream,
         filename: "sample.txt",
+        fields: {},
       });
 
       app
@@ -405,6 +461,7 @@ t.test("files", async (t) => {
       decorateRequest(app, {
         file: passthroughStream,
         filename: "sample.txt",
+        fields: {},
       });
 
       app
@@ -429,6 +486,7 @@ t.test("files", async (t) => {
         decorateRequest(app, {
           file: passthroughStream,
           filename: "sample.txt",
+          fields: {},
         });
 
         app
@@ -454,6 +512,7 @@ t.test("files", async (t) => {
         decorateRequest(app, {
           file: passthroughStream,
           filename: "sample.txt",
+          fields: {},
         });
 
         app
@@ -477,68 +536,6 @@ t.test("files", async (t) => {
         await nextTick();
       },
     );
-  });
-
-  t.test("delete", async (t) => {
-    // t.test("Should throw an error when DELETE with no key is called", (t) => {
-    //   app
-    //     .inject({
-    //       method: "DELETE",
-    //       url: "/files/",
-    //     })
-    //     .then((response) => {
-    //       t.equal(response.statusCode, 400);
-    //       t.end();
-    //     });
-    // });
-    // t.test("Should delete a file successfully", async (t) => {
-    //   app
-    //     .inject({
-    //       method: "DELETE",
-    //       url: "/files/dummyfile.txt",
-    //     })
-    //     .then((response) => {
-    //       t.equal(response.statusCode, 200);
-    //       t.end();
-    //     });
-    //   await nextTick();
-    //   pgEventEmitter.emit("done", [{ key: "key" }]);
-    //   await nextTick();
-    //   s3SendEventEmitter.emit("sendComplete");
-    //   await nextTick();
-    //   pgEventEmitter.emit("done", [{ key: "key" }]);
-    //   await nextTick();
-    // });
-    // t.test("should throw an error when delete fails", async (t) => {
-    //   app
-    //     .inject({
-    //       method: "DELETE",
-    //       url: "/files/dummyfile.txt",
-    //     })
-    //     .then((response) => {
-    //       t.equal(response.statusCode, 500);
-    //       t.end();
-    //     });
-    //   await nextTick();
-    //   pgEventEmitter.emit("done", [{ key: "key" }]);
-    //   await nextTick();
-    //   s3SendEventEmitter.emit("send-error");
-    //   await nextTick();
-    // });
-    // t.test("should throw not found when metadata is not present", async (t) => {
-    //   app
-    //     .inject({
-    //       method: "DELETE",
-    //       url: "/files/dummyfile.txt",
-    //     })
-    //     .then((response) => {
-    //       t.equal(response.statusCode, 404);
-    //       t.end();
-    //     });
-    //   await nextTick();
-    //   pgEventEmitter.emit("done", []);
-    //   await nextTick();
-    // });
   });
 
   t.test("get", async (t) => {

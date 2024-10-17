@@ -25,6 +25,7 @@ type Props = {
 
 export default async function (props: Props) {
   const t = await getTranslations("MyPayments");
+  const tStatus = await getTranslations("PaymentSetup.paymentStatus");
   const paymentsApi = await AuthenticationFactory.getPaymentsClient();
 
   const currentPage = props.searchParams.page
@@ -108,7 +109,7 @@ export default async function (props: Props) {
                         className={`govie-tag ${mapTransactionStatusColorClassName(trx.status)} govie-body-s`}
                         style={{ marginBottom: "0px" }}
                       >
-                        {trx.status}
+                        {tStatus(trx.status)}
                       </strong>
                     </td>
                     <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">

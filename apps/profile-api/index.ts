@@ -1,16 +1,15 @@
 import { writeFile } from "fs/promises";
 
 import { build } from "./app";
-import { getLoggingConfiguration } from "logging-wrapper";
+import { getLoggingConfiguration } from "@ogcio/fastify-logging-wrapper";
 
 const app = await build(getLoggingConfiguration());
 
-app.listen({ host: "0.0.0.0", port: 8003 }, (err, address) => {
+app.listen({ host: "0.0.0.0", port: 8003 }, (err) => {
   if (err) {
     console.error(err);
     process.exit(1);
   }
-  app.log.info(`app listening at ${address}`);
 });
 
 await app.ready();

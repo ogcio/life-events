@@ -15,7 +15,7 @@ headers {
 }
 
 assert {
-  res.status: eq 200
+  ~res.status: eq 200
 }
 
 script:pre-request {

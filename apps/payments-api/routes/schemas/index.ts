@@ -31,6 +31,7 @@ export const BankTransferData = Type.Object({
 export const StripeData = Type.Object({
   livePublishableKey: Type.String(),
   liveSecretKey: Type.String(),
+  webhookSigningKey: Type.Optional(Type.String()),
 });
 
 export const WorldpayData = Type.Object({
@@ -110,14 +111,15 @@ export const ProviderDetails = Type.Object({
 export const PaymentRequestStatus = Type.Union([
   Type.Literal("active"),
   Type.Literal("inactive"),
+  Type.Literal("draft"),
 ]);
 
 export const PaymentRequest = Type.Object({
   paymentRequestId: Type.String(),
   title: Type.String(),
-  description: Type.String(),
-  amount: Type.Number(),
-  reference: Type.String(),
+  description: Type.Optional(Type.String()),
+  amount: Type.Optional(Type.Number()),
+  reference: Type.Optional(Type.String()),
   providers: Type.Array(ProviderDetails),
   status: PaymentRequestStatus,
 });
@@ -125,18 +127,70 @@ export const PaymentRequest = Type.Object({
 export const PaymentRequestDetails = Type.Composite([
   PaymentRequest,
   Type.Object({
-    redirectUrl: Type.String(),
+    redirectUrl: Type.Optional(Type.String()),
     allowAmountOverride: Type.Boolean(),
     allowCustomAmount: Type.Boolean(),
   }),
 ]);
 
+export const PaymentRequestPublicInfo = Type.Object({
+  paymentRequestId: Type.String(),
+  title: Type.String(),
+  description: Type.String(),
+  amount: Type.Number(),
+  reference: Type.String(),
+  providers: Type.Array(ProviderDetails),
+  status: PaymentRequestStatus,
+  redirectUrl: Type.String(),
+  allowAmountOverride: Type.Boolean(),
+  allowCustomAmount: Type.Boolean(),
+});
+
 export const CreatePaymentRequest = Type.Object({
   title: Type.String({ validator: "RequiredValidator" }),
-  description: Type.String(),
-  reference: Type.String({ validator: "RequiredValidator" }),
-  amount: Type.Number({ minimum: 1, maximum: 1000000 }),
-  redirectUrl: Type.String({ validator: "RequiredValidator" }),
+  description: Type.Union([Type.String(), Type.Null()], {
+    validator: {
+      name: "OptionalRequiredValidator",
+      options: {
+        field: "status",
+        operation: "notEqual",
+        value: "draft",
+      },
+    },
+  }),
+  reference: Type.Union([Type.String(), Type.Null()], {
+    validator: {
+      name: "OptionalRequiredValidator",
+      options: {
+        field: "status",
+        operation: "notEqual",
+        value: "draft",
+      },
+    },
+  }),
+  amount: Type.Union(
+    [Type.Number({ minimum: 1, maximum: 1000000 }), Type.Null()],
+    {
+      validator: {
+        name: "OptionalRequiredValidator",
+        options: {
+          field: "status",
+          operation: "notEqual",
+          value: "draft",
+        },
+      },
+    },
+  ),
+  redirectUrl: Type.Union([Type.String(), Type.Null()], {
+    validator: {
+      name: "OptionalRequiredValidator",
+      options: {
+        field: "status",
+        operation: "notEqual",
+        value: "draft",
+      },
+    },
+  }),
   allowAmountOverride: Type.Boolean(),
   allowCustomAmount: Type.Boolean(),
   providers: Type.Array(Type.String()),
@@ -181,7 +235,7 @@ export const FullTransaction = Type.Object({
   extPaymentId: Type.String(),
   status: TransactionStatuses,
   integrationReference: Type.String(),
-  amount: Type.Number(),
+  amount: Type.Number({ minimum: 1, maximum: 1000000 }),
   paymentProviderId: Type.String(),
   createdAt: Type.String(),
   updatedAt: Type.String(),
@@ -198,6 +252,7 @@ export const Transaction = Type.Composite([
     "status",
     "amount",
     "extPaymentId",
+    "paymentProviderId",
     "updatedAt",
   ]),
   Type.Object({
@@ -209,6 +264,7 @@ export const TransactionDetails = Type.Composite([
   Transaction,
   Type.Pick(FullTransaction, ["extPaymentId", "userId", "userData"]),
   Type.Object({
+    description: Type.String(),
     providerName: Type.String(),
     providerType: Type.String(),
     paymentRequestId: Type.String(),
@@ -301,6 +357,28 @@ export const RealexHppResponse = Type.Object({
   HPP_CUSTOMER_EMAIL: Type.String(),
   HPP_ADDRESS_MATCH_INDICATOR: Type.String(),
   BATCHID: Type.String(),
+});
+
+export const RealexStatusUpdateQueryParams = Type.Object({
+  sha1hash: Type.String(),
+  timestamp: Type.String(),
+  merchantid: Type.String(),
+  orderid: Type.String(),
+  result: Type.String(),
+  message: Type.String(),
+  pasref: Type.String(),
+  paymentmethod: Type.String(),
+  waitfornotification: Type.String(),
+  fundstatus: Type.String(),
+  paymentpurpose: Type.String(),
+  acountholdername: Type.String(),
+  country: Type.String(),
+  accountnumber: Type.String(),
+  iban: Type.String(),
+  bic: Type.String(),
+  bankname: Type.String(),
+  bankcode: Type.String(),
+  redirectoptional: Type.String(),
 });
 
 /**

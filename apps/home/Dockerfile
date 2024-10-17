@@ -7,7 +7,6 @@ COPY ./package*.json /app/
 COPY ./apps/home/package*.json /app/apps/home/
 COPY ./packages/analytics/package*.json /app/packages/analytics/
 COPY ./packages/auth/package*.json /app/packages/auth/
-COPY ./packages/shared-errors/package*.json /app/packages/shared-errors/
 COPY ./packages/nextjs-logging-wrapper/package*.json /app/packages/nextjs-logging-wrapper/
 
 RUN npm ci
@@ -16,7 +15,6 @@ COPY ./apps/home/ /app/apps/home/
 COPY --from=design-system-container /app/packages/design-system/ /app/packages/design-system/
 COPY ./packages/analytics/ /app/packages/analytics/
 COPY ./packages/auth/ /app/packages/auth/
-COPY ./packages/shared-errors/ /app/packages/shared-errors/
 COPY ./packages/nextjs-logging-wrapper/ /app/packages/nextjs-logging-wrapper/
 
 FROM deps AS builder
@@ -44,7 +42,6 @@ ENV NEXT_PUBLIC_DESIGN_SYSTEM_SERVICE_ENTRY_POINT=$NEXT_PUBLIC_DESIGN_SYSTEM_SER
 ENV NODE_ENV=production
 ENV LOG_LEVEL=trace
 
-RUN npm run build --workspace=packages/shared-errors
 RUN npm run build --workspace=packages/nextjs-logging-wrapper
 RUN npm run build --workspace=apps/home
 

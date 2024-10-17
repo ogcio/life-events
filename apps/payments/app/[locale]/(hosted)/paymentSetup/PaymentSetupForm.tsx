@@ -6,6 +6,7 @@ import { ProvidersMap } from "./PaymentSetupFormPage";
 import { useFormState } from "react-dom";
 import InputField from "../../../components/InputField";
 import { PaymentRequestFormState } from "./create/page";
+import { PaymentRequestStatus } from "../../../../types/common";
 
 type PaymentSetupFormProps = {
   action: (
@@ -16,9 +17,34 @@ type PaymentSetupFormProps = {
     details?: Partial<PaymentRequestDetails>;
     providerAccounts: ProvidersMap;
   };
+  originalState?: Partial<PaymentRequestDetails>;
 };
 
-export default function ({ action, defaultState }: PaymentSetupFormProps) {
+const getDefaultStatus = (
+  details: Partial<PaymentRequestDetails>,
+): PaymentRequestStatus => {
+  if (details === undefined || details.status === undefined) {
+    return "draft";
+  }
+
+  return details.status;
+};
+
+const disableDraft = (
+  originalState: Partial<PaymentRequestDetails> | undefined,
+) => {
+  if (originalState === undefined) {
+    return false;
+  }
+
+  return originalState.status === "draft" ? false : true;
+};
+
+export default function ({
+  action,
+  defaultState,
+  originalState,
+}: PaymentSetupFormProps) {
   const t = useTranslations("PaymentSetup.CreatePayment");
   const tCommon = useTranslations("Common");
 
@@ -36,10 +62,18 @@ export default function ({ action, defaultState }: PaymentSetupFormProps) {
         error={state.errors.title}
         defaultValue={state.defaultState?.details?.title}
       />
-      <div className="govie-form-group">
+      <div
+        className={`govie-form-group ${state.errors.description && "govie-form-group--error"}`}
+      >
         <label htmlFor="description" className="govie-label--s">
           {t("form.description")}
         </label>
+        {state.errors.description && (
+          <p id="input-field-error" className="govie-error-message">
+            <span className="govie-visually-hidden">Error:</span>
+            {state.errors.description}
+          </p>
+        )}
         <textarea
           id="description"
           name="description"
@@ -166,9 +200,7 @@ export default function ({ action, defaultState }: PaymentSetupFormProps) {
               value="active"
               className="govie-radios__input"
               defaultChecked={
-                typeof state.defaultState?.details === "undefined"
-                  ? true
-                  : state.defaultState?.details?.status === "active"
+                getDefaultStatus(state.defaultState.details) === "active"
               }
             />
             <div className="govie-label--s govie-radios__label">
@@ -185,7 +217,7 @@ export default function ({ action, defaultState }: PaymentSetupFormProps) {
               value="inactive"
               className="govie-radios__input"
               defaultChecked={
-                state.defaultState?.details?.status === "inactive"
+                getDefaultStatus(state.defaultState.details) === "inactive"
               }
             />
 
@@ -194,6 +226,24 @@ export default function ({ action, defaultState }: PaymentSetupFormProps) {
               <p className="govie-body">
                 {t("form.status.inactiveDescription")}
               </p>
+            </div>
+          </div>
+
+          <div className="govie-radios__item">
+            <input
+              id="draft"
+              name="status"
+              type="radio"
+              value="draft"
+              className="govie-radios__input"
+              defaultChecked={
+                getDefaultStatus(state.defaultState.details) === "draft"
+              }
+              disabled={disableDraft(originalState)}
+            />
+            <div className="govie-label--s govie-radios__label">
+              <label htmlFor="active">{t("form.status.draft")}</label>
+              <p className="govie-body">{t("form.status.draftDescription")}</p>
             </div>
           </div>
         </div>

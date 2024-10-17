@@ -1,0 +1,24 @@
+meta {
+  name: PS unshares the file
+  type: http
+  seq: 11
+}
+
+delete {
+  url: {{baseUrl}}/api/v1/permissions
+  body: formUrlEncoded
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{accessToken}}
+}
+
+body:form-urlencoded {
+  userId: e2e-user-id
+  fileId: {{fileId}}
+}
+
+assert {
+  res.status: eq 200
+}

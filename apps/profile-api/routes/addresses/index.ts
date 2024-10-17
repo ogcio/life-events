@@ -16,7 +16,7 @@ import {
   PatchAddress,
   PatchAddressSchema,
 } from "../../types/schemaDefinitions";
-import { getErrorMessage } from "../../utils/error-utils";
+import { getErrorMessage } from "@ogcio/shared-errors";
 import { Permissions } from "../../types/permissions";
 
 const ADDRESSES_TAGS = ["Addresses"];
@@ -61,7 +61,7 @@ export default async function addresses(app: FastifyInstance) {
 
         reply.send(result.rows);
       } catch (error) {
-        throw new ServerError(ERROR_PROCESS, getErrorMessage(error));
+        throw app.httpErrors.internalServerError(getErrorMessage(error));
       }
     },
   );
@@ -117,7 +117,7 @@ export default async function addresses(app: FastifyInstance) {
 
         reply.send({ id: result.rows[0].id });
       } catch (error) {
-        throw new ServerError(ERROR_PROCESS, getErrorMessage(error));
+        throw app.httpErrors.internalServerError(getErrorMessage(error));
       }
     },
   );
@@ -166,7 +166,7 @@ export default async function addresses(app: FastifyInstance) {
       }
 
       if (!result?.rows.length) {
-        throw new NotFoundError(ERROR_PROCESS, "Address not found");
+        throw app.httpErrors.notFound("Address not found");
       }
 
       reply.send(result.rows[0]);
@@ -231,12 +231,12 @@ export default async function addresses(app: FastifyInstance) {
         );
 
         if (!result?.rows.length) {
-          throw new NotFoundError(ERROR_PROCESS, "Address not found");
+          throw app.httpErrors.notFound("Address not found");
         }
 
         reply.send({ id: result.rows[0].id });
       } catch (error) {
-        throw new ServerError(ERROR_PROCESS, getErrorMessage(error));
+        throw app.httpErrors.internalServerError(getErrorMessage(error));
       }
     },
   );
@@ -291,12 +291,12 @@ export default async function addresses(app: FastifyInstance) {
         );
 
         if (!result?.rows.length) {
-          throw new NotFoundError(ERROR_PROCESS, "Address not found");
+          throw app.httpErrors.notFound("Address not found");
         }
 
         reply.send({ id: result.rows[0].id });
       } catch (error) {
-        throw new ServerError(ERROR_PROCESS, getErrorMessage(error));
+        throw app.httpErrors.internalServerError(getErrorMessage(error));
       }
     },
   );
@@ -336,11 +336,11 @@ export default async function addresses(app: FastifyInstance) {
           [userId, addressId],
         );
       } catch (error) {
-        throw new ServerError(ERROR_PROCESS, getErrorMessage(error));
+        throw app.httpErrors.internalServerError(getErrorMessage(error));
       }
 
       if (!result?.rows.length) {
-        throw new NotFoundError(ERROR_PROCESS, "Address not found");
+        throw app.httpErrors.notFound("Address not found");
       }
 
       reply.send({ id: result.rows[0].id });

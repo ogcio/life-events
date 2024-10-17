@@ -1,7 +1,3 @@
-import { createRemoteJWKSet, jwtVerify } from "jose";
-import { AuthenticationError, AuthorizationError } from "shared-errors";
-
-const ERROR_PROCESS = "CHECK_PERMISSIONS";
 type ScopeMap = Map<string, ScopeMap | boolean>;
 
 const getMapFromScope = (scopes: string[]) => {
@@ -32,11 +28,6 @@ const getMapFromScope = (scopes: string[]) => {
 
     return acc;
   }, new Map());
-};
-
-type ExtractedUserData = {
-  userId: string;
-  organizationId?: string;
 };
 
 export const hasPermissions = (

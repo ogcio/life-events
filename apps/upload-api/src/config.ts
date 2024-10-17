@@ -21,6 +21,8 @@ export const envSchema = {
     "LOGTO_M2M_SCHEDULER_APP_SECRET",
     "LOGTO_M2M_SCHEDULER_APP_ID",
     "SCHEDULER_BACKEND_URL",
+    "SCHEDULED_JOBS_HOURS_INTERVAL",
+    "ORGANIZATION_ID",
   ],
   properties: {
     CLAMAV_HOST: { type: "string" },
@@ -65,6 +67,12 @@ export const envSchema = {
       type: "string",
     },
     SCHEDULER_BACKEND_URL: {
+      type: "string",
+    },
+    SCHEDULED_JOBS_HOURS_INTERVAL: {
+      type: "number",
+    },
+    ORGANIZATION_ID: {
       type: "string",
     },
   },

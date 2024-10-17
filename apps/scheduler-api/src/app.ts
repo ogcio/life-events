@@ -1,12 +1,12 @@
 import fastifyEnv from "@fastify/env";
 import postgres from "@fastify/postgres";
-import sensible from "@fastify/sensible";
+import sensible, { httpErrors } from "@fastify/sensible";
 import fastifySwaggerUi from "@fastify/swagger-ui";
 import { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
-import { initializeErrorHandler } from "error-handler";
+import { initializeErrorHandler } from "@ogcio/fastify-error-handler";
 import fastify, { FastifyServerOptions } from "fastify";
 import fs from "fs";
-import { initializeLoggingHooks } from "logging-wrapper";
+import { initializeLoggingHooks } from "@ogcio/fastify-logging-wrapper";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
 import { envSchema } from "./config.js";
@@ -16,7 +16,6 @@ import v8 from "v8";
 
 import fastifySwagger from "@fastify/swagger";
 import fastifyUnderPressure from "@fastify/under-pressure";
-import { CustomError } from "shared-errors";
 import apiAuthPlugin from "api-auth";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -67,12 +66,8 @@ export async function build(opts?: FastifyServerOptions) {
     maxRssBytes: v8.getHeapStatistics().total_available_size,
     maxEventLoopUtilization: 0.98,
     pressureHandler: (_req, _rep, type, value) => {
-      const pressureError = "UNDER_PRESSURE_ERROR";
-      throw new CustomError(
-        pressureError,
+      throw httpErrors.serviceUnavailable(
         `System is under pressure. Pressure type: ${type}. Pressure value: ${value}`,
-        503,
-        pressureError,
       );
     },
   });

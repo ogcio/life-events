@@ -2,7 +2,7 @@ import { writeFile } from "fs/promises";
 
 import { build } from "./app.js";
 
-import { getLoggingConfiguration } from "logging-wrapper";
+import { getLoggingConfiguration } from "@ogcio/fastify-logging-wrapper";
 
 const app = await build(getLoggingConfiguration());
 

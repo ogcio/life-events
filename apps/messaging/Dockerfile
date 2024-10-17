@@ -8,9 +8,7 @@ COPY ./apps/messaging/package*.json /app/apps/messaging/
 COPY ./packages/feature-flags/package*.json /app/packages/feature-flags/
 COPY ./packages/auth/package*.json /app/packages/auth/
 COPY ./packages/messages/package*.json /app/packages/messages/
-COPY ./packages/building-blocks-sdk/package*.json /app/packages/building-blocks-sdk/
 COPY ./packages/shared-components/package*.json /app/packages/shared-components/
-COPY ./packages/shared-errors/package*.json /app/packages/shared-errors/
 COPY ./packages/nextjs-logging-wrapper/package*.json /app/packages/nextjs-logging-wrapper/
 
 RUN npm ci
@@ -20,9 +18,7 @@ COPY --from=design-system-container /app/packages/design-system/ /app/packages/d
 COPY ./packages/feature-flags/ /app/packages/feature-flags/
 COPY ./packages/auth/ /app/packages/auth/
 COPY ./packages/messages/ /app/packages/messages/
-COPY ./packages/building-blocks-sdk/ /app/packages/building-blocks-sdk/
 COPY ./packages/shared-components/ /app/packages/shared-components/
-COPY ./packages/shared-errors/ /app/packages/shared-errors/
 COPY ./packages/nextjs-logging-wrapper/ /app/packages/nextjs-logging-wrapper/
 
 FROM deps AS builder
@@ -41,9 +37,7 @@ ENV NEXT_PUBLIC_BUILDING_BLOCKS_LANDING_PAGE=$NEXT_PUBLIC_BUILDING_BLOCKS_LANDIN
 ENV NODE_ENV=production
 ENV LOG_LEVEL=trace
 
-RUN npm run build --workspace=packages/shared-errors && \
-    npm run build --workspace=packages/nextjs-logging-wrapper && \
-    npm run build --workspace=packages/building-blocks-sdk && \
+RUN npm run build --workspace=packages/nextjs-logging-wrapper && \
     npm run build --workspace=apps/messaging
 
 FROM base-deps AS assembler

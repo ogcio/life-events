@@ -133,7 +133,7 @@ export default async function Bank(params: {
     >
       <section style={{ width: "80%" }}>
         <h1 className="govie-heading-l">{t("title")}</h1>
-        <p className="govie-body">{t("description")}</p>
+
         <dl className="govie-summary-list">
           <div className="govie-summary-list__row">
             <dt className="govie-summary-list__key">{t("summary.title")}</dt>

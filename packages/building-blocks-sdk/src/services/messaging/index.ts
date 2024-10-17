@@ -29,8 +29,19 @@ export class Messaging {
 
   async getMessagesForUser(
     userId: string,
-    filter?: { offset?: number; limit?: number; isSeen?: boolean },
+    filter?: {
+      offset?: number;
+      limit?: number;
+      isSeen?: boolean;
+      search?: string;
+    },
   ) {
+    const isSeen =
+      filter?.isSeen === undefined
+        ? undefined
+        : filter.isSeen
+          ? "true"
+          : "false";
     const { error, data } = await this.client.GET("/api/v1/messages/", {
       params: {
         query: {
@@ -38,7 +49,8 @@ export class Messaging {
           offset: toStringOrUndefined(filter?.offset),
           recipientUserId: userId,
           status: "delivered",
-          isSeen: filter?.isSeen,
+          isSeen,
+          search: filter?.search,
         },
       },
     });

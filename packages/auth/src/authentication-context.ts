@@ -1,5 +1,6 @@
 import { AuthSession, AuthUserScope } from "auth/auth-session";
 import { PartialAuthSessionContext } from "auth/types";
+import { Logger } from "pino";
 
 export const getBaseLogtoConfig = () => ({
   cookieSecure: process.env.NODE_ENV === "production",
@@ -33,37 +34,111 @@ interface CitizenParameters {
   appSecret: string;
 }
 
-export const getCitizenContext = (
+export const getCitizenContext = async (
   params: CitizenParameters,
-): Promise<PartialAuthSessionContext> =>
-  AuthSession.get(
-    buildCitizenAuthConfig(params),
-    buildCitizenContextParameters(params),
+  logger: Logger,
+): Promise<PartialAuthSessionContext> => {
+  const citizenAuthConfig = buildCitizenAuthConfig(params);
+  const contextParameters = buildCitizenContextParameters(params);
+  logger.trace(
+    {
+      citizenAuthConfig: {
+        endpoint: citizenAuthConfig.endpoint,
+        resources: citizenAuthConfig.resources,
+        cookieSecure: citizenAuthConfig.cookieSecure,
+        scopes: citizenAuthConfig.scopes,
+        baseUrl: citizenAuthConfig.baseUrl,
+        appId: citizenAuthConfig.appId,
+        isCookieSecretSet: citizenAuthConfig.cookieSecret?.length > 0,
+      },
+      contextParameters,
+    },
+    "Requesting citizen context",
   );
+  try {
+    const citizenContext = await AuthSession.get(
+      citizenAuthConfig,
+      contextParameters,
+    );
 
-export const getPublicServantContext = (
+    logger.trace(
+      {
+        isInactivePublicServant: citizenContext.isInactivePublicServant,
+        isPublicServant: citizenContext.isPublicServant,
+        userId: citizenContext.user?.id,
+      },
+      "Got citizen context",
+    );
+
+    return citizenContext;
+  } catch (e) {
+    logger.error({ error: e }, "Error getting citizen context");
+    throw e;
+  }
+};
+
+export const getPublicServantContext = async (
   params: PublicServantParameters,
-): Promise<PartialAuthSessionContext> =>
-  AuthSession.get(
+  logger: Logger,
+): Promise<PartialAuthSessionContext> => {
+  const authConfig = buildPublicServantAuthConfig(params);
+  const contextParameters = buildPublicServantContextParameters(params);
+  logger.trace(
+    {
+      publicServantAuthConfig: {
+        endpoint: authConfig.endpoint,
+        resources: authConfig.resources,
+        cookieSecure: authConfig.cookieSecure,
+        scopes: authConfig.scopes,
+        baseUrl: authConfig.baseUrl,
+        appId: authConfig.appId,
+        isCookieSecretSet: authConfig.cookieSecret?.length > 0,
+      },
+      contextParameters,
+    },
+    "Requesting public servant context",
+  );
+  try {
+    const publicServantContext = await AuthSession.get(
+      authConfig,
+      contextParameters,
+    );
+
+    logger.trace(
+      {
+        isInactivePublicServant: publicServantContext.isInactivePublicServant,
+        isPublicServant: publicServantContext.isPublicServant,
+        userId: publicServantContext.user?.id,
+      },
+      "Got public servant context",
+    );
+
+    return publicServantContext;
+  } catch (e) {
+    logger.error({ error: e }, "Error getting public servant context");
+    throw e;
+  }
+};
+
+export const isPublicServantAuthenticated = async (
+  params: PublicServantParameters,
+  logger: Logger,
+): Promise<boolean> => {
+  const isUserAuthenticatedAsPublicServant = await AuthSession.isAuthenticated(
     buildPublicServantAuthConfig(params),
     buildPublicServantContextParameters(params),
   );
 
-export const isPublicServantAuthenticated = async (
-  params: PublicServantParameters,
-): Promise<boolean> => {
-  if (
-    !AuthSession.isAuthenticated(
-      buildPublicServantAuthConfig(params),
-      buildPublicServantContextParameters(params),
-    )
-  ) {
+  if (!isUserAuthenticatedAsPublicServant) {
+    logger.trace({}, "User is not authenticated as public servant");
     return false;
   }
 
-  const publicServantContext = await getPublicServantContext(params);
+  const publicServantContext = await getPublicServantContext(params, logger);
+  const isPublicServant = publicServantContext.isPublicServant;
+  logger.trace({ isPublicServant }, "Checking if user is public servant");
 
-  return publicServantContext.isPublicServant;
+  return isPublicServant;
 };
 
 export const isAuthenticated = async (params: {
@@ -75,19 +150,22 @@ export const isAuthenticated = async (params: {
 
 export const isCitizenAuthenticated = async (
   params: CitizenParameters,
+  logger: Logger,
 ): Promise<boolean> => {
-  if (
-    !AuthSession.isAuthenticated(
-      buildCitizenAuthConfig(params),
-      buildCitizenContextParameters(params),
-    )
-  ) {
+  const isUserAuthenticatedAsCitizen = await AuthSession.isAuthenticated(
+    buildCitizenAuthConfig(params),
+    buildCitizenContextParameters(params),
+  );
+  if (!isUserAuthenticatedAsCitizen) {
+    logger.trace({}, "User is not authenticated as citizen");
     return false;
   }
 
-  const citizen = await getCitizenContext(params);
+  const citizen = await getCitizenContext(params, logger);
+  const isCitizen = !citizen.isPublicServant;
+  logger.trace({ isCitizen }, "Checking if user is citizen");
 
-  return !citizen.isPublicServant;
+  return isCitizen;
 };
 
 export const getSelectedOrganization = () =>
@@ -96,17 +174,72 @@ export const getSelectedOrganization = () =>
 export const setSelectedOrganization = (organizationId) =>
   AuthSession.setSelectedOrganization(organizationId);
 
-export const getCitizenToken = (
+export const getCitizenToken = async (
   params: CitizenParameters,
+  logger: Logger,
   resource?: string,
-): Promise<string> =>
-  AuthSession.getCitizenToken(buildCitizenAuthConfig(params), resource);
+): Promise<string> => {
+  const authConfig = buildCitizenAuthConfig(params);
+  logger.trace(
+    {
+      citizenAuthConfig: {
+        endpoint: authConfig.endpoint,
+        resources: authConfig.resources,
+        cookieSecure: authConfig.cookieSecure,
+        scopes: authConfig.scopes,
+        baseUrl: authConfig.baseUrl,
+        appId: authConfig.appId,
+        isCookieSecretSet: authConfig.cookieSecret?.length > 0,
+      },
+      resource,
+    },
+    "Requesting citizen token",
+  );
+  try {
+    const token = await AuthSession.getCitizenToken(authConfig, resource);
+    logger.trace({}, "Citizen token retrieved");
 
-export const getOrgToken = (
+    return token;
+  } catch (e) {
+    logger.error({ error: e }, "Error getting citizen token");
+    throw e;
+  }
+};
+
+export const getOrgToken = async (
   params: PublicServantParameters,
   organizationId: string,
-): Promise<string> =>
-  AuthSession.getOrgToken(buildPublicServantAuthConfig(params), organizationId);
+  logger: Logger,
+): Promise<string> => {
+  const authConfig = buildPublicServantAuthConfig(params);
+  logger.trace(
+    {
+      citizenAuthConfig: {
+        endpoint: authConfig.endpoint,
+        resources: authConfig.resources,
+        cookieSecure: authConfig.cookieSecure,
+        scopes: authConfig.scopes,
+        baseUrl: authConfig.baseUrl,
+        appId: authConfig.appId,
+        isCookieSecretSet: authConfig.cookieSecret?.length > 0,
+      },
+      organizationId,
+    },
+    "Requesting public servant token",
+  );
+  try {
+    const token = await AuthSession.getOrgToken(
+      buildPublicServantAuthConfig(params),
+      organizationId,
+    );
+    logger.trace({}, "Public servant token retrieved!");
+    return token;
+  } catch (e) {
+    logger.error({ error: e }, "Error getting public servant token");
+
+    throw e;
+  }
+};
 
 const buildPublicServantAuthConfig = (params: PublicServantParameters) => ({
   ...getBaseLogtoConfig(),

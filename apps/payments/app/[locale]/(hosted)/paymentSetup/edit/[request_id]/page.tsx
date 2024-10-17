@@ -174,6 +174,7 @@ export default async function ({ params: { request_id, locale } }: Props) {
         locale={locale}
         action={handleSubmitClb}
         details={details}
+        originalState={details}
       />
     </PageWrapper>
   );

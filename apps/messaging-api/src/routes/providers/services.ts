@@ -1,6 +1,5 @@
 import nodemailer from "nodemailer";
 import { PoolClient } from "pg";
-import { ServiceError } from "../../utils.js";
 
 export type EmailProvider = {
   id: string;
@@ -27,7 +26,7 @@ export interface MailService {
   getPrimaryProvider(
     organisationId: string,
   ): Promise<EmailProvider | undefined>;
-  sendMail(params: SendMailParams): Promise<ServiceError | undefined>;
+  sendMail(params: SendMailParams): Promise<void>;
   getFirstOrEtherealMailProvider(): Promise<string>;
 }
 
@@ -54,35 +53,27 @@ export function mailService(client: PoolClient): MailService {
 
       return providerQueryResult.rows.at(0);
     },
-    async sendMail(params: SendMailParams): Promise<ServiceError | undefined> {
-      try {
-        const { host, password, username, port, fromAddress, ssl, name } =
-          params.provider;
+    async sendMail(params: SendMailParams): Promise<void> {
+      const { host, password, username, port, fromAddress, ssl, name } =
+        params.provider;
 
-        const transporter: nodemailer.Transporter = nodemailer.createTransport({
-          host,
-          port,
-          secure: ssl,
-          version: "TLSv1_2_method",
-          auth: {
-            user: username,
-            pass: password,
-          },
-        });
+      const transporter: nodemailer.Transporter = nodemailer.createTransport({
+        host,
+        port,
+        secure: ssl,
+        version: "TLSv1_2_method",
+        auth: {
+          user: username,
+          pass: password,
+        },
+      });
 
-        await transporter.sendMail({
-          from: `${name} <${fromAddress}>`,
-          to: params.email,
-          subject: params.subject,
-          html: params.body,
-        });
-      } catch (err) {
-        return {
-          critical: false,
-          error: { err, ...params },
-          msg: "failed to send email",
-        };
-      }
+      await transporter.sendMail({
+        from: `${name} <${fromAddress}>`,
+        to: params.email,
+        subject: params.subject,
+        html: params.body,
+      });
     },
 
     // Temporary demonstrational util functions

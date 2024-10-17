@@ -1,7 +1,7 @@
 import { headers } from "next/headers.js";
 import { hostname } from "os";
 import { Level, Logger } from "pino";
-import { REQUEST_ID_HEADER } from "shared-errors";
+import { REQUEST_ID_HEADER } from "@ogcio/shared-errors";
 import { REQUEST_ID_LOG_LABEL, getPinoInstance } from "./shared.js";
 
 export interface LoggingRequest {

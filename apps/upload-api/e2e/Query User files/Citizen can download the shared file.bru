@@ -1,0 +1,24 @@
+meta {
+  name: Citizen can download the shared file
+  type: http
+  seq: 11
+}
+
+get {
+  url: {{baseUrl}}/api/v1/files/:fileId
+  body: none
+  auth: none
+}
+
+params:path {
+  fileId: {{fileId}}
+}
+
+headers {
+  Authorization: Bearer {{citizenAccessToken}}
+}
+
+assert {
+  res.status: eq 200
+  res.headers["content-type"]: eq text/plain
+}

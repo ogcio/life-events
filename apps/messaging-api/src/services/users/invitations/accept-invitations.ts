@@ -9,9 +9,7 @@ import {
 } from "../../../types/usersSchemaDefinitions.js";
 import { PoolClient, QueryResult } from "pg";
 import { isNativeError } from "util/types";
-import { BadRequestError, NotFoundError, ServerError } from "shared-errors";
-
-const ACCEPT_INVITATIONS_ERROR = "ACCEPT_INVITATIONS_ERROR";
+import { httpErrors } from "@fastify/sensible";
 
 export const getOrganisationSettingsForProfile = async (params: {
   pg: PostgresDb;
@@ -40,26 +38,18 @@ const getSettingPerProfileId = async (params: {
   const user = await getUserByUserProfileId({
     client,
     userProfileId,
-    errorCode: ACCEPT_INVITATIONS_ERROR,
   });
   if (!user.userProfileId) {
-    throw new BadRequestError(
-      ACCEPT_INVITATIONS_ERROR,
-      "The current user has no related user profile",
-    );
+    throw httpErrors.badRequest("The current user has no related user profile");
   }
   const invitations = await getSettingsPerUser({
     userId: user.id,
     client,
-    errorCode: ACCEPT_INVITATIONS_ERROR,
     organisationSettingId,
   });
 
   if (invitations.data.length === 0) {
-    throw new NotFoundError(
-      ACCEPT_INVITATIONS_ERROR,
-      "Organisation setting not found",
-    );
+    throw httpErrors.notFound("Organisation setting not found");
   }
 
   return invitations.data[0];
@@ -67,8 +57,7 @@ const getSettingPerProfileId = async (params: {
 
 const ensureUserIsActive = (userInvitation: OrganisationSetting): void => {
   if (userInvitation.userStatus !== "active") {
-    throw new BadRequestError(
-      ACCEPT_INVITATIONS_ERROR,
+    throw httpErrors.badRequest(
       "A user must be active before accepting invitation from an organisation",
     );
   }
@@ -89,8 +78,7 @@ export const updateOrganisationFeedback = async (params: {
       params.feedback.preferredTransports.length === 0 &&
       params.feedback.invitationStatusFeedback === "accepted"
     ) {
-      throw new BadRequestError(
-        ACCEPT_INVITATIONS_ERROR,
+      throw httpErrors.badRequest(
         "At least one preferred transport must be selected",
       );
     }
@@ -99,7 +87,6 @@ export const updateOrganisationFeedback = async (params: {
       client,
       ...params,
       userId: userInvitation.userId,
-      errorCode: ACCEPT_INVITATIONS_ERROR,
     });
 
     return await getSettingPerProfileId({ client, ...params });
@@ -118,7 +105,6 @@ export const updateInvitationStatus = async (params: {
     // invoking this will check if the user exists
     await getUserByUserProfileId({
       client,
-      errorCode: ACCEPT_INVITATIONS_ERROR,
       userProfileId: params.userProfileId,
     });
 
@@ -146,8 +132,7 @@ export const getInvitationStatus = async (params: {
     );
   } catch (error) {
     const message = isNativeError(error) ? error.message : "unknown error";
-    throw new ServerError(
-      ACCEPT_INVITATIONS_ERROR,
+    throw httpErrors.internalServerError(
       `Error on invitation feedback: ${message}`,
     );
   } finally {
@@ -155,10 +140,7 @@ export const getInvitationStatus = async (params: {
   }
 
   if (!statusResponse || statusResponse.rowCount === 0) {
-    throw new NotFoundError(
-      ACCEPT_INVITATIONS_ERROR,
-      "Cannot find accepted invitations for the user",
-    );
+    throw httpErrors.notFound("Cannot find accepted invitations for the user");
   }
 
   return statusResponse.rows[0];
@@ -187,14 +169,13 @@ const executeUpdateUserStatus = async (params: {
     );
   } catch (error) {
     const message = isNativeError(error) ? error.message : "unknown error";
-    throw new ServerError(
-      ACCEPT_INVITATIONS_ERROR,
+    throw httpErrors.internalServerError(
       `Error on invitation feedback: ${message}`,
     );
   }
 
   if (users.rowCount === 0) {
-    throw new ServerError(ACCEPT_INVITATIONS_ERROR, "Cannot update this user");
+    throw httpErrors.internalServerError("Cannot update this user");
   }
 
   return users.rows[0];

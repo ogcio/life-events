@@ -10,6 +10,7 @@ import {
   ParamsWithPaymentRequestId,
   PaymentRequest,
   PaymentRequestDetails,
+  PaymentRequestPublicInfo,
   Transaction,
 } from "../schemas";
 import {
@@ -28,6 +29,7 @@ import {
   ParamsWithPaymentRequestIdDO,
   PaymentRequestDetailsDO,
   PaymentRequestDO,
+  PaymentRequestPublicInfoDO,
 } from "../../plugins/entities/paymentRequest/types";
 import { AuditLogEventType } from "../../plugins/auditLog/auditLogEvents";
 
@@ -117,7 +119,7 @@ export default async function paymentRequests(app: FastifyInstance) {
   );
 
   app.get<{
-    Reply: PaymentRequestDetailsDO | Error;
+    Reply: PaymentRequestPublicInfoDO | Error;
     Params: ParamsWithPaymentRequestIdDO;
   }>(
     "/:requestId/public-info",
@@ -130,7 +132,7 @@ export default async function paymentRequests(app: FastifyInstance) {
         tags: TAGS,
         params: ParamsWithPaymentRequestId,
         response: {
-          200: PaymentRequestDetails,
+          200: PaymentRequestPublicInfo,
           404: HttpError,
         },
       },

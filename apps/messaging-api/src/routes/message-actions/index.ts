@@ -1,11 +1,5 @@
 import { Static, Type } from "@sinclair/typebox";
 import { FastifyInstance } from "fastify";
-import {
-  BadRequestError,
-  isLifeEventsError,
-  NotFoundError,
-  ServerError,
-} from "shared-errors";
 import { ensureUserIdIsSet } from "../../utils/authentication-factory.js";
 import {
   EventType,
@@ -16,6 +10,7 @@ import {
 import { PoolClient, QueryResult } from "pg";
 import { Permissions } from "../../types/permissions.js";
 import { HttpError } from "../../types/httpErrors.js";
+import { isHttpError } from "http-errors";
 
 export const prefix = "/message-actions";
 
@@ -32,7 +27,7 @@ export default async function messagesActions(app: FastifyInstance) {
     "/:messageId",
     {
       preValidation: (req, res) =>
-        app.checkPermissions(req, res, [Permissions.CitizenSelf.Write]),
+        app.checkPermissions(req, res, [Permissions.MessageSelf.Write]),
       schema: {
         tags: ["Message actions"],
         body: MessageActions,
@@ -44,16 +39,12 @@ export default async function messagesActions(app: FastifyInstance) {
       },
     },
     async function putMessageOptions(req) {
-      const errorProcess = "PUT_MESSAGE_OPTIONS";
       const messageOptionId = req.params.messageId;
       if (messageOptionId !== req.body.messageId) {
-        throw new BadRequestError(
-          errorProcess,
-          "url params id mismatch with body id",
-        );
+        throw app.httpErrors.badRequest("url params id mismatch with body id");
       }
 
-      const userId = ensureUserIdIsSet(req, errorProcess);
+      const userId = ensureUserIdIsSet(req);
 
       /**
        * We can opt to have link tables for each option, or have a table with dynamic option type/value
@@ -87,7 +78,7 @@ export default async function messagesActions(app: FastifyInstance) {
         );
 
         if (!existanceCheckQueryResult.rows.at(0)?.exists) {
-          throw new NotFoundError(errorProcess, "message not found for user");
+          throw app.httpErrors.notFound("message not found for user");
         }
 
         // seen/unseen
@@ -121,12 +112,12 @@ export default async function messagesActions(app: FastifyInstance) {
           });
         }
       } catch (error) {
-        throw isLifeEventsError(error)
+        throw isHttpError(error)
           ? error
-          : new ServerError(
-              errorProcess,
+          : app.httpErrors.createError(
+              500,
               "failed to update message options",
-              error,
+              { parent: error },
             );
       } finally {
         poolClient?.release();

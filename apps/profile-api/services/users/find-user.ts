@@ -6,7 +6,7 @@ import {
 } from "../../types/schemaDefinitions";
 import { isNativeError } from "util/types";
 import { createError } from "@fastify/error";
-import { NotFoundError } from "shared-errors";
+import { httpErrors } from "@fastify/sensible";
 
 type WhereClauseTypes = string | number | null | boolean;
 type PartialFoundUser = Omit<FoundUser, "matchQuality">;
@@ -34,10 +34,7 @@ export const getUser = async (params: {
   );
 
   if (result.rowCount === 0) {
-    throw new NotFoundError(
-      "GET_USER",
-      `Cannot find user with id ${params.id}`,
-    );
+    throw httpErrors.notFound(`Cannot find user with id ${params.id}`);
   }
 
   return result.rows[0];

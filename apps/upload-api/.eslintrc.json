@@ -21,12 +21,17 @@
       }
     ]
   },
+  "overrides": [
+    {
+      "files": "**/*.test.ts",
+      "rules": {
+        "no-global-assign": "off"
+      }
+    }
+  ],
   "env": {
     "browser": true,
     "node": true
   },
-  "ignorePatterns": [
-    "dist",
-    "db"
-  ]
+  "ignorePatterns": ["dist", "db"]
 }

@@ -17,7 +17,6 @@ import {
   sanitizePagination,
 } from "../../utils/pagination.js";
 import { Permissions } from "../../types/permissions.js";
-import { NotFoundError } from "shared-errors";
 import { ensureUserIsOrganisationMember } from "../../utils/error-utils.js";
 import {
   ensureOrganizationIdIsSet,
@@ -99,7 +98,7 @@ export default async function users(app: FastifyInstance) {
       const pagination = sanitizePagination(query);
       const params = {
         pool: app.pg.pool,
-        organisationId: ensureOrganizationIdIsSet(request, "GET_USERS"),
+        organisationId: ensureOrganizationIdIsSet(request),
         search: query.search,
         pagination,
         importId: query.importId,
@@ -145,11 +144,7 @@ export default async function users(app: FastifyInstance) {
       },
     },
     async function (request) {
-      const errorProcess = "GET_USER";
-      const organisationId = ensureUserIsOrganisationMember(
-        request.userData,
-        errorProcess,
-      );
+      const organisationId = ensureUserIsOrganisationMember(request.userData);
       const userId = request.params.userId;
       const user = await getUser({
         pool: app.pg.pool,
@@ -175,7 +170,7 @@ export default async function users(app: FastifyInstance) {
 
         const profile = data?.at(0);
         if (!profile) {
-          throw new NotFoundError(errorProcess, "profile user not found");
+          throw app.httpErrors.notFound("profile user not found");
         }
 
         user.firstName = profile.firstName;

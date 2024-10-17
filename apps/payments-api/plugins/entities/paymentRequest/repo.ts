@@ -6,6 +6,7 @@ import {
   EditPaymentRequestDO,
   PaymentRequestDO,
   PaymentRequestDetailsDO,
+  PaymentRequestPublicInfoDO,
 } from "./types";
 
 export class PaymentRequestRepo {
@@ -103,7 +104,7 @@ export class PaymentRequestRepo {
 
   getPaymentRequestPublicInfo(
     requestId: string,
-  ): Promise<QueryResult<PaymentRequestDetailsDO>> {
+  ): Promise<QueryResult<PaymentRequestPublicInfoDO>> {
     return this.pg.query(
       `SELECT pr.title,
         pr.payment_request_id as "paymentRequestId",

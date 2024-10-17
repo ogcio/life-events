@@ -1,0 +1,27 @@
+meta {
+  name: Share File With User
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{uploadBaseUrl}}/api/v1/metadata/share
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{uploadPublicServantAccessToken}}
+}
+
+body:json {
+  {
+    "fileId": "{{attachmentId}}",
+    "userId": "{{attachmentUserProfileId}}"
+  }
+}
+
+assert {
+  res.status: eq 201
+  res.body.data.fileId: isString
+}

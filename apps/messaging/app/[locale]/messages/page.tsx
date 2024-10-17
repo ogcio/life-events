@@ -77,7 +77,10 @@ export default async (props: { searchParams: any }) => {
               >
                 <Link
                   href={
-                    new URL(`/messages/${msg.id}`, process.env.HOST_URL).href
+                    new URL(
+                      `/messages/${msg.id}`,
+                      process.env.NEXT_PUBLIC_MESSAGING_SERVICE_ENTRY_POINT,
+                    ).href
                   }
                 >
                   {msg.subject}

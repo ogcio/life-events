@@ -4,6 +4,7 @@
  *
  * The body is styled as a flex column
  */
+import "./Main.css";
 export default function Main({ children }: React.PropsWithChildren) {
-  return <main style={{ flex: "auto" }}>{children}</main>;
+  return <main className="inbox-main">{children}</main>;
 }

@@ -35,6 +35,14 @@ export default async function ({ params: { transactionId } }) {
           </dt>
         </div>
         <div className="govie-summary-list__row">
+          <dt className="govie-summary-list__key">{t("description")}</dt>
+          <dt className="govie-summary-list__value">
+            <pre style={{ fontFamily: "inherit" }}>
+              {details.data.description}
+            </pre>
+          </dt>
+        </div>
+        <div className="govie-summary-list__row">
           <dt className="govie-summary-list__key">{t("lastUpdate")}</dt>
           <dt className="govie-summary-list__value">
             {dayjs(details.data.updatedAt).format("DD/MM/YYYY - HH:mm:ss")}

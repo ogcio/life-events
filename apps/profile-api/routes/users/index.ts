@@ -20,14 +20,12 @@ import {
 import { Type } from "@sinclair/typebox";
 import { findUser, getUser } from "../../services/users/find-user";
 import { createUser } from "../../services/users/create-user";
-import { NotFoundError, ServerError } from "shared-errors";
-import { getErrorMessage } from "../../utils/error-utils";
+import { getErrorMessage } from "@ogcio/shared-errors";
 import { isNativeError } from "util/types";
 import { Permissions } from "../../types/permissions";
 import { ensureUserCanAccessUser } from "api-auth";
 
 const USER_TAGS = ["Users"];
-const ERROR_PROCESS = "USER_PROFILE_DETAILS";
 
 export default async function users(app: FastifyInstance) {
   app.get<{ Reply: UserDetails | Error; Params: ParamsWithUserId }>(
@@ -51,11 +49,7 @@ export default async function users(app: FastifyInstance) {
       },
     },
     async (request) => {
-      ensureUserCanAccessUser(
-        request.userData,
-        request.params.userId,
-        ERROR_PROCESS,
-      );
+      ensureUserCanAccessUser(request.userData, request.params.userId);
 
       return getUser({
         pool: app.pg.pool,
@@ -96,7 +90,7 @@ export default async function users(app: FastifyInstance) {
           }),
         );
       } catch (error) {
-        throw new ServerError(ERROR_PROCESS, getErrorMessage(error));
+        throw app.httpErrors.internalServerError(getErrorMessage(error));
       }
     },
   );
@@ -125,11 +119,7 @@ export default async function users(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
-      ensureUserCanAccessUser(
-        request.userData,
-        request.params.userId,
-        ERROR_PROCESS,
-      );
+      ensureUserCanAccessUser(request.userData, request.params.userId);
       let result;
 
       const columnsMapping: Record<keyof UpdateUser, string> = {
@@ -165,11 +155,11 @@ export default async function users(app: FastifyInstance) {
           values,
         );
       } catch (error) {
-        throw new ServerError(ERROR_PROCESS, getErrorMessage(error));
+        throw app.httpErrors.internalServerError(getErrorMessage(error));
       }
 
       if (!result?.rows.length) {
-        throw new NotFoundError(ERROR_PROCESS, "User not found");
+        throw app.httpErrors.notFound("User not found");
       }
 
       reply.send({ id: result.rows[0].id });
@@ -199,11 +189,7 @@ export default async function users(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
-      ensureUserCanAccessUser(
-        request.userData,
-        request.params.userId,
-        ERROR_PROCESS,
-      );
+      ensureUserCanAccessUser(request.userData, request.params.userId);
       let result;
 
       const columnsMapping: Record<keyof PatchUser, string> = {
@@ -231,11 +217,11 @@ export default async function users(app: FastifyInstance) {
           values,
         );
       } catch (error) {
-        throw new ServerError(ERROR_PROCESS, getErrorMessage(error));
+        throw app.httpErrors.internalServerError(getErrorMessage(error));
       }
 
       if (!result?.rows.length) {
-        throw new NotFoundError(ERROR_PROCESS, "User not found");
+        throw app.httpErrors.notFound("User not found");
       }
 
       reply.send({ id: result.rows[0].id });
@@ -270,7 +256,7 @@ export default async function users(app: FastifyInstance) {
         return;
       }
 
-      throw new NotFoundError(ERROR_PROCESS, "User not found");
+      throw app.httpErrors.notFound("User not found");
     },
   );
 
@@ -343,14 +329,13 @@ export default async function users(app: FastifyInstance) {
 
         users.push(...usersQueryResult.rows);
       } catch (err) {
-        throw new ServerError(
-          ERROR_PROCESS,
+        throw app.httpErrors.internalServerError(
           isNativeError(err) ? err.message : "failed to select users",
         );
       }
 
       if (!users.length) {
-        throw new NotFoundError(ERROR_PROCESS, "User not found");
+        throw app.httpErrors.notFound("User not found");
       }
 
       return { data: users };

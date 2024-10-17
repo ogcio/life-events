@@ -22,18 +22,13 @@ init-ds:
 	@if [ ! -d "packages/design-system/dist" ]; then \
 		$(MAKE) build-ds; \
 	fi
-build-shared-errors:
-	npm run build --workspace=shared-errors
-build-logging-wrapper: 
-	npm run build --workspace=logging-wrapper
+build-nextjs-logging-wrapper: 
 	npm run build --workspace=nextjs-logging-wrapper
 build-api-auth: 
 	npm run build --workspace=api-auth
-build-error-handler: 
-	npm run build --workspace=error-handler
 build-sdk: 
 	npm run build --workspace=building-blocks-sdk
-build-packages: build-shared-errors build-logging-wrapper build-error-handler build-api-auth build-sdk
+build-packages: build-nextjs-logging-wrapper build-api-auth build-sdk
 init-packages: npm-install build-packages
 
 ## Docker ##
