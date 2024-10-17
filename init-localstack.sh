@@ -41,7 +41,6 @@ for SERVICE in "payments-api" "integrator-api"; do
 
   echo "Created KMS key for $SERVICE with Key ID: $KMS_KEY_ID"
 
-  # Create an alias for the KMS key
   echo "Creating KMS alias for $SERVICE..."
 
   aws kms create-alias \
