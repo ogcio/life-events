@@ -1,3 +1,4 @@
+import { JourneyStepConnectionDO } from "../../plugins/entities/journeyStepConnections/types";
 import {
   JourneyStepTypesDO,
   StepDataDO,
@@ -14,6 +15,15 @@ class IntegratorEngine {
 
   public executeStep(data: StepDataDO): Promise<{ url: string }> {
     return this.plugin.execute(data);
+  }
+
+  public getNextStep(
+    currentStepId: string,
+    connections: JourneyStepConnectionDO[],
+  ): string | undefined {
+    return connections.find((connection) => {
+      return connection.sourceStepId === currentStepId;
+    })?.destinationStepId;
   }
 }
 

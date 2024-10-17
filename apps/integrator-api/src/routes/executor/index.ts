@@ -239,6 +239,7 @@ export default async function executor(app: FastifyInstance) {
             ).href,
           }),
         );
+        return;
       }
 
       const activeRunStep = await app.run.getActiveRunStep(runId);
@@ -298,6 +299,7 @@ export default async function executor(app: FastifyInstance) {
             ).href,
           }),
         );
+        return;
       }
 
       const activeRunStep = await app.run.getActiveRunStep(runId);
@@ -311,12 +313,37 @@ export default async function executor(app: FastifyInstance) {
         status: RunStepStatusEnum.COMPLETED,
       });
 
+      const step = await app.journeySteps.getStepById(activeRunStep.stepId);
+      const engine = new IntegratorEngine(step.stepType);
+
       const stepConnections =
         await app.journeyStepConnections.getJourneyStepConnections(journeyId);
+      const nextStepId = engine.getNextStep(step.id, stepConnections);
 
-      // await app.run.createRunStep(runId.id, journeyInfo.initialStepId);
+      if (!nextStepId) {
+        await app.run.updateRun(runId, RunStatusEnum.COMPLETED);
 
-      // reply.send(formatAPIResponse(result));
+        reply.send(
+          formatAPIResponse({
+            url: new URL(
+              `/journey/${journeyId}/complete`,
+              process.env.INTEGRATOR_URL,
+            ).href,
+          }),
+        );
+        return;
+      }
+
+      await app.run.createRunStep(runId, nextStepId);
+
+      reply.send(
+        formatAPIResponse({
+          url: new URL(
+            `/journey/${journeyId}/run/${runId}`,
+            process.env.INTEGRATOR_URL,
+          ).href,
+        }),
+      );
     },
   );
 }
