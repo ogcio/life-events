@@ -14,18 +14,28 @@ import {
   SignCommand,
 } from "@aws-sdk/client-kms";
 
-const kmsConfig: KMSClientConfig = {
-  region: process.env.AWS_REGION,
-  endpoint: process.env.KMS_ENDPOINT,
-};
-if (process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY) {
-  kmsConfig.credentials = {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  };
-}
+const getKmsClient = (() => {
+  let kmsClient: KMSClient | null = null;
 
-const kmsClient = new KMSClient(kmsConfig);
+  return function getKmsClient(): KMSClient {
+    if (kmsClient) return kmsClient;
+
+    const kmsConfig: KMSClientConfig = {
+      region: process.env.AWS_REGION,
+      endpoint: process.env.KMS_ENDPOINT,
+    };
+
+    if (process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY) {
+      kmsConfig.credentials = {
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+      };
+    }
+
+    kmsClient = new KMSClient(kmsConfig);
+    return kmsClient;
+  };
+})();
 
 const defaultAlgorithm = "RS256";
 
@@ -70,7 +80,7 @@ async function createSignedJWT(
     SigningAlgorithm: "RSASSA_PKCS1_V1_5_SHA_256" as const,
   };
   const command = new SignCommand(input);
-  const signResponse = await kmsClient.send(command);
+  const signResponse = await getKmsClient().send(command);
 
   if (!signResponse.Signature) {
     throw new Error("KMS did not return a signature. Signing failed.");
@@ -132,7 +142,7 @@ async function verifyJWT(
  */
 async function getJWKS(keyId: string): Promise<{ keys: JWK[] }> {
   const command = new GetPublicKeyCommand({ KeyId: keyId });
-  const { PublicKey } = await kmsClient.send(command);
+  const { PublicKey } = await getKmsClient().send(command);
 
   if (!PublicKey)
     throw new Error("KMS did not return a public key. Retrieval failed.");
