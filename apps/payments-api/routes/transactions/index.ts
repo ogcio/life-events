@@ -35,6 +35,7 @@ import { authPermissions } from "../../types/authPermissions";
 import { AuditLogEventType } from "../../plugins/auditLog/auditLogEvents";
 import { getJourneyDetails } from "../../services/getJourney";
 import { createSignedJWT } from "api-auth";
+import { keyAlias } from "../../utils/kms";
 
 const TAGS = ["Transactions"];
 
@@ -341,7 +342,7 @@ export default async function transactions(app: FastifyInstance) {
           userId: userId,
           transactionId: transactionDetails.transactionId,
         },
-        "alias/payments-api-key",
+        keyAlias,
         {
           issuer: "payments-api",
           audience: "integrator-api",

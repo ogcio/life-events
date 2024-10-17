@@ -21,10 +21,10 @@ import journey from "./src/plugins/entities/journey/index.js";
 import journeyStepConnections from "./src/plugins/entities/journeyStepConnections";
 import journeySteps from "./src/plugins/entities/journeySteps";
 import run from "./src/plugins/entities/run";
+import { keyAlias } from "./src/utils/kms";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-const keyAlias = "alias/life-events-integrator-api-key";
 
 dotenv.config();
 

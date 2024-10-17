@@ -23,11 +23,10 @@ import transactions from "./plugins/entities/transactions";
 import paymentRequest from "./plugins/entities/paymentRequest";
 import auditLog from "./plugins/auditLog";
 import rawbody from "fastify-raw-body";
+import { keyAlias } from "./utils/kms";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-
-const keyAlias = "alias/life-events-payments-api-key";
 
 dotenv.config();
 

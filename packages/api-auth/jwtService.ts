@@ -64,6 +64,7 @@ async function createSignedJWT(
     typ: "JWT",
   };
 
+  // we need to create the jwt manually and sign it directly on KMS - private keys cannot be retrieved
   const payloadString = JSON.stringify({ ...payload, aud, iss });
 
   const encodedHeader = Buffer.from(JSON.stringify(header)).toString(
