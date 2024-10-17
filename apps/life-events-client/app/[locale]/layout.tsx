@@ -64,7 +64,15 @@ export default async function RootLayout(
         ></Header>
         <main style={{ flex: "auto" }}>
           <Container>
-            <PhaseBanner level="beta">blabla</PhaseBanner>
+            <PhaseBanner level="beta">
+              {tHome.rich("bannerText", {
+                url: (chunks) => (
+                  <a className="govie-link" href={"/"}>
+                    {chunks}
+                  </a>
+                ),
+              })}
+            </PhaseBanner>
             {isPublicServant ? (
               <Heading>This is not for you!</Heading>
             ) : (

@@ -4,7 +4,8 @@
     "englishMenuLabel": "English",
     "myDashboard": "My dashboard",
     "messaging": "Messaging",
-    "aboutMe": "About me"
+    "aboutMe": "About me",
+    "bannerText": "This is a new service - your <url>feedback</url> will help us to improve it."
   },
   "Subcategories": {
     "searchPlaceholderPrefix": "Search",

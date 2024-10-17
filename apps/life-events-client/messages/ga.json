@@ -4,7 +4,8 @@
     "englishMenuLabel": "English",
     "myDashboard": "Mo phainéal",
     "messaging": "Teachtaireachtaí",
-    "aboutMe": "Maidir liomsa"
+    "aboutMe": "Maidir liomsa",
+    "bannerText": "Is seirbhís nua í seo - cabhróidh <url>d'aiseolas</url> linn é a fheabhsú."
   },
   "Subcategories": {
     "searchPlaceholderPrefix": "Cuardach",
