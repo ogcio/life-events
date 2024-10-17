@@ -245,4 +245,14 @@ export class Integrator {
       }),
     );
   }
+
+  async executeStep(
+    data: paths["/api/v1/executor/execute"]["post"]["requestBody"]["content"]["application/json"],
+  ) {
+    return formatQueryResult(
+      this.client.POST("/api/v1/executor/execute", {
+        body: data,
+      }),
+    );
+  }
 }

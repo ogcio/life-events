@@ -16,6 +16,7 @@ export const envSchema = {
     "FORMS_SERVICE_URL",
     "FORMS_SECRET_API_KEY",
     "FORMS_PUBLIC_API_KEY",
+    "INTEGRATOR_URL",
   ],
   properties: {
     POSTGRES_USER: {
@@ -61,6 +62,9 @@ export const envSchema = {
       type: "string",
     },
     FORMS_PUBLIC_API_KEY: {
+      type: "string",
+    },
+    INTEGRATOR_URL: {
       type: "string",
     },
   },

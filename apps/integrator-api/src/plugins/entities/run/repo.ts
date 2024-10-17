@@ -1,6 +1,11 @@
 import { PostgresDb } from "@fastify/postgres";
 import { QueryResult } from "pg";
-import { PSRunDetailsDO, UserRunDetailsDO, RunStepDO } from "./types";
+import {
+  PSRunDetailsDO,
+  UserRunDetailsDO,
+  RunStepDO,
+  UpdateRunStepDO,
+} from "./types";
 
 export class RunRepo {
   pg: PostgresDb;
@@ -50,7 +55,6 @@ export class RunRepo {
     return this.pg.query(
       `SELECT
               id,
-              title,
               user_id as "userId",
               journey_id as "journeyId",
               status,
@@ -118,6 +122,44 @@ export class RunRepo {
         VALUES ($1, $2, '{}'::json, 'pending')
         RETURNING id`,
       [runId, stepId],
+    );
+  }
+
+  getActiveRunStep(runId: string): Promise<QueryResult<RunStepDO>> {
+    return this.pg.query(
+      `SELECT
+        id,
+        run_id as "runId",
+        step_id as "stepId",
+        status,
+        data,
+        created_at as "createdAt",
+        updated_at as "updatedAt"
+        FROM run_steps
+        WHERE run_id  = $1 AND status = ANY('{pending, in_progress}')
+        `,
+      [runId],
+    );
+  }
+
+  updateRunStep(
+    runStepId: string,
+    runStepData: UpdateRunStepDO,
+  ): Promise<QueryResult<RunStepDO>> {
+    return this.pg.query(
+      `UPDATE run_steps
+        SET status = $1, data = $2, updated_at = now()::DATE
+        WHERE id = $3
+        RETURNING
+          id,
+          run_id as "runId",
+          step_id as "stepId",
+          status,
+          data,
+          created_at as "createdAt",
+          updated_at as "updatedAt"
+        `,
+      [runStepData.status, runStepData.data, runStepId],
     );
   }
 }
