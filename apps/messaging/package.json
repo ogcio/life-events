@@ -1,4 +1,5 @@
 {
+  "name": "messaging",
   "private": true,
   "scripts": {
     "dev": "nodemon",
@@ -34,7 +35,7 @@
     "next": "14.2.5",
     "next-intl": "^3.17.2",
     "nextjs-logging-wrapper": "*",
-    "pg": "^8.12.0",
+    "pg": "^8.11.5",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "shared-components": "*"
@@ -42,9 +43,9 @@
   "devDependencies": {
     "@faker-js/faker": "^8.4.1",
     "@playwright/test": "^1.46.0",
-    "@types/node": "20.14.14",
+    "@types/node": "20.12.13",
     "@types/pg": "^8.11.6",
     "@types/react": "18.3.3",
-    "typescript": "5.5.4"
+    "typescript": "5.4.5"
   }
 }
