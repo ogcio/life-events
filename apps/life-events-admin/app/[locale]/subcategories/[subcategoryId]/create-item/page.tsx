@@ -23,6 +23,8 @@ export default async function CreateItem(props: {
     const titleGa = formData.get("title_ga")?.toString() || "";
     const textEn = formData.get("text_en")?.toString() || "";
     const textGa = formData.get("text_ga")?.toString() || "";
+    const isHighlighted = Boolean(formData.get("isHighlighted"));
+
     const link1NameEn = formData.get("0_link_name_en")?.toString() || "";
     const link1NameGa = formData.get("0_link_name_ga")?.toString() || "";
     const link1href = formData.get("0_link_href")?.toString() || "";
@@ -60,6 +62,7 @@ export default async function CreateItem(props: {
     ];
 
     const item = {
+      isHighlighted,
       title: {
         en: titleEn!,
         ga: titleGa,
@@ -118,6 +121,29 @@ export default async function CreateItem(props: {
 
       <Heading>{tSubcat("newItem")}</Heading>
       <form action={createItemAction}>
+        <div className="govie-form-group">
+          <fieldset className="govie-fieldset">
+            <div className="govie-checkboxes govie-checkboxes--medium">
+              <div className="govie-checkboxes__item">
+                <input
+                  className="govie-checkboxes__input"
+                  id="isHighlighted"
+                  name="isHighlighted"
+                  type="checkbox"
+                  defaultChecked={false}
+                  value="isHighlighted"
+                />
+                <label
+                  htmlFor="isHighlighted"
+                  className="govie-label govie-checkboxes__label"
+                >
+                  {tForm("isHighlighted")}
+                </label>
+              </div>
+            </div>
+          </fieldset>
+        </div>
+
         <fieldset
           style={{
             padding: "12px",

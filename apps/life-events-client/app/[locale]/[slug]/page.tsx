@@ -9,6 +9,7 @@ import { Links } from "./Links";
 import { AuthenticationFactory } from "../../../utils/authentication-factory";
 import { getTranslations } from "next-intl/server";
 import Search from "./Search";
+import MyDashboard from "./MyDashboard";
 
 export default async function RootPage(props: {
   params: { locale: string; slug: string };
@@ -19,7 +20,7 @@ export default async function RootPage(props: {
     getTranslations("Home"),
   ]);
   const categoryItems = await data.category.menu();
-  const { name } = await AuthenticationFactory.getInstance().getUser();
+  const { name, id } = await AuthenticationFactory.getInstance().getUser();
 
   let title = { en: "", ga: "" };
   let categoryData:
@@ -31,8 +32,11 @@ export default async function RootPage(props: {
       props.params.slug,
       props.searchParams?.search,
     );
-    categoryData = mainListQuery.subcategories;
-    title = mainListQuery.categoryName;
+
+    if (mainListQuery) {
+      categoryData = mainListQuery.subcategories;
+      title = mainListQuery.categoryName;
+    }
   } catch (err) {
     console.log(err);
   }
@@ -43,6 +47,7 @@ export default async function RootPage(props: {
         userName={name || "User"}
         topItems={[
           <PageMenuItem
+            key="my-dashboard"
             href="/"
             icon="space_dashboard"
             isSelected={props.params.slug === "my-dashboard"}
@@ -50,6 +55,7 @@ export default async function RootPage(props: {
             {tHome("myDashboard")}
           </PageMenuItem>,
           <PageMenuItem
+            key="messaging"
             href="/"
             icon="mail"
             isSelected={props.params.slug === "messaging"}
@@ -57,6 +63,7 @@ export default async function RootPage(props: {
             {tHome("messaging")}
           </PageMenuItem>,
           <PageMenuItem
+            key="about-me"
             href="/"
             icon="person"
             isSelected={props.params.slug === "about-me"}
@@ -66,7 +73,7 @@ export default async function RootPage(props: {
         ]}
         bottomItems={categoryItems.map((cat) => (
           <PageMenuItem
-            key={cat.id}
+            key={`menu_${cat.id}`}
             href={`/${props.params.locale}/${cat.slug.en}`}
             icon={cat.icon}
             isSelected={cat.slug.en === props.params.slug}
@@ -75,79 +82,86 @@ export default async function RootPage(props: {
           </PageMenuItem>
         ))}
       ></PageMenu>
-      <section style={{ minWidth: "360px", width: "100%" }}>
-        <Heading>{translate(title, props.params.locale)}</Heading>
+      {props.params.slug === "my-dashboard" ? (
+        <MyDashboard locale={props.params.locale} userId={id} />
+      ) : (
+        <section style={{ minWidth: "360px", width: "100%" }}>
+          <Heading>{translate(title, props.params.locale)}</Heading>
 
-        <Search
-          default={props.searchParams?.search || ""}
-          placeholder={`${tSub("searchPlaceholderPrefix")} ${translate(title, props.params.locale)}`}
-        />
+          <Search
+            default={props.searchParams?.search || ""}
+            placeholder={`${tSub("searchPlaceholderPrefix")} ${translate(title, props.params.locale)}`}
+          />
 
-        {categoryData?.length ? (
-          categoryData.map((subcategory) => {
-            return (
-              <div
-                style={{ paddingBottom: "24px" }}
-                key={subcategory.subcategoryId}
-              >
-                <Heading as="h2">
-                  {translate(
-                    subcategory.subcategoryCopy,
-                    props.params.locale,
-                    "title",
-                  )}
-                </Heading>
-                <Paragraph>
-                  {translate(
-                    subcategory.subcategoryCopy,
-                    props.params.locale,
-                    "text",
-                  )}
-                </Paragraph>
-                <ItemContainer>
-                  {subcategory.items.map((item) => {
-                    return (
-                      <div
-                        style={{
-                          minWidth: "380px",
-                          flex: "1",
-                        }}
-                      >
-                        <Label
-                          style={{ fontWeight: 600 }}
-                          text={translate(
-                            item.copy,
-                            props.params.locale,
-                            "title",
-                          )}
-                        />
-                        <Paragraph
+          {categoryData?.length ? (
+            categoryData.map((subcategory) => {
+              return (
+                <div
+                  style={{ paddingBottom: "24px" }}
+                  key={subcategory.subcategoryId}
+                >
+                  <Heading as="h2">
+                    {translate(
+                      subcategory.subcategoryCopy,
+                      props.params.locale,
+                      "title",
+                    )}
+                  </Heading>
+                  <Paragraph>
+                    {translate(
+                      subcategory.subcategoryCopy,
+                      props.params.locale,
+                      "text",
+                    )}
+                  </Paragraph>
+                  <ItemContainer>
+                    {subcategory.items.map((item) => {
+                      return (
+                        <div
+                          key={`sc_${item.id}`}
                           style={{
-                            textOverflow: "ellipsis",
-                            overflow: "hidden",
-                            whiteSpace: "nowrap",
-                            margin: "0 0 12px 0",
+                            minWidth: "380px",
+                            flex: "1",
                           }}
                         >
-                          {translate(item.copy, props.params.locale, "text")}
-                        </Paragraph>
-                        <Links
-                          keyId={item.id}
-                          links={item.links}
-                          locale={props.params.locale}
-                        />
-                      </div>
-                    );
-                  })}
-                </ItemContainer>
-                <hr />
-              </div>
-            );
-          })
-        ) : (
-          <Paragraph>{tSub("noItems")}</Paragraph>
-        )}
-      </section>
+                          <Label
+                            style={{ fontWeight: 600 }}
+                            text={translate(
+                              item.copy,
+                              props.params.locale,
+                              "title",
+                            )}
+                          />
+                          <Paragraph
+                            style={{
+                              textOverflow: "ellipsis",
+                              overflow: "hidden",
+                              whiteSpace: "nowrap",
+                              margin: "0 0 12px 0",
+                            }}
+                          >
+                            {translate(item.copy, props.params.locale, "text")}
+                          </Paragraph>
+
+                          <Links
+                            itemId={item.id}
+                            links={item.links}
+                            locale={props.params.locale}
+                            userId={id}
+                          />
+                        </div>
+                      );
+                    })}
+                  </ItemContainer>
+                  <hr />
+                </div>
+              );
+            })
+          ) : (
+            <Paragraph>{tSub("noItems")}</Paragraph>
+          )}
+        </section>
+      )}
     </div>
   );
 }

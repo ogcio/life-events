@@ -45,7 +45,6 @@ export type SubcategoryItemModel = {
   text: Lang<string>;
 };
 
-/// ta bort allt ovan den haer
 type CategoryMenuModel = {
   name: Lang<string>;
   slug: Lang<string>;
@@ -90,6 +89,35 @@ type SubcategoryMainListModel = {
     links: Link[];
   }[];
 };
+
+type ItemSubmittedJourneyQueryRow = {
+  item_id: string;
+  title_en: string;
+  title_ga: string;
+  status: string;
+  at: string;
+};
+
+type ItemSubmittedJourneyModel = {
+  itemId: string;
+  title: Lang<string>;
+  status: string;
+  at: string;
+};
+
+type HighlightedJourneyQueryRow = {
+  item_id: string;
+  item_title_en: string;
+  item_title_ga: string;
+  item_text_en: string;
+  item_text_ga: string;
+};
+
+type HighlightedJourneyModel = {
+  itemId: string;
+  copy: Lang<{ title: string; text: string }>;
+};
+
 export const data = {
   category: {
     async menu(): Promise<CategoryMenuModel[]> {
@@ -247,6 +275,118 @@ export const data = {
       }
     },
   },
-  subcategoryItem: {},
+  subcategoryItem: {
+    async completeJourney(itemId: string, userId: string): Promise<void> {
+      try {
+        await lifeEventsPool.query(
+          `
+            
+            insert into user_journey_states(
+            user_logto_id, subcategory_items_id, journey_status)
+            values($1,$2,'completed')
+            on conflict (user_logto_id, subcategory_items_id, journey_status)
+            do nothing
+          `,
+          [userId, itemId],
+        );
+      } catch (err) {
+        console.log(err);
+        throw new Error("completeJourney_error");
+      }
+    },
+    async submittedJourneys(
+      userId: string,
+    ): Promise<ItemSubmittedJourneyModel[]> {
+      try {
+        const queryResult =
+          await lifeEventsPool.query<ItemSubmittedJourneyQueryRow>(
+            `
+            select
+              i.id as item_id,
+              i.title_en,
+              i.title_ga,
+              s.journey_status as status,
+              s.created_at as at
+            from subcategory_items i
+            join user_journey_states s on s.subcategory_items_id = i.id
+            where s.user_logto_id = $1
+            order by s.created_at desc
+            limit 3
+            `,
+            [userId],
+          );
+
+        return queryResult.rows.map((row) => ({
+          at: row.at,
+          itemId: row.item_id,
+          status: row.status,
+          title: {
+            en: row.title_en,
+            ga: row.title_ga,
+          },
+        }));
+      } catch (err) {
+        console.log(err);
+        throw new Error("submittedJourneys_fail");
+      }
+    },
+    async highlightedJourneys(
+      userId: string,
+    ): Promise<HighlightedJourneyModel[]> {
+      try {
+        const queryResult =
+          await lifeEventsPool.query<HighlightedJourneyQueryRow>(
+            `
+          with x as (
+            select 
+              i.id as item_id,
+              i.title_en as item_title_en,
+              i.title_ga as item_title_ga,
+              i.text_en as item_text_en,
+              i.text_ga as item_text_ga
+            from user_journey_states s
+            join recommended_paths r on r.from_subcategory_item_id = s.subcategory_items_id
+            join subcategory_items i on i.id = r.to_subcategory_item_id
+            where s.user_logto_id = $1
+            order by s.created_at
+            limit 3
+          ), rnd_remains as(
+            select
+              i.id as item_id,
+              i.title_en as item_title_en,
+              i.title_ga as item_title_ga,
+              i.text_en as item_text_en,
+              i.text_ga as item_text_ga
+            from subcategory_items i
+            where is_highlighted
+            order by random()
+            limit (3-(select count(*) from x))
+          )
+          select * from x
+          union all
+          select * from rnd_remains;
+          `,
+            [userId],
+          );
+
+        return queryResult.rows.map((row) => ({
+          itemId: row.item_id,
+          copy: {
+            en: {
+              text: row.item_text_en,
+              title: row.item_title_en,
+            },
+            ga: {
+              text: row.item_text_ga,
+              title: row.item_title_ga,
+            },
+          },
+        }));
+      } catch (err) {
+        console.log(err);
+        throw new Error("highlightedJourneys_fail");
+      }
+    },
+  },
   recommendedPaths: {},
 };

@@ -22,7 +22,8 @@
     "deleteAction": "Scrios",
     "noRows": "Uimh míreanna",
     "from": "Ó",
-    "to": "Chuig"
+    "to": "Chuig",
+    "isHighlighted": "Aibhsithe"
   },
   "Form": {
     "en": "Béarla",
@@ -41,7 +42,8 @@
     "itemLabel": "Mír",
     "selectCategory": "Roghnaigh catagóir",
     "selectSubcategory": "Roghnaigh fochatagóir",
-    "selectItem": "Roghnaigh mír"
+    "selectItem": "Roghnaigh mír",
+    "isHighlighted": "Aibhsithe"
   },
   "Modal": {
     "deleteP1Generic": "Tá tú ar tí an mhír roghnaithe a scriosadh go buan",

@@ -28,7 +28,7 @@ export type SubcategoryModel = {
   id: string;
   title: Lang<string>;
   text: Lang<string>;
-  items: Pick<SubcategoryItemModel, "id" | "title">[];
+  items: Pick<SubcategoryItemModel, "id" | "title" | "isHighlighted">[];
 };
 
 export type SubcategoryUpdateModel = {
@@ -43,6 +43,7 @@ export type SubcategoryItemModel = {
   links: [Link, Link, Link];
   title: Lang<string>;
   text: Lang<string>;
+  isHighlighted: boolean;
 };
 
 type CategoryTableQueryRow = {
@@ -64,6 +65,7 @@ type SubcategoryFormQueryRow = {
   item_id: string;
   item_title_en: string;
   item_title_ga: string;
+  item_is_highlighted: boolean;
 };
 
 type SubcategoryItemQueryRow = {
@@ -80,6 +82,7 @@ type SubcategoryItemQueryRow = {
     name_ga: string;
     isExternal: boolean;
   }[];
+  is_highlighted: boolean;
 };
 
 type FullCategoryQueryRow = {
@@ -96,6 +99,7 @@ type FullCategoryQueryRow = {
   item_title_ga: string;
   item_text_en: string;
   item_text_ga: string;
+  item_is_highlighted: boolean;
   item_links: {
     href: string;
     name_en: string;
@@ -355,6 +359,7 @@ export const data = {
           {
             id: row.item_id,
             links,
+            isHighlighted: row.item_is_highlighted,
             text: {
               en: row.item_text_en,
               ga: row.item_text_ga,
@@ -462,7 +467,8 @@ export const data = {
             s.text_ga as sub_text_ga,
             i.id as item_id,
             i.title_en as item_title_en,
-            i.title_ga as item_title_ga
+            i.title_ga as item_title_ga,
+            i.is_highlighted as item_is_highlighted
         from subcategories s
         join categories c on c.id = s.category_id
         left join subcategory_items i on i.subcategory_id = s.id
@@ -483,6 +489,7 @@ export const data = {
                   en: row.item_title_en,
                   ga: row.item_title_ga,
                 },
+                isHighlighted: row.item_is_highlighted,
               },
             ]
           : [];
@@ -658,7 +665,8 @@ export const data = {
               title_ga as item_title_ga,
               text_en as item_text_en,
               text_ga as item_text_ga,
-              links as item_links
+              links as item_links,
+              is_highlighted
             from subcategory_items
             where id = $1
           `,
@@ -673,6 +681,7 @@ export const data = {
         return {
           id: row.item_id,
           subcategoryId: row.sub_id,
+          isHighlighted: row.is_highlighted,
           links: [
             {
               href: row.item_links?.[0]?.href || "",
@@ -725,7 +734,8 @@ export const data = {
                     title_ga = $3,
                     text_en = $4,
                     text_ga  = $5,
-                    links = $6
+                    links = $6,
+                    is_highlighted = $7
                 where id = $1
                 `,
           [
@@ -742,6 +752,7 @@ export const data = {
                 name_ga: link.name.ga,
               })),
             ),
+            item.isHighlighted,
           ],
         );
       } catch (err) {
@@ -762,9 +773,10 @@ export const data = {
                 title_ga,
                 text_en,
                 text_ga,
-                links
+                links,
+                is_highlighted
             ) values (
-                $1,$2,$3,$4,$5,$6
+                $1,$2,$3,$4,$5,$6,$7
             )
             returning id
           `,
@@ -782,6 +794,7 @@ export const data = {
                 name_ga: item.name.ga || "",
               })),
             ),
+            item.isHighlighted,
           ],
         );
 

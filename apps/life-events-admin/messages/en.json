@@ -22,7 +22,8 @@
     "deleteAction": "Delete",
     "noRows": "No items",
     "from": "From",
-    "to": "To"
+    "to": "To",
+    "isHighlighted": "Highlighted"
   },
   "Form": {
     "en": "English",
@@ -41,7 +42,8 @@
     "itemLabel": "Item",
     "selectCategory": "Select a category",
     "selectSubcategory": "Select a subcategory",
-    "selectItem": "Select an item"
+    "selectItem": "Select an item",
+    "isHighlighted": "Highlighted"
   },
   "Modal": {
     "deleteP1Generic": "You are about to permanently delete the chosen item",

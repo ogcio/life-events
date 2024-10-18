@@ -1,5 +1,5 @@
 import React from "react";
-import { Heading, TextInput, Paragraph } from "@govie-ds/react";
+import { Heading, TextInput, Paragraph, Icon } from "@govie-ds/react";
 import { data } from "../../../../data/data";
 import { translate } from "../../../../utils/locale";
 import { getTranslations } from "next-intl/server";
@@ -19,9 +19,9 @@ export default async (props: {
     getTranslations("Table"),
     getTranslations("Form"),
   ]);
-  let formData: Awaited<ReturnType<typeof data.subcategory.formData>>;
+  let subcatData: Awaited<ReturnType<typeof data.subcategory.formData>>;
   try {
-    formData = await data.subcategory.formData(props.params.subcategoryId);
+    subcatData = await data.subcategory.formData(props.params.subcategoryId);
   } catch (err) {
     console.log(err);
     return <>Not found</>;
@@ -68,7 +68,7 @@ export default async (props: {
     );
   }
 
-  const itemToBeDeleted = formData.items.find(
+  const itemToBeDeleted = subcatData.items.find(
     (item) => item.id === props.searchParams.did,
   );
 
@@ -167,7 +167,7 @@ export default async (props: {
         {tSubcat("back")}
       </a>
 
-      <Heading>{translate(formData.title, props.params.locale)}</Heading>
+      <Heading>{translate(subcatData.title, props.params.locale)}</Heading>
       <form action={subcategoryFormAction}>
         <fieldset
           style={{
@@ -181,21 +181,21 @@ export default async (props: {
             {tForm("title")}
           </legend>
 
-          {Object.keys(formData.title).map((langKey) => (
+          {Object.keys(subcatData.title).map((langKey) => (
             <TextInput
               key={`title_${langKey}`}
-              defaultValue={translate(formData.title, langKey)}
+              defaultValue={translate(subcatData.title, langKey)}
               label={{ text: tForm(langKey) }}
               name={`title_${langKey}`}
             ></TextInput>
           ))}
-          <button
+          {/* <button
             style={{ margin: "unset" }}
             className="govie-button govie-button--medium"
             type="submit"
           >
             {tForm("save")}
-          </button>
+          </button> */}
         </fieldset>
 
         <fieldset
@@ -210,29 +210,34 @@ export default async (props: {
             {tForm("text")}
           </legend>
 
-          {Object.keys(formData.title).map((langKey) => (
+          {Object.keys(subcatData.title).map((langKey) => (
             <TextInput
               key={`desc_${langKey}`}
-              defaultValue={translate(formData.text, langKey)}
+              defaultValue={translate(subcatData.text, langKey)}
               label={{ text: tForm(langKey) }}
               name={`text_${langKey}`}
             ></TextInput>
           ))}
 
-          <button
+          {/* <button
             style={{ margin: "unset" }}
             className="govie-button govie-button--medium"
             type="submit"
           >
             {tForm("save")}
-          </button>
+          </button> */}
         </fieldset>
+        <button className="govie-button" type="submit">
+          {tForm("update")}
+        </button>
       </form>
+
+      <hr className="govie-section-break govie-section-break--visible"></hr>
 
       <TableSection>
         <TableHeading>
           <TableHeader>
-            {translate(formData.title, props.params.locale)}
+            {translate(subcatData.title, props.params.locale)}
           </TableHeader>
           <TableNewButtonLink
             href={`/${props.params.locale}/subcategories/${props.params.subcategoryId}/create-item`}
@@ -241,17 +246,20 @@ export default async (props: {
           </TableNewButtonLink>
         </TableHeading>
         <div style={{ padding: "24px" }}>
-          {!Boolean(formData.items?.length) && (
+          {!Boolean(subcatData.items?.length) && (
             <Paragraph align="center" style={{ margin: "0 auto" }}>
               {tTable("noRows")}
             </Paragraph>
           )}
-          {Boolean(formData.items.length) && (
+          {Boolean(subcatData.items.length) && (
             <table className="govie-table">
               <thead className="govie-table__head">
                 <tr className="govie-table__row">
                   <th scope="col" className="govie-table__header">
                     {tTable("journeyItem")}
+                  </th>
+                  <th scope="col" className="govie-table__header">
+                    {tTable("isHighlighted")}
                   </th>
                   <th
                     scope="col"
@@ -262,10 +270,13 @@ export default async (props: {
                 </tr>
               </thead>
               <tbody className="govie-table__body">
-                {formData.items.map((row) => (
+                {subcatData.items.map((row) => (
                   <tr key={row.id} className="govie-table__row">
                     <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-m">
                       {translate(row.title, props.params.locale)}
+                    </td>
+                    <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-m">
+                      {row.isHighlighted ? <Icon icon={"check" as any} /> : ""}
                     </td>
                     <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s govie-table__cell--numeric">
                       <div>

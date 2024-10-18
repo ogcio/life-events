@@ -1,0 +1,13 @@
+.my-dash-container {
+  column-count: 2;
+  column-gap: 24px;
+
+  @media (max-width: 1024px) {
+    column-count: 1;
+  }
+
+  section {
+    padding: 24px;
+    display: inline-block;
+  }
+}

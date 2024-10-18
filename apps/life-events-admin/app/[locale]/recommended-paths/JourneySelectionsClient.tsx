@@ -99,7 +99,7 @@ export default function SelectionForm(props: {
     replace("?" + params.toString());
     refresh();
   };
-  console.log(props);
+
   return (
     <section>
       <Heading as="h2">{tTable("from")}</Heading>

@@ -4,6 +4,7 @@ import { data } from "../../../../data/data";
 import { translate } from "../../../../utils/locale";
 import { getTranslations } from "next-intl/server";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
 export default async (props: {
   params: { locale: string; itemId: string };
@@ -13,9 +14,9 @@ export default async (props: {
     getTranslations("Subcategory"),
     getTranslations("Form"),
   ]);
-  let formData: Awaited<ReturnType<typeof data.subcategoryItem.formData>>;
+  let itemData: Awaited<ReturnType<typeof data.subcategoryItem.formData>>;
   try {
-    formData = await data.subcategoryItem.formData(props.params.itemId);
+    itemData = await data.subcategoryItem.formData(props.params.itemId);
   } catch (err) {
     console.log(err);
     return <>Not found</>;
@@ -32,6 +33,8 @@ export default async (props: {
     const titleGa = formData.get("title_ga")?.toString() || "";
     const textEn = formData.get("text_en")?.toString() || "";
     const textGa = formData.get("text_ga")?.toString() || "";
+    const isHighlighted = Boolean(formData.get("isHighlighted"));
+
     const link1nameEn = formData.get("0_link_name_en")?.toString() || "";
     const link1nameGa = formData.get("0_link_name_ga")?.toString() || "";
     const link1href = formData.get("0_link_href")?.toString() || "";
@@ -49,6 +52,7 @@ export default async (props: {
 
     await data.subcategoryItem.update({
       id: props.params.itemId,
+      isHighlighted,
       links: [
         {
           href: link1href,
@@ -85,7 +89,7 @@ export default async (props: {
       },
     });
 
-    revalidatePath("/");
+    redirect(`/${props.params.locale}/subcategories/${itemData.subcategoryId}`);
   }
 
   return (
@@ -113,13 +117,36 @@ export default async (props: {
 
       <a
         className="govie-back-link"
-        href={`/${props.params.locale}/subcategories/${formData.subcategoryId}`}
+        href={`/${props.params.locale}/subcategories/${itemData.subcategoryId}`}
       >
         {tSubcat("back")}
       </a>
 
-      <Heading>{translate(formData.title, props.params.locale)}</Heading>
+      <Heading>{translate(itemData.title, props.params.locale)}</Heading>
       <form action={itemFormAction}>
+        <div className="govie-form-group">
+          <fieldset className="govie-fieldset">
+            <div className="govie-checkboxes govie-checkboxes--medium">
+              <div className="govie-checkboxes__item">
+                <input
+                  className="govie-checkboxes__input"
+                  id={"asd"}
+                  name="isHighlighted"
+                  type="checkbox"
+                  defaultChecked={itemData.isHighlighted}
+                  value="isHighlighted"
+                />
+                <label
+                  htmlFor={"asd"}
+                  className="govie-label govie-checkboxes__label"
+                >
+                  {tForm("isHighlighted")}
+                </label>
+              </div>
+            </div>
+          </fieldset>
+        </div>
+
         <fieldset
           style={{
             padding: "12px",
@@ -132,21 +159,21 @@ export default async (props: {
             {tForm("title")}
           </legend>
 
-          {Object.keys(formData.title).map((langKey) => (
+          {Object.keys(itemData.title).map((langKey) => (
             <TextInput
               key={`title_${langKey}`}
-              defaultValue={translate(formData.title, langKey)}
+              defaultValue={translate(itemData.title, langKey)}
               label={{ text: tForm(langKey) }}
               name={`title_${langKey}`}
             ></TextInput>
           ))}
-          <button
+          {/* <button
             style={{ margin: "unset" }}
             className="govie-button govie-button--medium"
             type="submit"
           >
             {tForm("save")}
-          </button>
+          </button> */}
         </fieldset>
 
         <fieldset
@@ -160,31 +187,28 @@ export default async (props: {
           <legend style={{ fontSize: "18px", fontWeight: 600 }}>
             {tForm("text")}
           </legend>
-          {!formData.text.en && (
-            <Label text={tForm("emptyDisclaimer")} size={LabelSize.sm}></Label>
-          )}
 
-          {Object.keys(formData.title).map((langKey) => (
+          {Object.keys(itemData.title).map((langKey) => (
             <TextInput
               key={`desc_${langKey}`}
-              defaultValue={translate(formData.text, langKey)}
+              defaultValue={translate(itemData.text, langKey)}
               label={{ text: tForm(langKey) }}
               name={`text_${langKey}`}
             ></TextInput>
           ))}
 
-          <button
+          {/* <button
             style={{ margin: "unset" }}
             className="govie-button govie-button--medium"
             type="submit"
           >
             {tForm("save")}
-          </button>
+          </button> */}
         </fieldset>
 
-        {formData.links.map((link, i) => (
+        {itemData.links.map((link, i) => (
           <fieldset
-            key={`${formData.id}_link_${i}}`}
+            key={`${itemData.id}_link_${i}}`}
             style={{
               padding: "12px",
               border: "1px solid gray",
@@ -214,14 +238,14 @@ export default async (props: {
                   <div className="govie-checkboxes__item">
                     <input
                       className="govie-checkboxes__input"
-                      id={`${i}_${formData.id}`}
+                      id={`${i}_${itemData.id}`}
                       name={`${i}_link_isExternal`}
                       type="checkbox"
                       defaultChecked={link.isExternal}
                       value="ext"
                     />
                     <label
-                      htmlFor={`${i}_${formData.id}`}
+                      htmlFor={`${i}_${itemData.id}`}
                       className="govie-label govie-checkboxes__label"
                     >
                       {tForm("isExternal")}
@@ -231,15 +255,19 @@ export default async (props: {
               </fieldset>
             </div>
 
-            <button
+            {/* <button
               style={{ margin: "unset" }}
               className="govie-button govie-button--medium"
               type="submit"
             >
               {tForm("save")}
-            </button>
+            </button> */}
           </fieldset>
         ))}
+
+        <button type="submit" className="govie-button">
+          {tForm("update")}
+        </button>
       </form>
     </>
   );

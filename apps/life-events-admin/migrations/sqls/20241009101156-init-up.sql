@@ -29,6 +29,7 @@ create table subcategory_items(
 	text_ga text,
 	links jsonb, -- []{href:text, isExternal:bool, name_ga: text, name_en:text}
 	sort_order int,
+	is_highlighted BOOLEAN,
 	created_at timestamptz not null default now()
 );
 
@@ -38,6 +39,15 @@ create table recommended_paths(
 	to_subcategory_item_id uuid not null,
 	created_at timestamptz not null default now()
 );
+
+create table user_journey_states(
+	user_logto_id text not null,
+	subcategory_items_id uuid not null,
+	journey_status text not null, -- could have a check, use enum or anything numeric..
+	created_at timestamptz not null default now(),
+	primary key(user_logto_id, subcategory_items_id, journey_status)
+);
+
 
 
 insert into categories (
