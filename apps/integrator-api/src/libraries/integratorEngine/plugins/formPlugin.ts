@@ -6,4 +6,8 @@ export class FormPlugin implements IIntegratorPlugin {
     const { url } = stepData;
     return { url };
   }
+
+  public processResultData(data: any) {
+    return data;
+  }
 }

@@ -1,29 +1,34 @@
 import { getTranslations } from "next-intl/server";
 import { redirect, RedirectType } from "next/navigation";
-import { AuthenticationFactory } from "../../../../../../../libraries/authentication-factory";
+import { AuthenticationFactory } from "../../../../../../libraries/authentication-factory";
 
 type Props = {
   params: {
     locale: string;
     journey: string;
+  };
+  searchParams: {
     runId: string;
+    token: string;
   };
 };
 
-const executeStep = async (journeyId: string, runId: string) => {
+const transitionStep = async (journeyId: string, runId: string, data: any) => {
   "use server";
 
   const client = await AuthenticationFactory.getIntegratorClient();
-  const result = await client.executeStep({
+  const result = await client.transitionStep({
     journeyId,
     runId,
+    data,
   });
 
   return result.data?.data.url;
 };
 
 export default async (props: Props) => {
-  const { locale, journey: journeyId, runId } = props.params;
+  const { locale, journey: journeyId } = props.params;
+  const { runId, token, ...searchParams } = props.searchParams;
 
   const t = await getTranslations();
 
@@ -38,7 +43,7 @@ export default async (props: Props) => {
     return redirect("/admin/journeys", RedirectType.replace);
   }
 
-  const url = await executeStep(journeyId, runId);
+  const url = await transitionStep(journeyId, runId, searchParams);
 
   if (!url) {
     return (
