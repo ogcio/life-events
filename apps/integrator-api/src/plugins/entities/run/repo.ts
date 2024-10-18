@@ -119,7 +119,7 @@ export class RunRepo {
   ): Promise<QueryResult<UserRunDetailsDO>> {
     return this.pg.query(
       `UPDATE runs
-        SET status = $2, updated_at = now()::DATE
+        SET status = $2, updated_at = now()
         WHERE id = $1
         RETURNING
           id,
@@ -169,7 +169,7 @@ export class RunRepo {
   ): Promise<QueryResult<RunStepDO>> {
     return this.pg.query(
       `UPDATE run_steps
-        SET status = $1, data = $2, updated_at = now()::DATE
+        SET status = $1, data = $2, updated_at = now()
         WHERE id = $3
         RETURNING
           id,

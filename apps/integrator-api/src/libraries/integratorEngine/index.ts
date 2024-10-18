@@ -9,12 +9,36 @@ import { IIntegratorPlugin } from "./plugins/basePlugin";
 class IntegratorEngine {
   private readonly plugin: IIntegratorPlugin;
 
-  constructor(stepType: JourneyStepTypesDO) {
+  private readonly journeyId: string;
+  private readonly runId: string;
+  private readonly host: string;
+
+  constructor(
+    stepType: JourneyStepTypesDO,
+    journeyId: string,
+    runId: string,
+    host: string,
+  ) {
     this.plugin = integratorPluginManager.getPlugin(stepType);
+    this.journeyId = journeyId;
+    this.runId = runId;
+    this.host = host;
   }
 
   public executeStep(data: StepDataDO): Promise<{ url: string }> {
-    return this.plugin.execute(data);
+    return this.plugin.execute(data, {
+      journeyId: this.journeyId,
+      runId: this.runId,
+      host: this.host,
+    });
+  }
+
+  public processResultData(data: any) {
+    return this.plugin.processResultData(data, {
+      journeyId: this.journeyId,
+      runId: this.runId,
+      host: this.host,
+    });
   }
 
   public getNextStep(

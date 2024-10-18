@@ -228,6 +228,12 @@ export default async function executor(app: FastifyInstance) {
         throw app.httpErrors.unauthorized("Unauthorized!");
       }
 
+      if (!process.env.INTEGRATOR_URL) {
+        throw app.httpErrors.internalServerError(
+          "INTEGRATOR_URL variable is missing!",
+        );
+      }
+
       const run = await app.run.getUserRunById(runId, userId);
 
       if (run.status === RunStatusEnum.COMPLETED) {
@@ -249,7 +255,12 @@ export default async function executor(app: FastifyInstance) {
       }
 
       const step = await app.journeySteps.getStepById(activeRunStep.stepId);
-      const engine = new IntegratorEngine(step.stepType);
+      const engine = new IntegratorEngine(
+        step.stepType,
+        journeyId,
+        runId,
+        process.env.INTEGRATOR_URL,
+      );
       const result = await engine.executeStep(step.stepData);
 
       await app.run.updateRunStep(activeRunStep.id, {
@@ -288,6 +299,12 @@ export default async function executor(app: FastifyInstance) {
         throw app.httpErrors.unauthorized("Unauthorized!");
       }
 
+      if (!process.env.INTEGRATOR_URL) {
+        throw app.httpErrors.internalServerError(
+          "INTEGRATOR_URL variable is missing!",
+        );
+      }
+
       const run = await app.run.getUserRunById(runId, userId);
 
       if (run.status === RunStatusEnum.COMPLETED) {
@@ -308,13 +325,19 @@ export default async function executor(app: FastifyInstance) {
         throw app.httpErrors.internalServerError("No active step found");
       }
 
+      const step = await app.journeySteps.getStepById(activeRunStep.stepId);
+      const engine = new IntegratorEngine(
+        step.stepType,
+        journeyId,
+        runId,
+        process.env.INTEGRATOR_URL,
+      );
+      const processedData = engine.processResultData(data);
+
       await app.run.updateRunStep(activeRunStep.id, {
-        data,
+        data: processedData,
         status: RunStepStatusEnum.COMPLETED,
       });
-
-      const step = await app.journeySteps.getStepById(activeRunStep.stepId);
-      const engine = new IntegratorEngine(step.stepType);
 
       const stepConnections =
         await app.journeyStepConnections.getJourneyStepConnections(journeyId);
