@@ -193,6 +193,11 @@ export default async function executor(app: FastifyInstance) {
         throw app.httpErrors.unauthorized("Unauthorized!");
       }
 
+      /**
+       * Based on the Journey's info we initialize a new Run instance
+       * and create the initial step's instance. The step will be marked
+       * as PENDING.
+       */
       const journeyInfo = await app.journey.getJourneyPublicInfo(journeyId);
       const runId = await app.run.createRun(journeyId, userId);
       await app.run.createRunStep(runId.id, journeyInfo.initialStepId);
@@ -228,12 +233,9 @@ export default async function executor(app: FastifyInstance) {
         throw app.httpErrors.unauthorized("Unauthorized!");
       }
 
-      if (!process.env.INTEGRATOR_URL) {
-        throw app.httpErrors.internalServerError(
-          "INTEGRATOR_URL variable is missing!",
-        );
-      }
-
+      /**
+       * Validating the incoming RunID and check if it is completed already
+       */
       const run = await app.run.getUserRunById(runId, userId);
 
       if (run.status === RunStatusEnum.COMPLETED) {
@@ -248,21 +250,31 @@ export default async function executor(app: FastifyInstance) {
         return;
       }
 
+      /**
+       * Loading the active run step. This step must be initialized by the Integrator already
+       */
       const activeRunStep = await app.run.getActiveRunStep(runId);
 
       if (!activeRunStep) {
         throw app.httpErrors.internalServerError("No active step found");
       }
 
+      /**
+       * Loading the active step's information and execute its handler. The result
+       * of the execution must be a URL where the user will be redirected.
+       */
       const step = await app.journeySteps.getStepById(activeRunStep.stepId);
-      const engine = new IntegratorEngine(
-        step.stepType,
+      const engine = new IntegratorEngine({
+        stepType: step.stepType,
         journeyId,
         runId,
-        process.env.INTEGRATOR_URL,
-      );
+        host: process.env.INTEGRATOR_URL!,
+      });
       const result = await engine.executeStep(step.stepData);
 
+      /**
+       * The step will be marked as IN PROGRESS.
+       */
       await app.run.updateRunStep(activeRunStep.id, {
         data: activeRunStep.data,
         status: RunStepStatusEnum.IN_PROGRESS,
@@ -299,12 +311,9 @@ export default async function executor(app: FastifyInstance) {
         throw app.httpErrors.unauthorized("Unauthorized!");
       }
 
-      if (!process.env.INTEGRATOR_URL) {
-        throw app.httpErrors.internalServerError(
-          "INTEGRATOR_URL variable is missing!",
-        );
-      }
-
+      /**
+       * Validating the incoming RunID and check if it is completed already
+       */
       const run = await app.run.getUserRunById(runId, userId);
 
       if (run.status === RunStatusEnum.COMPLETED) {
@@ -319,30 +328,51 @@ export default async function executor(app: FastifyInstance) {
         return;
       }
 
+      /**
+       * Loading the active run step. This step must be initialized by the Integrator already
+       */
       const activeRunStep = await app.run.getActiveRunStep(runId);
 
       if (!activeRunStep) {
         throw app.httpErrors.internalServerError("No active step found");
       }
 
+      /**
+       * The incoming result data must be validated and interpreted. Because it can vary based
+       * on the step's type, the corresponding step widget must process the data before saving
+       * it into the DB.
+       */
       const step = await app.journeySteps.getStepById(activeRunStep.stepId);
-      const engine = new IntegratorEngine(
-        step.stepType,
+      const engine = new IntegratorEngine({
+        stepType: step.stepType,
         journeyId,
         runId,
-        process.env.INTEGRATOR_URL,
-      );
+        host: process.env.INTEGRATOR_URL!,
+      });
       const processedData = engine.processResultData(data);
 
+      /**
+       * Step is completed and it will be updated with the processed result data.
+       */
       await app.run.updateRunStep(activeRunStep.id, {
         data: processedData,
         status: RunStepStatusEnum.COMPLETED,
       });
 
+      /**
+       * Based on step connections and the current step the engine should be able to
+       * calculate the next step. Currently, the steps are linearly chained, but in
+       * the future, we can have conditional steps that assume a logic that calculates
+       * the next step. The step-specific widgetets will handle this logic.
+       */
       const stepConnections =
         await app.journeyStepConnections.getJourneyStepConnections(journeyId);
       const nextStepId = engine.getNextStep(step.id, stepConnections);
 
+      /**
+       * If there are no more steps in the Journey, the Run has to be marked as COMPLETED
+       * and the user will be redirected to the Journey's complete page.
+       */
       if (!nextStepId) {
         await app.run.updateRun(runId, RunStatusEnum.COMPLETED);
 
@@ -357,6 +387,10 @@ export default async function executor(app: FastifyInstance) {
         return;
       }
 
+      /**
+       * The next step must be initialised. The user will be redirected to the
+       * current Journey Run page.
+       */
       await app.run.createRunStep(runId, nextStepId);
 
       reply.send(

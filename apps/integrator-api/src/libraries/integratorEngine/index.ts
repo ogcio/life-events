@@ -6,6 +6,13 @@ import {
 import integratorPluginManager from "./plugins";
 import { IIntegratorPlugin } from "./plugins/basePlugin";
 
+export type IntegratorEngineProps = {
+  stepType: JourneyStepTypesDO;
+  journeyId: string;
+  runId: string;
+  host: string;
+};
+
 class IntegratorEngine {
   private readonly plugin: IIntegratorPlugin;
 
@@ -13,16 +20,11 @@ class IntegratorEngine {
   private readonly runId: string;
   private readonly host: string;
 
-  constructor(
-    stepType: JourneyStepTypesDO,
-    journeyId: string,
-    runId: string,
-    host: string,
-  ) {
-    this.plugin = integratorPluginManager.getPlugin(stepType);
-    this.journeyId = journeyId;
-    this.runId = runId;
-    this.host = host;
+  constructor(props: IntegratorEngineProps) {
+    this.plugin = integratorPluginManager.getPlugin(props.stepType);
+    this.journeyId = props.journeyId;
+    this.runId = props.runId;
+    this.host = props.host;
   }
 
   public executeStep(data: StepDataDO): Promise<{ url: string }> {
