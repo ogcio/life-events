@@ -3,6 +3,7 @@ import {
   default as getBuildingBlockSDK,
 } from "@ogcio/building-blocks-sdk";
 import { headers } from "next/headers";
+import { getCommonLoggerWithEnvLevel, streamToString } from "./messaging";
 let buildingBlockSdk: BuildingBlocksSDK | undefined = undefined;
 
 export const getSdks = () => {
@@ -33,14 +34,38 @@ const invokeTokenApi = async (
   // call a route handler that retrieves the cached token
   // we need to forward the cookie header or the request won't be authenticated
   const cookieHeader = headers().get("cookie") as string;
-
-  const res = await fetch(
-    new URL(
-      serviceName === "messaging" ? "/api/token" : "/api/profile-token",
+  const serviceRoute =
+    serviceName === "messaging" ? "/api/token" : "/api/profile-token";
+  let responseClone: undefined | Response = undefined;
+  try {
+    const tokenUrl = new URL(
+      serviceRoute,
       process.env.NEXT_PUBLIC_MESSAGING_SERVICE_ENTRY_POINT as string,
-    ),
-    { headers: { cookie: cookieHeader } },
-  );
-  const { token } = await res.json();
-  return token;
+    );
+    getCommonLoggerWithEnvLevel().trace(
+      {
+        tokenUrl: tokenUrl.toString(),
+        hostname: tokenUrl.host,
+        isCookieSet: cookieHeader?.length > 0,
+      },
+      "Invoking NextJs API to get token",
+    );
+    const res = await fetch(tokenUrl, { headers: { cookie: cookieHeader } });
+    responseClone = res.clone();
+    const { token } = await res.json();
+    return token;
+  } catch (e) {
+    let responseBody = "Response clone has not been set";
+    let responseCode: number | undefined = undefined;
+    if (responseClone && responseClone.body) {
+      responseBody = await streamToString(responseClone.body);
+      responseCode = responseClone.status;
+    }
+    getCommonLoggerWithEnvLevel().error(
+      { error: e, serviceRoute, responseCode, responseBody },
+      "Error retrieving token from NextJs API",
+    );
+
+    throw e;
+  }
 };
