@@ -80,7 +80,11 @@ export default async function MyDashboard(props: {
         <ol>
           {recentlySubmittedJourneys.map((journey) => (
             <React.Fragment key={`sbm_${journey.itemId}`}>
-              <li>{translate(journey.title, props.locale)}</li>
+              <li className="highlight-item-container">
+                <Paragraph className="dash-item-paragraph">
+                  {translate(journey.title, props.locale)}
+                </Paragraph>
+              </li>
               <hr className="govie-section-break govie-section-break--visible"></hr>
             </React.Fragment>
           ))}
