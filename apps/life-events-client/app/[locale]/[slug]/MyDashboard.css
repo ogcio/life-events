@@ -9,6 +9,7 @@
   section {
     padding: 24px;
     display: inline-block;
+    width: 100%;
   }
 
   .highlight-item-container {

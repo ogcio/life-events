@@ -32,6 +32,7 @@ export default async function MyDashboard(props: {
     );
   } catch (err) {}
 
+  console.log({ recentlySubmittedJourneys });
   return (
     <article className="my-dash-container">
       <section>
@@ -77,7 +78,7 @@ export default async function MyDashboard(props: {
 
       <section>
         <Heading>{tDash("recentHeading")}</Heading>
-        {recentlySubmittedJourneys.map.length ? (
+        {Boolean(recentlySubmittedJourneys.length) ? (
           <ol>
             {recentlySubmittedJourneys.map((journey) => (
               <React.Fragment key={`sbm_${journey.itemId}`}>
@@ -91,7 +92,7 @@ export default async function MyDashboard(props: {
             ))}
           </ol>
         ) : (
-          <Paragraph>You have no recently submitted journeys</Paragraph>
+          <Paragraph>{tDash("noRecent")}</Paragraph>
         )}
       </section>
     </article>
