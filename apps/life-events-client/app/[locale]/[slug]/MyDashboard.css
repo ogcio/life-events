@@ -10,4 +10,23 @@
     padding: 24px;
     display: inline-block;
   }
+
+  .highlight-item-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 84px;
+  }
+
+  .simple-grid {
+    display: grid;
+  }
+
+  p {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin: unset;
+    padding-right: 24px;
+  }
 }

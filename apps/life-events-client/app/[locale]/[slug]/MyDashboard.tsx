@@ -43,41 +43,21 @@ export default async function MyDashboard(props: {
         <Heading>{tDash("highlightedHeading")}</Heading>
         {highlightedJourneys.map((journey) => (
           <React.Fragment key={`hgh_${journey.itemId}`}>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-              }}
-            >
-              <div
-                style={{
-                  display: "grid",
-                }}
-              >
+            <div className="highlight-item-container">
+              <div className="simple-grid">
                 <Link href="#" noVisited>
                   <Label
                     text={translate(journey.copy, props.locale, "title")}
                   />
                 </Link>
 
-                <Paragraph
-                  style={{
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    whiteSpace: "nowrap",
-                    marginRight: "24px",
-                  }}
-                >
+                <Paragraph>
                   {translate(journey.copy, props.locale, "text")}
                 </Paragraph>
               </div>
               <Icon icon={"chevron_right" as any} />
             </div>
-            <hr
-              className="govie-section-break govie-section-break--visible"
-              style={{ marginBottom: "24px" }}
-            ></hr>
+            <hr className="govie-section-break govie-section-break--visible"></hr>
           </React.Fragment>
         ))}
       </section>
