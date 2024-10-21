@@ -13,7 +13,8 @@
     "welcomeHeading": "Welcome to Life Events",
     "welcomeParagraph": "Life Events is the Irish Government's new platform that simplifies essential administrative tasks. From registering a birth or death to applying for a driving licence.",
     "highlightedHeading": "Highlighted journeys",
-    "recentHeading": "Recently submitted journeys"
+    "recentHeading": "Recently submitted journeys",
+    "noRecent": "You have no recently submitted journeys"
   },
   "Subcategories": {
     "searchPlaceholderPrefix": "Search",

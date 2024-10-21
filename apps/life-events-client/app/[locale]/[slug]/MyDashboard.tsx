@@ -77,18 +77,22 @@ export default async function MyDashboard(props: {
 
       <section>
         <Heading>{tDash("recentHeading")}</Heading>
-        <ol>
-          {recentlySubmittedJourneys.map((journey) => (
-            <React.Fragment key={`sbm_${journey.itemId}`}>
-              <li className="highlight-item-container">
-                <Paragraph className="dash-item-paragraph">
-                  {translate(journey.title, props.locale)}
-                </Paragraph>
-              </li>
-              <hr className="govie-section-break govie-section-break--visible"></hr>
-            </React.Fragment>
-          ))}
-        </ol>
+        {recentlySubmittedJourneys.map.length ? (
+          <ol>
+            {recentlySubmittedJourneys.map((journey) => (
+              <React.Fragment key={`sbm_${journey.itemId}`}>
+                <li className="highlight-item-container">
+                  <Paragraph className="dash-item-paragraph">
+                    {translate(journey.title, props.locale)}
+                  </Paragraph>
+                </li>
+                <hr className="govie-section-break govie-section-break--visible"></hr>
+              </React.Fragment>
+            ))}
+          </ol>
+        ) : (
+          <Paragraph>You have no recently submitted journeys</Paragraph>
+        )}
       </section>
     </article>
   );

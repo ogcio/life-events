@@ -13,7 +13,8 @@
     "welcomeHeading": "Fáilte chuig Life Events",
     "welcomeParagraph": "Is é Life Events ardán nua Rialtas na hÉireann a shimplíonn tascanna riachtanacha riaracháin. Ó bhreith nó bás a chlárú go dtí iarratas a dhéanamh ar cheadúnas tiomána.",
     "highlightedHeading": "Turais aibhsithe",
-    "recentHeading": "Turais a cuireadh isteach le déanaí"
+    "recentHeading": "Turais a cuireadh isteach le déanaí",
+    "noRecent": "Níl aon thurais curtha isteach agat le déanaí"
   },
   "Subcategories": {
     "searchPlaceholderPrefix": "Cuardach",
