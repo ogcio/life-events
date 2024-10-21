@@ -51,7 +51,7 @@ export default async function MyDashboard(props: {
                   />
                 </Link>
 
-                <Paragraph>
+                <Paragraph className="dash-item-paragraph">
                   {translate(journey.copy, props.locale, "text")}
                 </Paragraph>
               </div>

@@ -22,7 +22,7 @@
     display: grid;
   }
 
-  p {
+  .dash-item-paragraph {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
