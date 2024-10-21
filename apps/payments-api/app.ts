@@ -14,7 +14,7 @@ import { dirname, join } from "path";
 import healthCheck from "./routes/healthcheck";
 import sensible from "@fastify/sensible";
 import schemaValidators from "./routes/schemas/validations";
-import apiAuthPlugin, { readOrGenerateKeyPair, getJWKSRoute } from "api-auth";
+import apiAuthPlugin, { createSignedJWT, getJWKS, verifyJWT } from "api-auth";
 import { initializeErrorHandler } from "@ogcio/fastify-error-handler";
 import { initializeLoggingHooks } from "@ogcio/fastify-logging-wrapper";
 import providers from "./plugins/entities/providers";
@@ -23,6 +23,7 @@ import transactions from "./plugins/entities/transactions";
 import paymentRequest from "./plugins/entities/paymentRequest";
 import auditLog from "./plugins/auditLog";
 import rawbody from "fastify-raw-body";
+import { keyAlias } from "./utils/kms";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -108,11 +109,20 @@ export async function build(opts?: FastifyServerOptions) {
   app.register(transactions);
   app.register(paymentRequest);
 
-  // This route exposes the Public keys
   app.get("/.well-known/jwks.json", async () => {
-    // const publicKey = await readLocalPublicKey(join(__dirname, "public.key"));
-    const { publicKey } = await readOrGenerateKeyPair("payments-api");
-    return getJWKSRoute(publicKey);
+    return getJWKS(keyAlias);
+  });
+
+  // can be used to test
+  app.get("/token", async (_, reply) => {
+    const payload = { amount: 70 };
+
+    const jwt = await createSignedJWT(payload, keyAlias, {
+      audience: "payments-api",
+      issuer: "integrator-api",
+    });
+
+    return reply.code(200).send({ token: jwt });
   });
 
   return app;
