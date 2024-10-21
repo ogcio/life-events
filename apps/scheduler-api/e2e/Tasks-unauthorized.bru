@@ -12,7 +12,7 @@ post {
 
 assert {
   res.status: eq 401
-  res.body.detail: eq "Not Authenticated"
+  res.body.detail: eq "Unauthorized"
 }
 
 script:pre-request {
