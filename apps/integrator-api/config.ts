@@ -17,6 +17,9 @@ export const envSchema = {
     "FORMS_SECRET_API_KEY",
     "FORMS_PUBLIC_API_KEY",
     "INTEGRATOR_URL",
+    "LOGTO_M2M_MESSAGING_APP_ID",
+    "LOGTO_M2M_MESSAGING_APP_SECRET",
+    "MESSAGES_BACKEND_URL",
   ],
   properties: {
     POSTGRES_USER: {
@@ -65,6 +68,15 @@ export const envSchema = {
       type: "string",
     },
     INTEGRATOR_URL: {
+      type: "string",
+    },
+    LOGTO_M2M_MESSAGING_APP_ID: {
+      type: "string",
+    },
+    LOGTO_M2M_MESSAGING_APP_SECRET: {
+      type: "string",
+    },
+    MESSAGES_BACKEND_URL: {
       type: "string",
     },
   },
