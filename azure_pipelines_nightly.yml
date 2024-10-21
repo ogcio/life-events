@@ -30,7 +30,7 @@ stages:
           parameters:
             serviceName: ${{ serviceName }}
             testPath: './apps/'
-      # condition: succeededOrFailed()
+      condition: succeededOrFailed()
     - stage: Performance_Tests_${{ replace(serviceName, '-', '_') }}
       displayName: Run performance tests - ${{ serviceName }}
       pool: 'Openshift'
@@ -39,5 +39,5 @@ stages:
           parameters:
             serviceName: ${{ serviceName }}
             testPath: './apps/'
-      # condition: succeededOrFailed()
+      condition: succeededOrFailed()
 
