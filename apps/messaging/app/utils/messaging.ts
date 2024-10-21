@@ -4,8 +4,8 @@ import { ComponentProps } from "react";
 import ds from "design-system";
 import { api } from "messages";
 import { events, providerRoutes, users } from "./routes";
-import { BaseAuthenticationContext } from "auth/base-authentication-context";
-import { getAuthenticationContextConfig } from "../utils/logto-config";
+import { getCommonLogger } from "nextjs-logging-wrapper";
+import { Level } from "pino";
 
 export const languages = {
   EN: "EN",
@@ -205,3 +205,46 @@ export function isAvailableTransport(
 ): t is (typeof AVAILABLE_TRANSPORTS)[number] {
   return AVAILABLE_TRANSPORTS.some((at) => at === t);
 }
+
+const isValidLogLevel = (logLevel: string | undefined): logLevel is Level => {
+  return (
+    logLevel !== undefined &&
+    ["fatal", "error", "warn", "info", "debug", "trace"].includes(logLevel)
+  );
+};
+
+export function getCommonLoggerWithEnvLevel() {
+  const inputLogLevel = process.env.LOG_LEVEL;
+  return getCommonLogger(
+    isValidLogLevel(inputLogLevel) ? inputLogLevel : undefined,
+  );
+}
+
+export const isValidJson = (token: string): boolean => {
+  try {
+    return JSON.parse(token) && !!token;
+  } catch (e) {
+    return false;
+  }
+};
+
+export const streamToString = async (
+  stream: ReadableStream<Uint8Array>,
+): Promise<string> => {
+  const reader = stream.getReader();
+  const textDecoder = new TextDecoder();
+  let result = "";
+
+  async function read() {
+    const { done, value } = await reader.read();
+
+    if (done) {
+      return result;
+    }
+
+    result += textDecoder.decode(value, { stream: true });
+    return read();
+  }
+
+  return read();
+};

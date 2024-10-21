@@ -31,6 +31,15 @@ export const AuthUserScope = UserScope;
 export const AuthSession: IAuthSession = {
   async login(config) {
     addInactivePublicServantScope(config);
+    getCommonLogger().info(
+      {
+        baseUrl: config.baseUrl,
+        endpoint: config.endpoint,
+        resources: config.resources,
+        scopes: config.scopes,
+      },
+      "Requesting login, redirecting to the Logto signIn page",
+    );
     return signIn(config);
   },
   async logout(config, redirectUri) {

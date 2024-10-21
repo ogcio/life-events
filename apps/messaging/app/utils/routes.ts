@@ -52,7 +52,7 @@ export const userOrganisationsRoutes = {
 };
 
 export const logtoLogin = {
-  url: "/login",
+  url: "/after-login",
 };
 
 export const logtoSignout = {

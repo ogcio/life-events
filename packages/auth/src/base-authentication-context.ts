@@ -17,6 +17,7 @@ import {
 import { notFound } from "next/navigation";
 import { getCommonLogger } from "nextjs-logging-wrapper";
 import createError from "http-errors";
+import { Level, Logger } from "pino";
 
 export interface AuthenticationContextConfig {
   resourceUrl?: string;
@@ -30,67 +31,73 @@ export interface AuthenticationContextConfig {
   appSecret: string;
 }
 
+const isValidLogLevel = (logLevel: string | undefined): logLevel is Level => {
+  return (
+    logLevel !== undefined &&
+    ["fatal", "error", "warn", "info", "debug", "trace"].includes(logLevel)
+  );
+};
+
 export class BaseAuthenticationContext {
   readonly config: AuthenticationContextConfig;
   sharedContext: AuthSessionContext | null = null;
   citizenContext: PartialAuthSessionContext | null = null;
   publicServantContext: PartialAuthSessionContext | null = null;
-
+  readonly logger: Logger;
   constructor(config: AuthenticationContextConfig) {
     this.config = config;
+    const inputLogLevel = process.env.LOG_LEVEL;
+    this.logger = getCommonLogger(
+      isValidLogLevel(inputLogLevel) ? inputLogLevel : undefined,
+    );
   }
 
   async getContext() {
     if (!this.sharedContext) {
+      this.logger.trace({}, "Shared context is not set");
       let context = await this.getCitizen();
       if (context.isPublicServant) {
         context = await this.getPublicServant();
       }
 
       this.sharedContext = this.ensureIsFullContext(context);
+      this.logger.trace(
+        {
+          sharedContext: {
+            ...this.sharedContext,
+            organization: { id: this.sharedContext.organization?.id },
+            user: { id: this.sharedContext.user.id },
+          },
+        },
+        "Got shared context",
+      );
     }
 
     return this.sharedContext;
   }
 
   async getCitizen() {
-    getCommonLogger().info(
-      { authConfig: this.config, citizenContext: this.citizenContext },
-      "in get citizen method",
-    );
     if (!this.citizenContext) {
       this.citizenContext =
         this.sharedContext && !this.sharedContext.isPublicServant
           ? this.sharedContext
-          : await getCitizenContext(this.config);
+          : await getCitizenContext(this.config, this.logger);
     }
-    getCommonLogger().info(
-      { citizenContext: this.citizenContext },
-      "got citizen",
-    );
     return this.citizenContext as PartialAuthSessionContext;
   }
 
   async getPublicServant() {
-    getCommonLogger().info(
-      {
-        authConfig: this.config,
-        publicServantContext: this.publicServantContext,
-      },
-      "in get public servant method",
-    );
     if (!this.publicServantContext) {
       this.publicServantContext =
         this.sharedContext && this.sharedContext.isPublicServant
           ? this.publicServantContext
-          : await getPublicServantContext({
-              ...this.config,
-              organizationId: await this.getSelectedOrganization(),
-            });
-      getCommonLogger().info(
-        { pubServantCOntext: this.publicServantContext },
-        "got ps context",
-      );
+          : await getPublicServantContext(
+              {
+                ...this.config,
+                organizationId: await this.getSelectedOrganization(),
+              },
+              this.logger,
+            );
     }
     return this.publicServantContext as PartialAuthSessionContext;
   }
@@ -121,11 +128,11 @@ export class BaseAuthenticationContext {
   }
 
   async isPublicServantAuthenticated(): Promise<boolean> {
-    return isPublicServantAuthenticated(this.config);
+    return isPublicServantAuthenticated(this.config, this.logger);
   }
 
   async isCitizenAuthenticated(): Promise<boolean> {
-    return isPublicServantAuthenticated(this.config);
+    return isPublicServantAuthenticated(this.config, this.logger);
   }
 
   async isAuthenticated(): Promise<boolean> {
@@ -138,10 +145,9 @@ export class BaseAuthenticationContext {
 
   async getSelectedOrganization(): Promise<string> {
     const storedOrgId = getSelectedOrganization();
-    console.log({ storedOrgId });
+
     if (storedOrgId) {
       const context = await this.getCitizen();
-      console.log({ citizenContext: context });
       const userOrganizations = Object.keys(
         context.user?.organizationData ?? {},
       );
@@ -151,8 +157,10 @@ export class BaseAuthenticationContext {
     }
 
     const orgs = await this.getOrganizations();
-    console.log({ gotOrganizations: orgs });
-    return Object.values(orgs)?.[0]?.id;
+    const loadedOrganizationId = Object.values(orgs)?.[0]?.id;
+    this.logger.trace({ loadedOrganizationId }, "Got organization id");
+
+    return loadedOrganizationId;
   }
 
   setSelectedOrganization(organizationId: string): string {
@@ -173,27 +181,13 @@ export class BaseAuthenticationContext {
   };
 
   async getToken() {
-    try {
-      console.log({
-        get_token_config: this.config,
-      });
-      let response: string | null = null;
-      const isPublicServant = await this.isPublicServant();
-      console.log({ isPublicServant });
-      if (isPublicServant) {
-        response = await getOrgToken(
-          this.config,
-          await this.getSelectedOrganization(),
-        );
-        console.log({ getOrgTokenResponse: response });
-        return response;
-      }
-      response = await getCitizenToken(this.config, this.config.resourceUrl);
-      console.log({ getCitizenTokenResponse: response });
-      return response;
-    } catch (e) {
-      console.log({ msg: "Error in base auth context", error: e });
-      throw e;
+    if (await this.isPublicServant()) {
+      return getOrgToken(
+        this.config,
+        await this.getSelectedOrganization(),
+        this.logger,
+      );
     }
+    return getCitizenToken(this.config, this.logger, this.config.resourceUrl);
   }
 }
