@@ -3,7 +3,7 @@ import {
   default as getBuildingBlockSDK,
 } from "@ogcio/building-blocks-sdk";
 import { headers } from "next/headers";
-import { getCommonLoggerWithEnvLevel, streamToString } from "./messaging";
+import { streamToString } from "./messaging";
 let buildingBlockSdk: BuildingBlocksSDK | undefined = undefined;
 
 export const getSdks = () => {
@@ -42,14 +42,14 @@ const invokeTokenApi = async (
       serviceRoute,
       process.env.NEXT_PUBLIC_MESSAGING_SERVICE_ENTRY_POINT as string,
     );
-    getCommonLoggerWithEnvLevel().trace(
-      {
-        tokenUrl: tokenUrl.toString(),
-        hostname: tokenUrl.host,
-        isCookieSet: cookieHeader?.length > 0,
-      },
-      "Invoking NextJs API to get token",
-    );
+    // getCommonLoggerWithEnvLevel().trace(
+    //   {
+    //     tokenUrl: tokenUrl.toString(),
+    //     hostname: tokenUrl.host,
+    //     isCookieSet: cookieHeader?.length > 0,
+    //   },
+    //   "Invoking NextJs API to get token",
+    // );
     const res = await fetch(tokenUrl, { headers: { cookie: cookieHeader } });
     responseClone = res.clone();
     const { token } = await res.json();
@@ -61,10 +61,10 @@ const invokeTokenApi = async (
       responseBody = await streamToString(responseClone.body);
       responseCode = responseClone.status;
     }
-    getCommonLoggerWithEnvLevel().error(
-      { error: e, serviceRoute, responseCode, responseBody },
-      "Error retrieving token from NextJs API",
-    );
+    // getCommonLoggerWithEnvLevel().error(
+    //   { error: e, serviceRoute, responseCode, responseBody },
+    //   "Error retrieving token from NextJs API",
+    // );
 
     throw e;
   }
