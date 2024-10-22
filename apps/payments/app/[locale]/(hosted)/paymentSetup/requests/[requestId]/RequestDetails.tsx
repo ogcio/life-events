@@ -172,7 +172,7 @@ export const RequestDetails = async ({
         </div>
         <div className="govie-summary-list__row">
           <dt className="govie-summary-list__key">
-            {t("form.allowAmountOverride")}
+            {t("form.allowDynamicAmount")}
           </dt>
           <dt className="govie-summary-list__value">
             {JSON.stringify(details.allowAmountOverride)}

@@ -28,7 +28,7 @@ async function updateTransaction(extPaymentId: string, status: string) {
     update payment_transactions
     set status = $1, updated_at = now()
     where ext_payment_id = $2
-    returning transaction_id, payment_request_id, integration_reference
+    returning transaction_id, payment_request_id, integration_reference, metadata
     `,
     [status, extPaymentId],
   );
@@ -48,9 +48,10 @@ async function getTransactionDetails(extPaymentId: string) {
     transaction_id: number;
     payment_request_id: string;
     integration_reference: string;
+    amount: string;
   }>(
     `
-    SELECT transaction_id, payment_request_id, integration_reference
+    SELECT transaction_id, payment_request_id, integration_reference, amount, metadata
     FROM payment_transactions
     where ext_payment_id = $1
     `,
@@ -150,7 +151,20 @@ export default async function Page(props: Props) {
   );
   returnUrl.searchParams.append("id", transactionDetail.integration_reference);
   returnUrl.searchParams.append("status", status);
-  returnUrl.searchParams.append("pay", requestDetail.amount.toString());
+  returnUrl.searchParams.append("pay", transactionDetail.amount);
 
-  redirect(returnUrl.href, RedirectType.replace);
+  if (transactionDetail.metadata.runId) {
+    returnUrl.searchParams.append("runId", transactionDetail.metadata.runId);
+  }
+
+  const paymentsApi = await AuthenticationFactory.getPaymentsClient();
+  const { data: redirectToken, error: tokenError } =
+    await paymentsApi.getRedirectToken(transactionDetail.transaction_id);
+
+  if (tokenError) errorHandler(tokenError);
+
+  const token = redirectToken?.data.token;
+  if (token) returnUrl.searchParams.append("token", token);
+
+  redirect(returnUrl.toString(), RedirectType.replace);
 }

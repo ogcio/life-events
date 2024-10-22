@@ -5,8 +5,13 @@ import { AbstractIntlMessages, NextIntlClientProvider } from "next-intl";
 import { redirect, RedirectType } from "next/navigation";
 import { errorHandler } from "../../../../utils";
 import { AuthenticationFactory } from "../../../../../libraries/authentication-factory";
+import { getAmount } from "../utils";
 
-async function getPaymentDetails(paymentId: string, amount?: string) {
+async function getPaymentDetails(
+  paymentId: string,
+  token?: string,
+  customAmount?: string,
+) {
   const paymentsApi = await AuthenticationFactory.getPaymentsClient();
   const { data: details, error } =
     await paymentsApi.getPaymentRequestPublicInfo(paymentId);
@@ -23,15 +28,14 @@ async function getPaymentDetails(paymentId: string, amount?: string) {
 
   if (!provider) return undefined;
 
+  const amount = await getAmount({ customAmount, token, prDetails: details });
+
   return {
     ...details,
     providerId: provider.id,
     providerName: provider.name,
     providerData: provider.data,
-    amount:
-      details.allowAmountOverride && amount
-        ? parseFloat(amount)
-        : details.amount,
+    amount,
   };
 }
 
@@ -41,7 +45,10 @@ export default async function Card(props: {
     | {
         paymentId: string;
         integrationRef: string;
-        amount?: string;
+        token?: string;
+        runId?: string;
+        journeyId?: string;
+        customAmount?: string;
       }
     | undefined;
 }) {
@@ -62,9 +69,12 @@ export default async function Card(props: {
     return redirect("/not-found", RedirectType.replace);
   }
 
+  const { paymentId, runId = "", journeyId = "" } = props.searchParams;
+
   const paymentDetails = await getPaymentDetails(
-    props.searchParams.paymentId,
-    props.searchParams.amount,
+    paymentId,
+    props.searchParams.token,
+    props.searchParams.customAmount,
   );
 
   if (!paymentDetails) {
@@ -80,7 +90,12 @@ export default async function Card(props: {
     integrationReference: props.searchParams.integrationRef,
     amount: paymentDetails.amount,
     paymentProviderId: paymentDetails.providerId,
-    userData: { email: user?.email ?? "", name: user?.name ?? "" },
+    metadata: {
+      email: user?.email ?? "",
+      name: user?.name ?? "",
+      runId,
+      journeyId,
+    },
   });
 
   if (error) {

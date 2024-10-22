@@ -5,11 +5,31 @@ import { errorHandler, formatCurrency } from "../../../../utils";
 import { TransactionStatuses } from "../../../../../types/TransactionStatuses";
 import { BankTransferData } from "../../paymentSetup/providers/types";
 import { AuthenticationFactory } from "../../../../../libraries/authentication-factory";
+import { getAmount } from "../utils";
 
-async function getPaymentDetails(paymentId: string, amount?: number) {
+type Params = {
+  searchParams: {
+    paymentId: string;
+    integrationRef: string;
+    runId?: string;
+    journeyId?: string;
+    token?: string;
+    customAmount?: string;
+  };
+};
+
+async function getPaymentDetails({
+  id,
+  customAmount,
+  token,
+}: {
+  id: string;
+  customAmount?: string;
+  token?: string;
+}) {
   const paymentsApi = await AuthenticationFactory.getPaymentsClient();
   const { data: details, error } =
-    await paymentsApi.getPaymentRequestPublicInfo(paymentId);
+    await paymentsApi.getPaymentRequestPublicInfo(id);
 
   if (error) {
     errorHandler(error);
@@ -23,16 +43,22 @@ async function getPaymentDetails(paymentId: string, amount?: number) {
 
   if (!provider) return undefined;
 
+  const amount = await getAmount({ customAmount, token, prDetails: details });
+
   return {
     ...details,
     providerId: provider.id,
     providerName: provider.name,
     providerData: provider.data,
-    amount: details.allowAmountOverride && amount ? amount : details.amount,
+    amount,
   };
 }
 
-async function confirmPayment(transactionId: string, redirectUrl: string) {
+async function confirmPayment(
+  transactionId: string,
+  redirectUrl: string,
+  runId: string,
+) {
   "use server";
 
   const paymentsApi = await AuthenticationFactory.getPaymentsClient();
@@ -44,7 +70,24 @@ async function confirmPayment(transactionId: string, redirectUrl: string) {
     errorHandler(error);
   }
 
-  redirect(redirectUrl, RedirectType.replace);
+  const { data: redirectToken, error: tokenError } =
+    await paymentsApi.getRedirectToken(transactionId);
+
+  if (tokenError) {
+    errorHandler(tokenError);
+  }
+
+  const token = redirectToken?.data.token;
+  const url = new URL(redirectUrl);
+  if (token) {
+    url.searchParams.append("token", token);
+  }
+
+  if (runId) {
+    url.searchParams.append("runId", runId);
+  }
+
+  redirect(url.toString(), RedirectType.replace);
 }
 
 async function generatePaymentIntentId(): Promise<string> {
@@ -66,15 +109,7 @@ async function generatePaymentIntentId(): Promise<string> {
   return result.data.intentId;
 }
 
-export default async function Bank(params: {
-  searchParams:
-    | {
-        paymentId: string;
-        integrationRef: string;
-        amount?: string;
-      }
-    | undefined;
-}) {
+export default async function Bank(params: Params) {
   const authContext = AuthenticationFactory.getInstance();
   const { user, isPublicServant } = await authContext.getContext();
   const paymentsApi = await AuthenticationFactory.getPaymentsClient();
@@ -83,19 +118,24 @@ export default async function Bank(params: {
     return redirect("/not-found", RedirectType.replace);
   }
 
-  if (!params.searchParams?.paymentId) {
+  const {
+    paymentId,
+    integrationRef,
+    runId = "",
+    journeyId = "",
+  } = params.searchParams;
+
+  if (!paymentId) {
     redirect(routeDefinitions.paymentRequest.pay.path(), RedirectType.replace);
   }
 
   const t = await getTranslations("PayManualBankTransfer");
 
-  const amount = params.searchParams.amount
-    ? parseFloat(params.searchParams.amount)
-    : undefined;
-  const paymentDetails = await getPaymentDetails(
-    params.searchParams.paymentId,
-    amount,
-  );
+  const paymentDetails = await getPaymentDetails({
+    id: params.searchParams.paymentId,
+    customAmount: params.searchParams.customAmount,
+    token: params.searchParams.token,
+  });
 
   if (!paymentDetails) {
     notFound();
@@ -104,12 +144,17 @@ export default async function Bank(params: {
   const paymentIntentId = await generatePaymentIntentId();
 
   const { data: transaction, error } = await paymentsApi.createTransaction({
-    paymentRequestId: params.searchParams.paymentId,
+    paymentRequestId: paymentId,
     extPaymentId: paymentIntentId,
-    integrationReference: params.searchParams.integrationRef,
+    integrationReference: integrationRef,
     amount: paymentDetails.amount,
     paymentProviderId: paymentDetails.providerId,
-    userData: { email: user?.email ?? "", name: user?.name ?? "" },
+    metadata: {
+      email: user?.email ?? "",
+      name: user?.name ?? "",
+      runId,
+      journeyId,
+    },
   });
 
   if (error) {
@@ -120,6 +165,7 @@ export default async function Bank(params: {
     this,
     transaction?.data?.id,
     paymentDetails.redirectUrl,
+    runId,
   );
 
   return (

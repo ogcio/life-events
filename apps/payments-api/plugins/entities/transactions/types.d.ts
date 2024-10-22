@@ -3,6 +3,7 @@ import {
   CreateTransactionBody,
   FullTransaction,
   Transaction,
+  TransactionData,
   TransactionDetails,
   TransactionStatuses,
   UpdateTransactionBody,
@@ -25,9 +26,14 @@ export type TransactionEntry = {
   updatedAt;
   amount: number;
   paymentProviderId: string;
-  userData: {
+  metadata: {
     name: string;
     email: string;
+    journeyId?: string;
+    runId?: string;
+    journeyTitle?: string;
   };
   userId: string;
 };
+
+export type TransactionDataDO = Static<typeof TransactionData>;

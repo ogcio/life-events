@@ -7,9 +7,13 @@ import {
   PaginationParams,
   ParamsWithTransactionId,
   PaymentIntentId,
+  transactionDataJsonSchema,
+  transactionDataSchema,
+  TransactionData,
   TransactionDetails,
   Transactions,
   UpdateTransactionBody,
+  TokenObject,
 } from "../schemas";
 import { Type } from "@sinclair/typebox";
 import {
@@ -22,12 +26,16 @@ import { GenericResponse as GenericResponseType } from "../../types/genericRespo
 import { PaginationParams as PaginationParamsType } from "../../types/pagination";
 import {
   CreateTransactionBodyDO,
+  TransactionDataDO,
   TransactionDetailsDO,
   UpdateTransactionBodyDO,
 } from "../../plugins/entities/transactions/types";
 import { TransactionStatusesEnum } from "../../plugins/entities/transactions";
 import { authPermissions } from "../../types/authPermissions";
 import { AuditLogEventType } from "../../plugins/auditLog/auditLogEvents";
+import { getJourneyDetails } from "../../services/getJourney";
+import { createSignedJWT } from "api-auth";
+import { keyAlias } from "../../utils/kms";
 
 const TAGS = ["Transactions"];
 
@@ -114,6 +122,21 @@ export default async function transactions(app: FastifyInstance) {
     },
   );
 
+  app.get(
+    "/schema",
+    {
+      schema: {
+        tags: TAGS,
+        response: {
+          200: transactionDataJsonSchema,
+        },
+      },
+    },
+    async (_, reply) => {
+      reply.send(transactionDataSchema);
+    },
+  );
+
   app.patch<{
     Body: UpdateTransactionBodyDO;
     Reply: {};
@@ -196,14 +219,23 @@ export default async function transactions(app: FastifyInstance) {
         throw app.httpErrors.unauthorized("Unauthorized!");
       }
 
+      const transactionBody = request.body;
+      const journeyId = request.body.metadata.journeyId;
+      if (journeyId) {
+        const journeyDetails = await getJourneyDetails(journeyId);
+        if (!journeyDetails)
+          throw app.httpErrors.notFound("Journey not found!");
+        transactionBody.metadata.journeyTitle = journeyDetails.title;
+      }
+
       const result = await app.transactions.createTransaction(
         userId,
-        request.body,
+        transactionBody,
       );
 
       const orgIdResult =
         await app.paymentRequest.getOrganizationIdFromPaymentRequest(
-          request.body.paymentRequestId,
+          transactionBody.paymentRequestId,
         );
 
       app.auditLog.createEvent({
@@ -246,6 +278,78 @@ export default async function transactions(app: FastifyInstance) {
     async (request, reply) => {
       const result = await app.transactions.generatePaymentIntentId();
       reply.send(formatAPIResponse(result));
+    },
+  );
+
+  // Transaction data for integrator
+  app.get<{
+    Reply: GenericResponseType<TransactionDataDO> | Error;
+    Params: ParamsWithTransactionId;
+  }>(
+    "/data/:transactionId",
+    {
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [authPermissions.TRANSACTION_READ]),
+      schema: {
+        tags: TAGS,
+        response: {
+          200: GenericResponse(TransactionData),
+          404: HttpError,
+        },
+      },
+    },
+    async (request, reply) => {
+      const { transactionId } = request.params;
+
+      const transactionDetails =
+        await app.transactions.getTransactionData(transactionId);
+
+      reply.send(formatAPIResponse(transactionDetails));
+    },
+  );
+
+  app.get<{
+    Reply: GenericResponseType<unknown> | Error;
+    Params: ParamsWithTransactionId;
+  }>(
+    "/:transactionId/token",
+    {
+      preValidation: (req, res) =>
+        app.checkPermissions(req, res, [authPermissions.TRANSACTION_SELF_READ]),
+      schema: {
+        response: {
+          200: GenericResponse(TokenObject),
+          401: HttpError,
+          500: HttpError,
+        },
+      },
+    },
+    async (request, reply) => {
+      const userId = request.userData?.userId;
+      const { transactionId } = request.params;
+
+      if (!userId) {
+        throw app.httpErrors.unauthorized("Unauthorized!");
+      }
+
+      const transactionDetails = await app.transactions.getTransactionById(
+        transactionId,
+        userId,
+      );
+
+      const jwt = await createSignedJWT(
+        {
+          userId: userId,
+          transactionId: transactionDetails.transactionId,
+        },
+        keyAlias,
+        {
+          issuer: "payments-api",
+          audience: "integrator-api",
+        },
+      );
+
+      reply.send(formatAPIResponse({ token: jwt }));
     },
   );
 }
