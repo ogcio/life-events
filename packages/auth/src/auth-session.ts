@@ -26,6 +26,14 @@ const DEFAULT_ORGANIZATION_ID = "ogcio";
 
 const SELECTED_ORG_COOKIE = "bb-selected-org-id";
 
+const INACTIVE_PUBLIC_SERVANT_ORG_ROLE =
+  "inactive-ps-org:Inactive Public Servant";
+const INACTIVE_PUBLIC_SERVANT_SCOPE = "bb:public-servant.inactive:*";
+
+const DEFAULT_ORGANIZATION_ID = "ogcio";
+
+const SELECTED_ORG_COOKIE = "bb-selected-org-id";
+
 export const AuthUserScope = UserScope;
 
 export const AuthSession: IAuthSession = {

@@ -43,7 +43,7 @@ export default async function RootLayout({
   const path = headers().get("x-pathname")?.toString();
   const queryString = headers().get("x-searchParams")?.toString();
 
-  const redirectUrl = `${path}${queryString ? `?${queryString}` : ""}`;
+  const authFactory = AuthenticationFactory.getInstance();
 
   const { userId, firstName, lastName, verificationLevel } =
     await PgSessions.get(redirectUrl);

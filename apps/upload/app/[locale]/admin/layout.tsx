@@ -37,7 +37,11 @@ export default async ({
           flexDirection: "column",
         }}
       >
-        <Header showHamburgerButton={false} locale={locale} />
+        <Header
+          signoutUrl="/admin/signout"
+          showHamburgerButton={false}
+          locale={locale}
+        />
         {/* All designs are made for 1440 px  */}
         <main className={styles.mainContainer}>
           <FeedbackBanner locale={locale} />

@@ -302,4 +302,38 @@ export class Payments {
   async getAuditLogEventTypes() {
     return formatQueryResult(this.client.GET("/api/v1/auditLogs/event-types"));
   }
+
+  /**
+   * AUDIT LOGS
+   */
+
+  async getAuditLogEvents(
+    query: paths["/api/v1/auditLogs/"]["get"]["parameters"]["query"],
+  ) {
+    return formatQueryResult(
+      this.client.GET("/api/v1/auditLogs/", {
+        params: {
+          query,
+        },
+      }),
+    );
+  }
+
+  async getAuditLogDetails(
+    auditLogId: paths["/api/v1/auditLogs/{auditLogId}"]["get"]["parameters"]["path"]["auditLogId"],
+  ) {
+    return formatQueryResult(
+      this.client.GET("/api/v1/auditLogs/{auditLogId}", {
+        params: {
+          path: {
+            auditLogId,
+          },
+        },
+      }),
+    );
+  }
+
+  async getAuditLogEventTypes() {
+    return formatQueryResult(this.client.GET("/api/v1/auditLogs/event-types"));
+  }
 }

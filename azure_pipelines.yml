@@ -157,4 +157,3 @@ stages:
           parameters:
             serviceName: ${{ serviceName }}
             testPath: './apps/'
-
