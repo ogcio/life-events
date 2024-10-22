@@ -28,3 +28,5 @@ export async function GET(request) {
   const accessToken = (await result.json()).access_token;
   return NextResponse.json({ token: accessToken });
 }
+
+export const dynamic = "force-dynamic";
