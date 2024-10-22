@@ -56,7 +56,7 @@ test.describe("Payment Request with multiple providers", () => {
     await createPaymentRequestPage.selectCardAccount(realexProvider);
     await createPaymentRequestPage.enterReference(mockPaymentRequestReference);
     await createPaymentRequestPage.enterAmount(mockAmount);
-    await createPaymentRequestPage.selectAllowAmountOverride();
+    await createPaymentRequestPage.selectAllowDynamicAmount();
     await createPaymentRequestPage.selectCustomAmount();
     await createPaymentRequestPage.enterRedirectURL(mockRedirectUrl);
     await createPaymentRequestPage.selectInactiveStatus();
@@ -74,7 +74,7 @@ test.describe("Payment Request with multiple providers", () => {
     ]);
     await detailsPage.checkAmount(mockAmount);
     await detailsPage.checkRedirectUrl(mockRedirectUrl);
-    await detailsPage.checkAmountOverrideOption(true);
+    await detailsPage.checkDynamicAmountOption(true);
     await detailsPage.checkCustomAmountOption(true);
     await detailsPage.checkEmptyPaymentsList();
 
@@ -131,7 +131,7 @@ test.describe("Payment Request with multiple providers", () => {
     await createPaymentRequestPage.enterReference(mockPaymentRequestReference);
     await createPaymentRequestPage.enterAmount(mockAmount);
     await createPaymentRequestPage.enterRedirectURL(mockRedirectUrl);
-    await createPaymentRequestPage.selectAllowAmountOverride();
+    await createPaymentRequestPage.selectAllowDynamicAmount();
     await createPaymentRequestPage.selectCustomAmount();
     await createPaymentRequestPage.selectActiveStatus();
     await createPaymentRequestPage.saveChanges();
@@ -148,7 +148,7 @@ test.describe("Payment Request with multiple providers", () => {
     ]);
     await detailsPage.checkAmount(mockAmount);
     await detailsPage.checkRedirectUrl(mockRedirectUrl);
-    await detailsPage.checkAmountOverrideOption(true);
+    await detailsPage.checkDynamicAmountOption(true);
     await detailsPage.checkCustomAmountOption(true);
     await detailsPage.checkEmptyPaymentsList();
 
@@ -214,7 +214,7 @@ test.describe("Payment Request with multiple providers", () => {
     await createPaymentRequestPage.selectCardAccount(realexProvider);
     await createPaymentRequestPage.enterReference(mockPaymentRequestReference);
     await createPaymentRequestPage.enterAmount(mockAmount);
-    await createPaymentRequestPage.selectAllowAmountOverride();
+    await createPaymentRequestPage.selectAllowDynamicAmount();
     await createPaymentRequestPage.selectCustomAmount();
     await createPaymentRequestPage.enterRedirectURL(mockRedirectUrl);
     await createPaymentRequestPage.selectInactiveStatus();
@@ -253,7 +253,7 @@ test.describe("Payment Request with multiple providers", () => {
     await createPaymentRequestPage.selectCardAccount(realexProvider);
     await createPaymentRequestPage.enterReference("");
     await createPaymentRequestPage.enterAmount(mockAmount);
-    await createPaymentRequestPage.selectAllowAmountOverride();
+    await createPaymentRequestPage.selectAllowDynamicAmount();
     await createPaymentRequestPage.selectCustomAmount();
     await createPaymentRequestPage.enterRedirectURL(mockRedirectUrl);
     await createPaymentRequestPage.selectInactiveStatus();
@@ -296,7 +296,7 @@ test.describe("Payment Request with multiple providers", () => {
     await createPaymentRequestPage.selectCardAccount(realexProvider);
     await createPaymentRequestPage.enterReference(mockPaymentRequestReference);
     await createPaymentRequestPage.enterAmount("");
-    await createPaymentRequestPage.selectAllowAmountOverride();
+    await createPaymentRequestPage.selectAllowDynamicAmount();
     await createPaymentRequestPage.selectCustomAmount();
     await createPaymentRequestPage.enterRedirectURL(mockRedirectUrl);
     await createPaymentRequestPage.selectInactiveStatus();
@@ -339,7 +339,7 @@ test.describe("Payment Request with multiple providers", () => {
     await createPaymentRequestPage.selectCardAccount(realexProvider);
     await createPaymentRequestPage.enterReference(mockPaymentRequestReference);
     await createPaymentRequestPage.enterAmount(mockAmount);
-    await createPaymentRequestPage.selectAllowAmountOverride();
+    await createPaymentRequestPage.selectAllowDynamicAmount();
     await createPaymentRequestPage.selectCustomAmount();
     await createPaymentRequestPage.enterRedirectURL("");
     await createPaymentRequestPage.selectInactiveStatus();
@@ -372,7 +372,7 @@ test.describe("Payment Request with multiple providers", () => {
     await createPaymentRequestPage.enterDescription(paymentRequestDescription);
     await createPaymentRequestPage.enterReference(mockPaymentRequestReference);
     await createPaymentRequestPage.enterAmount(mockAmount);
-    await createPaymentRequestPage.selectAllowAmountOverride();
+    await createPaymentRequestPage.selectAllowDynamicAmount();
     await createPaymentRequestPage.selectCustomAmount();
     await createPaymentRequestPage.enterRedirectURL(mockRedirectUrl);
     await createPaymentRequestPage.selectActiveStatus();
@@ -405,7 +405,7 @@ test.describe("Payment Request with multiple providers", () => {
     await createPaymentRequestPage.enterDescription(paymentRequestDescription);
     await createPaymentRequestPage.enterReference(mockPaymentRequestReference);
     await createPaymentRequestPage.enterAmount(mockAmount);
-    await createPaymentRequestPage.selectAllowAmountOverride();
+    await createPaymentRequestPage.selectAllowDynamicAmount();
     await createPaymentRequestPage.selectCustomAmount();
     await createPaymentRequestPage.enterRedirectURL(mockRedirectUrl);
     await createPaymentRequestPage.selectInactiveStatus();
@@ -418,7 +418,7 @@ test.describe("Payment Request with multiple providers", () => {
     await detailsPage.checkStatus("inactive");
     await detailsPage.checkAmount(mockAmount);
     await detailsPage.checkRedirectUrl(mockRedirectUrl);
-    await detailsPage.checkAmountOverrideOption(true);
+    await detailsPage.checkDynamicAmountOption(true);
     await detailsPage.checkCustomAmountOption(true);
     await detailsPage.checkEmptyPaymentsList();
 

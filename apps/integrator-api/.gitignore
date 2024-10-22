@@ -1,0 +1,6 @@
+node_modules
+.env
+.tap
+
+e2e/test-results/
+results.xml

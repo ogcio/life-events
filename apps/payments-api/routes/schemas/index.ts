@@ -1,4 +1,5 @@
 import { Static, TSchema, Type } from "@sinclair/typebox";
+import toJsonSchema from "to-json-schema";
 import {
   PAGINATION_LIMIT_DEFAULT,
   PAGINATION_OFFSET_DEFAULT,
@@ -214,6 +215,16 @@ export const ParamsWithPaymentRequestId = Type.Object({
   requestId: Type.String(),
 });
 
+export const TokenBody = Type.Object({
+  token: Type.String(),
+});
+export type TokenBodyDO = Static<typeof TokenBody>;
+
+export const TokenPayload = Type.Object({
+  amount: Type.Number(),
+});
+export type TokenPayload = Static<typeof TokenPayload>;
+
 /**
  * Transaction status
  */
@@ -240,11 +251,31 @@ export const FullTransaction = Type.Object({
   createdAt: Type.String(),
   updatedAt: Type.String(),
   userId: Type.String(),
-  userData: Type.Object({
+  metadata: Type.Object({
     name: Type.String(),
     email: Type.String(),
+    runId: Type.Optional(Type.String()),
+    journeyId: Type.Optional(Type.String()),
+    journeyTitle: Type.Optional(Type.String()),
   }),
 });
+
+export const TransactionData = Type.Object({
+  userId: Type.String(),
+  transactionId: Type.String(),
+  paymentRequestId: Type.String(),
+  paymentRequestTitle: Type.String(),
+  amount: Type.Number({ minimum: 1, maximum: 1000000 }),
+  extReferenceCode: Type.String(),
+  paymentMethod: Type.String(),
+  paymentProviderName: Type.String(),
+  status: TransactionStatuses,
+  createdAt: Type.String(),
+  updatedAt: Type.String(),
+});
+
+export const transactionDataSchema = Type.Strict(TransactionData);
+export const transactionDataJsonSchema = toJsonSchema(transactionDataSchema);
 
 export const Transaction = Type.Composite([
   Type.Pick(FullTransaction, [
@@ -262,7 +293,7 @@ export const Transaction = Type.Composite([
 
 export const TransactionDetails = Type.Composite([
   Transaction,
-  Type.Pick(FullTransaction, ["extPaymentId", "userId", "userData"]),
+  Type.Pick(FullTransaction, ["extPaymentId", "userId", "metadata"]),
   Type.Object({
     description: Type.String(),
     providerName: Type.String(),
@@ -497,3 +528,7 @@ export const AuditLogEventsFiltersQueryString = Type.Composite([
 export type AuditLogEventsFiltersQueryString = Static<
   typeof AuditLogEventsFiltersQueryString
 >;
+
+export const TokenObject = Type.Object({
+  token: Type.String(),
+});

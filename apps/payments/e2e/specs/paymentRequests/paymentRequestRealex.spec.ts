@@ -48,7 +48,7 @@ test.describe("Payment Request with realex provider", () => {
     await createPaymentRequestPage.selectCardAccount(realexProvider);
     await createPaymentRequestPage.enterReference(mockPaymentRequestReference);
     await createPaymentRequestPage.enterAmount(mockAmount);
-    await createPaymentRequestPage.selectAllowAmountOverride();
+    await createPaymentRequestPage.selectAllowDynamicAmount();
     await createPaymentRequestPage.selectCustomAmount();
     await createPaymentRequestPage.enterRedirectURL(mockRedirectUrl);
     await createPaymentRequestPage.selectInactiveStatus();
@@ -62,7 +62,7 @@ test.describe("Payment Request with realex provider", () => {
     await detailsPage.checkAccounts([{ name: realexProvider, type: "realex" }]);
     await detailsPage.checkAmount(mockAmount);
     await detailsPage.checkRedirectUrl(mockRedirectUrl);
-    await detailsPage.checkAmountOverrideOption(true);
+    await detailsPage.checkDynamicAmountOption(true);
     await detailsPage.checkCustomAmountOption(true);
     await detailsPage.checkEmptyPaymentsList();
 
@@ -118,7 +118,7 @@ test.describe("Payment Request with realex provider", () => {
     await detailsPage.checkAccounts([{ name: realexProvider, type: "realex" }]);
     await detailsPage.checkAmount(mockAmount);
     await detailsPage.checkRedirectUrl(mockRedirectUrl);
-    await detailsPage.checkAmountOverrideOption(false);
+    await detailsPage.checkDynamicAmountOption(false);
     await detailsPage.checkCustomAmountOption(false);
     await detailsPage.checkEmptyPaymentsList();
 

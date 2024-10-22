@@ -10,6 +10,7 @@
   "dependencies": {
     "@fastify/sensible": "5.6.0",
     "@logto/node": "^2.5.8",
+    "@aws-sdk/client-kms": "^3.670.0",
     "@ogcio/shared-errors": "1.0.0",
     "fastify": "^4.28.1",
     "fastify-plugin": "^4.5.1",

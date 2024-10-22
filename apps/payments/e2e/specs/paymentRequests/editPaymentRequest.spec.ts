@@ -60,7 +60,7 @@ test.describe("Edit payment Request", () => {
     await editPaymentRequestPage.selectCardAccount(realexProvider);
     await editPaymentRequestPage.enterAmount(updatedAmount);
     await editPaymentRequestPage.enterRedirectURL(updatedRedirectUri);
-    await editPaymentRequestPage.deselectAllowAmountOverride();
+    await editPaymentRequestPage.deselectAllowDynamicAmount();
     await editPaymentRequestPage.deselectCustomAmount();
     await editPaymentRequestPage.selectInactiveStatus();
     await editPaymentRequestPage.saveChanges();
@@ -76,7 +76,7 @@ test.describe("Edit payment Request", () => {
     ]);
     await detailsPage.checkAmount(updatedAmount);
     await detailsPage.checkRedirectUrl(updatedRedirectUri);
-    await detailsPage.checkAmountOverrideOption(false);
+    await detailsPage.checkDynamicAmountOption(false);
     await detailsPage.checkCustomAmountOption(false);
     await detailsPage.checkStatus("inactive");
   });
