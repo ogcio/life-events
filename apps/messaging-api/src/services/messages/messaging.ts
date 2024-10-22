@@ -6,13 +6,13 @@
 
 import { PoolClient } from "pg";
 import { utils } from "../../utils.js";
-import { BadRequestError, ServerError, ThirdPartyError } from "shared-errors";
 import { randomUUID } from "crypto";
 import {
   AllProviderTypes,
   SecurityLevels,
 } from "../../types/schemaDefinitions.js";
 import { getSchedulerSdk } from "../../utils/authentication-factory.js";
+import { httpErrors } from "@fastify/sensible";
 
 type TemplateContent = {
   subject: string;
@@ -32,8 +32,6 @@ type User = {
   email: string;
   phone: string;
 };
-
-const ERROR_PROCESS = "Messaging Service";
 
 type CreatedTemplateMessage = {
   userId: string;
@@ -61,6 +59,7 @@ export type CreateMessageParams = {
   organisationId: string;
   senderUserProfileId: string | null;
   senderApplicationId: string | null;
+  attachments: string[];
 };
 
 export interface MessagingService {
@@ -131,12 +130,13 @@ export function newMessagingService(
       ];
 
       const values = valueArray.map((_, i) => `$${i + 1}`).join(", ");
-
-      const insertQueryResult = await pool.query<{
-        id: string;
-        user_id: string;
-      }>(
-        `
+      try {
+        await pool.query("BEGIN;");
+        const insertQueryResult = await pool.query<{
+          id: string;
+          user_id: string;
+        }>(
+          `
         insert into messages(
             is_delivered,
             user_id,
@@ -152,18 +152,41 @@ export function newMessagingService(
             scheduled_at
         ) values (${values})
         returning 
-          id, user_id
+          id, user_id;
       `,
-        valueArray,
-      );
+          valueArray,
+        );
 
-      const message = insertQueryResult.rows[0];
+        const message = insertQueryResult.rows[0];
 
-      if (!message) {
-        throw new Error("no message id generated");
+        if (!message) {
+          throw new Error("no message id generated");
+        }
+
+        if (params.attachments.length) {
+          let attachmentIndex = 2;
+          const attachmentValues = [];
+          const attachmentIndexes = [];
+          for (const attId of params.attachments) {
+            attachmentIndexes.push(`($1, $${attachmentIndex++})`);
+            attachmentValues.push(attId);
+          }
+
+          await pool.query(
+            `
+            insert into attachments_messages(
+              message_id,
+              attachment_id) values ${attachmentIndexes.join(", ")};
+            `,
+            [message.id, ...attachmentValues],
+          );
+        }
+
+        return message;
+      } catch (e) {
+        await pool.query("ROLLBACK;");
+        throw e;
       }
-
-      return message;
     },
     async createTemplateMessages(
       templateContents: TemplateContent[],
@@ -174,10 +197,7 @@ export function newMessagingService(
       organizationId: string,
     ): Promise<CreatedTemplateMessage[]> {
       if (!templateContents.length) {
-        throw new BadRequestError(
-          ERROR_PROCESS,
-          "no template contents provided",
-        );
+        throw httpErrors.badRequest("no template contents provided");
       }
 
       const valueArgsArray: string[] = [];
@@ -343,7 +363,7 @@ export function newMessagingService(
         );
         jobs.push(...jobInsertResult.rows);
       } catch (err) {
-        throw new ServerError(ERROR_PROCESS, "failed to create jobs");
+        throw httpErrors.internalServerError("failed to create jobs");
       }
 
       const scheduleBody = jobs.map((job) => {
@@ -362,7 +382,7 @@ export function newMessagingService(
       const schedulerSdk = await getSchedulerSdk(organisationId);
       const { error } = await schedulerSdk.scheduleTasks(scheduleBody);
       if (error) {
-        throw new ThirdPartyError("SCHEDULE_MESSAGES", error.detail, error);
+        throw httpErrors.createError(503, error.message, { parent: error });
       }
 
       return jobs;

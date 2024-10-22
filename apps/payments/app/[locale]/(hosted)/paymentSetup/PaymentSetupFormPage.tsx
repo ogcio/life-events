@@ -50,6 +50,7 @@ async function getRegisteredAccounts(): Promise<ProvidersMap> {
 
 type PaymentSetupFormPageProps = {
   details?: PaymentRequestDetails;
+  originalState?: PaymentRequestDetails;
   locale: string;
   action: (
     prevState: FormData,
@@ -59,10 +60,14 @@ type PaymentSetupFormPageProps = {
 
 export default async function ({
   details,
+  originalState,
   locale,
   action,
 }: PaymentSetupFormPageProps) {
-  const { messages } = await getRequestConfig({ locale });
+  const { messages } = await getRequestConfig({
+    locale: locale,
+    requestLocale: new Promise(() => locale),
+  });
   const providerAccounts = await getRegisteredAccounts();
 
   return (
@@ -81,6 +86,7 @@ export default async function ({
             details,
             providerAccounts,
           }}
+          originalState={originalState}
         ></PaymentSetupForm>
       </div>
     </NextIntlClientProvider>

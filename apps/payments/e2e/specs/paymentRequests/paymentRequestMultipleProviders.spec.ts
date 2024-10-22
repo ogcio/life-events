@@ -89,7 +89,7 @@ test.describe("Payment Request with multiple providers", () => {
     await paymentRequestsPage.goto();
     await paymentRequestsPage.checkHeader();
     await paymentRequestsPage.checkRequestIsVisible(name);
-    await paymentRequestsPage.checkBeneficiaryAccounts(name, [
+    await paymentRequestsPage.checkRecipientAccounts(name, [
       bankTransferProvider.name,
       openBankingProvider,
       realexProvider,
@@ -173,7 +173,7 @@ test.describe("Payment Request with multiple providers", () => {
     await paymentRequestsPage.goto();
     await paymentRequestsPage.checkHeader();
     await paymentRequestsPage.checkRequestIsVisible(name);
-    await paymentRequestsPage.checkBeneficiaryAccounts(name, [
+    await paymentRequestsPage.checkRecipientAccounts(name, [
       bankTransferProvider.name,
       openBankingProvider,
       stripeProvider,

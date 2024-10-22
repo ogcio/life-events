@@ -2,35 +2,27 @@ import { FastifyInstance } from "fastify";
 import { Permissions } from "../../types/permissions.js";
 import {
   FileMetadataType,
-  FileOwnerType,
   getGenericResponseSchema,
   ResponseMetadata,
 } from "../../types/schemaDefinitions.js";
 import { Type } from "@sinclair/typebox";
-import { HttpError } from "../../types/httpErrors.js";
+import { HttpError as OutputHttpError } from "../../types/httpErrors.js";
+import { ensureUserIdIsSet } from "../../utils/authentication-factory.js";
+
 import {
-  ensureUserIdIsSet,
-  getProfileSdk,
-} from "../../utils/authentication-factory.js";
-import { BadRequestError, NotFoundError, ServerError } from "shared-errors";
-import {
-  getOwnedFiles,
   getOrganizationFiles,
   getSharedFiles,
+  scheduleFileForDeletion,
+  getUserFiles,
 } from "./utils/filesMetadata.js";
 import getFileMetadataById from "../utils/getFileMetadataById.js";
-import getFileSharings from "./utils/getFileSharings.js";
-import scheduleFileForDeletion from "./utils/scheduleFileForDeletion.js";
 import removeAllFileSharings from "./utils/removeAllFileSharings.js";
-
-const METADATA_INDEX = "METADATA_INDEX";
-const GET_METADATA = "GET_METADATA";
-const SCHEDULE_DELETION = "SCHEDULE_DELETION";
+import { httpErrors } from "@fastify/sensible";
 
 const API_DOCS_TAG = "Metadata";
 
 export default async function routes(app: FastifyInstance) {
-  app.get(
+  app.get<{ Querystring: { userId?: string; organizationId?: string } }>(
     "/",
     {
       preValidation: (req, res) =>
@@ -40,99 +32,88 @@ export default async function routes(app: FastifyInstance) {
         ]),
       schema: {
         tags: [API_DOCS_TAG],
+        querystring: Type.Optional(
+          Type.Object({
+            userId: Type.Optional(Type.String()),
+            organizationId: Type.Optional(Type.String()),
+          }),
+        ),
         response: {
           200: getGenericResponseSchema(Type.Array(ResponseMetadata)),
-          "4xx": HttpError,
-          "5xx": HttpError,
+          "4xx": OutputHttpError,
+          "5xx": OutputHttpError,
         },
       },
     },
-    async (request, reply) => {
-      const userId = ensureUserIdIsSet(request, METADATA_INDEX);
+    async (request) => {
+      const userId = ensureUserIdIsSet(request);
       const organizationId = request.userData?.organizationId;
-      const files: FileMetadataType[] = [];
+      ensureUserCanAccessResource({
+        loggedInUserId: userId,
+        queryUserId: request.query.userId,
+        queryOrganizationId: request.query.organizationId,
+        organizationId,
+      });
 
       const client = await app.pg.pool.connect();
-      const userIds = new Set<string>();
+
+      const queryUserId = request.query.userId;
+
+      const queryOrganizationId = request.query.organizationId;
+
+      /**
+       * if public servant
+       * if queries user return all owned files + all shared files withhin org
+       * if queries org return all org files withing org
+       *
+       * if no public servant return shared files
+       */
+
       try {
-        const ownedFilesData = await getOwnedFiles(client, userId);
-
-        const ownedFiles = ownedFilesData.rows;
-
-        files.push(...ownedFiles);
-        files.forEach(({ ownerId }) => userIds.add(ownerId as string));
-        const filesToExclude = ownedFiles.map(({ id }) => id as string);
-
         if (organizationId) {
-          const organizationFilesData = await getOrganizationFiles(
-            client,
-            organizationId,
-            filesToExclude,
-          );
-
-          if (organizationFilesData.rows.length) {
-            files.push(...organizationFilesData.rows);
-            organizationFilesData.rows.forEach(({ ownerId }) =>
-              userIds.add(ownerId),
-            );
-            filesToExclude.push(
-              ...organizationFilesData.rows.map(({ id }) => id as string),
-            );
+          if (queryUserId) {
+            const userFiles = await getUserFiles({
+              client,
+              organizationId,
+              userId: queryUserId,
+              toExclude: [],
+            });
+            return { data: userFiles };
           }
+
+          if (queryOrganizationId && queryOrganizationId === organizationId) {
+            const filesResponse = await getOrganizationFiles({
+              client,
+              organizationId,
+              toExclude: [],
+            });
+            return { data: filesResponse.rows };
+          }
+
+          throw app.httpErrors.forbidden(
+            "You are not authorized to access other organization data",
+          );
         }
 
-        const sharedFilesData = await getSharedFiles(
-          client,
-          userId,
-          filesToExclude,
+        if (queryUserId === userId) {
+          const sharedFiles = await getSharedFiles({
+            client,
+            userId: queryUserId,
+            toExclude: [],
+          });
+          return { data: sharedFiles.rows };
+        }
+
+        throw app.httpErrors.forbidden(
+          "You are not authorized to access other users data",
         );
-
-        if (sharedFilesData.rows.length) {
-          sharedFilesData.rows.map(({ ownerId }) => userIds.add(ownerId));
-          files.push(...sharedFilesData.rows);
-        }
-      } catch (err) {
-        throw new ServerError(METADATA_INDEX, "Internal server error", err);
+      } catch (e) {
+        throw app.httpErrors.createError(500, "Error getting files", {
+          parent: e,
+        });
       } finally {
         client.release();
       }
-
-      let usersData: { [key: string]: FileOwnerType };
-
-      if (files.length === 0) {
-        return reply.send({ data: [] });
-      }
-
-      const profileSdk = await getProfileSdk(organizationId);
-      try {
-        const usersResponse = await profileSdk.selectUsers(
-          Array.from(userIds.keys()),
-        );
-
-        if (usersResponse.error) {
-          app.log.error(usersResponse.error);
-          throw new ServerError(
-            METADATA_INDEX,
-            "Internal server error",
-            usersResponse.error,
-          );
-        }
-
-        if (usersResponse.data) {
-          usersData = usersResponse.data.reduce(
-            (acc, next) => ({ ...acc, [next.id]: next }),
-            {},
-          );
-        }
-      } catch (err) {
-        throw new ServerError(METADATA_INDEX, "Internal server error", err);
-      }
-      const filesData = files.map((f) => ({
-        ...f,
-        owner: usersData?.[f.ownerId],
-      }));
-
-      reply.send({ data: filesData });
     },
   );
 
@@ -149,18 +130,15 @@ export default async function routes(app: FastifyInstance) {
         params: Type.Object({ id: Type.String() }),
         response: {
           200: getGenericResponseSchema(ResponseMetadata),
-          "4xx": HttpError,
-          "5xx": HttpError,
+          "4xx": OutputHttpError,
+          "5xx": OutputHttpError,
         },
       },
     },
     async (request, reply) => {
-      const organizationId = request.userData?.organizationId;
-
       const fileId = request.params.id;
 
       let file: FileMetadataType | undefined = undefined;
-      const usersToRetrieve = new Set<string>();
 
       try {
         const fileData = await getFileMetadataById(app.pg, fileId);
@@ -169,48 +147,18 @@ export default async function routes(app: FastifyInstance) {
         }
 
         if (!file) {
-          return new NotFoundError(GET_METADATA, "File not found");
-        }
-
-        usersToRetrieve.add(file.ownerId);
-
-        const sharingsData = await getFileSharings(app.pg, fileId);
-
-        if (sharingsData.rows) {
-          sharingsData.rows.forEach(({ userId }) =>
-            usersToRetrieve.add(userId),
-          );
+          return app.httpErrors.notFound("File not found");
         }
       } catch (err) {
-        throw new ServerError(GET_METADATA, "Internal server error", err);
+        throw app.httpErrors.createError(500, "Error retrieving files", {
+          parent: err,
+        });
       }
 
-      const profileSdk = await getProfileSdk(organizationId);
-
-      let users: FileOwnerType[] = [];
-      let fileOwner: FileOwnerType | undefined;
-      try {
-        const usersData = await profileSdk.selectUsers(
-          Array.from(usersToRetrieve.keys()),
-        );
-
-        if (usersData.error) {
-          return new ServerError(
-            GET_METADATA,
-            "Internal server error",
-            usersData.error,
-          );
-        }
-
-        if (usersData.data) {
-          fileOwner = usersData.data.filter(({ id }) => file.ownerId === id)[0];
-          users = usersData.data.filter(({ id }) => file.ownerId !== id);
-        }
-      } catch (err) {
-        throw new ServerError(GET_METADATA, "Internal server error", err);
-      }
-
-      const fileMetadata = { ...file, owner: fileOwner, sharedWith: users };
+      const fileMetadata = {
+        ...file,
+        owner: file.ownerId,
+      };
 
       return reply.send({ data: fileMetadata });
     },
@@ -226,8 +174,8 @@ export default async function routes(app: FastifyInstance) {
         body: Type.Object({ fileId: Type.String() }),
         response: {
           200: getGenericResponseSchema(Type.Object({ id: Type.String() })),
-          "4xx": HttpError,
-          "5xx": HttpError,
+          "4xx": OutputHttpError,
+          "5xx": OutputHttpError,
         },
       },
     },
@@ -235,7 +183,7 @@ export default async function routes(app: FastifyInstance) {
       const fileId = request.body.fileId;
 
       if (!fileId) {
-        throw new BadRequestError(SCHEDULE_DELETION, "File key not provided");
+        throw app.httpErrors.badRequest("File key not provided");
       }
 
       const fileData = await getFileMetadataById(app.pg, fileId);
@@ -243,23 +191,49 @@ export default async function routes(app: FastifyInstance) {
       const file = fileData.rows?.[0];
 
       if (!file) {
-        throw new NotFoundError(SCHEDULE_DELETION);
+        throw app.httpErrors.notFound("File not found");
       }
 
       try {
-        const currentDate = new Date();
-
-        const deletionDate = new Date(currentDate);
-        deletionDate.setDate(currentDate.getDate() + 30);
-
-        await scheduleFileForDeletion(app.pg, fileId, deletionDate);
+        await scheduleFileForDeletion(app.pg, fileId);
 
         await removeAllFileSharings(app.pg, fileId);
       } catch (err) {
-        throw new ServerError(SCHEDULE_DELETION, "Internal server error", err);
+        throw app.httpErrors.createError(500, "Error deleting file", {
+          parent: err,
+        });
       }
 
       reply.send({ data: { id: fileId } });
     },
   );
 }
+
+const ensureUserCanAccessResource = (params: {
+  loggedInUserId: string;
+  queryUserId?: string;
+  queryOrganizationId?: string;
+  organizationId?: string;
+}) => {
+  //public servant
+  if (params.organizationId) {
+    if (params.organizationId !== params.queryOrganizationId) {
+      throw httpErrors.forbidden(
+        "You are not allowed to access data for the requested organization",
+      );
+    }
+    return;
+  }
+
+  if (params.loggedInUserId !== params.queryUserId) {
+    throw httpErrors.forbidden(
+      "You are not allowed to access data for the requested user",
+    );
+  }
+
+  if (params.queryOrganizationId) {
+    throw httpErrors.forbidden(
+      "You are not allowed to access data for the requested organization",
+    );
+  }
+};

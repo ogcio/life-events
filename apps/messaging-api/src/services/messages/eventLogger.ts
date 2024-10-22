@@ -123,6 +123,7 @@ type MessageUpsertEvent = {
   scheduledAt: string;
   bypassConsent: boolean;
   security: SecurityLevels;
+  attachments?: string[];
 };
 
 type MessageScheduleEvent = {
@@ -134,6 +135,7 @@ type MessageScheduleEvent = {
 
 type MessageErrorEvent = {
   messageKey?: string;
+  details?: string;
 };
 
 type Required = { messageId: string };

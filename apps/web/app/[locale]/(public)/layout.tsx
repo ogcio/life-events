@@ -43,15 +43,6 @@ export default async function RootLayout({
   const path = headers().get("x-pathname")?.toString();
   const queryString = headers().get("x-searchParams")?.toString();
 
-  const authFactory = AuthenticationFactory.getInstance();
-
-  const isAuthenticatedWithLogto =
-    await authFactory.isPublicServantAuthenticated();
-
-  if (isAuthenticatedWithLogto) {
-    redirect(`/${locale}/admin`, RedirectType.replace);
-  }
-
   const redirectUrl = `${path}${queryString ? `?${queryString}` : ""}`;
 
   const { userId, firstName, lastName, verificationLevel } =

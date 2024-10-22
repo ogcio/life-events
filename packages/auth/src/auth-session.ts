@@ -15,11 +15,8 @@ import {
 } from "./types";
 import { redirect } from "next/navigation";
 import { LogtoNextConfig, UserScope } from "@logto/next";
-import { BadRequestError } from "shared-errors";
 import { getCommonLogger } from "nextjs-logging-wrapper";
 import { cookies } from "next/headers";
-
-const PROCESS_ERROR = "PARSE_LOGTO_CONTEXT";
 
 const INACTIVE_PUBLIC_SERVANT_ORG_ROLE =
   "inactive-ps-org:Inactive Public Servant";
@@ -34,6 +31,15 @@ export const AuthUserScope = UserScope;
 export const AuthSession: IAuthSession = {
   async login(config) {
     addInactivePublicServantScope(config);
+    getCommonLogger().info(
+      {
+        baseUrl: config.baseUrl,
+        endpoint: config.endpoint,
+        resources: config.resources,
+        scopes: config.scopes,
+      },
+      "Requesting login, redirecting to the Logto signIn page",
+    );
     return signIn(config);
   },
   async logout(config, redirectUri) {
@@ -51,18 +57,18 @@ export const AuthSession: IAuthSession = {
       context = await getLogtoContext(config, getContextParameters);
     } catch (err) {
       getCommonLogger().error(err);
-      redirect(getContextParameters?.loginUrl ?? "/logto_integration/login");
+      redirect(getContextParameters?.loginUrl ?? "/login");
     }
 
     if (!context.isAuthenticated) {
-      redirect(getContextParameters?.loginUrl ?? "/logto_integration/login");
+      redirect(getContextParameters?.loginUrl ?? "/login");
     }
 
     try {
       return parseContext(context, getContextParameters);
     } catch (err) {
       getCommonLogger().error(err);
-      redirect(getContextParameters?.loginUrl ?? "/logto_integration/login");
+      redirect(getContextParameters?.loginUrl ?? "/login");
     }
   },
   async isAuthenticated(config, getContextParameters) {
@@ -157,26 +163,9 @@ const getUserInfo = (
     organizationData,
   };
 };
-// waiting for https://github.com/logto-io/js/issues/758
-// to be resolved
-type WithOrgDataUserInfo =
-  | (
-      | (LogtoContext["userInfo"] & {
-          organization_data?: {
-            id: string;
-            name: string;
-            description: string;
-          }[];
-        })
-      | undefined
-    )
-  | undefined;
-type WithOrgDataContext = Omit<LogtoContext, "userInfo"> & {
-  userInfo?: WithOrgDataUserInfo;
-};
 
 const getOrganizationInfo = (
-  context: WithOrgDataContext,
+  context: LogtoContext,
   getContextParameters: GetSessionContextParameters | undefined,
   organizationRoles: string[] | null,
 ): AuthSessionOrganizationInfo | undefined => {

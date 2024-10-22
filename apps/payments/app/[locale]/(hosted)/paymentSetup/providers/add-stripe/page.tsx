@@ -22,12 +22,16 @@ export type StripeFormState = {
     providerName: string;
     livePublishableKey: string;
     liveSecretKey: string;
+    webhookSigningKey: string;
   };
 };
 
 export default async (props: Props) => {
   const t = await getTranslations("PaymentSetup.AddStripe");
-  const { messages } = await getRequestConfig({ locale: props.params.locale });
+  const { messages } = await getRequestConfig({
+    locale: props.params.locale,
+    requestLocale: new Promise(() => props.params.locale),
+  });
 
   const errorFieldMapping = stripeValidationMap(t);
 
@@ -44,6 +48,9 @@ export default async (props: Props) => {
       "live_publishable_key",
     ) as string;
     const liveSecretKeyField = formData.get("live_secret_key") as string;
+    const webhookSigningKeyField = formData.get(
+      "webhook_signing_key",
+    ) as string;
 
     const formResult = {
       errors: {},
@@ -51,6 +58,7 @@ export default async (props: Props) => {
         providerName: nameField,
         livePublishableKey: livePublishableKeyField,
         liveSecretKey: liveSecretKeyField,
+        webhookSigningKey: webhookSigningKeyField,
       },
     };
 
@@ -60,6 +68,7 @@ export default async (props: Props) => {
       data: {
         liveSecretKey: liveSecretKeyField,
         livePublishableKey: livePublishableKeyField,
+        webhookSigningKey: webhookSigningKeyField,
       },
     });
 

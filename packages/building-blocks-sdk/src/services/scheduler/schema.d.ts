@@ -36,11 +36,20 @@ export interface paths {
         500: {
           content: {
             "application/json": {
-              statusCode: number;
+              /** @description Code used to categorize the error */
               code: string;
-              error: string;
-              message: string;
-              time: string;
+              /** @description Description of the error */
+              detail: string;
+              /** @description Unique request id. This one will be used to troubleshoot the problems */
+              requestId: string;
+              /** @description Name of the error type */
+              name: string;
+              /** @description List of the validation errors */
+              validation?: {
+                fieldName: string;
+                message: string;
+              }[];
+              validationContext?: string;
             };
           };
         };

@@ -17,7 +17,10 @@ type Props = {
 
 export default async ({ provider, locale }: Props) => {
   const t = await getTranslations("PaymentSetup.AddStripe");
-  const { messages } = await getRequestConfig({ locale });
+  const { messages } = await getRequestConfig({
+    locale: locale,
+    requestLocale: new Promise(() => locale),
+  });
 
   const errorFieldMapping = stripeValidationMap(t);
 
@@ -34,6 +37,9 @@ export default async ({ provider, locale }: Props) => {
       "live_publishable_key",
     ) as string;
     const liveSecretKeyField = formData.get("live_secret_key") as string;
+    const webhookSigningKeyField = formData.get(
+      "webhook_signing_key",
+    ) as string;
 
     const formResult = {
       errors: {},
@@ -41,6 +47,7 @@ export default async ({ provider, locale }: Props) => {
         providerName: nameField,
         livePublishableKey: livePublishableKeyField,
         liveSecretKey: liveSecretKeyField,
+        webhookSigningKey: webhookSigningKeyField,
       },
     };
 
@@ -69,6 +76,7 @@ export default async ({ provider, locale }: Props) => {
           data: {
             livePublishableKey: livePublishableKeyField,
             liveSecretKey: liveSecretKeyField,
+            webhookSigningKey: webhookSigningKeyField,
           },
           type: provider.type,
           status: provider.status,
@@ -101,6 +109,7 @@ export default async ({ provider, locale }: Props) => {
           providerName: provider.name,
           livePublishableKey: provider.data.livePublishableKey,
           liveSecretKey: provider.data.liveSecretKey,
+          webhookSigningKey: provider.data.webhookSigningKey,
         }}
       >
         <h1 className="govie-heading-l">{t("editTitle")}</h1>

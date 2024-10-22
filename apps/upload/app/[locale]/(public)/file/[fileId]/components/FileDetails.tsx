@@ -24,9 +24,17 @@ export default async ({ file }: FileDetailProps) => {
       <div className="govie-summary-list__row">
         <dt className="govie-summary-list__key">{t("createdAt")}</dt>
         <dd className="govie-summary-list__value">
-          {new Date(file.createdAt).toLocaleDateString()}
+          {new Date(file.createdAt).toLocaleString()}
         </dd>
       </div>
+      {file.expiresAt && (
+        <div className="govie-summary-list__row">
+          <dt className="govie-summary-list__key">{t("expiresAt")}</dt>
+          <dd className="govie-summary-list__value">
+            {new Date(file.expiresAt).toLocaleString()}
+          </dd>
+        </div>
+      )}
       <div className="govie-summary-list__row">
         <dt className="govie-summary-list__key">{t("fileType")}</dt>
         <dd className="govie-summary-list__value">{file.mimeType}</dd>
