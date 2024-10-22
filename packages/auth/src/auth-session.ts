@@ -31,6 +31,15 @@ export const AuthUserScope = UserScope;
 export const AuthSession: IAuthSession = {
   async login(config) {
     addInactivePublicServantScope(config);
+    getCommonLogger().info(
+      {
+        baseUrl: config.baseUrl,
+        endpoint: config.endpoint,
+        resources: config.resources,
+        scopes: config.scopes,
+      },
+      "Requesting login, redirecting to the Logto signIn page",
+    );
     return signIn(config);
   },
   async logout(config, redirectUri) {
@@ -48,18 +57,18 @@ export const AuthSession: IAuthSession = {
       context = await getLogtoContext(config, getContextParameters);
     } catch (err) {
       getCommonLogger().error(err);
-      redirect(getContextParameters?.loginUrl ?? "/logto_integration/login");
+      redirect(getContextParameters?.loginUrl ?? "/login");
     }
 
     if (!context.isAuthenticated) {
-      redirect(getContextParameters?.loginUrl ?? "/logto_integration/login");
+      redirect(getContextParameters?.loginUrl ?? "/login");
     }
 
     try {
       return parseContext(context, getContextParameters);
     } catch (err) {
       getCommonLogger().error(err);
-      redirect(getContextParameters?.loginUrl ?? "/logto_integration/login");
+      redirect(getContextParameters?.loginUrl ?? "/login");
     }
   },
   async isAuthenticated(config, getContextParameters) {

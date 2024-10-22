@@ -166,8 +166,10 @@ export default async (props: MessageCreateProps) => {
   const messaging = await AuthenticationFactory.getMessagingClient();
   const response = await messaging.getUsers({
     ...queryParams,
+    limit: queryParams.limit ? String(queryParams.limit) : undefined,
+    offset: queryParams.offset ? String(queryParams.offset) : undefined,
     transports: props.state.transportations.join(","),
-    activeOnly: true,
+    activeOnly: "true",
   });
 
   if (response.error || !response.data) {
