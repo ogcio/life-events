@@ -348,7 +348,7 @@ export const data = {
             join recommended_paths r on r.from_subcategory_item_id = s.subcategory_items_id
             join subcategory_items i on i.id = r.to_subcategory_item_id
             where s.user_logto_id = $1
-            order by s.created_at
+            order by s.created_at desc
             limit 3
           ), rnd_remains as(
             select

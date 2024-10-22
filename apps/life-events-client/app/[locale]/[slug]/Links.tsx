@@ -19,22 +19,27 @@ export function Links(props: {
   async function simulateCompletedJourneyAction() {
     "use server";
 
-    console.log("Skojaren is here", props.userId, props.itemId);
     data.subcategoryItem.completeJourney(props.itemId, props.userId);
   }
 
   for (const link of links) {
+    const url = new URL(
+      "/skojaren",
+      process.env.NEXT_PUBLIC_LEA_SERVICE_ENTRY_POINT,
+    );
+    url.searchParams.append("cb", link.href);
+    url.searchParams.append("iid", props.itemId);
     render.push(
-      <button
+      <a
         key={`${props.itemId}_${++keyIndex}`}
         className={`govie-link govie-link--no-visited-state link-anchor ${link.isExternal ? "link-anchor__padded" : ""}`.trim()}
-        // href={link.href}
+        href={url.href}
       >
         {translate(link.name, props.locale)}
         {link.isExternal && (
           <Icon size="sm" icon="open_in_new" inline className="link-icon" />
         )}
-      </button>,
+      </a>,
     );
 
     if (index < size) {

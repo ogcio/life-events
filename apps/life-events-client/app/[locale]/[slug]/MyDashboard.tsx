@@ -32,7 +32,6 @@ export default async function MyDashboard(props: {
     );
   } catch (err) {}
 
-  console.log({ recentlySubmittedJourneys });
   return (
     <article className="my-dash-container">
       <section>
@@ -86,6 +85,7 @@ export default async function MyDashboard(props: {
                   <Paragraph className="dash-item-paragraph">
                     {translate(journey.title, props.locale)}
                   </Paragraph>
+                  <strong className="govie-tag">{tDash(journey.status)}</strong>
                 </li>
                 <hr className="govie-section-break govie-section-break--visible"></hr>
               </React.Fragment>
