@@ -54,7 +54,11 @@ async function getPaymentDetails({
   };
 }
 
-async function confirmPayment(transactionId: string, redirectUrl: string) {
+async function confirmPayment(
+  transactionId: string,
+  redirectUrl: string,
+  runId: string,
+) {
   "use server";
 
   const paymentsApi = await AuthenticationFactory.getPaymentsClient();
@@ -77,6 +81,10 @@ async function confirmPayment(transactionId: string, redirectUrl: string) {
   const url = new URL(redirectUrl);
   if (token) {
     url.searchParams.append("token", token);
+  }
+
+  if (runId) {
+    url.searchParams.append("runId", runId);
   }
 
   redirect(url.toString(), RedirectType.replace);
@@ -157,6 +165,7 @@ export default async function Bank(params: Params) {
     this,
     transaction?.data?.id,
     paymentDetails.redirectUrl,
+    runId,
   );
 
   return (

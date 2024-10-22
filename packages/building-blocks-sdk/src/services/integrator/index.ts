@@ -255,4 +255,14 @@ export class Integrator {
       }),
     );
   }
+
+  async transitionStep(
+    data: paths["/api/v1/executor/transition"]["post"]["requestBody"]["content"]["application/json"],
+  ) {
+    return formatQueryResult(
+      this.client.POST("/api/v1/executor/transition", {
+        body: data,
+      }),
+    );
+  }
 }

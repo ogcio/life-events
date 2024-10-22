@@ -11,6 +11,7 @@ import {
   RunStepDO,
   PSRunDetailsDO,
   UpdateRunStepDO,
+  RunStatusEnum,
 } from "./types";
 import { Id } from "../../../routes/schemas";
 
@@ -125,6 +126,24 @@ const buildCreateRun =
     return result.rows[0];
   };
 
+const buildUpdateRun =
+  (repo: RunRepo, log: FastifyBaseLogger, httpErrors: HttpErrors) =>
+  async (runId: string, status: RunStatusEnum): Promise<UserRunDetailsDO> => {
+    let result;
+
+    try {
+      result = await repo.updateRunStatus(runId, status);
+    } catch (err) {
+      log.error((err as Error).message);
+    }
+
+    if (!result?.rowCount) {
+      throw httpErrors.internalServerError("Something went wrong!");
+    }
+
+    return result.rows[0];
+  };
+
 const buildCreateRunStep =
   (repo: RunRepo, log: FastifyBaseLogger, httpErrors: HttpErrors) =>
   async (runId: string, stepId: string): Promise<Id> => {
@@ -190,6 +209,7 @@ const buildPlugin = (
     getRunById: buildGetRunById(repo, log, httpErrors),
     getRunStepsByRunId: buildGetRunStepsByRunId(repo, log),
     createRun: buildCreateRun(repo, log, httpErrors),
+    updateRun: buildUpdateRun(repo, log, httpErrors),
     createRunStep: buildCreateRunStep(repo, log, httpErrors),
     getActiveRunStep: buildGetActiveRunStep(repo, log),
     updateRunStep: buildUpdateRunStep(repo, log, httpErrors),
