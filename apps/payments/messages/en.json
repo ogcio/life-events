@@ -83,7 +83,8 @@
       },
       "payerName": "Payer name",
       "payerEmail": "Payer email",
-      "referenceCode": "Payment reference code"
+      "referenceCode": "Payment reference code",
+      "journeyTitle": "Journey title"
     }
   },
   "Modal": {
@@ -272,7 +273,10 @@
         "providerType": "Provider type",
         "payerName": "Payer name",
         "payerEmail": "Payer email",
-        "referenceCode": "Payment reference code"
+        "referenceCode": "Payment reference code",
+        "submissionId": "Form submission id",
+        "journeyId": "Journey id",
+        "journeyTitle": "Journey title"
       },
       "transactionFound": "Transaction found with this reference code",
       "assignTitle": "Assign to user",
@@ -322,7 +326,7 @@
         "currencySymbol": "€",
         "redirectUrl": "Redirect url",
         "redirectUrlRequired": "Redirect url is required.",
-        "allowAmountOverride": "Allow amount override from url",
+        "allowDynamicAmount": "Allow dynamic amount",
         "allowCustomAmount": "Allow the user to pay a custom amount",
         "submit": "Continue"
       },

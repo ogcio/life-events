@@ -2,6 +2,7 @@ import { PostgresDb } from "@fastify/postgres";
 import { QueryResult } from "pg";
 import {
   CreateTransactionBodyDO,
+  TransactionDataDO,
   TransactionDetailsDO,
   TransactionEntry,
 } from "./types";
@@ -35,7 +36,7 @@ export class TransactionsRepo {
         t.transaction_id as "transactionId",
         t.status,
         t.user_id as "userId",
-        t.user_data as "userData",
+        t.metadata,
         pr.title,
         pr.payment_request_id as "paymentRequestId",
         pr.description,
@@ -104,7 +105,7 @@ export class TransactionsRepo {
         t.transaction_id as "transactionId",
         t.status,
         t.user_id as "userId",
-        t.user_data as "userData",
+        t.metadata,
         pr.title,
         pr.payment_request_id as "paymentRequestId",
         pr.description,
@@ -144,7 +145,7 @@ export class TransactionsRepo {
   ): Promise<QueryResult<{ transactionId: string; extPaymentId: string }>> {
     return this.pg.query(
       `INSERT INTO payment_transactions
-        (payment_request_id, ext_payment_id, integration_reference, amount, status, created_at, updated_at, payment_provider_id, user_id, user_data)
+        (payment_request_id, ext_payment_id, integration_reference, amount, status, created_at, updated_at, payment_provider_id, user_id, metadata)
         VALUES ($1, $2, $3, $4, $5, now(), now(), $6, $7, $8)
         RETURNING transaction_id as "transactionId", ext_payment_id as "extPaymentId";
       `,
@@ -156,7 +157,7 @@ export class TransactionsRepo {
         TransactionStatusesEnum.Initiated,
         transaction.paymentProviderId,
         userId,
-        transaction.userData,
+        transaction.metadata,
       ],
     );
   }
@@ -229,7 +230,7 @@ export class TransactionsRepo {
         updated_at as "updatedAt",
         amount,
         payment_provider_id as "paymentProviderId",
-        user_data as "userData",
+        metadata,
         user_id as "userId"
       FROM payment_transactions 
       WHERE ext_payment_id = $1`,
@@ -244,6 +245,30 @@ export class TransactionsRepo {
       `SELECT
         t.payment_request_id as "paymentRequestId"
       FROM payment_transactions t
+      WHERE t.transaction_id = $1`,
+      [transactionId],
+    );
+  }
+
+  getTransactionData(
+    transactionId: string,
+  ): Promise<QueryResult<TransactionDataDO>> {
+    return this.pg.query(
+      `SELECT
+        t.user_id as "userId",
+        t.transaction_id as "transactionId",
+        pr.payment_request_id as "paymentRequestId",
+        pr.title as "paymentRequestTitle",
+        t.amount,
+        t.ext_payment_id as "extReferenceCode",
+        pp.provider_type as "paymentMethod",
+        pp.provider_name as "paymentProviderName",
+        t.status,
+        t.created_at as "createdAt",
+        t.updated_at as "updatedAt"
+      FROM payment_transactions t
+      LEFT JOIN payment_requests pr ON pr.payment_request_id = t.payment_request_id
+      LEFT JOIN payment_providers pp ON t.payment_provider_id = pp.provider_id
       WHERE t.transaction_id = $1`,
       [transactionId],
     );

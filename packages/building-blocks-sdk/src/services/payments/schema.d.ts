@@ -4,6 +4,16 @@
  */
 
 export interface paths {
+  "/.well-known/jwks.json": {
+    get: {
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: never;
+        };
+      };
+    };
+  };
   "/health": {
     get: {
       responses: {
@@ -603,6 +613,80 @@ export interface paths {
       };
     };
   };
+  "/api/v1/requests/decode": {
+    post: {
+      requestBody: {
+        content: {
+          "application/json": {
+            token: string;
+          };
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              data: {
+                amount: number;
+              };
+              metadata?: {
+                links?: {
+                  self: {
+                    href?: string;
+                  };
+                  next?: {
+                    href?: string;
+                  };
+                  prev?: {
+                    href?: string;
+                  };
+                  first: {
+                    href?: string;
+                  };
+                  last: {
+                    href?: string;
+                  };
+                  pages: {
+                    [key: string]: {
+                      href?: string;
+                    };
+                  };
+                };
+                totalCount?: number;
+              };
+            };
+          };
+        };
+        /** @description Default Response */
+        401: {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              requestId: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        500: {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              requestId: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
+      };
+    };
+  };
   "/api/v1/requests/{requestId}/transactions": {
     get: {
       parameters: {
@@ -690,9 +774,12 @@ export interface paths {
                 updatedAt: string;
                 title: string;
                 userId: string;
-                userData: {
+                metadata: {
                   name: string;
                   email: string;
+                  runId?: string;
+                  journeyId?: string;
+                  journeyTitle?: string;
                 };
                 description: string;
                 providerName: string;
@@ -810,9 +897,12 @@ export interface paths {
                 updatedAt: string;
                 title: string;
                 userId: string;
-                userData: {
+                metadata: {
                   name: string;
                   email: string;
+                  runId?: string;
+                  journeyId?: string;
+                  journeyTitle?: string;
                 };
                 description: string;
                 providerName: string;
@@ -897,9 +987,12 @@ export interface paths {
             integrationReference: string;
             amount: number;
             paymentProviderId: string;
-            userData: {
+            metadata: {
               name: string;
               email: string;
+              runId?: string;
+              journeyId?: string;
+              journeyTitle?: string;
             };
           };
         };
@@ -969,6 +1062,61 @@ export interface paths {
       };
     };
   };
+  "/api/v1/transactions/schema": {
+    get: {
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              type?: string;
+              properties?: {
+                userId?: {
+                  type?: string;
+                };
+                transactionId?: {
+                  type?: string;
+                };
+                paymentRequestId?: {
+                  type?: string;
+                };
+                paymentRequestTitle?: {
+                  type?: string;
+                };
+                amount?: {
+                  minimum?: number;
+                  maximum?: number;
+                  type?: string;
+                };
+                extReferenceCode?: {
+                  type?: string;
+                };
+                paymentMethod?: {
+                  type?: string;
+                };
+                paymentProviderName?: {
+                  type?: string;
+                };
+                status?: {
+                  anyOf?: {
+                    const?: string;
+                    type?: string;
+                  }[];
+                };
+                createdAt?: {
+                  type?: string;
+                };
+                updatedAt?: {
+                  type?: string;
+                };
+              };
+              required?: string[];
+            };
+          };
+        };
+      };
+    };
+  };
   "/api/v1/transactions/generatePaymentIntentId": {
     get: {
       responses: {
@@ -1009,6 +1157,152 @@ export interface paths {
         };
         /** @description Default Response */
         404: {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              requestId: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  "/api/v1/transactions/data/{transactionId}": {
+    get: {
+      parameters: {
+        path: {
+          transactionId: string;
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              data: {
+                userId: string;
+                transactionId: string;
+                paymentRequestId: string;
+                paymentRequestTitle: string;
+                amount: number;
+                extReferenceCode: string;
+                paymentMethod: string;
+                paymentProviderName: string;
+                status:
+                  | "initiated"
+                  | "pending"
+                  | "succeeded"
+                  | "cancelled"
+                  | "failed";
+                createdAt: string;
+                updatedAt: string;
+              };
+              metadata?: {
+                links?: {
+                  self: {
+                    href?: string;
+                  };
+                  next?: {
+                    href?: string;
+                  };
+                  prev?: {
+                    href?: string;
+                  };
+                  first: {
+                    href?: string;
+                  };
+                  last: {
+                    href?: string;
+                  };
+                  pages: {
+                    [key: string]: {
+                      href?: string;
+                    };
+                  };
+                };
+                totalCount?: number;
+              };
+            };
+          };
+        };
+        /** @description Default Response */
+        404: {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              requestId: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  "/api/v1/transactions/{transactionId}/token": {
+    get: {
+      parameters: {
+        path: {
+          transactionId: string;
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              data: {
+                token: string;
+              };
+              metadata?: {
+                links?: {
+                  self: {
+                    href?: string;
+                  };
+                  next?: {
+                    href?: string;
+                  };
+                  prev?: {
+                    href?: string;
+                  };
+                  first: {
+                    href?: string;
+                  };
+                  last: {
+                    href?: string;
+                  };
+                  pages: {
+                    [key: string]: {
+                      href?: string;
+                    };
+                  };
+                };
+                totalCount?: number;
+              };
+            };
+          };
+        };
+        /** @description Default Response */
+        401: {
+          content: {
+            "application/json": {
+              code: string;
+              detail: string;
+              requestId: string;
+              name: string;
+              validation?: unknown;
+              validationContext?: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        500: {
           content: {
             "application/json": {
               code: string;
@@ -1145,9 +1439,12 @@ export interface paths {
                 updatedAt: string;
                 title: string;
                 userId: string;
-                userData: {
+                metadata: {
                   name: string;
                   email: string;
+                  runId?: string;
+                  journeyId?: string;
+                  journeyTitle?: string;
                 };
                 description: string;
                 providerName: string;
