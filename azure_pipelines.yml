@@ -1,7 +1,5 @@
 trigger:
-  - dev
-  - uat
-  - sta
+  - debug
 
 pr:
   autoCancel: true
@@ -14,7 +12,7 @@ pr:
 parameters:
   - name: buildBranches
     type: object
-    default: ["dev", "sta", "uat"]
+    default: ["debug"]
 
   - name: validEnvironments
     type: object
