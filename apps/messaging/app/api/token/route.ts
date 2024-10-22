@@ -7,20 +7,20 @@ export async function GET() {
   try {
     const token = await AuthenticationFactory.getInstance().getToken();
 
-    getCommonLoggerWithEnvLevel().trace(
-      {
-        subToken:
-          token && typeof token === "string" ? token.substring(0, 10) : token,
-      },
-      "Token retrieved in /api/token",
-    );
+    // getCommonLoggerWithEnvLevel().trace(
+    //   {
+    //     subToken:
+    //       token && typeof token === "string" ? token.substring(0, 10) : token,
+    //   },
+    //   "Token retrieved in /api/token",
+    // );
 
     return NextResponse.json({ token });
   } catch (error) {
-    getCommonLoggerWithEnvLevel().error(
-      { error },
-      "Error raised requesting token in /api/token",
-    );
+    // getCommonLoggerWithEnvLevel().error(
+    //   { error },
+    //   "Error raised requesting token in /api/token",
+    // );
 
     throw error;
   }
