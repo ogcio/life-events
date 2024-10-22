@@ -10,7 +10,7 @@
     "test:smoke:e2e": "echo \"Error: no test specified\" && exit 0",
     "test:regression:e2e": "echo \"Error: no test specified\" && exit 0",
     "test:ci-disabled:e2e": "cd ./e2e && mkdir -p test-results && bru run --env dev --output ./test-results/results.xml --format junit",
-    "test:perf": "mkdir -p performance_test_reports && k6 run perf/script.js ./performance_test_reports/",
+    "test:perf": "mkdir -p performance_test_reports && k6 version && k6 run perf/script.js ./performance_test_reports/",
     "test:perf:local": "mkdir -p performance_test_reports && cat perf/script.js | docker run --name loadtest -i grafana/k6 run - && docker cp loadtest:/home/k6/LoadTestReport.html ./reports/ && docker stop loadtest && docker rm loadtest",
     "dev": "node --watch --import tsx src/index.ts | pino-pretty",
     "lint": "eslint . --ext .ts",
