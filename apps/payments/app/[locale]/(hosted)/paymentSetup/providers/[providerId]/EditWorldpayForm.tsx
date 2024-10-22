@@ -19,7 +19,6 @@ type Props = {
 
 export default async ({ provider, locale }: Props) => {
   const t = await getTranslations("PaymentSetup.AddWorldpay");
-  const { messages } = await getRequestConfig({ locale });
 
   const errorFieldMapping = {};
 
