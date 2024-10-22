@@ -29,7 +29,24 @@ const SELECTED_ORG_COOKIE = "bb-selected-org-id";
 export const AuthUserScope = UserScope;
 
 export const AuthSession: IAuthSession = {
-  async login(config) {
+  async login(config, options) {
+    // redirectUrl from deprecated signIn @logto/next/lib/server-actions/index.js
+    const redirectUri = `${config.baseUrl}/callback`;
+
+    let directSignIn;
+    if (options?.signInConnector === "entraid") {
+      directSignIn = {
+        target: "OGCIO EntraID",
+        method: "social",
+      };
+    }
+    if (options?.signInConnector === "mygovid") {
+      directSignIn = {
+        target: "MyGovId",
+        method: "social",
+      };
+    }
+
     addInactivePublicServantScope(config);
     getCommonLogger().info(
       {
@@ -40,7 +57,7 @@ export const AuthSession: IAuthSession = {
       },
       "Requesting login, redirecting to the Logto signIn page",
     );
-    return signIn(config);
+    return signIn(config, { directSignIn, redirectUri });
   },
   async logout(config, redirectUri) {
     addInactivePublicServantScope(config);
