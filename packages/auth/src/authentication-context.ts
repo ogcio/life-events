@@ -1,7 +1,19 @@
 import { AuthSession, AuthUserScope } from "auth/auth-session";
 import { PartialAuthSessionContext } from "auth/types";
-import { Logger } from "pino";
+//import { Logger } from "pino";
 
+type Level = "fatal" | "error" | "warn" | "info" | "debug" | "trace" | "silent";
+type genericLogMethodType = <T>(obj: T, msg?: string, ...args: any[]) => void;
+type Logger = {
+  level: Level;
+  warn: genericLogMethodType;
+  silent: genericLogMethodType;
+  trace: genericLogMethodType;
+  fatal: genericLogMethodType;
+  info: genericLogMethodType;
+  error: genericLogMethodType;
+  debug: genericLogMethodType;
+};
 export const getBaseLogtoConfig = () => ({
   cookieSecure: process.env.NODE_ENV === "production",
   endpoint: process.env.LOGTO_ENDPOINT as string,

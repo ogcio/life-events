@@ -15,9 +15,11 @@ import {
   isAuthenticated,
 } from "./authentication-context";
 import { notFound } from "next/navigation";
-import { getCommonLogger } from "nextjs-logging-wrapper";
+//import { getCommonLogger } from "nextjs-logging-wrapper";
 import createError from "http-errors";
-import { Level, Logger } from "pino";
+//import { Level, Logger } from "pino";
+
+type Level = "fatal" | "error" | "warn" | "info" | "debug" | "trace" | "silent";
 
 export interface AuthenticationContextConfig {
   resourceUrl?: string;
@@ -37,19 +39,42 @@ const isValidLogLevel = (logLevel: string | undefined): logLevel is Level => {
     ["fatal", "error", "warn", "info", "debug", "trace"].includes(logLevel)
   );
 };
-
+type genericLogMethodType = <T>(obj: T, msg?: string, ...args: any[]) => void;
 export class BaseAuthenticationContext {
   readonly config: AuthenticationContextConfig;
   sharedContext: AuthSessionContext | null = null;
   citizenContext: PartialAuthSessionContext | null = null;
   publicServantContext: PartialAuthSessionContext | null = null;
-  readonly logger: Logger;
+  genericLogMethodFunction<T>(obj: T, msg?: string, ...args: any[]) {
+    console.log(msg, obj);
+  }
+  //readonly logger: Logger;
+  readonly logger: {
+    level: Level;
+    warn: genericLogMethodType;
+    silent: genericLogMethodType;
+    trace: genericLogMethodType;
+    fatal: genericLogMethodType;
+    info: genericLogMethodType;
+    error: genericLogMethodType;
+    debug: genericLogMethodType;
+  };
   constructor(config: AuthenticationContextConfig) {
     this.config = config;
     const inputLogLevel = process.env.LOG_LEVEL;
-    this.logger = getCommonLogger(
-      isValidLogLevel(inputLogLevel) ? inputLogLevel : undefined,
-    );
+    // this.logger = getCommonLogger(
+    //   isValidLogLevel(inputLogLevel) ? inputLogLevel : undefined,
+    // );
+    this.logger = {
+      level: isValidLogLevel(inputLogLevel) ? inputLogLevel : "info",
+      warn: this.genericLogMethodFunction,
+      silent: this.genericLogMethodFunction,
+      trace: this.genericLogMethodFunction,
+      fatal: this.genericLogMethodFunction,
+      info: this.genericLogMethodFunction,
+      error: this.genericLogMethodFunction,
+      debug: this.genericLogMethodFunction,
+    };
   }
 
   async getContext() {
@@ -106,7 +131,7 @@ export class BaseAuthenticationContext {
     context: PartialAuthSessionContext,
   ): AuthSessionContext {
     if (!context.user) {
-      getCommonLogger().error({
+      this.logger.error({
         error: createError.Unauthorized("Missing user"),
       });
       throw notFound();
