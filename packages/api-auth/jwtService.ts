@@ -6,6 +6,7 @@ import {
   JWTPayload,
   JWK,
   importSPKI,
+  decodeJwt,
 } from "jose";
 import {
   GetPublicKeyCommand,
@@ -154,4 +155,9 @@ async function getJWKS(keyId: string): Promise<{ keys: JWK[] }> {
   return getJWKSRoute(jwk);
 }
 
-export { createSignedJWT, verifyJWT, getJWKS };
+// Function to decode JWT without validation
+function getIssuerFromJWT(token: string) {
+  return decodeJwt(token).iss;
+}
+
+export { createSignedJWT, verifyJWT, getJWKS, getIssuerFromJWT };

@@ -37,4 +37,9 @@ export class FormPlugin implements IIntegratorPlugin {
   public processResultData(data: any) {
     return data;
   }
+
+  //TODO: To complete
+  public getJwksUrl() {
+    return "/.well-known/jwks.json";
+  }
 }
