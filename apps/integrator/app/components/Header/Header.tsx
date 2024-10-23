@@ -23,49 +23,6 @@ export default async ({ locale }: HeaderProps) => {
   const instance = AuthenticationFactory.getInstance();
 
   return (
-    // <header
-    //   role="banner"
-    //   data-module="govie-header"
-    //   className={`govie-header ${styles.govieHeader}`}
-    // >
-    //   <div className={`govie-header__container ${styles.innerWrapper}`}>
-    //     <div
-    //       style={{
-    //         display: "flex",
-    //         justifyContent: "space-between",
-    //         alignItems: "center",
-    //         width: "100%",
-    //       }}
-    //     >
-    //       <div className={styles.leftSideContainer}>
-    //         <a
-    //           href="/"
-    //           className="govie-header__link govie-header__link--homepage"
-    //           style={{ display: "block" }}
-    //         >
-    //           <HeaderSvg />
-    //         </a>
-    //         <div className={styles.title}>
-    //           <strong>Life events - admin dashboard</strong>
-    //         </div>
-    //       </div>
-    //       <div className={styles.rightsideContainer}>
-    //         <LanguageSwitch theme="dark" />
-    //         <UserIcon initials={initials} />
-
-    //         <Link
-    //           href={"/signout"}
-    //           prefetch={false}
-    //           style={{ display: "flex" }}
-    //           aria-label="signout"
-    //         >
-    //           <ds.Icon icon="logout" color={ds.colours.ogcio.white} size={22} />
-    //         </Link>
-    //       </div>
-    //     </div>
-    //   </div>
-    // </header>
-
     <header
       role="banner"
       data-module="govie-header"
