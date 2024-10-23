@@ -7,7 +7,7 @@ const integratorResource = process.env.INTEGRATOR_BACKEND_URL + "/";
 
 export const baseConfig = {
   cookieSecure: process.env.NODE_ENV === "production",
-  baseUrl: process.env.HOST_URL as string,
+  baseUrl: process.env.NEXT_PUBLIC_INTEGRATOR_SERVICE_ENTRY_POINT as string,
   endpoint: process.env.LOGTO_ENDPOINT as string,
   cookieSecret: process.env.LOGTO_COOKIE_SECRET as string,
 
