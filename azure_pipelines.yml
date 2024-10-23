@@ -1,5 +1,7 @@
 trigger:
-  - debug
+  - dev
+  - uat
+  - sta
 
 pr:
   autoCancel: true
@@ -12,7 +14,7 @@ pr:
 parameters:
   - name: buildBranches
     type: object
-    default: ["debug"]
+    default: ["dev", "sta", "uat"]
 
   - name: validEnvironments
     type: object
@@ -155,4 +157,3 @@ stages:
           parameters:
             serviceName: ${{ serviceName }}
             testPath: './apps/'
-
