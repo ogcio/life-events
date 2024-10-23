@@ -48,7 +48,8 @@ export const getAuthenticationContextConfig =
     resourceUrl: integratorResource,
   });
 
-export const postSignoutRedirect = process.env.HOST_URL;
+export const postSignoutRedirect =
+  process.env.NEXT_PUBLIC_INTEGRATOR_SERVICE_ENTRY_POINT;
 
 export const getSignInConfiguration = () => ({
   ...baseConfig,
