@@ -2,19 +2,20 @@ import createMiddleware from "next-intl/middleware";
 import { type NextRequest } from "next/server";
 import { ProfileAuthenticationFactory } from "./app/utils/profile-authentication-factory";
 import { cookies } from "next/headers";
+import { getCommonLoggerWithEnvLevel } from "./app/utils/messaging";
 
 const locales = ["en", "ga"];
 const DEFAULT_LOCALE = "en";
 const NEXT_LOCALE_COOKIE = "NEXT_LOCALE";
 
 export default async function (request: NextRequest) {
-  // getCommonLoggerWithEnvLevel().trace(
-  //   {
-  //     destinationUrl: request.nextUrl.toString(),
-  //     cookies: request.cookies.getAll(),
-  //   },
-  //   "I am in middleware",
-  // );
+  getCommonLoggerWithEnvLevel().trace(
+    {
+      destinationUrl: request.nextUrl.toString(),
+      cookies: request.cookies.getAll(),
+    },
+    "I am in middleware",
+  );
 
   let preferredLanguage = DEFAULT_LOCALE;
   if (!cookies().get(NEXT_LOCALE_COOKIE)) {

@@ -15,11 +15,9 @@ import {
   isAuthenticated,
 } from "./authentication-context";
 import { notFound } from "next/navigation";
-//import { getCommonLogger } from "nextjs-logging-wrapper";
+import { getCommonLogger } from "nextjs-logging-wrapper";
 import createError from "http-errors";
-//import { Level, Logger } from "pino";
-
-type Level = "fatal" | "error" | "warn" | "info" | "debug" | "trace" | "silent";
+import { Level, Logger } from "pino";
 
 export interface AuthenticationContextConfig {
   resourceUrl?: string;
@@ -45,36 +43,13 @@ export class BaseAuthenticationContext {
   sharedContext: AuthSessionContext | null = null;
   citizenContext: PartialAuthSessionContext | null = null;
   publicServantContext: PartialAuthSessionContext | null = null;
-  genericLogMethodFunction<T>(obj: T, msg?: string, ...args: any[]) {
-    console.log(msg, obj);
-  }
-  //readonly logger: Logger;
-  readonly logger: {
-    level: Level;
-    warn: genericLogMethodType;
-    silent: genericLogMethodType;
-    trace: genericLogMethodType;
-    fatal: genericLogMethodType;
-    info: genericLogMethodType;
-    error: genericLogMethodType;
-    debug: genericLogMethodType;
-  };
+  readonly logger: Logger;
   constructor(config: AuthenticationContextConfig) {
     this.config = config;
     const inputLogLevel = process.env.LOG_LEVEL;
-    // this.logger = getCommonLogger(
-    //   isValidLogLevel(inputLogLevel) ? inputLogLevel : undefined,
-    // );
-    this.logger = {
-      level: isValidLogLevel(inputLogLevel) ? inputLogLevel : "info",
-      warn: this.genericLogMethodFunction,
-      silent: this.genericLogMethodFunction,
-      trace: this.genericLogMethodFunction,
-      fatal: this.genericLogMethodFunction,
-      info: this.genericLogMethodFunction,
-      error: this.genericLogMethodFunction,
-      debug: this.genericLogMethodFunction,
-    };
+    this.logger = getCommonLogger(
+      isValidLogLevel(inputLogLevel) ? inputLogLevel : undefined,
+    );
   }
 
   async getContext() {
