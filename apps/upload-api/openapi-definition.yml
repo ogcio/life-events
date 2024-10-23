@@ -595,6 +595,27 @@ paths:
           name: fileId
           required: true
       responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        fileId:
+                          type: string
+                        userId:
+                          type: string
+                      required:
+                        - fileId
+                        - userId
+                required:
+                  - data
         4XX:
           description: Default Response
           content:
