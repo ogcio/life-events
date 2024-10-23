@@ -52,7 +52,7 @@ class IntegratorEngine {
     });
   }
 
-  public processResultData(data: any) {
+  public async processResultData(data: any) {
     return this.plugin.processResultData(data, {
       journeyId: this.journeyId,
       runId: this.runId,

@@ -352,12 +352,8 @@ export default async function executor(app: FastifyInstance) {
 
       let processedData;
       if (token) {
-        // Get the token issuer
-        // Map the mapped token to the issuer
-        // From this, find the key URL in the repository
-        // Verify the token, and get all the data
-        const data = {};
-        processedData = engine.processResultData(data);
+        const data = await engine.validateToken(token);
+        processedData = await engine.processResultData(data);
       }
 
       /**
