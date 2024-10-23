@@ -21,3 +21,4 @@ variables:
   nextPublicPaymentsMatomoSiteId: 15
   nextPublicFormsServiceEntryPoint: #
   nextPublicDesignSystemServiceEntryPoint: #
+  nextPublicIntegratorServiceEntryPoint: https://journey.dev.blocks.gov.ie
