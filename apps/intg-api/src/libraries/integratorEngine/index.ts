@@ -35,6 +35,11 @@ class IntegratorEngine {
     });
   }
 
+  //TODO: implement this
+  public validateToken(token: string) {
+    return { token };
+  }
+
   public processResultData(data: any) {
     return this.plugin.processResultData(data, {
       journeyId: this.journeyId,

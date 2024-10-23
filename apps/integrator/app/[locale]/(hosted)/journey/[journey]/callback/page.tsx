@@ -9,18 +9,22 @@ type Props = {
   };
   searchParams: {
     runId: string;
-    token: string;
+    token?: string;
   };
 };
 
-const transitionStep = async (journeyId: string, runId: string, data: any) => {
+const transitionStep = async (
+  journeyId: string,
+  runId: string,
+  token?: string,
+) => {
   "use server";
 
   const client = await AuthenticationFactory.getIntegratorClient();
   const result = await client.transitionStep({
     journeyId,
     runId,
-    data,
+    token,
   });
 
   return result.data?.data.url;
@@ -28,7 +32,7 @@ const transitionStep = async (journeyId: string, runId: string, data: any) => {
 
 export default async (props: Props) => {
   const { locale, journey: journeyId } = props.params;
-  const { runId, token, ...searchParams } = props.searchParams;
+  const { runId, token } = props.searchParams;
 
   const t = await getTranslations();
 
@@ -43,7 +47,7 @@ export default async (props: Props) => {
     return redirect("/admin/journeys", RedirectType.replace);
   }
 
-  const url = await transitionStep(journeyId, runId, searchParams);
+  const url = await transitionStep(journeyId, runId, token);
 
   if (!url) {
     return (
