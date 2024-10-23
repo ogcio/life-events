@@ -25,7 +25,7 @@
     "@govie-ds/react": "^0.14.1",
     "@govie-ds/theme-govie": "^0.3.4",
     "auth": "*",
-    "@ogcio/building-blocks-sdk": "0.0.1",
+    "@ogcio/building-blocks-sdk": "0.0.2",
     "dayjs": "^1.11.12",
     "db-migrate": "^0.11.14",
     "db-migrate-pg": "^1.5.2",
