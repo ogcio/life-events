@@ -28,7 +28,7 @@ awslocal s3api put-bucket-cors --bucket "$IMAGES_S3_BUCKET" --cors-configuration
 
 AWS_REGION="eu-west-1"
 
-for SERVICE in "payments-api" "integrator-api"; do
+for SERVICE in "payments-api" "intg-api"; do
   echo "Creating KMS key for $SERVICE..."
 
   KMS_KEY_ID=$(aws kms create-key \
