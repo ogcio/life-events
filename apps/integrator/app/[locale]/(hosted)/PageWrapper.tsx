@@ -3,6 +3,7 @@ import { AuthenticationFactory } from "../../../libraries/authentication-factory
 import { redirect, RedirectType } from "next/navigation";
 import { Suspense } from "react";
 import { OrganizationData } from "auth/types";
+import { getTranslations } from "next-intl/server";
 
 type Props = React.PropsWithChildren<{
   locale: string;
@@ -22,6 +23,7 @@ export const PageWrapper = async ({
   locale,
   disableOrgSelector = false,
 }: Props) => {
+  const t = await getTranslations("Journeys");
   let organizations: OrganizationData[] = [];
   let defaultOrgId: string = "";
 
@@ -53,21 +55,35 @@ export const PageWrapper = async ({
     >
       <div>
         <section className="sidebar" style={{ width: "220px" }}>
-          <div>{userName}</div>
-
           <Suspense fallback={<h3>{"loading"}</h3>}>
-            {organizations && organizations.length > 1 && (
-              <OrganizationSelector
-                title="Department"
-                actionTitle="Change department"
-                organizations={organizations.map((org) => ({
-                  name: org.name,
-                  id: org.id,
-                }))}
-                defaultOrganization={defaultOrgId}
-                handleSubmit={handleSubmit}
-                disabled={disableOrgSelector}
-              ></OrganizationSelector>
+            <h2>{t("organisationSelector.title")}</h2>
+            {!disableOrgSelector &&
+              organizations &&
+              organizations.length > 1 && (
+                <OrganizationSelector
+                  description={t("organisationSelector.description")}
+                  actionTitle="Change"
+                  organizations={organizations.map((org) => ({
+                    name: org.name,
+                    id: org.id,
+                  }))}
+                  defaultOrganization={defaultOrgId}
+                  handleSubmit={handleSubmit}
+                  disabled={disableOrgSelector}
+                ></OrganizationSelector>
+              )}
+            {(disableOrgSelector ||
+              (organizations && organizations.length == 1)) && (
+              <div
+                style={{
+                  background: "#F2EFE8",
+                  padding: "8px 20px 10px",
+                  fontWeight: "700",
+                  fontSize: "16px",
+                }}
+              >
+                {organizations[0].name}
+              </div>
             )}
           </Suspense>
         </section>

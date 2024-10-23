@@ -19,10 +19,6 @@ $breakpoint-xxl: 1400px;
 .page-container {
   width: 100%;
   margin: 0 auto;
-
-  @media (min-width: $breakpoint-md) {
-    width: 80%;
-  }
 }
 
 .table-container {
