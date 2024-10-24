@@ -877,6 +877,11 @@ paths:
                   - detail
                   - requestId
                   - name
+  /api/v1/journeys/create-journey:
+    post:
+      responses:
+        "200":
+          description: Default Response
   /api/v1/journey_step_connections/{connectionId}:
     get:
       tags: &a2
