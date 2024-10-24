@@ -77,7 +77,10 @@ export default async function Page(props: Props) {
     getTranslations("Common"),
   ]);
 
-  const { messages } = await getRequestConfig({ locale: props.params.locale });
+  const { messages } = await getRequestConfig({
+    locale: props.params.locale,
+    requestLocale: new Promise(() => props.params.locale),
+  });
 
   if (!details || details.status === "draft") return notFound();
 
