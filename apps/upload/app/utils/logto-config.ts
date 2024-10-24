@@ -43,19 +43,6 @@ export const getAuthenticationContextConfig =
     resourceUrl: uploadApiResource,
   });
 
-export const getProfileAuthenticationContextConfig =
-  (): AuthenticationContextConfig => ({
-    baseUrl: uploadEntryPointSlash,
-    appId: process.env.LOGTO_PROFILE_APP_ID as string,
-    appSecret: process.env.LOGTO_PROFILE_APP_SECRET as string,
-    organizationId,
-    citizenScopes,
-    publicServantExpectedRoles: ["Profile Public Servant"],
-    publicServantScopes: ["profile:user:*"],
-    loginUrl: logtoLogin.url,
-    resourceUrl: profileApiResource,
-  });
-
 export const postSignoutRedirect = process.env.UPLOAD_ENTRY_POINT;
 
 export const getSignInConfiguration = () => ({

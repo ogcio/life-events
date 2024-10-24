@@ -1,10 +1,10 @@
 export type FileOwner = {
-  id: string;
+  id?: string;
   firstName: string;
   lastName: string;
-  ppsn: string;
+  ppsn: string | null;
   email?: string;
-  phone?: string;
+  phone: string | null;
 };
 
 export type FileMetadata = {

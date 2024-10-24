@@ -1,14 +1,10 @@
 import { BaseAuthenticationContext } from "auth/base-authentication-context";
-import { getProfileAuthenticationContextConfig } from "./logto-config";
+import { getAuthenticationContextConfig } from "./logto-config";
 import { getSdks } from "./building-blocks-client";
 
 export class ProfileAuthenticationFactory {
   static getInstance(): BaseAuthenticationContext {
-    console.log({ config: getProfileAuthenticationContextConfig() });
-
-    return new BaseAuthenticationContext(
-      getProfileAuthenticationContextConfig(),
-    );
+    return new BaseAuthenticationContext(getAuthenticationContextConfig());
   }
 
   static async getProfileClient() {
