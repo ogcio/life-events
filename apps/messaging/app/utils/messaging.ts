@@ -4,7 +4,7 @@ import { ComponentProps } from "react";
 import ds from "design-system";
 import { api } from "messages";
 import { events, providerRoutes, users } from "./routes";
-// import { getCommonLogger } from "nextjs-logging-wrapper";
+import { getCommonLogger } from "nextjs-logging-wrapper";
 import { Level } from "pino";
 
 export const languages = {
@@ -215,9 +215,9 @@ const isValidLogLevel = (logLevel: string | undefined): logLevel is Level => {
 
 export function getCommonLoggerWithEnvLevel() {
   const inputLogLevel = process.env.LOG_LEVEL;
-  // return getCommonLogger(
-  //   isValidLogLevel(inputLogLevel) ? inputLogLevel : undefined,
-  // );
+  return getCommonLogger(
+    isValidLogLevel(inputLogLevel) ? inputLogLevel : undefined,
+  );
 }
 
 export const isValidJson = (token: string): boolean => {
