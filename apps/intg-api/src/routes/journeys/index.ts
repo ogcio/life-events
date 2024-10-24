@@ -21,6 +21,7 @@ import {
   JourneyPublicDetailsDO,
 } from "../../plugins/entities/journey/types";
 import { getExternalService } from "../../services/externalServices/externalServiceProvider";
+import { getProfileSdk } from "../../utils/authenticationFactory";
 
 const TAGS = ["Journeys"];
 
@@ -48,8 +49,18 @@ export default async function journeys(app: FastifyInstance) {
       }
 
       const journeys = await app.journey.getJourneys(organizationId);
+      const profileSdk = await getProfileSdk(organizationId);
 
-      reply.send(formatAPIResponse(journeys));
+      const promises = journeys.map(async (journey) => {
+        const userInfo = await profileSdk.getUser(journey.userId);
+        return {
+          ...journey,
+          userName: `${userInfo.data?.firstName} ${userInfo.data?.lastName}`,
+        };
+      });
+      const result = await Promise.all(promises);
+
+      reply.send(formatAPIResponse(result));
     },
   );
 

@@ -144,6 +144,8 @@ export const JourneyPublicDetails = Type.Pick(JourneyDetails, [
   "organizationId",
   "status",
   "initialStepId",
+  "createdAt",
+  "updatedAt",
 ]);
 
 export const FullJourney = Type.Composite([
@@ -155,7 +157,14 @@ export const FullJourney = Type.Composite([
 ]);
 export type FullJourneyDO = Static<typeof FullJourney>;
 
-export const Journeys = Type.Array(JourneyPublicDetails);
+export const Journeys = Type.Array(
+  Type.Composite([
+    JourneyPublicDetails,
+    Type.Object({
+      userName: Type.String(),
+    }),
+  ]),
+);
 
 export const CreateJourneyBody = Type.Object({
   title: Type.String(),

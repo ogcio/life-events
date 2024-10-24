@@ -28,6 +28,9 @@ export interface paths {
                 organizationId: string;
                 status: "active" | "draft";
                 initialStepId: string;
+                createdAt: string;
+                updatedAt: string;
+                userName: string;
               }[];
               metadata?: {
                 links?: {
@@ -341,6 +344,8 @@ export interface paths {
                 organizationId: string;
                 status: "active" | "draft";
                 initialStepId: string;
+                createdAt: string;
+                updatedAt: string;
               };
               metadata?: {
                 links?: {

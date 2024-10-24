@@ -27,7 +27,8 @@ export class JourneyRepo {
         organization_id as "organizationId",
         created_at as "createdAt",
         updated_at as "updatedAt",
-        user_id as "userId"
+        user_id as "userId",
+        initial_step_id as "initialStepId"
       FROM journeys
       WHERE organization_id = $1
       ORDER BY created_at DESC`,

@@ -19,6 +19,7 @@ export const envSchema = {
     "AWS_REGION",
     "KMS_ENDPOINT",
     "INTEGRATOR_URL",
+    "PROFILE_BACKEND_URL",
   ],
   properties: {
     POSTGRES_USER: {
@@ -73,6 +74,9 @@ export const envSchema = {
       type: "string",
     },
     INTEGRATOR_URL: {
+      type: "string",
+    },
+    PROFILE_BACKEND_URL: {
       type: "string",
     },
   },

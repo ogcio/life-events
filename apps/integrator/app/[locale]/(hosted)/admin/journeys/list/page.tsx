@@ -33,10 +33,18 @@ export default async ({ params: { locale } }: Props) => {
   const integratorApi = await AuthenticationFactory.getIntegratorClient();
   const journeysRes = await integratorApi.getJourneys();
   const journeys = journeysRes.data?.data;
-
+  console.log(journeysRes);
   return (
-    <PageWrapper locale={locale}>
+    <PageWrapper locale={locale} disableOrgSelector={true}>
       <div className="table-container">
+        <div
+          className="govie-width-container"
+          style={{ width: "100%", fontSize: "16px" }}
+        >
+          <Link className="govie-link" href={`/${locale}/admin/journeys`}>
+            {`< ${tGeneral("back")}`}
+          </Link>
+        </div>
         <section
           style={{
             margin: "1rem 0",
@@ -62,6 +70,9 @@ export default async ({ params: { locale } }: Props) => {
                 <thead className="govie-table__head">
                   <tr className="govie-table__row">
                     <th scope="col" className="govie-table__header">
+                      {t("tableHeaders.id")}
+                    </th>
+                    <th scope="col" className="govie-table__header">
                       {t("tableHeaders.name")}
                     </th>
                     <th scope="col" className="govie-table__header">
@@ -69,9 +80,6 @@ export default async ({ params: { locale } }: Props) => {
                     </th>
                     <th scope="col" className="govie-table__header">
                       {t("tableHeaders.created")}
-                    </th>
-                    <th scope="col" className="govie-table__header">
-                      {t("tableHeaders.updated")}
                     </th>
                     <th scope="col" className="govie-table__header">
                       {t("tableHeaders.actions")}
@@ -86,17 +94,27 @@ export default async ({ params: { locale } }: Props) => {
                       data-journey-id={journey.id}
                     >
                       <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
+                        <div
+                          style={{
+                            whiteSpace: "nowrap",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            width: "80px",
+                          }}
+                          title={`#${journey.id}`}
+                        >
+                          {`#${journey.id}`}
+                        </div>
+                      </td>
+                      <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
                         {journey.title}
                       </td>
                       <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-                        {await getUserNameById(journey.userId, defaultOrgId)}
-                      </td>
-                      {/* <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-                        {dayjs(journey.createdAt).format("Do MMM YYYY")}
+                        {journey.userName}
                       </td>
                       <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
-                        {dayjs(journey.updatedAt).format("Do MMM YYYY")}
-                      </td> */}
+                        {dayjs(journey.createdAt).format("DD/MM/YYYY")}
+                      </td>
                       <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
                         <div
                           style={{
@@ -110,7 +128,7 @@ export default async ({ params: { locale } }: Props) => {
                               marginRight: "12px",
                             }}
                           >
-                            {tGeneral("journeyStatus")}
+                            {tGeneral("view")}
                           </Link>
 
                           <CopyLink
@@ -124,10 +142,6 @@ export default async ({ params: { locale } }: Props) => {
                   ))}
                 </tbody>
               </table>
-
-              <Link className="govie-link" href={`/${locale}/admin/journeys`}>
-                {tGeneral("backToHome")}
-              </Link>
             </div>
           )}
         </section>
