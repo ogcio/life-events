@@ -10,6 +10,7 @@ import {
   Journeys,
   JourneySchema,
   JourneyStepSchema,
+  JourneyStepTypes,
   ParamsWithJourneyId,
   UpdateJourneyBody,
   UpdateJourneyBodyDO,
@@ -281,4 +282,68 @@ export default async function journeys(app: FastifyInstance) {
       reply.send(formatAPIResponse(result));
     },
   );
+
+  app.post<{
+    Body: {
+      title: string;
+      formUrl: string;
+      paymentUrl: string;
+      userId: string;
+      organizationId: string;
+    };
+    Reply: GenericResponse<Id> | Error;
+  }>("/create-journey", {}, async (request, reply) => {
+    const { title, formUrl, paymentUrl, userId, organizationId } = request.body;
+
+    const journey = await app.journey.createJourney({
+      title,
+      organizationId,
+      userId,
+    });
+
+    const formStep = await app.journeySteps.createStep({
+      journeyId: journey.id,
+      stepType: "form",
+      stepData: {
+        title: "Test form",
+        url: formUrl,
+      },
+    });
+
+    const paymentStep = await app.journeySteps.createStep({
+      journeyId: journey.id,
+      stepType: "payment",
+      stepData: {
+        title: "Test payment",
+        url: paymentUrl,
+      },
+    });
+
+    const messageStep = await app.journeySteps.createStep({
+      journeyId: journey.id,
+      stepType: "messaging",
+      stepData: {},
+    });
+
+    await app.journeyStepConnections.createConnection({
+      journeyId: journey.id,
+      sourceStepId: formStep.id,
+      destinationStepId: paymentStep.id,
+    });
+
+    await app.journeyStepConnections.createConnection({
+      journeyId: journey.id,
+      sourceStepId: paymentStep.id,
+      destinationStepId: messageStep.id,
+    });
+
+    await app.journey.activateJourney({
+      journeyId: journey.id,
+      status: "active",
+      initialStepId: formStep.id,
+      organizationId: organizationId,
+    });
+
+    reply.send(formatAPIResponse(journey));
+  });
 }
