@@ -38,7 +38,7 @@
     "@ogcio/building-blocks-sdk": "^0.0.2",
     "@ogcio/fastify-error-handler": "^4.0.1",
     "@ogcio/fastify-logging-wrapper": "^4.0.1",
-    "@sinclair/typebox": "^0.32.16",
+    "@sinclair/typebox": "^0.33.17",
     "api-auth": "*",
     "clamscan": "^2.2.1",
     "db-migrate": "^0.11.14",
