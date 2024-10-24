@@ -6,7 +6,7 @@ import {
 } from "fastify";
 import fp from "fastify-plugin";
 import { JourneyRepo } from "./repo";
-import { Id } from "../../../routes/schemas";
+import { Id, PaginationParams } from "../../../routes/schemas";
 import {
   CreateJourneyBodyDO,
   JourneyDetailsDO,
@@ -18,16 +18,39 @@ export type JourneyPlugin = Awaited<ReturnType<typeof buildPlugin>>;
 
 const buildGetJourneys =
   (repo: JourneyRepo, log: FastifyBaseLogger) =>
-  async (organizationId: string): Promise<JourneyPublicDetailsDO[]> => {
+  async (
+    organizationId: string,
+    pagination: PaginationParams,
+  ): Promise<JourneyPublicDetailsDO[]> => {
     let result;
 
     try {
-      result = await repo.getJourneys(organizationId);
+      result = await repo.getJourneys(organizationId, pagination);
     } catch (err) {
       log.error((err as Error).message);
     }
 
     return result?.rows ?? [];
+  };
+
+const buildGetJourneysTotalCount =
+  (repo: JourneyRepo, log: FastifyBaseLogger, httpErrors: HttpErrors) =>
+  async (organizationId: string): Promise<number> => {
+    let result;
+
+    try {
+      result = await repo.getJourneysTotalCount(organizationId);
+    } catch (err) {
+      log.error((err as Error).message);
+    }
+
+    const totalCount = result?.rows[0].totalCount;
+
+    if (totalCount === undefined) {
+      throw httpErrors.internalServerError("Something went wrong.");
+    }
+
+    return totalCount;
   };
 
 const buildGetJourneyById =
@@ -117,6 +140,7 @@ const buildPlugin = (
 ) => {
   return {
     getJourneys: buildGetJourneys(repo, log),
+    getJourneysTotalCount: buildGetJourneysTotalCount(repo, log, httpErrors),
     getJourneyById: buildGetJourneyById(repo, log, httpErrors),
     getJourneyPublicInfo: buildGetJourneyPublicInfo(repo, log, httpErrors),
     createJourney: buildCreateJourney(repo, log, httpErrors),

@@ -10,7 +10,7 @@ import {
   Journeys,
   JourneySchema,
   JourneyStepSchema,
-  JourneyStepTypes,
+  PaginationParams,
   ParamsWithJourneyId,
   UpdateJourneyBody,
   UpdateJourneyBodyDO,
@@ -23,12 +23,18 @@ import {
 } from "../../plugins/entities/journey/types";
 import { getExternalService } from "../../services/externalServices/externalServiceProvider";
 import { getProfileSdk } from "../../utils/authenticationFactory";
+import {
+  PAGINATION_LIMIT_DEFAULT,
+  PAGINATION_OFFSET_DEFAULT,
+  PaginationDetails,
+} from "../../utils/pagination";
 
 const TAGS = ["Journeys"];
 
 export default async function journeys(app: FastifyInstance) {
   app.get<{
     Reply: GenericResponse<JourneyPublicDetailsDO[]> | Error;
+    Querystring: PaginationParams;
   }>(
     "/",
     {
@@ -36,6 +42,7 @@ export default async function journeys(app: FastifyInstance) {
         app.checkPermissions(req, res, [authPermissions.JOURNEY_READ]),
       schema: {
         tags: TAGS,
+        querystring: PaginationParams,
         response: {
           200: GenericResponse(Journeys),
           401: HttpError,
@@ -43,13 +50,31 @@ export default async function journeys(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
+      const {
+        offset = PAGINATION_OFFSET_DEFAULT,
+        limit = PAGINATION_LIMIT_DEFAULT,
+      } = request.query;
+
       const organizationId = request.userData?.organizationId;
 
       if (!organizationId) {
         throw app.httpErrors.unauthorized("Unauthorized!");
       }
 
-      const journeys = await app.journey.getJourneys(organizationId);
+      const journeys = await app.journey.getJourneys(organizationId, {
+        offset,
+        limit,
+      });
+      const totalCount =
+        await app.journey.getJourneysTotalCount(organizationId);
+      const url = request.url.split("?")[0];
+      const paginationDetails: PaginationDetails = {
+        offset,
+        limit,
+        totalCount,
+        url: url,
+      };
+
       const profileSdk = await getProfileSdk(organizationId);
 
       const promises = journeys.map(async (journey) => {
@@ -61,7 +86,7 @@ export default async function journeys(app: FastifyInstance) {
       });
       const result = await Promise.all(promises);
 
-      reply.send(formatAPIResponse(result));
+      reply.send(formatAPIResponse(result, paginationDetails));
     },
   );
 

@@ -101,5 +101,9 @@
   "EmptyStatus": {
     "title": "Nothing to show...",
     "description": "The current list is empty"
+  },
+  "Pagination": {
+    "previous": "Previous",
+    "next": "Next"
   }
 }

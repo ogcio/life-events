@@ -15,6 +15,23 @@ paths:
     get:
       tags: &a1
         - Journeys
+      parameters:
+        - schema:
+            default: 0
+            minimum: 0
+            type: number
+          in: query
+          name: offset
+          required: false
+        - schema:
+            default: 10
+            minimum: 5
+            maximum: 50
+            multipleOf: 5
+            type: number
+          in: query
+          name: limit
+          required: false
       responses:
         "200":
           description: Default Response

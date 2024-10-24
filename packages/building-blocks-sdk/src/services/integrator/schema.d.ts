@@ -16,6 +16,12 @@ export interface paths {
   };
   "/api/v1/journeys/": {
     get: {
+      parameters: {
+        query?: {
+          offset?: number;
+          limit?: number;
+        };
+      };
       responses: {
         /** @description Default Response */
         200: {
@@ -471,6 +477,16 @@ export interface paths {
               validationContext?: string;
             };
           };
+        };
+      };
+    };
+  };
+  "/api/v1/journeys/create-journey": {
+    post: {
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: never;
         };
       };
     };

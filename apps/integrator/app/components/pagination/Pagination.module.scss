@@ -1,0 +1,16 @@
+@import "app/styles/globals.scss";
+
+.pagination {
+  display: flex;
+  justify-content: center;
+
+  :global(.govie-pagination__item) {
+    display: none;
+  }
+
+  @media (min-width: $breakpoint-sm) {
+    :global(.govie-pagination__item) {
+      display: block;
+    }
+  }
+}

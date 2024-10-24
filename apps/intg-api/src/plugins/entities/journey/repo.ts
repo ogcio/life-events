@@ -1,6 +1,6 @@
 import { PostgresDb } from "@fastify/postgres";
 import { QueryResult } from "pg";
-import { Id } from "../../../routes/schemas";
+import { Id, PaginationParams } from "../../../routes/schemas";
 import {
   CreateJourneyBodyDO,
   JourneyDetailsDO,
@@ -18,6 +18,7 @@ export class JourneyRepo {
 
   getJourneys(
     organizationId: string,
+    pagination: PaginationParams,
   ): Promise<QueryResult<JourneyPublicDetailsDO>> {
     return this.pg.query(
       `SELECT
@@ -31,7 +32,20 @@ export class JourneyRepo {
         initial_step_id as "initialStepId"
       FROM journeys
       WHERE organization_id = $1
-      ORDER BY created_at DESC`,
+      ORDER BY created_at DESC
+      LIMIT $2 OFFSET $3`,
+      [organizationId, pagination.limit, pagination.offset],
+    );
+  }
+
+  getJourneysTotalCount(
+    organizationId: string,
+  ): Promise<QueryResult<{ totalCount: number }>> {
+    return this.pg.query(
+      `SELECT
+        count(*) as "totalCount"
+      FROM journeys
+      WHERE organization_id = $1`,
       [organizationId],
     );
   }
