@@ -27,10 +27,7 @@ export type RealexFormState = {
 
 export default async (props: Props) => {
   const t = await getTranslations("PaymentSetup.AddRealex");
-  const { messages } = await getRequestConfig({
-    locale: props.params.locale,
-    requestLocale: new Promise(() => props.params.locale),
-  });
+  const { messages } = await getRequestConfig({ locale: props.params.locale });
 
   const errorFieldMapping = realexValidationMap(t);
 

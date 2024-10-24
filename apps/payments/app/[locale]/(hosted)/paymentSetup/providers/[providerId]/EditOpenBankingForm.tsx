@@ -17,10 +17,7 @@ type Props = {
 
 export default async ({ provider, locale }: Props) => {
   const t = await getTranslations("PaymentSetup.AddOpenbanking");
-  const { messages } = await getRequestConfig({
-    locale: locale,
-    requestLocale: new Promise(() => locale),
-  });
+  const { messages } = await getRequestConfig({ locale });
 
   const errorFieldMapping = openBankingValidationMap(t);
 
