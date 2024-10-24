@@ -17,7 +17,7 @@ export class PaymentPlugin implements IIntegratorPlugin {
       `/journey/${props.journeyId}/callback`,
       props.host,
     );
-    url.searchParams.set("runId", props.runId);
+    redirectUrl.searchParams.set("runId", props.runId);
 
     //TODO: take this dinamically, for now is just to test that it work
     const amount = 100;
@@ -27,7 +27,7 @@ export class PaymentPlugin implements IIntegratorPlugin {
         runId: props.runId,
         journeyId: props.journeyId,
         amount,
-        redirectUrl,
+        redirectUrl: redirectUrl.href,
       },
       keyAlias,
       {

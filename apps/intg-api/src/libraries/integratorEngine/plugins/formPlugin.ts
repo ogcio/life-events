@@ -14,13 +14,13 @@ export class FormPlugin implements IIntegratorPlugin {
       `/journey/${props.journeyId}/callback`,
       props.host,
     );
-    url.searchParams.set("runId", props.runId);
+    redirectUrl.searchParams.set("runId", props.runId);
 
     const jwt = await createSignedJWT(
       {
         runId: props.runId,
         journeyId: props.journeyId,
-        redirectUrl,
+        redirectUrl: redirectUrl.href,
       },
       keyAlias,
       {
