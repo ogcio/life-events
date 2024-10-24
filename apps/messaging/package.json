@@ -25,7 +25,7 @@
     "@govie-ds/react": "^0.14.1",
     "@govie-ds/theme-govie": "^0.3.4",
     "auth": "*",
-    "@ogcio/building-blocks-sdk": "0.0.1",
+    "@ogcio/building-blocks-sdk": "0.0.2",
     "dayjs": "^1.11.12",
     "db-migrate": "^0.11.14",
     "db-migrate-pg": "^1.5.2",
@@ -34,11 +34,11 @@
     "messages": "*",
     "next": "14.2.5",
     "next-intl": "^3.17.2",
-    "nextjs-logging-wrapper": "*",
     "pg": "^8.11.5",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "shared-components": "*"
+    "shared-components": "*",
+    "nextjs-logging-wrapper": "*"
   },
   "devDependencies": {
     "@faker-js/faker": "^8.4.1",

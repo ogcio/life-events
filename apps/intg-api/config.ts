@@ -17,7 +17,7 @@ export const envSchema = {
     "FORMS_SECRET_API_KEY",
     "FORMS_PUBLIC_API_KEY",
     "AWS_REGION",
-    "KMS_ENDPOINT",
+    // "KMS_ENDPOINT", - required only locally with value http://localhost:4566 for localstack
     "INTEGRATOR_URL",
   ],
   properties: {

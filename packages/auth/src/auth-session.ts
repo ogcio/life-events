@@ -15,7 +15,6 @@ import {
 } from "./types";
 import { redirect } from "next/navigation";
 import { LogtoNextConfig, UserScope } from "@logto/next";
-import { getCommonLogger } from "nextjs-logging-wrapper";
 import { cookies } from "next/headers";
 
 const INACTIVE_PUBLIC_SERVANT_ORG_ROLE =
@@ -31,7 +30,7 @@ export const AuthUserScope = UserScope;
 export const AuthSession: IAuthSession = {
   async login(config) {
     addInactivePublicServantScope(config);
-    getCommonLogger().info(
+    console.info(
       {
         baseUrl: config.baseUrl,
         endpoint: config.endpoint,
@@ -56,7 +55,7 @@ export const AuthSession: IAuthSession = {
     try {
       context = await getLogtoContext(config, getContextParameters);
     } catch (err) {
-      getCommonLogger().error(err);
+      console.error(err);
       redirect(getContextParameters?.loginUrl ?? "/login");
     }
 
@@ -67,7 +66,7 @@ export const AuthSession: IAuthSession = {
     try {
       return parseContext(context, getContextParameters);
     } catch (err) {
-      getCommonLogger().error(err);
+      console.error(err);
       redirect(getContextParameters?.loginUrl ?? "/login");
     }
   },

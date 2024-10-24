@@ -37,7 +37,7 @@ const isValidLogLevel = (logLevel: string | undefined): logLevel is Level => {
     ["fatal", "error", "warn", "info", "debug", "trace"].includes(logLevel)
   );
 };
-
+type genericLogMethodType = <T>(obj: T, msg?: string, ...args: any[]) => void;
 export class BaseAuthenticationContext {
   readonly config: AuthenticationContextConfig;
   sharedContext: AuthSessionContext | null = null;
@@ -106,7 +106,7 @@ export class BaseAuthenticationContext {
     context: PartialAuthSessionContext,
   ): AuthSessionContext {
     if (!context.user) {
-      getCommonLogger().error({
+      this.logger.error({
         error: createError.Unauthorized("Missing user"),
       });
       throw notFound();

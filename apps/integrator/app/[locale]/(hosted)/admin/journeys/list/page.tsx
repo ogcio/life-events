@@ -91,12 +91,12 @@ export default async ({ params: { locale } }: Props) => {
                       <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
                         {await getUserNameById(journey.userId, defaultOrgId)}
                       </td>
-                      <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
+                      {/* <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
                         {dayjs(journey.createdAt).format("Do MMM YYYY")}
                       </td>
                       <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
                         {dayjs(journey.updatedAt).format("Do MMM YYYY")}
-                      </td>
+                      </td> */}
                       <td className="govie-table__cell govie-table__cell--vertical-centralized govie-body-s">
                         <div
                           style={{

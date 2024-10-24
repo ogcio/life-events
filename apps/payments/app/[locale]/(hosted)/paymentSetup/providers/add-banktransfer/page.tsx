@@ -27,7 +27,10 @@ export type BankTransferFormState = {
 
 export default async (props: Props) => {
   const t = await getTranslations("PaymentSetup.AddBankTransfer");
-  const { messages } = await getRequestConfig({ locale: props.params.locale });
+  const { messages } = await getRequestConfig({
+    locale: props.params.locale,
+    requestLocale: new Promise(() => props.params.locale),
+  });
   const errorFieldMapping = bankTransferValidationMap(t);
 
   async function handleSubmit(
