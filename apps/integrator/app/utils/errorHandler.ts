@@ -34,6 +34,12 @@ export const getValidationErrors = (
       fieldMap[errorField]?.errorMessage[validation.validationRule] ??
       validation.message;
 
+    /**
+     * Regex to match variables in the translated error messages.
+     * The variables are marked by @ characters. This regex will match
+     * any word between @ characters. The provided value for the variable
+     * will replace the matched words.
+     */
     const regExp = /@\w+@/g;
 
     const processedMessage = message.replaceAll(regExp, function (match) {
