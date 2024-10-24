@@ -2862,11 +2862,11 @@ paths:
                   type: string
                 runId:
                   type: string
-                data: {}
+                token:
+                  type: string
               required:
                 - journeyId
                 - runId
-                - data
         required: true
       responses:
         "200":

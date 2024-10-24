@@ -1,9 +1,10 @@
+import { getIssuerFromJWT, verifyJWT } from "api-auth";
 import { JourneyStepConnectionDO } from "../../plugins/entities/journeyStepConnections/types";
 import {
   JourneyStepTypesDO,
   StepDataDO,
 } from "../../plugins/entities/journeySteps/types";
-import integratorPluginManager from "./plugins";
+import integratorPluginManager, { IssuerPluginKeys } from "./plugins";
 import { IIntegratorPlugin } from "./plugins/basePlugin";
 
 export type IntegratorEngineProps = {
@@ -35,7 +36,23 @@ class IntegratorEngine {
     });
   }
 
-  public processResultData(data: any) {
+  public async validateToken(token: string) {
+    const issuer = getIssuerFromJWT(token);
+    if (!issuer) {
+      throw new Error("Issuer must be set to properly validate a token");
+    }
+
+    const pluginJwksUrl = integratorPluginManager
+      .getPluginFromIssuer(issuer as IssuerPluginKeys)
+      .getJwksUrl();
+
+    return verifyJWT(token, {
+      jwksUrl: pluginJwksUrl,
+      audience: "integrator-api",
+    });
+  }
+
+  public async processResultData(data: any) {
     return this.plugin.processResultData(data, {
       journeyId: this.journeyId,
       runId: this.runId,

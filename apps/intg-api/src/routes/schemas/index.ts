@@ -315,6 +315,6 @@ export type JourneyStepExecutionResponse = Static<
 export const TransitionJourneyStep = Type.Object({
   journeyId: Type.String(),
   runId: Type.String(),
-  data: Type.Any(),
+  token: Type.Optional(Type.String()),
 });
 export type TransitionJourneyStep = Static<typeof TransitionJourneyStep>;

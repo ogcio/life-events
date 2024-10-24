@@ -304,7 +304,7 @@ export default async function executor(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
-      const { journeyId, runId, data } = request.body;
+      const { journeyId, runId, token } = request.body;
       const userId = request.userData?.userId;
 
       if (!userId) {
@@ -349,7 +349,12 @@ export default async function executor(app: FastifyInstance) {
         runId,
         host: process.env.INTEGRATOR_URL!,
       });
-      const processedData = engine.processResultData(data);
+
+      let processedData;
+      if (token) {
+        const data = await engine.validateToken(token);
+        processedData = await engine.processResultData(data);
+      }
 
       /**
        * Step is completed and it will be updated with the processed result data.
