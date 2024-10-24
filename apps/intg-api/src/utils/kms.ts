@@ -1,2 +1,2 @@
 // key alias on KMS for integrator api application
-export const keyAlias = "alias/life-events-integrator-api-key";
+export const keyAlias = "alias/life-events-intg-api-asymmetric-key";

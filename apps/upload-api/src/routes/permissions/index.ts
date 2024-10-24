@@ -90,6 +90,11 @@ export default async function routes(app: FastifyInstance) {
           fileId: Type.String(),
         }),
         response: {
+          "200": getGenericResponseSchema(
+            Type.Array(
+              Type.Object({ fileId: Type.String(), userId: Type.String() }),
+            ),
+          ),
           "4xx": HttpError,
           "5xx": HttpError,
         },

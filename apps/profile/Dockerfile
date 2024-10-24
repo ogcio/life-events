@@ -6,6 +6,7 @@ ENV LOG_LEVEL=trace
 COPY ./package*.json /app/
 COPY ./apps/profile/package*.json /app/apps/profile/
 COPY ./packages/feature-flags/package*.json /app/packages/feature-flags/
+COPY ./packages/nextjs-logging-wrapper/package*.json /app/packages/nextjs-logging-wrapper/
 COPY ./packages/auth/package*.json /app/packages/auth/
 COPY ./packages/building-blocks-sdk/package*.json /app/packages/building-blocks-sdk/
 COPY ./packages/shared-components/package*.json /app/packages/shared-components/
@@ -15,6 +16,7 @@ RUN npm ci
 COPY ./apps/profile/ /app/apps/profile/
 COPY --from=design-system-container /app/packages/design-system/ /app/packages/design-system/
 COPY ./packages/feature-flags/ /app/packages/feature-flags/
+COPY ./packages/nextjs-logging-wrapper/ /app/packages/nextjs-logging-wrapper/
 COPY ./packages/auth/ /app/packages/auth/
 COPY ./packages/building-blocks-sdk/ /app/packages/building-blocks-sdk/
 COPY ./packages/shared-components/ /app/packages/shared-components/
@@ -29,6 +31,7 @@ ENV LOG_LEVEL=trace
 ENV NEXT_PUBLIC_PROFILE_SERVICE_ENTRY_POINT=$NEXT_PUBLIC_PROFILE_SERVICE_ENTRY_POINT
 
 RUN npm run build --workspace=packages/building-blocks-sdk && \
+    npm run build --workspace=packages/nextjs-logging-wrapper && \
     npm run build --workspace=apps/profile
 
 FROM base-deps AS runner
