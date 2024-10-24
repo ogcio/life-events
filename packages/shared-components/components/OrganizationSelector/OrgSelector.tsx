@@ -6,7 +6,8 @@ export type OrganizationSelectorItem = {
 };
 
 export type OrganizationSelectorProps = {
-  title: string;
+  title?: string;
+  description?: string;
   actionTitle: string;
   organizations: OrganizationSelectorItem[];
   defaultOrganization?: string;
@@ -16,6 +17,7 @@ export type OrganizationSelectorProps = {
 
 export default function ({
   title,
+  description,
   actionTitle,
   organizations,
   defaultOrganization,
@@ -30,13 +32,26 @@ export default function ({
     <div>
       <form action={handleSubmit}>
         <div className="govie-form-group organization-selector-wrapper">
-          <label
-            htmlFor="organization"
-            className="govie-!-font-weight-regular govie-label--s govie-!-font-size-16 organization-selector-label"
-          >
-            {title}
-          </label>
-          <br />
+          {title && (
+            <div>
+              <label
+                htmlFor="organization"
+                className="govie-!-font-weight-regular govie-label--s govie-!-font-size-16 organization-selector-label"
+              >
+                {title}
+              </label>
+            </div>
+          )}
+
+          {description && (
+            <div
+              style={{
+                marginBottom: "16px",
+              }}
+            >
+              {description}
+            </div>
+          )}
           <select
             id="organization"
             name="organization"
@@ -56,8 +71,11 @@ export default function ({
           id="button"
           type="submit"
           data-module="govie-button"
-          className="govie-button govie-button--small"
+          className="govie-button govie-button--medium"
           disabled={disabled}
+          style={{
+            width: "100%",
+          }}
         >
           {actionTitle}
         </button>
