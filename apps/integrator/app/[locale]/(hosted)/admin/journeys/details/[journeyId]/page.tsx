@@ -11,7 +11,6 @@ import dayjs from "dayjs";
 import { generateJourneyLink } from "../../../../../../utils/journey";
 import { JourneyEditor } from "../../../../../../../libraries/journeyEditor";
 import journeyDefaultFlow from "../../../../../../../libraries/journeyEditor/journeyStepFlow";
-import { getUserNameById } from "../../../../../../utils/profileHelpers";
 
 type Props = {
   params: {
@@ -102,9 +101,7 @@ export default async ({ params: { locale, journeyId } }: Props) => {
             </div>
             <div className="govie-summary-list__row">
               <dt className="govie-summary-list__key">{t("createdBy")}</dt>
-              <dt className="govie-summary-list__value">
-                {await getUserNameById(journey.userId, defaultOrgId)}
-              </dt>
+              <dt className="govie-summary-list__value"></dt>
             </div>
             <div className="govie-summary-list__row">
               <dt className="govie-summary-list__key">{t("journeyLink")}</dt>
