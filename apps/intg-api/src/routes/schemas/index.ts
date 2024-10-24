@@ -1,9 +1,34 @@
 import { Static, TSchema, Type } from "@sinclair/typebox";
+import {
+  PAGINATION_LIMIT_DEFAULT,
+  PAGINATION_OFFSET_DEFAULT,
+} from "../../utils/pagination";
 
 export const Id = Type.Object({
   id: Type.String(),
 });
 export type Id = Static<typeof Id>;
+
+/**
+ * Pagination
+ */
+export const PaginationParams = Type.Object({
+  offset: Type.Optional(
+    Type.Number({
+      default: PAGINATION_OFFSET_DEFAULT,
+      minimum: 0,
+    }),
+  ),
+  limit: Type.Optional(
+    Type.Number({
+      default: PAGINATION_LIMIT_DEFAULT,
+      minimum: 5,
+      maximum: 50,
+      multipleOf: 5,
+    }),
+  ),
+});
+export type PaginationParams = Static<typeof PaginationParams>;
 
 export const PaginationLink = Type.Object({
   href: Type.Optional(Type.String()),
@@ -144,6 +169,8 @@ export const JourneyPublicDetails = Type.Pick(JourneyDetails, [
   "organizationId",
   "status",
   "initialStepId",
+  "createdAt",
+  "updatedAt",
 ]);
 
 export const FullJourney = Type.Composite([
@@ -155,7 +182,14 @@ export const FullJourney = Type.Composite([
 ]);
 export type FullJourneyDO = Static<typeof FullJourney>;
 
-export const Journeys = Type.Array(JourneyPublicDetails);
+export const Journeys = Type.Array(
+  Type.Composite([
+    JourneyPublicDetails,
+    Type.Object({
+      userName: Type.String(),
+    }),
+  ]),
+);
 
 export const CreateJourneyBody = Type.Object({
   title: Type.String(),

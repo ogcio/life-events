@@ -16,6 +16,12 @@ export interface paths {
   };
   "/api/v1/journeys/": {
     get: {
+      parameters: {
+        query?: {
+          offset?: number;
+          limit?: number;
+        };
+      };
       responses: {
         /** @description Default Response */
         200: {
@@ -28,6 +34,9 @@ export interface paths {
                 organizationId: string;
                 status: "active" | "draft";
                 initialStepId: string;
+                createdAt: string;
+                updatedAt: string;
+                userName: string;
               }[];
               metadata?: {
                 links?: {
@@ -341,6 +350,8 @@ export interface paths {
                 organizationId: string;
                 status: "active" | "draft";
                 initialStepId: string;
+                createdAt: string;
+                updatedAt: string;
               };
               metadata?: {
                 links?: {
@@ -466,6 +477,16 @@ export interface paths {
               validationContext?: string;
             };
           };
+        };
+      };
+    };
+  };
+  "/api/v1/journeys/create-journey": {
+    post: {
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: never;
         };
       };
     };

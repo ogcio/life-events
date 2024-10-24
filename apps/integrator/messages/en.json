@@ -66,10 +66,10 @@
         "description": "You have no journeys created."
       },
       "tableHeaders": {
+        "id": "ID",
         "name": "Name",
         "createdBy": "Created by",
         "created": "Date created",
-        "updated": "Last updated",
         "actions": "Actions"
       }
     },
@@ -92,10 +92,18 @@
     "cancel": "Cancel",
     "shareLink": "Share link",
     "copyLink": "Copy link",
-    "journeyStatus": "Journey status",
+    "view": "View",
     "backToHome": "Back to Homepage",
     "backToExistingJourneys": "Back to existing journeys",
     "active": "Active",
     "draft": "Draft"
+  },
+  "EmptyStatus": {
+    "title": "Nothing to show...",
+    "description": "The current list is empty"
+  },
+  "Pagination": {
+    "previous": "Previous",
+    "next": "Next"
   }
 }

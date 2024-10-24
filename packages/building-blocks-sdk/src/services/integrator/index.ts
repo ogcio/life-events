@@ -158,8 +158,16 @@ export class Integrator {
     );
   }
 
-  async getJourneys() {
-    return formatQueryResult(this.client.GET("/api/v1/journeys/", {}));
+  async getJourneys(
+    query: paths["/api/v1/journeys/"]["get"]["parameters"]["query"],
+  ) {
+    return formatQueryResult(
+      this.client.GET("/api/v1/journeys/", {
+        params: {
+          query,
+        },
+      }),
+    );
   }
 
   async createJourney(
