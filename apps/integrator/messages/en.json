@@ -7,13 +7,28 @@
   "Footer": {
     "license": "All content is available under the <link>Open Government Licence v3.0</link>, except where otherwise stated"
   },
+  "FeedbackBanner": {
+    "tag": "Alpha",
+    "bannerText": "This is a new service - your <mail>feedback</mail> will help us to improve it."
+  },
+  "Menu": {
+    "login": "Login",
+    "logout": "Logout",
+    "loading": "Loading..."
+  },
   "Journeys": {
     "title": "Journeys",
     "createJourney": "Create a new journey",
-    "createJourneyDescription": "Combine building blocks to form a journey",
+    "createJourneyDescription": "Build a journey by combining building blocks",
     "listJourneys": "List of existing journeys",
-    "listJourneysDescription": "View and choose existing journey",
+    "listJourneysDescription": "View and manage existing journey",
+    "listJourneyRuns": "Journeys submissions",
+    "listJourneyRunsDescription": "Review submissions for ongoing journeys",
     "tutorialVideo": "Tutorial video",
+    "organisationSelector": {
+      "title": "Organisation",
+      "description": "Please have the correct organisation selected before creating a new journey."
+    },
     "create": {
       "title": "What would you like to call this journey?",
       "description": "Example: 'Request a replacement Driving Licence'"
