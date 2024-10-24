@@ -27,10 +27,7 @@ export type OpenBankingFormState = {
 
 export default async (props: Props) => {
   const t = await getTranslations("PaymentSetup.AddOpenbanking");
-  const { messages } = await getRequestConfig({
-    locale: props.params.locale,
-    requestLocale: new Promise(() => props.params.locale),
-  });
+  const { messages } = await getRequestConfig({ locale: props.params.locale });
 
   const errorFieldMapping = openBankingValidationMap(t);
 
