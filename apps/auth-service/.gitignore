@@ -3,3 +3,4 @@ node_modules
 .tap
 
 results.xml
+mkdir -p test_reports && mkdir -p test_reports/perf

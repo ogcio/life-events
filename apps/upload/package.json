@@ -11,7 +11,7 @@
     "test:headless:e2e": "playwright test",
     "test:smoke:e2e": "echo \"Error: no test specified\" && exit 0",
     "test:regression:e2e": "echo \"Error: no test specified\" && exit 0",
-    "test:perf": "mkdir -p performance_test_reports && echo \"Error: no test specified\" && exit 0",
+    "test:perf": "mkdir -p test_reports && mkdir -p test_reports/perf && echo \"Error: no test specified\" && exit 0",
     "test:debug:e2e": "playwright test --ui",
     "migrate": "db-migrate up"
   },

@@ -8,7 +8,7 @@
     "test:local": "TAP_RCFILE=tap.yml tap",
     "test:smoke:e2e": "echo \"Error: no test specified\" && exit 0",
     "test:regression:e2e": "echo \"Error: no test specified\" && exit 0",
-    "test:perf": "mkdir -p performance_test_reports && echo \"Error: no test specified\" && exit 0",
+    "test:perf": "mkdir -p test_reports && mkdir -p test_reports/perf && echo \"Error: no test specified\" && exit 0",
     "start": "node dist/index.js",
     "dev": "nodemon | pino-pretty",
     "lint": "eslint . --ext .ts",
